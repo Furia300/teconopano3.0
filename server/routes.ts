@@ -1,4 +1,5 @@
 import type { Express, Request, Response } from "express";
+import { fetchPessoas, fetchDepartamentos, isRHiDConfigured } from "./rhid";
 
 // In-memory storage (will be replaced with DB later)
 let coletas: any[] = [
@@ -525,6 +526,112 @@ export function registerRoutes(app: Express) {
     };
     estoqueList.push(novo);
     res.status(201).json(novo);
+  });
+
+  // ==================== COLABORADORES (RHiD + fallback local) ====================
+
+  // Fallback local - usado quando API RHiD não está configurada/disponível
+  let colaboradoresLocal: any[] = [
+    { id: 1, cpf: "11111111111", name: "José da Silva", registration: "M001", departamento: "Motorista", status: 1, fonte: "local" },
+    { id: 2, cpf: "22222222222", name: "Carlos Santos", registration: "M002", departamento: "Motorista", status: 1, fonte: "local" },
+    { id: 3, cpf: "33333333333", name: "Maria Silva", registration: "C001", departamento: "Costura", status: 1, fonte: "local" },
+    { id: 4, cpf: "44444444444", name: "Lucas Oliveira", registration: "G001", departamento: "Galpão", status: 1, fonte: "local" },
+    { id: 5, cpf: "55555555555", name: "Ana Santos", registration: "C002", departamento: "Costura", status: 1, fonte: "local" },
+    { id: 6, cpf: "66666666666", name: "Rafael Lima", registration: "G002", departamento: "Galpão", status: 1, fonte: "local" },
+    { id: 7, cpf: "77777777777", name: "Marcos Souza", registration: "G003", departamento: "Galpão", status: 1, fonte: "local" },
+    { id: 8, cpf: "88888888888", name: "Pedro Costa", registration: "G004", departamento: "Galpão", status: 1, fonte: "local" },
+  ];
+
+  // GET colaboradores - tenta RHiD primeiro, fallback local
+  app.get("/api/colaboradores", async (_req: Request, res: Response) => {
+    if (isRHiDConfigured()) {
+      try {
+        const [pessoas, departamentos] = await Promise.all([
+          fetchPessoas(),
+          fetchDepartamentos(),
+        ]);
+
+        const deptMap = new Map(departamentos.map((d) => [d.id, d.name]));
+
+        const colaboradores = pessoas.map((p) => ({
+          id: p.id,
+          cpf: String(p.cpf).padStart(11, "0"),
+          name: p.name,
+          registration: p.registration,
+          departamento: deptMap.get(p.idDepartment) || "",
+          status: p.status,
+          fonte: "rhid",
+        }));
+
+        return res.json({ fonte: "rhid", colaboradores });
+      } catch (error) {
+        console.error("RHiD falhou, usando fallback local:", error);
+      }
+    }
+
+    // Fallback local
+    res.json({ fonte: "local", colaboradores: colaboradoresLocal });
+  });
+
+  // GET colaboradores filtrados por departamento (motoristas, galpão, etc.)
+  app.get("/api/colaboradores/departamento/:depto", async (req: Request, res: Response) => {
+    const depto = req.params.depto.toLowerCase();
+
+    if (isRHiDConfigured()) {
+      try {
+        const [pessoas, departamentos] = await Promise.all([
+          fetchPessoas(),
+          fetchDepartamentos(),
+        ]);
+
+        const deptIds = departamentos
+          .filter((d) => d.name.toLowerCase().includes(depto))
+          .map((d) => d.id);
+
+        const filtered = pessoas
+          .filter((p) => deptIds.includes(p.idDepartment))
+          .map((p) => ({
+            id: p.id,
+            cpf: String(p.cpf).padStart(11, "0"),
+            name: p.name,
+            registration: p.registration,
+            fonte: "rhid",
+          }));
+
+        return res.json(filtered);
+      } catch {
+        // fallback
+      }
+    }
+
+    const filtered = colaboradoresLocal.filter((c) =>
+      c.departamento.toLowerCase().includes(depto)
+    );
+    res.json(filtered);
+  });
+
+  // POST cadastro manual (fallback)
+  app.post("/api/colaboradores", (req: Request, res: Response) => {
+    const novo = {
+      id: Date.now(),
+      cpf: req.body.cpf || "",
+      name: req.body.name || "",
+      registration: req.body.registration || "",
+      departamento: req.body.departamento || "",
+      status: 1,
+      fonte: "local",
+    };
+    colaboradoresLocal.push(novo);
+    res.status(201).json(novo);
+  });
+
+  // GET status da integração RHiD
+  app.get("/api/colaboradores/status", (_req: Request, res: Response) => {
+    res.json({
+      rhidConfigurado: isRHiDConfigured(),
+      rhidUrl: process.env.RHID_API_URL || "https://www.rhid.com.br/v2/swagger.svc",
+      totalLocal: colaboradoresLocal.length,
+    });
   });
 
   // ==================== HEALTH ====================
