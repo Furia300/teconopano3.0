@@ -116,9 +116,20 @@ let separacoes: any[] = [
   { id: "s11", coletaId: "4", coletaNumero: 245, fornecedor: "VLI LOGÍSTICA", tipoMaterial: "GRU", cor: "Variado", peso: 390, destino: "producao", colaborador: "Pedro", data: "2026-03-23T07:30:00Z" },
 ];
 
+let producoes: any[] = [
+  { id: "p1", coletaId: "3", coletaNumero: 246, fornecedor: "HOTEL MAJESTIC", sala: "CORTE 01", tipoMaterial: "TOALHA", cor: "Branco", acabamento: "Corte-Reto", medida: "30x30 Cm", kilo: 120, pesoMedio: 0.5, qtdePacote: 240, unidadeSaida: "unidade", statusEstoque: "em_estoque", operador: "Lucas", dataCriacao: "2026-03-29T08:00:00Z" },
+  { id: "p2", coletaId: "3", coletaNumero: 246, fornecedor: "HOTEL MAJESTIC", sala: "CORTE 03", tipoMaterial: "ENXOVAL", cor: "Branco", acabamento: "Overlock", medida: "50x50 Cm", kilo: 80, pesoMedio: 0.8, qtdePacote: 100, unidadeSaida: "unidade", statusEstoque: "em_estoque", operador: "Lucas", dataCriacao: "2026-03-29T09:30:00Z" },
+  { id: "p3", coletaId: "4", coletaNumero: 245, fornecedor: "VLI LOGÍSTICA", sala: "CORTE VLI", tipoMaterial: "ESTOPA", cor: "Escuro", acabamento: "Sem Acabamento", medida: "", kilo: 400, pesoMedio: 0, qtdePacote: 0, unidadeSaida: "kilo", statusEstoque: "em_estoque", operador: "Rafael", dataCriacao: "2026-03-24T07:00:00Z" },
+  { id: "p4", coletaId: "4", coletaNumero: 245, fornecedor: "VLI LOGÍSTICA", sala: "FAIXA", tipoMaterial: "GRU", cor: "Variado", acabamento: "Corte-Reto", medida: "", kilo: 350, pesoMedio: 0, qtdePacote: 0, unidadeSaida: "kilo", statusEstoque: "pendente", operador: "Rafael", dataCriacao: "2026-03-24T08:00:00Z" },
+  { id: "p5", coletaId: "2", coletaNumero: 247, fornecedor: "SUL AMERICANA", sala: "CORTE 02", tipoMaterial: "MALHA", cor: "Azul", acabamento: "Zig-Zag", medida: "40x40 Cm", kilo: 95, pesoMedio: 0.4, qtdePacote: 237, unidadeSaida: "unidade", statusEstoque: "pendente", operador: "Ana", dataCriacao: "2026-04-01T10:00:00Z" },
+  { id: "p6", coletaId: "1", coletaNumero: 248, fornecedor: "ATMOSFERA GESTÃO", sala: "CORTE 04", tipoMaterial: "LENÇOL", cor: "Branco", acabamento: "Overlock", medida: "60x80 Cm", kilo: 180, pesoMedio: 1.2, qtdePacote: 150, unidadeSaida: "unidade", statusEstoque: "pendente", operador: "Marcos", dataCriacao: "2026-04-04T14:00:00Z" },
+  { id: "p7", coletaId: "1", coletaNumero: 248, fornecedor: "ATMOSFERA GESTÃO", sala: "CORTE 05", tipoMaterial: "EDREDON", cor: "Colorido", acabamento: "Sem Acabamento", medida: "", kilo: 130, pesoMedio: 0, qtdePacote: 0, unidadeSaida: "kilo", statusEstoque: "pendente", operador: "Marcos", dataCriacao: "2026-04-04T15:00:00Z" },
+];
+
 let nextColetaId = 6;
 let nextColetaNumero = 250;
 let nextSeparacaoId = 12;
+let nextProducaoId = 8;
 
 export function registerRoutes(app: Express) {
   // ==================== AUTH ====================
@@ -221,6 +232,41 @@ export function registerRoutes(app: Express) {
       data: new Date().toISOString(),
     };
     separacoes.push(nova);
+    res.status(201).json(nova);
+  });
+
+  // ==================== PRODUCOES ====================
+  app.get("/api/producoes", (_req: Request, res: Response) => {
+    res.json(producoes);
+  });
+
+  app.post("/api/producoes", (req: Request, res: Response) => {
+    const coleta = coletas.find((c) => c.id === req.body.coletaId);
+    if (!coleta) return res.status(404).json({ message: "Coleta não encontrada" });
+
+    if (coleta.status === "em_separacao" || coleta.status === "separado") {
+      coleta.status = "em_producao";
+    }
+
+    const nova = {
+      id: `p${nextProducaoId++}`,
+      coletaId: req.body.coletaId,
+      coletaNumero: coleta.numero,
+      fornecedor: coleta.nomeFantasia,
+      sala: req.body.sala,
+      tipoMaterial: req.body.tipoMaterial,
+      cor: req.body.cor || "",
+      acabamento: req.body.acabamento || "",
+      medida: req.body.medida || "",
+      kilo: Number(req.body.kilo) || 0,
+      pesoMedio: Number(req.body.pesoMedio) || 0,
+      qtdePacote: Number(req.body.qtdePacote) || 0,
+      unidadeSaida: req.body.unidadeSaida || "unidade",
+      statusEstoque: "pendente",
+      operador: req.body.operador || "",
+      dataCriacao: new Date().toISOString(),
+    };
+    producoes.push(nova);
     res.status(201).json(nova);
   });
 
