@@ -102,8 +102,23 @@ let fornecedores: any[] = [
   { id: "f5", nome: "REDE ACCOR", razaoSocial: "Accor Hospitality Brasil Ltda", cnpj: "33.444.555/0001-22", contato: "(11) 7777-5555", email: "compras@accor.com", ativo: true },
 ];
 
+let separacoes: any[] = [
+  { id: "s1", coletaId: "1", coletaNumero: 248, fornecedor: "ATMOSFERA GESTÃO", tipoMaterial: "TOALHA", cor: "Branco", peso: 120, destino: "producao", colaborador: "Carlos", data: "2026-04-03T09:00:00Z" },
+  { id: "s2", coletaId: "1", coletaNumero: 248, fornecedor: "ATMOSFERA GESTÃO", tipoMaterial: "LENÇOL", cor: "Branco", peso: 200, destino: "producao", colaborador: "Carlos", data: "2026-04-03T09:15:00Z" },
+  { id: "s3", coletaId: "1", coletaNumero: 248, fornecedor: "ATMOSFERA GESTÃO", tipoMaterial: "FRONHA", cor: "Escuro", peso: 80, destino: "repanol", colaborador: "Carlos", data: "2026-04-03T09:30:00Z" },
+  { id: "s4", coletaId: "1", coletaNumero: 248, fornecedor: "ATMOSFERA GESTÃO", tipoMaterial: "EDREDON", cor: "Colorido", peso: 150, destino: "producao", colaborador: "Carlos", data: "2026-04-03T09:45:00Z" },
+  { id: "s5", coletaId: "2", coletaNumero: 247, fornecedor: "SUL AMERICANA", tipoMaterial: "MALHA", cor: "Azul", peso: 100, destino: "producao", colaborador: "João", data: "2026-03-31T10:00:00Z" },
+  { id: "s6", coletaId: "2", coletaNumero: 247, fornecedor: "SUL AMERICANA", tipoMaterial: "GSY", cor: "Variado", peso: 95, destino: "costureira", colaborador: "João", data: "2026-03-31T10:20:00Z" },
+  { id: "s7", coletaId: "2", coletaNumero: 247, fornecedor: "SUL AMERICANA", tipoMaterial: "TNT", cor: "Preto", peso: 55, destino: "repanol", colaborador: "João", data: "2026-03-31T10:40:00Z" },
+  { id: "s8", coletaId: "3", coletaNumero: 246, fornecedor: "HOTEL MAJESTIC", tipoMaterial: "TOALHA", cor: "Branco", peso: 250, destino: "producao", colaborador: "Maria", data: "2026-03-28T08:00:00Z" },
+  { id: "s9", coletaId: "3", coletaNumero: 246, fornecedor: "HOTEL MAJESTIC", tipoMaterial: "ENXOVAL", cor: "Branco", peso: 168, destino: "producao", colaborador: "Maria", data: "2026-03-28T08:30:00Z" },
+  { id: "s10", coletaId: "4", coletaNumero: 245, fornecedor: "VLI LOGÍSTICA", tipoMaterial: "ESTOPA", cor: "Escuro", peso: 400, destino: "producao", colaborador: "Pedro", data: "2026-03-23T07:00:00Z" },
+  { id: "s11", coletaId: "4", coletaNumero: 245, fornecedor: "VLI LOGÍSTICA", tipoMaterial: "GRU", cor: "Variado", peso: 390, destino: "producao", colaborador: "Pedro", data: "2026-03-23T07:30:00Z" },
+];
+
 let nextColetaId = 6;
 let nextColetaNumero = 250;
+let nextSeparacaoId = 12;
 
 export function registerRoutes(app: Express) {
   // ==================== AUTH ====================
@@ -172,6 +187,41 @@ export function registerRoutes(app: Express) {
   // ==================== FORNECEDORES ====================
   app.get("/api/fornecedores", (_req: Request, res: Response) => {
     res.json(fornecedores);
+  });
+
+  // ==================== SEPARACOES ====================
+  app.get("/api/separacoes", (_req: Request, res: Response) => {
+    res.json(separacoes);
+  });
+
+  app.get("/api/separacoes/coleta/:coletaId", (req: Request, res: Response) => {
+    const filtered = separacoes.filter((s) => s.coletaId === req.params.coletaId);
+    res.json(filtered);
+  });
+
+  app.post("/api/separacoes", (req: Request, res: Response) => {
+    const coleta = coletas.find((c) => c.id === req.body.coletaId);
+    if (!coleta) return res.status(404).json({ message: "Coleta não encontrada" });
+
+    // Update coleta status
+    if (coleta.status === "recebido") {
+      coleta.status = "em_separacao";
+    }
+
+    const nova = {
+      id: `s${nextSeparacaoId++}`,
+      coletaId: req.body.coletaId,
+      coletaNumero: coleta.numero,
+      fornecedor: coleta.nomeFantasia,
+      tipoMaterial: req.body.tipoMaterial,
+      cor: req.body.cor || "",
+      peso: Number(req.body.peso) || 0,
+      destino: req.body.destino || "producao",
+      colaborador: req.body.colaborador || "",
+      data: new Date().toISOString(),
+    };
+    separacoes.push(nova);
+    res.status(201).json(nova);
   });
 
   // ==================== HEALTH ====================
