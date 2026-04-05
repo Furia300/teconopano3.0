@@ -139,12 +139,21 @@ let costureiraList: any[] = [
   { id: "c4", coletaId: "2", coletaNumero: 247, fornecedor: "SUL AMERICANA", costureira: "Lucia Oliveira", tipoMaterial: "GSY", tipoMedida: "40x40 Cm", status: "enviado", dataEnvio: "2026-04-02T08:00:00Z", dataRetorno: null, motoristaEnvio: "Carlos", motoristaRetorno: "", qtdsSaidaKg: 45, qtdsRetornoKg: 0, qtdsPacotesRetorno: 0, totalDifKg: 0, residuos: 0, assCostEntrega: "signed", assMotEntrega: null, assCostDevolucao: null, assMotDevolucao: null, galpaoEnvio: "Vicente", observacao: "" },
 ];
 
+let estoqueList: any[] = [
+  { id: "e1", coletaNumero: 246, fornecedor: "HOTEL MAJESTIC", descricaoProduto: "TOALHA Branco 30x30 Cm Corte-Reto", tipoMaterial: "TOALHA", cor: "Branco", medida: "30x30 Cm", acabamento: "Corte-Reto", kilo: 120, unidade: 240, pesoMedioPct: 0.5, unidadeMedida: "Pacote/Kilo", qtdeReservadaPacote: 50, galpao: "Vicente", status: "Disponivel", statusMaterial: "", data: "2026-03-30T10:00:00Z" },
+  { id: "e2", coletaNumero: 246, fornecedor: "HOTEL MAJESTIC", descricaoProduto: "ENXOVAL Branco 50x50 Cm Overlock", tipoMaterial: "ENXOVAL", cor: "Branco", medida: "50x50 Cm", acabamento: "Overlock", kilo: 80, unidade: 100, pesoMedioPct: 0.8, unidadeMedida: "Pacote/Kilo", qtdeReservadaPacote: 0, galpao: "Vicente", status: "Disponivel", statusMaterial: "", data: "2026-03-30T11:00:00Z" },
+  { id: "e3", coletaNumero: 245, fornecedor: "VLI LOGÍSTICA", descricaoProduto: "ESTOPA Escuro", tipoMaterial: "ESTOPA", cor: "Escuro", medida: "", acabamento: "Sem Acabamento", kilo: 400, unidade: 0, pesoMedioPct: 0, unidadeMedida: "Kilo", qtdeReservadaPacote: 0, galpao: "Vicente", status: "Disponivel", statusMaterial: "", data: "2026-03-25T09:00:00Z" },
+  { id: "e4", coletaNumero: 245, fornecedor: "VLI LOGÍSTICA", descricaoProduto: "GRU Variado", tipoMaterial: "GRU", cor: "Variado", medida: "", acabamento: "Corte-Reto", kilo: 350, unidade: 0, pesoMedioPct: 0, unidadeMedida: "Kilo", qtdeReservadaPacote: 0, galpao: "Vicente", status: "Pendente", statusMaterial: "", data: "2026-03-25T10:00:00Z" },
+  { id: "e5", coletaNumero: 247, fornecedor: "SUL AMERICANA", descricaoProduto: "MALHA Azul 40x40 Cm Zig-Zag", tipoMaterial: "MALHA", cor: "Azul", medida: "40x40 Cm", acabamento: "Zig-Zag", kilo: 95, unidade: 237, pesoMedioPct: 0.4, unidadeMedida: "Pacote/Kilo", qtdeReservadaPacote: 100, galpao: "Vicente", status: "Reservado", statusMaterial: "", data: "2026-04-02T12:00:00Z" },
+];
+
 let nextColetaId = 6;
 let nextColetaNumero = 250;
 let nextSeparacaoId = 12;
 let nextProducaoId = 8;
 let nextRepanolId = 4;
 let nextCostureiraId = 5;
+let nextEstoqueId = 6;
 
 export function registerRoutes(app: Express) {
   // ==================== AUTH ====================
@@ -387,6 +396,42 @@ export function registerRoutes(app: Express) {
     };
     producoes.push(nova);
     res.status(201).json(nova);
+  });
+
+  // ==================== ESTOQUE ====================
+  app.get("/api/estoque", (_req: Request, res: Response) => {
+    res.json(estoqueList);
+  });
+
+  app.post("/api/estoque", (req: Request, res: Response) => {
+    const prod = producoes.find((p) => p.id === req.body.producaoId);
+    if (!prod) return res.status(404).json({ message: "Produção não encontrada" });
+
+    // Mark production as in estoque
+    prod.statusEstoque = "em_estoque";
+
+    const novo = {
+      id: `e${nextEstoqueId++}`,
+      coletaNumero: prod.coletaNumero,
+      fornecedor: prod.fornecedor,
+      descricaoProduto: req.body.descricaoProduto || `${prod.tipoMaterial} ${prod.cor}`,
+      tipoMaterial: prod.tipoMaterial,
+      cor: prod.cor,
+      medida: prod.medida,
+      acabamento: prod.acabamento,
+      kilo: prod.kilo,
+      unidade: prod.qtdePacote || 0,
+      pesoMedioPct: prod.pesoMedio || 0,
+      unidadeMedida: prod.unidadeSaida === "kilo" ? "Kilo" : "Pacote/Kilo",
+      qtdeReservadaPacote: 0,
+      galpao: req.body.galpao || "Vicente",
+      status: "Disponivel",
+      statusMaterial: "",
+      data: new Date().toISOString(),
+      observacao: req.body.observacao || "",
+    };
+    estoqueList.push(novo);
+    res.status(201).json(novo);
   });
 
   // ==================== HEALTH ====================
