@@ -126,10 +126,17 @@ let producoes: any[] = [
   { id: "p7", coletaId: "1", coletaNumero: 248, fornecedor: "ATMOSFERA GESTÃO", sala: "CORTE 05", tipoMaterial: "EDREDON", cor: "Colorido", acabamento: "Sem Acabamento", medida: "", kilo: 130, pesoMedio: 0, qtdePacote: 0, unidadeSaida: "kilo", statusEstoque: "pendente", operador: "Marcos", dataCriacao: "2026-04-04T15:00:00Z" },
 ];
 
+let repanolList: any[] = [
+  { id: "r1", coletaId: "1", coletaNumero: 248, fornecedor: "ATMOSFERA GESTÃO", empresaFornecedor: "Lavanderia SP", tipoMaterial: "FRONHA", dataEnvio: "2026-04-04T08:00:00Z", dataRetorno: null, pesoManchadoEnvio: 30, pesoMolhadoEnvio: 25, pesoTingidoEnvio: 25, pesoManchadoRetorno: 0, pesoMolhadoRetorno: 0, pesoTingidoRetorno: 0, repanolResiduo: 0, status: "enviado" },
+  { id: "r2", coletaId: "2", coletaNumero: 247, fornecedor: "SUL AMERICANA", empresaFornecedor: "Lavanderia SP", tipoMaterial: "TNT", dataEnvio: "2026-04-01T09:00:00Z", dataRetorno: "2026-04-03T14:00:00Z", pesoManchadoEnvio: 20, pesoMolhadoEnvio: 15, pesoTingidoEnvio: 20, pesoManchadoRetorno: 18, pesoMolhadoRetorno: 14, pesoTingidoRetorno: 19, repanolResiduo: 4, status: "retornado" },
+  { id: "r3", coletaId: "4", coletaNumero: 245, fornecedor: "VLI LOGÍSTICA", empresaFornecedor: "TingeBem Ltda", tipoMaterial: "ESTOPA", dataEnvio: "2026-03-23T10:00:00Z", dataRetorno: "2026-03-26T11:00:00Z", pesoManchadoEnvio: 50, pesoMolhadoEnvio: 40, pesoTingidoEnvio: 60, pesoManchadoRetorno: 48, pesoMolhadoRetorno: 38, pesoTingidoRetorno: 57, repanolResiduo: 7, status: "retornado" },
+];
+
 let nextColetaId = 6;
 let nextColetaNumero = 250;
 let nextSeparacaoId = 12;
 let nextProducaoId = 8;
+let nextRepanolId = 4;
 
 export function registerRoutes(app: Express) {
   // ==================== AUTH ====================
@@ -233,6 +240,53 @@ export function registerRoutes(app: Express) {
     };
     separacoes.push(nova);
     res.status(201).json(nova);
+  });
+
+  // ==================== REPANOL ====================
+  app.get("/api/repanol", (_req: Request, res: Response) => {
+    res.json(repanolList);
+  });
+
+  app.post("/api/repanol", (req: Request, res: Response) => {
+    const coleta = coletas.find((c) => c.id === req.body.coletaId);
+    if (!coleta) return res.status(404).json({ message: "Coleta não encontrada" });
+
+    const novo = {
+      id: `r${nextRepanolId++}`,
+      coletaId: req.body.coletaId,
+      coletaNumero: coleta.numero,
+      fornecedor: coleta.nomeFantasia,
+      empresaFornecedor: req.body.empresaFornecedor || "",
+      tipoMaterial: req.body.tipoMaterial || "",
+      dataEnvio: new Date().toISOString(),
+      dataRetorno: null,
+      pesoManchadoEnvio: Number(req.body.pesoManchadoEnvio) || 0,
+      pesoMolhadoEnvio: Number(req.body.pesoMolhadoEnvio) || 0,
+      pesoTingidoEnvio: Number(req.body.pesoTingidoEnvio) || 0,
+      pesoManchadoRetorno: 0,
+      pesoMolhadoRetorno: 0,
+      pesoTingidoRetorno: 0,
+      repanolResiduo: 0,
+      status: "enviado",
+    };
+    repanolList.push(novo);
+    res.status(201).json(novo);
+  });
+
+  app.put("/api/repanol/:id/retorno", (req: Request, res: Response) => {
+    const idx = repanolList.findIndex((r) => r.id === req.params.id);
+    if (idx === -1) return res.status(404).json({ message: "Repanol não encontrado" });
+
+    repanolList[idx] = {
+      ...repanolList[idx],
+      dataRetorno: new Date().toISOString(),
+      pesoManchadoRetorno: Number(req.body.pesoManchadoRetorno) || 0,
+      pesoMolhadoRetorno: Number(req.body.pesoMolhadoRetorno) || 0,
+      pesoTingidoRetorno: Number(req.body.pesoTingidoRetorno) || 0,
+      repanolResiduo: Number(req.body.repanolResiduo) || 0,
+      status: "retornado",
+    };
+    res.json(repanolList[idx]);
   });
 
   // ==================== PRODUCOES ====================
