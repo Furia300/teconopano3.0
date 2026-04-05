@@ -147,6 +147,22 @@ let estoqueList: any[] = [
   { id: "e5", coletaNumero: 247, fornecedor: "SUL AMERICANA", descricaoProduto: "MALHA Azul 40x40 Cm Zig-Zag", tipoMaterial: "MALHA", cor: "Azul", medida: "40x40 Cm", acabamento: "Zig-Zag", kilo: 95, unidade: 237, pesoMedioPct: 0.4, unidadeMedida: "Pacote/Kilo", qtdeReservadaPacote: 100, galpao: "Vicente", status: "Reservado", statusMaterial: "", data: "2026-04-02T12:00:00Z" },
 ];
 
+let clientesList: any[] = [
+  { id: "cl1", nome: "INDÚSTRIA MEGA STEEL", cnpj: "11.111.111/0001-01", contato: "(11) 3000-1000", email: "compras@megasteel.com" },
+  { id: "cl2", nome: "OFICINA RÁPIDA AUTO", cnpj: "22.222.222/0001-02", contato: "(13) 3000-2000", email: "contato@rapidaauto.com" },
+  { id: "cl3", nome: "LIMPEZA TOTAL LTDA", cnpj: "33.333.333/0001-03", contato: "(11) 3000-3000", email: "pedidos@limpezatotal.com" },
+  { id: "cl4", nome: "PETROBRÁS - CUBATÃO", cnpj: "44.444.444/0001-04", contato: "(13) 3000-4000", email: "suprimentos@petrobras.com" },
+  { id: "cl5", nome: "PORTO DE SANTOS SA", cnpj: "55.555.555/0001-05", contato: "(13) 3000-5000", email: "compras@portosantos.com" },
+];
+
+let expedicoesList: any[] = [
+  { id: "ex1", clienteId: "cl1", nomeFantasia: "INDÚSTRIA MEGA STEEL", razaoSocial: "Mega Steel Ind. Ltda", cnpj: "11.111.111/0001-01", contato: "(11) 3000-1000", email: "compras@megasteel.com", endereco: "Rua Industrial, 500 - Cubatão/SP", descricaoProduto: "TOALHA Branco 30x30 Cm", tipoMaterial: "TOALHA", cor: "Branco", medida: "30x30 Cm", kilo: 50, kiloSolicitada: 50, unidade: 100, qtdePedido: 100, unidadeMedida: "Pacote / Kilo", statusPedido: "", statusEntrega: "aguardando_financeiro", statusFinanceiro: "pendente_aprovacao", statusNota: "pendente_emissao", statusMaterial: "", galpao: "Vicente", rota: "Rota Fixa", prioridade: "Normal", periodicidade: "Quinzenal", notaFiscal: "", observacaoEscritorio: "Cliente recorrente", observacaoGalpao: "", createdAt: "2026-04-04T09:00:00Z" },
+  { id: "ex2", clienteId: "cl4", nomeFantasia: "PETROBRÁS - CUBATÃO", razaoSocial: "Petróleo Brasileiro SA", cnpj: "44.444.444/0001-04", contato: "(13) 3000-4000", email: "suprimentos@petrobras.com", endereco: "Rod. Cônego Domênico, 1000 - Cubatão/SP", descricaoProduto: "ESTOPA Escuro", tipoMaterial: "ESTOPA", cor: "Escuro", medida: "", kilo: 200, kiloSolicitada: 200, unidade: 0, qtdePedido: 0, unidadeMedida: "Kilo", statusPedido: "", statusEntrega: "aguardando_nf", statusFinanceiro: "aprovado", statusNota: "pendente_emissao", statusMaterial: "", galpao: "Vicente", rota: "Spot", prioridade: "Urgente", periodicidade: "", notaFiscal: "", observacaoEscritorio: "Pedido urgente - Petrobrás", observacaoGalpao: "Material já separado no galpão", createdAt: "2026-04-03T14:00:00Z" },
+  { id: "ex3", clienteId: "cl2", nomeFantasia: "OFICINA RÁPIDA AUTO", razaoSocial: "Rápida Auto Serviços Ltda", cnpj: "22.222.222/0001-02", contato: "(13) 3000-2000", email: "contato@rapidaauto.com", endereco: "Av. Ana Costa, 300 - Santos/SP", descricaoProduto: "MALHA Azul 40x40 Cm", tipoMaterial: "MALHA", cor: "Azul", medida: "40x40 Cm", kilo: 30, kiloSolicitada: 30, unidade: 75, qtdePedido: 75, unidadeMedida: "Pacote / Kilo", statusPedido: "", statusEntrega: "pronto_entrega", statusFinanceiro: "aprovado", statusNota: "emitida", statusMaterial: "", galpao: "Vicente", rota: "Rota Fixa", prioridade: "Normal", periodicidade: "Semanal", notaFiscal: "NF-2026-0078", observacaoEscritorio: "", observacaoGalpao: "", createdAt: "2026-04-01T10:00:00Z" },
+  { id: "ex4", clienteId: "cl5", nomeFantasia: "PORTO DE SANTOS SA", razaoSocial: "Santos Port Authority SA", cnpj: "55.555.555/0001-05", contato: "(13) 3000-5000", email: "compras@portosantos.com", endereco: "Av. Portuária, 1 - Santos/SP", descricaoProduto: "GRU Variado", tipoMaterial: "GRU", cor: "Variado", medida: "", kilo: 150, kiloSolicitada: 150, unidade: 0, qtdePedido: 0, unidadeMedida: "Kilo", statusPedido: "", statusEntrega: "entregue", statusFinanceiro: "aprovado", statusNota: "emitida", statusMaterial: "", galpao: "Vicente", rota: "Spot", prioridade: "Normal", periodicidade: "", notaFiscal: "NF-2026-0065", observacaoEscritorio: "", observacaoGalpao: "Entregue em 02/04", createdAt: "2026-03-28T08:00:00Z" },
+  { id: "ex5", clienteId: "cl3", nomeFantasia: "LIMPEZA TOTAL LTDA", razaoSocial: "Limpeza Total Serviços Ltda", cnpj: "33.333.333/0001-03", contato: "(11) 3000-3000", email: "pedidos@limpezatotal.com", endereco: "Rua Limpeza, 100 - São Vicente/SP", descricaoProduto: "ENXOVAL Branco 50x50 Cm", tipoMaterial: "ENXOVAL", cor: "Branco", medida: "50x50 Cm", kilo: 40, kiloSolicitada: 40, unidade: 50, qtdePedido: 50, unidadeMedida: "Pacote / Kilo", statusPedido: "", statusEntrega: "pendente", statusFinanceiro: "pendente_aprovacao", statusNota: "pendente_emissao", statusMaterial: "", galpao: "Vicente", rota: "Retire Aqui", prioridade: "Baixa", periodicidade: "Mensal", notaFiscal: "", observacaoEscritorio: "Cliente retira no galpão", observacaoGalpao: "", createdAt: "2026-04-05T07:00:00Z" },
+];
+
 let nextColetaId = 6;
 let nextColetaNumero = 250;
 let nextSeparacaoId = 12;
@@ -154,6 +170,7 @@ let nextProducaoId = 8;
 let nextRepanolId = 4;
 let nextCostureiraId = 5;
 let nextEstoqueId = 6;
+let nextExpedicaoId = 6;
 
 export function registerRoutes(app: Express) {
   // ==================== AUTH ====================
@@ -396,6 +413,82 @@ export function registerRoutes(app: Express) {
     };
     producoes.push(nova);
     res.status(201).json(nova);
+  });
+
+  // ==================== CLIENTES ====================
+  app.get("/api/clientes", (_req: Request, res: Response) => {
+    res.json(clientesList);
+  });
+
+  // ==================== EXPEDICOES ====================
+  app.get("/api/expedicoes", (_req: Request, res: Response) => {
+    res.json(expedicoesList);
+  });
+
+  app.post("/api/expedicoes", (req: Request, res: Response) => {
+    const cliente = clientesList.find((c) => c.id === req.body.clienteId);
+    const estoqueItem = estoqueList.find((e) => e.id === req.body.estoqueId);
+    if (!cliente || !estoqueItem) return res.status(404).json({ message: "Cliente ou estoque não encontrado" });
+
+    const nova = {
+      id: `ex${nextExpedicaoId++}`,
+      clienteId: cliente.id,
+      nomeFantasia: cliente.nome,
+      razaoSocial: cliente.nome,
+      cnpj: cliente.cnpj,
+      contato: cliente.contato,
+      email: cliente.email,
+      endereco: "",
+      descricaoProduto: estoqueItem.descricaoProduto,
+      tipoMaterial: estoqueItem.tipoMaterial,
+      cor: estoqueItem.cor,
+      medida: estoqueItem.medida,
+      kilo: estoqueItem.kilo,
+      kiloSolicitada: Number(req.body.qtdeSolicitada) || estoqueItem.kilo,
+      unidade: estoqueItem.unidade,
+      qtdePedido: Number(req.body.qtdeSolicitada) || estoqueItem.unidade,
+      unidadeMedida: estoqueItem.unidadeMedida,
+      statusPedido: "",
+      statusEntrega: "aguardando_financeiro",
+      statusFinanceiro: "pendente_aprovacao",
+      statusNota: "pendente_emissao",
+      statusMaterial: "",
+      galpao: "Vicente",
+      rota: req.body.rota || "",
+      prioridade: req.body.prioridade || "Normal",
+      periodicidade: "",
+      notaFiscal: "",
+      observacaoEscritorio: req.body.observacaoEscritorio || "",
+      observacaoGalpao: "",
+      createdAt: new Date().toISOString(),
+    };
+    expedicoesList.push(nova);
+    res.status(201).json(nova);
+  });
+
+  // Cadeia de aprovação
+  app.put("/api/expedicoes/:id/aprovar-financeiro", (req: Request, res: Response) => {
+    const idx = expedicoesList.findIndex((e) => e.id === req.params.id);
+    if (idx === -1) return res.status(404).json({ message: "Não encontrado" });
+    expedicoesList[idx].statusFinanceiro = "aprovado";
+    expedicoesList[idx].statusEntrega = "aguardando_nf";
+    res.json(expedicoesList[idx]);
+  });
+
+  app.put("/api/expedicoes/:id/emitir-nf", (req: Request, res: Response) => {
+    const idx = expedicoesList.findIndex((e) => e.id === req.params.id);
+    if (idx === -1) return res.status(404).json({ message: "Não encontrado" });
+    expedicoesList[idx].statusNota = "emitida";
+    expedicoesList[idx].notaFiscal = `NF-2026-${String(Math.floor(Math.random() * 9999)).padStart(4, "0")}`;
+    expedicoesList[idx].statusEntrega = "pronto_entrega";
+    res.json(expedicoesList[idx]);
+  });
+
+  app.put("/api/expedicoes/:id/entregar", (req: Request, res: Response) => {
+    const idx = expedicoesList.findIndex((e) => e.id === req.params.id);
+    if (idx === -1) return res.status(404).json({ message: "Não encontrado" });
+    expedicoesList[idx].statusEntrega = "entregue";
+    res.json(expedicoesList[idx]);
   });
 
   // ==================== ESTOQUE ====================

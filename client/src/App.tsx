@@ -8,6 +8,7 @@ import ProducaoList from "./pages/producao/ProducaoList";
 import RepanolList from "./pages/repanol/RepanolList";
 import CostureiraList from "./pages/costureira/CostureiraList";
 import EstoqueList from "./pages/estoque/EstoqueList";
+import ExpedicaoList from "./pages/expedicao/ExpedicaoList";
 import Login from "./pages/auth/Login";
 
 function AppContent() {
@@ -21,6 +22,7 @@ function AppContent() {
         <Route path="/repanol" component={RepanolList} />
         <Route path="/costureira" component={CostureiraList} />
         <Route path="/estoque" component={EstoqueList} />
+        <Route path="/expedicao" component={ExpedicaoList} />
         <Route>
           <div className="text-center py-20">
             <h1 className="text-2xl font-bold">404 - Página não encontrada</h1>
