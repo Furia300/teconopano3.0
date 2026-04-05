@@ -132,11 +132,19 @@ let repanolList: any[] = [
   { id: "r3", coletaId: "4", coletaNumero: 245, fornecedor: "VLI LOGÍSTICA", empresaFornecedor: "TingeBem Ltda", tipoMaterial: "ESTOPA", dataEnvio: "2026-03-23T10:00:00Z", dataRetorno: "2026-03-26T11:00:00Z", pesoManchadoEnvio: 50, pesoMolhadoEnvio: 40, pesoTingidoEnvio: 60, pesoManchadoRetorno: 48, pesoMolhadoRetorno: 38, pesoTingidoRetorno: 57, repanolResiduo: 7, status: "retornado" },
 ];
 
+let costureiraList: any[] = [
+  { id: "c1", coletaId: "1", coletaNumero: 248, fornecedor: "ATMOSFERA GESTÃO", costureira: "Maria Silva (CLT)", tipoMaterial: "TOALHA", tipoMedida: "30x30 Cm", status: "enviado", dataEnvio: "2026-04-04T10:00:00Z", dataRetorno: null, motoristaEnvio: "José", motoristaRetorno: "", qtdsSaidaKg: 60, qtdsRetornoKg: 0, qtdsPacotesRetorno: 0, totalDifKg: 0, residuos: 0, assCostEntrega: "signed", assMotEntrega: "signed", assCostDevolucao: null, assMotDevolucao: null, galpaoEnvio: "Vicente", observacao: "" },
+  { id: "c2", coletaId: "3", coletaNumero: 246, fornecedor: "HOTEL MAJESTIC", costureira: "Ana Santos", tipoMaterial: "LENÇOL", tipoMedida: "60x80 Cm", status: "retornado", dataEnvio: "2026-03-28T09:00:00Z", dataRetorno: "2026-03-31T15:00:00Z", motoristaEnvio: "José", motoristaRetorno: "Carlos", qtdsSaidaKg: 80, qtdsRetornoKg: 76, qtdsPacotesRetorno: 95, totalDifKg: 4, residuos: 4, assCostEntrega: "signed", assMotEntrega: "signed", assCostDevolucao: "signed", assMotDevolucao: "signed", galpaoEnvio: "Vicente", observacao: "" },
+  { id: "c3", coletaId: "4", coletaNumero: 245, fornecedor: "VLI LOGÍSTICA", costureira: "Joana Costa", tipoMaterial: "ESTOPA", tipoMedida: "20x20 Cm", status: "retornado", dataEnvio: "2026-03-23T11:00:00Z", dataRetorno: "2026-03-26T16:00:00Z", motoristaEnvio: "Carlos", motoristaRetorno: "José", qtdsSaidaKg: 120, qtdsRetornoKg: 115, qtdsPacotesRetorno: 575, totalDifKg: 5, residuos: 5, assCostEntrega: "signed", assMotEntrega: "signed", assCostDevolucao: "signed", assMotDevolucao: "signed", galpaoEnvio: "Vicente", observacao: "Lote grande" },
+  { id: "c4", coletaId: "2", coletaNumero: 247, fornecedor: "SUL AMERICANA", costureira: "Lucia Oliveira", tipoMaterial: "GSY", tipoMedida: "40x40 Cm", status: "enviado", dataEnvio: "2026-04-02T08:00:00Z", dataRetorno: null, motoristaEnvio: "Carlos", motoristaRetorno: "", qtdsSaidaKg: 45, qtdsRetornoKg: 0, qtdsPacotesRetorno: 0, totalDifKg: 0, residuos: 0, assCostEntrega: "signed", assMotEntrega: null, assCostDevolucao: null, assMotDevolucao: null, galpaoEnvio: "Vicente", observacao: "" },
+];
+
 let nextColetaId = 6;
 let nextColetaNumero = 250;
 let nextSeparacaoId = 12;
 let nextProducaoId = 8;
 let nextRepanolId = 4;
+let nextCostureiraId = 5;
 
 export function registerRoutes(app: Express) {
   // ==================== AUTH ====================
@@ -240,6 +248,63 @@ export function registerRoutes(app: Express) {
     };
     separacoes.push(nova);
     res.status(201).json(nova);
+  });
+
+  // ==================== COSTUREIRA ====================
+  app.get("/api/costureira", (_req: Request, res: Response) => {
+    res.json(costureiraList);
+  });
+
+  app.post("/api/costureira", (req: Request, res: Response) => {
+    const coleta = coletas.find((c) => c.id === req.body.coletaId);
+    if (!coleta) return res.status(404).json({ message: "Coleta não encontrada" });
+
+    const novo = {
+      id: `c${nextCostureiraId++}`,
+      coletaId: req.body.coletaId,
+      coletaNumero: coleta.numero,
+      fornecedor: coleta.nomeFantasia,
+      costureira: req.body.costureira,
+      tipoMaterial: req.body.tipoMaterial || "",
+      tipoMedida: req.body.tipoMedida || "",
+      status: "enviado",
+      dataEnvio: new Date().toISOString(),
+      dataRetorno: null,
+      motoristaEnvio: req.body.motoristaEnvio || "",
+      motoristaRetorno: "",
+      qtdsSaidaKg: Number(req.body.qtdsSaidaKg) || 0,
+      qtdsRetornoKg: 0,
+      qtdsPacotesRetorno: 0,
+      totalDifKg: 0,
+      residuos: 0,
+      assCostEntrega: null,
+      assMotEntrega: null,
+      assCostDevolucao: null,
+      assMotDevolucao: null,
+      galpaoEnvio: req.body.galpaoEnvio || "Vicente",
+      observacao: req.body.observacao || "",
+    };
+    costureiraList.push(novo);
+    res.status(201).json(novo);
+  });
+
+  app.put("/api/costureira/:id/retorno", (req: Request, res: Response) => {
+    const idx = costureiraList.findIndex((c) => c.id === req.params.id);
+    if (idx === -1) return res.status(404).json({ message: "Envio não encontrado" });
+
+    costureiraList[idx] = {
+      ...costureiraList[idx],
+      status: "retornado",
+      dataRetorno: new Date().toISOString(),
+      motoristaRetorno: req.body.motoristaRetorno || "",
+      qtdsRetornoKg: Number(req.body.qtdsRetornoKg) || 0,
+      qtdsPacotesRetorno: Number(req.body.qtdsPacotesRetorno) || 0,
+      totalDifKg: Number(req.body.totalDifKg) || 0,
+      residuos: Number(req.body.residuos) || 0,
+      assCostDevolucao: "signed",
+      assMotDevolucao: "signed",
+    };
+    res.json(costureiraList[idx]);
   });
 
   // ==================== REPANOL ====================
