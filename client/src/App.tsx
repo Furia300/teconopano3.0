@@ -9,6 +9,11 @@ import RepanolList from "./pages/repanol/RepanolList";
 import CostureiraList from "./pages/costureira/CostureiraList";
 import EstoqueList from "./pages/estoque/EstoqueList";
 import ExpedicaoList from "./pages/expedicao/ExpedicaoList";
+import FinanceiroPage from "./pages/financeiro/FinanceiroPage";
+import EmissaoNFPage from "./pages/emissao-nf/EmissaoNFPage";
+import ClientesList from "./pages/clientes/ClientesList";
+import FornecedoresList from "./pages/fornecedores/FornecedoresList";
+import ProdutosList from "./pages/produtos/ProdutosList";
 import FuncionariosList from "./pages/funcionarios/FuncionariosList";
 import Login from "./pages/auth/Login";
 
@@ -24,6 +29,11 @@ function AppContent() {
         <Route path="/costureira" component={CostureiraList} />
         <Route path="/estoque" component={EstoqueList} />
         <Route path="/expedicao" component={ExpedicaoList} />
+        <Route path="/financeiro" component={FinanceiroPage} />
+        <Route path="/emissao-nf" component={EmissaoNFPage} />
+        <Route path="/clientes" component={ClientesList} />
+        <Route path="/fornecedores" component={FornecedoresList} />
+        <Route path="/produtos" component={ProdutosList} />
         <Route path="/funcionarios" component={FuncionariosList} />
         <Route>
           <div className="text-center py-20">

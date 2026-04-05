@@ -242,6 +242,58 @@ export function registerRoutes(app: Express) {
     res.json(fornecedores);
   });
 
+  app.post("/api/fornecedores", (req: Request, res: Response) => {
+    const novo = { id: `f${Date.now()}`, ...req.body, ativo: true };
+    fornecedores.push(novo);
+    res.status(201).json(novo);
+  });
+
+  app.put("/api/fornecedores/:id", (req: Request, res: Response) => {
+    const idx = fornecedores.findIndex((f) => f.id === req.params.id);
+    if (idx === -1) return res.status(404).json({ message: "Não encontrado" });
+    fornecedores[idx] = { ...fornecedores[idx], ...req.body };
+    res.json(fornecedores[idx]);
+  });
+
+  app.delete("/api/fornecedores/:id", (req: Request, res: Response) => {
+    fornecedores = fornecedores.filter((f) => f.id !== req.params.id);
+    res.json({ ok: true });
+  });
+
+  // ==================== PRODUTOS ====================
+  let produtosList: any[] = [
+    { id: "pr1", descricao: "Pano Industrial Branco 30x30", tipoMaterial: "TOALHA", cor: "Branco", medida: "30x30 Cm", acabamento: "Corte-Reto", pesoMedio: 0.5, unidadeMedida: "Pacote/Kilo", observacao: "" },
+    { id: "pr2", descricao: "Estopa Escura Industrial", tipoMaterial: "ESTOPA", cor: "Escuro", medida: "", acabamento: "Sem Acabamento", pesoMedio: 0, unidadeMedida: "Kilo", observacao: "" },
+    { id: "pr3", descricao: "Pano GRU Variado", tipoMaterial: "GRU", cor: "Variado", medida: "", acabamento: "Corte-Reto", pesoMedio: 0, unidadeMedida: "Kilo", observacao: "" },
+    { id: "pr4", descricao: "Malha Azul 40x40 Zig-Zag", tipoMaterial: "MALHA", cor: "Azul", medida: "40x40 Cm", acabamento: "Zig-Zag", pesoMedio: 0.4, unidadeMedida: "Pacote/Kilo", observacao: "" },
+    { id: "pr5", descricao: "Enxoval Branco 50x50 Overlock", tipoMaterial: "ENXOVAL", cor: "Branco", medida: "50x50 Cm", acabamento: "Overlock", pesoMedio: 0.8, unidadeMedida: "Pacote/Kilo", observacao: "" },
+    { id: "pr6", descricao: "Faixa Industrial Branca", tipoMaterial: "FAIXA", cor: "Branco", medida: "", acabamento: "Sem Acabamento", pesoMedio: 0, unidadeMedida: "Kilo", observacao: "Saída por kilo" },
+    { id: "pr7", descricao: "Lençol Branco 60x80 Overlock", tipoMaterial: "LENÇOL", cor: "Branco", medida: "60x80 Cm", acabamento: "Overlock", pesoMedio: 1.2, unidadeMedida: "Pacote/Kilo", observacao: "" },
+    { id: "pr8", descricao: "TNT Preto Industrial", tipoMaterial: "TNT", cor: "Preto", medida: "20x20 Cm", acabamento: "Corte-Reto", pesoMedio: 0.3, unidadeMedida: "Pacote/Kilo", observacao: "" },
+  ];
+
+  app.get("/api/produtos", (_req: Request, res: Response) => {
+    res.json(produtosList);
+  });
+
+  app.post("/api/produtos", (req: Request, res: Response) => {
+    const novo = { id: `pr${Date.now()}`, ...req.body, pesoMedio: Number(req.body.pesoMedio) || 0 };
+    produtosList.push(novo);
+    res.status(201).json(novo);
+  });
+
+  app.put("/api/produtos/:id", (req: Request, res: Response) => {
+    const idx = produtosList.findIndex((p) => p.id === req.params.id);
+    if (idx === -1) return res.status(404).json({ message: "Não encontrado" });
+    produtosList[idx] = { ...produtosList[idx], ...req.body, pesoMedio: Number(req.body.pesoMedio) || produtosList[idx].pesoMedio };
+    res.json(produtosList[idx]);
+  });
+
+  app.delete("/api/produtos/:id", (req: Request, res: Response) => {
+    produtosList = produtosList.filter((p) => p.id !== req.params.id);
+    res.json({ ok: true });
+  });
+
   // ==================== SEPARACOES ====================
   app.get("/api/separacoes", (_req: Request, res: Response) => {
     res.json(separacoes);
@@ -419,6 +471,24 @@ export function registerRoutes(app: Express) {
   // ==================== CLIENTES ====================
   app.get("/api/clientes", (_req: Request, res: Response) => {
     res.json(clientesList);
+  });
+
+  app.post("/api/clientes", (req: Request, res: Response) => {
+    const novo = { id: `cl${Date.now()}`, ...req.body };
+    clientesList.push(novo);
+    res.status(201).json(novo);
+  });
+
+  app.put("/api/clientes/:id", (req: Request, res: Response) => {
+    const idx = clientesList.findIndex((c) => c.id === req.params.id);
+    if (idx === -1) return res.status(404).json({ message: "Não encontrado" });
+    clientesList[idx] = { ...clientesList[idx], ...req.body };
+    res.json(clientesList[idx]);
+  });
+
+  app.delete("/api/clientes/:id", (req: Request, res: Response) => {
+    clientesList = clientesList.filter((c) => c.id !== req.params.id);
+    res.json({ ok: true });
   });
 
   // ==================== EXPEDICOES ====================
