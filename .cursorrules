@@ -1,0 +1,8 @@
+Leia o arquivo CLAUDE.md na raiz do projeto para instruções completas.
+
+REGRAS CRÍTICAS:
+- Login usa MeshGradient WebGL (@paper-design/shaders-react) — NUNCA recriar do zero
+- Sidebar usa ícones neumorphic quadrados com shimmer sweep (SidebarC prototype-c) — NUNCA recriar do zero
+- Ambos são dark mode SEMPRE
+- Se precisar alterar, partir do arquivo existente
+- Paleta: #FF073A (red), #B20028 (dark red), #001443 (blue), #1a1a1a (sidebar bg)
