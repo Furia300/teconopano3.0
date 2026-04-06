@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useLocation } from 'wouter';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { MeshGradient } from '@paper-design/shaders-react';
@@ -7,6 +8,7 @@ import './Login.css';
 
 export default function Login() {
   const { login } = useAuth();
+  const [, navigate] = useLocation();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -51,6 +53,7 @@ export default function Login() {
     setLoading(true);
     try {
       await login(formData.email, formData.password);
+      navigate('/');
     } catch (error) {
       const msg = error instanceof Error ? error.message : 'Credenciais inválidas. Tente novamente.';
       setSubmitError(msg);
