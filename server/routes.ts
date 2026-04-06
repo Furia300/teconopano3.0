@@ -168,6 +168,18 @@ let expedicoesList: any[] = [
   { id: "ex5", clienteId: "cl3", nomeFantasia: "LIMPEZA TOTAL LTDA", razaoSocial: "Limpeza Total Serviços Ltda", cnpj: "33.333.333/0001-03", contato: "(11) 3000-3000", email: "pedidos@limpezatotal.com", endereco: "Rua Limpeza, 100 - São Vicente/SP", descricaoProduto: "ENXOVAL Branco 50x50 Cm", tipoMaterial: "ENXOVAL", cor: "Branco", medida: "50x50 Cm", kilo: 40, kiloSolicitada: 40, unidade: 50, qtdePedido: 50, unidadeMedida: "Pacote / Kilo", statusPedido: "", statusEntrega: "pendente", statusFinanceiro: "pendente_aprovacao", statusNota: "pendente_emissao", statusMaterial: "", galpao: "Vicente", rota: "Retire Aqui", prioridade: "Baixa", periodicidade: "Mensal", notaFiscal: "", observacaoEscritorio: "Cliente retira no galpão", observacaoGalpao: "", createdAt: "2026-04-05T07:00:00Z" },
 ];
 
+let producaoDiariaList: any[] = [
+  { id: "pd1", data: "2026-04-05", nomeDupla: "GLINS/KAYAN", sala: "O4", material: "BR CASAL", horarioInicio: "08:40", horarioFim: "10:55", status: "completa", assinatura: "Kayan", encarregado: "Nodin", observacao: "", createdAt: "2026-04-05T08:40:00Z" },
+  { id: "pd2", data: "2026-04-05", nomeDupla: "GLINS/KAYAN", sala: "O4", material: "CASAL RVA", horarioInicio: "11:10", horarioFim: "12:30", status: "completa", assinatura: "Kayan", encarregado: "Nodin", observacao: "", createdAt: "2026-04-05T11:10:00Z" },
+  { id: "pd3", data: "2026-04-05", nomeDupla: "GLINS/KAYAN", sala: "O4", material: "C2 RVA", horarioInicio: "13:40", horarioFim: "16:00", status: "completa", assinatura: "Kayan", encarregado: "Nodin", observacao: "", createdAt: "2026-04-05T13:40:00Z" },
+  { id: "pd4", data: "2026-04-05", nomeDupla: "EDISON/LUI", sala: "O5", material: "KING", horarioInicio: "08:30", horarioFim: "11:00", status: "completa", assinatura: "Edison", encarregado: "Nodin", observacao: "", createdAt: "2026-04-05T08:30:00Z" },
+  { id: "pd5", data: "2026-04-05", nomeDupla: "EDISON/LUI", sala: "O5", material: "MICROFIBRA", horarioInicio: "11:15", horarioFim: null, status: "incompleta", assinatura: "Edison", encarregado: "Nodin", observacao: "Material insuficiente", createdAt: "2026-04-05T11:15:00Z" },
+  { id: "pd6", data: "2026-04-05", nomeDupla: "EDISON/LUI", sala: "COBERTÓRIO", material: "LAMBRELA", horarioInicio: "13:30", horarioFim: "15:45", status: "completa", assinatura: "Edison", encarregado: "Nodin", observacao: "", createdAt: "2026-04-05T13:30:00Z" },
+  { id: "pd7", data: "2026-04-04", nomeDupla: "MARCOS/ANA", sala: "O3", material: "C2 LISA", horarioInicio: "08:00", horarioFim: "10:30", status: "completa", assinatura: "Marcos", encarregado: "Nodin", observacao: "", createdAt: "2026-04-04T08:00:00Z" },
+  { id: "pd8", data: "2026-04-04", nomeDupla: "MARCOS/ANA", sala: "O3", material: "CASAL EUA", horarioInicio: "10:45", horarioFim: "12:15", status: "completa", assinatura: "Marcos", encarregado: "Nodin", observacao: "", createdAt: "2026-04-04T10:45:00Z" },
+];
+
+let nextProducaoDiariaId = 9;
 let nextColetaId = 6;
 let nextColetaNumero = 250;
 let nextSeparacaoId = 12;
@@ -192,6 +204,11 @@ export function registerRoutes(app: Express) {
 
   app.post("/api/auth/logout", (_req: Request, res: Response) => {
     res.json({ ok: true });
+  });
+
+  // Retorna usuário logado (simulado — será session real com DB)
+  app.get("/api/auth/me", (_req: Request, res: Response) => {
+    res.json({ id: "1", username: "admin", nome: "Admin", perfil: "administrador" });
   });
 
   // ==================== COLETAS ====================
@@ -762,6 +779,37 @@ export function registerRoutes(app: Express) {
       totalLocal: colaboradoresLocal.length,
       totalDepartamentos: departamentosLocal.length,
     });
+  });
+
+  // ==================== PRODUÇÃO DIÁRIA ====================
+  app.get("/api/producao-diaria", (_req: Request, res: Response) => {
+    res.json(producaoDiariaList);
+  });
+
+  app.post("/api/producao-diaria", (req: Request, res: Response) => {
+    const item = {
+      id: `pd${nextProducaoDiariaId++}`,
+      data: req.body.data,
+      nomeDupla: req.body.nomeDupla,
+      sala: req.body.sala,
+      material: req.body.material,
+      horarioInicio: req.body.horarioInicio,
+      horarioFim: req.body.horarioFim || null,
+      status: req.body.status || "completa",
+      assinatura: req.body.assinatura || "",
+      encarregado: req.body.encarregado || "",
+      observacao: req.body.observacao || "",
+      createdAt: new Date().toISOString(),
+    };
+    producaoDiariaList.unshift(item);
+    res.status(201).json(item);
+  });
+
+  app.delete("/api/producao-diaria/:id", (req: Request, res: Response) => {
+    const idx = producaoDiariaList.findIndex((p: any) => p.id === req.params.id);
+    if (idx === -1) return res.status(404).json({ message: "Não encontrado" });
+    producaoDiariaList.splice(idx, 1);
+    res.json({ ok: true });
   });
 
   // ==================== HEALTH ====================

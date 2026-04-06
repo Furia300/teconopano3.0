@@ -1,48 +1,60 @@
 import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { Mail, Lock, Shield } from 'lucide-react';
 import { toast } from 'sonner';
+import { MeshGradient } from '@paper-design/shaders-react';
+import { Mail, Lock, Eye, EyeOff, CheckCircle2 } from 'lucide-react';
 import './Login.css';
 
 export default function Login() {
   const { login } = useAuth();
-  const [email, setEmail] = useState('admin@tecnopano.com');
-  const [password, setPassword] = useState('admin');
-  const [twoFactorCode, setTwoFactorCode] = useState('');
-  const [twoFactorMethod, setTwoFactorMethod] = useState<'sms' | 'app'>('app');
-  const [show2FA, setShow2FA] = useState(false);
-  const [twoFAMethods, setTwoFAMethods] = useState<{ sms: boolean; app: boolean }>({ sms: false, app: false });
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    rememberMe: false,
+  });
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [submitError, setSubmitError] = useState('');
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
+    if (errors[name as keyof typeof errors]) {
+      setErrors(prev => ({ ...prev, [name]: undefined }));
+    }
+  };
+
+  const validateForm = (): boolean => {
+    const newErrors: { email?: string; password?: string } = {};
+    if (!formData.email) {
+      newErrors.email = 'Email é obrigatório';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = 'Email inválido';
+    }
+    if (!formData.password) {
+      newErrors.password = 'Senha é obrigatória';
+    } else if (formData.password.length < 4) {
+      newErrors.password = 'Senha deve ter no mínimo 4 caracteres';
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validateForm()) return;
+    setSubmitError('');
     setLoading(true);
-    setError('');
-
     try {
-      await login(
-        email, 
-        password, 
-        show2FA ? twoFactorCode : undefined,
-        show2FA ? twoFactorMethod : undefined
-      );
-      // Success handled in useAuth
-    } catch (error: any) {
-      if (error.response?.data?.requires2FA) {
-        setTwoFAMethods(error.response.data.methods || { sms: false, app: false });
-        setShow2FA(true);
-        if (error.response.data.methods?.app) {
-          setTwoFactorMethod('app');
-        } else if (error.response.data.methods?.sms) {
-          setTwoFactorMethod('sms');
-        }
-        toast.error('Código 2FA necessário');
-      } else {
-        const errorMsg = error.message || 'Erro ao fazer login';
-        setError(errorMsg);
-        toast.error(errorMsg);
-      }
+      await login(formData.email, formData.password);
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : 'Credenciais inválidas. Tente novamente.';
+      setSubmitError(msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
@@ -50,124 +62,128 @@ export default function Login() {
 
   return (
     <div className="login-container">
+      {/* Efeito de fundo WebGL - MeshGradient preto/cinza/branco */}
+      <div className="login-bg-effect">
+        <MeshGradient
+          className="login-mesh-gradient"
+          colors={['#000000', '#1a1a1a', '#333333', '#ffffff']}
+          speed={1.0}
+          backgroundColor="#000000"
+        />
+      </div>
+
+      {/* Card de Login com Glassmorphism */}
       <div className="login-card">
-        {/* Logo */}
-        <div className="login-logo">
-          <img src="/src/assets/logo.png" alt="Logo" className="w-80 h-auto mb-6" />
+        <div className="login-header">
+          <div className="logo">
+            <img src="/src/assets/logo.png" alt="Tecnopano" className="login-logo-img" />
+          </div>
+          <h1 className="login-title">Bem-vindo de volta</h1>
+          <p className="login-subtitle">Sistema de Gestão Industrial</p>
         </div>
 
-        {/* Formulário */}
         <form onSubmit={handleSubmit} className="login-form">
-          {error && <div className="error-message">{error}</div>}
-
           <div className="form-group">
             <label htmlFor="email" className="form-label">
-              <Mail className="w-4 h-4" />
+              <Mail className="label-icon" />
               Email
             </label>
-            <input
-              id="email"
-              type="email"
-              placeholder="seu@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="form-input"
-              disabled={loading}
-            />
+            <div className={`input-wrapper ${errors.email ? 'error' : ''}`}>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="seu@email.com"
+                className="form-input"
+                autoComplete="email"
+                disabled={loading}
+              />
+              {formData.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email) && !errors.email && (
+                <CheckCircle2 className="input-icon success" />
+              )}
+            </div>
+            {errors.email && <span className="error-message">{errors.email}</span>}
           </div>
 
           <div className="form-group">
             <label htmlFor="password" className="form-label">
-              <Lock className="w-4 h-4" />
+              <Lock className="label-icon" />
               Senha
             </label>
-            <input
-              id="password"
-              type="password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="form-input"
-              disabled={loading}
-            />
+            <div className={`input-wrapper ${errors.password ? 'error' : ''}`}>
+              <input
+                type={showPassword ? 'text' : 'password'}
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="••••••••"
+                className="form-input"
+                autoComplete="current-password"
+                disabled={loading}
+              />
+              <button
+                type="button"
+                className="toggle-password"
+                onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
+              >
+                {showPassword ? (
+                  <Eye className="toggle-password-icon" />
+                ) : (
+                  <EyeOff className="toggle-password-icon" />
+                )}
+              </button>
+            </div>
+            {errors.password && <span className="error-message">{errors.password}</span>}
           </div>
 
-          {/* 2FA Section */}
-          {show2FA && (
-            <div className="space-y-4 pt-4 border-t border-white/10">
-              {(twoFAMethods.sms || twoFAMethods.app) && (
-                <div>
-                  <label className="form-label">
-                    <Shield className="w-4 h-4" />
-                    Método de Autenticação:
-                  </label>
-                  <div className="flex gap-3">
-                    {twoFAMethods.app && (
-                      <button
-                        type="button"
-                        onClick={() => setTwoFactorMethod('app')}
-                        className={`flex-1 px-4 py-3 rounded-lg border-2 transition-all font-medium ${
-                          twoFactorMethod === 'app'
-                            ? 'border-primary bg-primary/20 text-primary'
-                            : 'border-white/10 bg-white/5 text-text-secondary hover:border-white/20'
-                        }`}
-                      >
-                        App Autenticador
-                      </button>
-                    )}
-                    {twoFAMethods.sms && (
-                      <button
-                        type="button"
-                        onClick={() => setTwoFactorMethod('sms')}
-                        className={`flex-1 px-4 py-3 rounded-lg border-2 transition-all font-medium ${
-                          twoFactorMethod === 'sms'
-                            ? 'border-primary bg-primary/20 text-primary'
-                            : 'border-white/10 bg-white/5 text-text-secondary hover:border-white/20'
-                        }`}
-                      >
-                        SMS
-                      </button>
-                    )}
-                  </div>
-                </div>
-              )}
-              <div className="form-group">
-                <label className="form-label">
-                  <Shield className="w-4 h-4" />
-                  {twoFactorMethod === 'sms' ? 'Código SMS' : 'Código do App Autenticador'}
-                </label>
-                <input
-                  type="text"
-                  placeholder="000000"
-                  value={twoFactorCode}
-                  onChange={(e) => setTwoFactorCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                  required
-                  className="form-input"
-                  maxLength={6}
-                  disabled={loading}
-                />
-              </div>
-            </div>
+          {submitError && (
+            <div className="error-message submit-error">{submitError}</div>
           )}
+
+          <div className="form-options">
+            <label className="checkbox-wrapper">
+              <input
+                type="checkbox"
+                name="rememberMe"
+                checked={formData.rememberMe}
+                onChange={handleChange}
+                className="checkbox-input"
+              />
+              <span className="checkbox-custom" />
+              <span className="checkbox-label">Lembrar-me</span>
+            </label>
+            <a href="#" className="forgot-link" onClick={(e) => e.preventDefault()}>Esqueceu a senha?</a>
+          </div>
 
           <button
             type="submit"
+            className={`login-button ${loading ? 'loading' : ''}`}
             disabled={loading}
-            className="btn-login"
           >
-            {loading ? 'Entrando...' : 'Entrar'}
+            {loading ? (
+              <>
+                <span className="spinner" />
+                Entrando...
+              </>
+            ) : (
+              <>
+                Entrar
+                <svg className="button-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                  <polyline points="12 5 19 12 12 19" />
+                </svg>
+              </>
+            )}
           </button>
-        </form>
 
-        {/* Footer */}
-        <div className="login-footer">
-          <p>
-            <Shield className="w-3 h-3" />
-            Sistema seguro com autenticação de dois fatores
-          </p>
-        </div>
+          <div className="login-footer-inline">
+            <p>Sistema seguro · Tecnopano 3.0</p>
+          </div>
+        </form>
       </div>
     </div>
   );

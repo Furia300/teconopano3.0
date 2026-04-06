@@ -11,6 +11,11 @@ export const perfilEnum = pgEnum("perfil", [
   "emissao_nf",
   "financeiro",
   "expedicao",
+  "rh",
+  "producao",
+  "separacao",
+  "motorista",
+  "costureira",
 ]);
 
 export const statusColetaEnum = pgEnum("status_coleta", [
@@ -453,3 +458,30 @@ export const expedicoes = pgTable("expedicoes", {
 export const insertExpedicaoSchema = createInsertSchema(expedicoes).omit({ id: true, createdAt: true, updatedAt: true });
 export type InsertExpedicao = z.infer<typeof insertExpedicaoSchema>;
 export type Expedicao = typeof expedicoes.$inferSelect;
+
+// ==================== PRODUÇÃO DIÁRIA (substitui folha papel) ====================
+
+export const statusProducaoDiariaEnum = pgEnum("status_producao_diaria", [
+  "completa",
+  "incompleta",
+]);
+
+export const producaoDiaria = pgTable("producao_diaria", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  data: timestamp("data").notNull(),
+  nomeDupla: text("nome_dupla").notNull(), // ex: "GLINS/KAYAN", "EDISON/LUI"
+  sala: text("sala").notNull(), // ex: "O4", "O5", "COBERTÓRIO"
+  material: text("material").notNull(), // ex: "BR CASAL", "C2 RVA", "KING"
+  horarioInicio: text("horario_inicio").notNull(), // ex: "08:40"
+  horarioFim: text("horario_fim"), // ex: "10:55" — null se incompleta
+  status: statusProducaoDiariaEnum("status").default("completa"),
+  assinatura: text("assinatura"), // nome de quem assina
+  encarregado: text("encarregado"), // nome do encarregado que valida
+  observacao: text("observacao"),
+  operadorId: varchar("operador_id").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertProducaoDiariaSchema = createInsertSchema(producaoDiaria).omit({ id: true, createdAt: true });
+export type InsertProducaoDiaria = z.infer<typeof insertProducaoDiariaSchema>;
+export type ProducaoDiaria = typeof producaoDiaria.$inferSelect;

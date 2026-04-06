@@ -7,7 +7,13 @@ import {
 import { StatsCard } from "@/components/domain/StatsCard";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Button } from "@/components/ui/button";
+import DashboardGalpao from "./dashboard/DashboardGalpao";
+import DashboardFinanceiro from "./dashboard/DashboardFinanceiro";
+import DashboardExpedicao from "./dashboard/DashboardExpedicao";
+import DashboardEmissaoNF from "./dashboard/DashboardEmissaoNF";
+import DashboardRH from "./dashboard/DashboardRH";
+import DashboardProducaoPessoal from "./dashboard/DashboardProducaoPessoal";
+import DashboardSeparacaoPessoal from "./dashboard/DashboardSeparacaoPessoal";
 
 interface DashboardData {
   coletas: any[];
@@ -21,9 +27,22 @@ interface DashboardData {
   clientes: any[];
 }
 
+// Simula usuário logado — será substituído pelo useAuth real
+function useCurrentUser() {
+  const [user, setUser] = useState<{ nome: string; perfil: string } | null>(null);
+  useEffect(() => {
+    fetch("/api/auth/me")
+      .then(r => r.ok ? r.json() : null)
+      .then(u => setUser(u))
+      .catch(() => setUser({ nome: "Admin", perfil: "administrador" }));
+  }, []);
+  return user;
+}
+
 export default function Dashboard() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
+  const currentUser = useCurrentUser();
 
   useEffect(() => {
     Promise.all([
@@ -55,6 +74,34 @@ export default function Dashboard() {
 
   if (!data) return null;
 
+  const perfil = currentUser?.perfil || "administrador";
+  const nome = currentUser?.nome || "Usuário";
+
+  // Renderiza dashboard específico por perfil
+  switch (perfil) {
+    case "galpao":
+      return <DashboardGalpao data={data} />;
+    case "financeiro":
+      return <DashboardFinanceiro data={data} />;
+    case "expedicao":
+      return <DashboardExpedicao data={data} />;
+    case "emissao_nf":
+      return <DashboardEmissaoNF data={data} />;
+    case "rh":
+      return <DashboardRH data={data} />;
+    case "producao":
+      return <DashboardProducaoPessoal data={data} userName={nome} />;
+    case "separacao":
+      return <DashboardSeparacaoPessoal data={data} userName={nome} />;
+    default:
+      // Super Admin — vê tudo (dashboard original)
+      return <DashboardAdmin data={data} />;
+  }
+}
+
+// ==================== Dashboard Admin (Super Admin / Visão Completa) ====================
+
+function DashboardAdmin({ data }: { data: DashboardData }) {
   const pendFinanceiro = data.expedicoes.filter((e: any) => e.statusFinanceiro === "pendente_aprovacao").length;
   const pendNF = data.expedicoes.filter((e: any) => e.statusFinanceiro === "aprovado" && e.statusNota === "pendente_emissao").length;
   const prontoEntrega = data.expedicoes.filter((e: any) => e.statusNota === "emitida" && e.statusEntrega !== "entregue").length;
@@ -65,7 +112,6 @@ export default function Dashboard() {
   const pesoEstoque = data.estoque.reduce((a: number, e: any) => a + (e.kilo || 0), 0);
   const totalAlertas = pendFinanceiro + pendNF + repanolEnviados + costureiraEnviados;
 
-  // Pipeline progress
   const pipeline = [
     { label: "Coleta", count: data.coletas.length, icon: Truck, color: "text-blue-500" },
     { label: "Separação", count: data.separacoes.length, icon: Factory, color: "text-indigo-500" },

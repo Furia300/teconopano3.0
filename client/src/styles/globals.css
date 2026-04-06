@@ -26,10 +26,10 @@
   --input: 220 13% 90%;
   --ring: 358 89% 52%;
 
-  /* Sidebar */
-  --sidebar: 0 0% 98%;
-  --sidebar-foreground: 220 9% 26%;
-  --sidebar-border: 220 13% 91%;
+  /* Sidebar — dark mode (Tecnopano 2.0) */
+  --sidebar: 0 0% 10%;
+  --sidebar-foreground: 0 0% 88%;
+  --sidebar-border: 0 0% 16%;
 
   /* Success/Warning/Info */
   --success: 142 76% 36%;

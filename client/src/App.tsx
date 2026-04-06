@@ -15,6 +15,7 @@ import ClientesList from "./pages/clientes/ClientesList";
 import FornecedoresList from "./pages/fornecedores/FornecedoresList";
 import ProdutosList from "./pages/produtos/ProdutosList";
 import FuncionariosList from "./pages/funcionarios/FuncionariosList";
+import ProducaoDiariaPage from "./pages/producao-diaria/ProducaoDiariaPage";
 import Login from "./pages/auth/Login";
 
 function AppContent() {
@@ -35,6 +36,7 @@ function AppContent() {
         <Route path="/fornecedores" component={FornecedoresList} />
         <Route path="/produtos" component={ProdutosList} />
         <Route path="/funcionarios" component={FuncionariosList} />
+        <Route path="/producao-diaria" component={ProducaoDiariaPage} />
         <Route>
           <div className="text-center py-20">
             <h1 className="text-2xl font-bold">404 - Página não encontrada</h1>
