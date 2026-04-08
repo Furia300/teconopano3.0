@@ -9,6 +9,7 @@ Template seguro: `teconopano3.0/.env.example` (versionado).
 
 ## Commit de referência (UI FIPS / RH / motorista)
 
+- `fd78d4e` — *fix(rh): Ponto diário — filtros, FIPS e build do servidor*
 - `a35e0f9` — *feat(ui): RH Data List FIPS, motorista e ajustes de layout*
 - `d25765d` — *docs: referência FIPS/RH e front em memory/*
 - `ac002d6` — *fix(ui): hero FIPS — PageHero com gradiente DS e JunctionLines; dashboard admin alinhado; docs memory*
