@@ -1,33 +1,43 @@
-import * as React from "react";
-import { cn } from "@/lib/utils";
+import * as React from 'react'
+import { cn } from '@/lib/utils'
 
-interface ProgressProps extends React.HTMLAttributes<HTMLDivElement> {
-  value?: number;
-  max?: number;
+export interface ProgressProps extends React.HTMLAttributes<HTMLDivElement> {
+  value?: number
+  max?: number
+}
+
+function clampValue(value: number, max: number) {
+  if (max <= 0) return 0
+  return Math.min(Math.max(value, 0), max)
 }
 
 const Progress = React.forwardRef<HTMLDivElement, ProgressProps>(
   ({ className, value = 0, max = 100, ...props }, ref) => {
-    const percentage = Math.min(Math.max((value / max) * 100, 0), 100);
+    const boundedValue = clampValue(value, max)
+    const percent = max > 0 ? (boundedValue / max) * 100 : 0
 
     return (
       <div
         ref={ref}
         role="progressbar"
-        aria-valuenow={value}
         aria-valuemin={0}
         aria-valuemax={max}
-        className={cn("relative h-2 w-full overflow-hidden rounded-full bg-muted", className)}
+        aria-valuenow={Math.round(boundedValue)}
+        className={cn(
+          'relative h-3 w-full overflow-hidden rounded-full bg-[var(--fips-surface-muted)] shadow-[inset_0_1px_2px_rgba(15,23,42,0.06)]',
+          className,
+        )}
         {...props}
       >
         <div
-          className="h-full rounded-full bg-gradient-to-r from-primary to-[#d6174a] transition-all duration-300"
-          style={{ width: `${percentage}%` }}
+          className="h-full rounded-full bg-[linear-gradient(90deg,var(--fips-secondary),var(--fips-primary))] transition-[width] duration-300 ease-out"
+          style={{ width: `${percent}%` }}
         />
       </div>
-    );
-  }
-);
-Progress.displayName = "Progress";
+    )
+  },
+)
 
-export { Progress };
+Progress.displayName = 'Progress'
+
+export { Progress }

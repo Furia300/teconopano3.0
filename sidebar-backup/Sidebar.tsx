@@ -20,6 +20,7 @@ const CSS = `
   0%   { transform: translateX(-100%); }
   100% { transform: translateX(100%); }
 }
+.sb-nav::-webkit-scrollbar { display: none; }
 .sb-range {
   -webkit-appearance: none; appearance: none;
   width: 100%; height: 6px; border-radius: 3px; outline: none;
@@ -407,20 +408,20 @@ export function Sidebar() {
         {/* Logo */}
         <div style={{
           display: "flex", alignItems: "center", justifyContent: "center",
-          height: 56, padding: "0 16px", flexShrink: 0,
+          height: 56, flexShrink: 0,
           borderBottom: "1px solid rgba(255,255,255,.06)",
         }}>
           {mini
-            ? <img src="/src/assets/logo-30anos.png" alt="Tecnopano 30 Anos" style={{ width: 40, height: 40, objectFit: "contain", borderRadius: 6 }} />
+            ? <img src="/src/assets/logo-30anos.png" alt="Tecnopano 30 Anos"
+                style={{ width: 36, height: 36, objectFit: "contain", borderRadius: 10 }} />
             : <img src="/src/assets/logo.png" alt="Tecnopano" style={{ width: 144 }} />}
         </div>
 
         {/* Nav */}
-        <nav style={{
+        <nav className="sb-nav" style={{
           flex: 1, overflowY: "auto", overflowX: "hidden",
           padding: "12px 0",
-          scrollbarWidth: "thin",
-          scrollbarColor: "rgba(255,255,255,.1) transparent",
+          scrollbarWidth: "none",
         }}>
           {filteredMenu.map((item) => (
             <SidebarItem key={item.href ?? item.label}

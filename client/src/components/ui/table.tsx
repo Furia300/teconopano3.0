@@ -1,70 +1,139 @@
-import * as React from "react";
-import { cn } from "@/lib/utils";
+import * as React from 'react'
+import { cn } from '@/lib/utils'
 
-const Table = React.forwardRef<HTMLTableElement, React.HTMLAttributes<HTMLTableElement>>(
-  ({ className, ...props }, ref) => (
-    <div className="relative w-full overflow-auto">
-      <table ref={ref} className={cn("w-full caption-bottom text-sm", className)} {...props} />
-    </div>
-  )
-);
-Table.displayName = "Table";
+interface TableProps extends React.HTMLAttributes<HTMLTableElement> {
+  framed?: boolean
+  density?: 'default' | 'dense'
+}
 
-const TableHeader = React.forwardRef<HTMLTableSectionElement, React.HTMLAttributes<HTMLTableSectionElement>>(
-  ({ className, ...props }, ref) => (
-    <thead ref={ref} className={cn("[&_tr]:border-b", className)} {...props} />
-  )
-);
-TableHeader.displayName = "TableHeader";
+const TableDensityContext = React.createContext<'default' | 'dense'>('default')
 
-const TableBody = React.forwardRef<HTMLTableSectionElement, React.HTMLAttributes<HTMLTableSectionElement>>(
-  ({ className, ...props }, ref) => (
-    <tbody ref={ref} className={cn("[&_tr:last-child]:border-0", className)} {...props} />
-  )
-);
-TableBody.displayName = "TableBody";
+const Table = React.forwardRef<HTMLTableElement, TableProps>(
+  ({ className, framed = true, density = 'default', ...props }, ref) => {
+    const table = (
+      <table
+        ref={ref}
+        className={cn('w-full caption-bottom text-sm', className)}
+        data-density={density}
+        {...props}
+      />
+    )
+
+    if (!framed) {
+      return (
+        <TableDensityContext.Provider value={density}>
+          <div className="relative w-full overflow-auto">{table}</div>
+        </TableDensityContext.Provider>
+      )
+    }
+
+    return (
+      <TableDensityContext.Provider value={density}>
+        <div className="relative w-full overflow-auto rounded-2xl border border-[var(--fips-border)] bg-[var(--fips-surface)] shadow-[var(--shadow-card)]">
+          {table}
+        </div>
+      </TableDensityContext.Provider>
+    )
+  },
+)
+Table.displayName = 'Table'
+
+const TableHeader = React.forwardRef<
+  HTMLTableSectionElement,
+  React.HTMLAttributes<HTMLTableSectionElement>
+>(({ className, ...props }, ref) => (
+  <thead
+    ref={ref}
+    className={cn('border-b border-[var(--fips-border)] bg-[var(--fips-surface)]', className)}
+    {...props}
+  />
+))
+TableHeader.displayName = 'TableHeader'
+
+const TableBody = React.forwardRef<
+  HTMLTableSectionElement,
+  React.HTMLAttributes<HTMLTableSectionElement>
+>(({ className, ...props }, ref) => (
+  <tbody ref={ref} className={cn('[&_tr:last-child]:border-0', className)} {...props} />
+))
+TableBody.displayName = 'TableBody'
 
 const TableRow = React.forwardRef<HTMLTableRowElement, React.HTMLAttributes<HTMLTableRowElement>>(
   ({ className, ...props }, ref) => (
     <tr
       ref={ref}
-      className={cn("border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted", className)}
+      className={cn(
+        'border-b border-[var(--fips-border)] transition-colors hover:bg-[var(--fips-surface-soft)] data-[state=selected]:bg-[var(--fips-surface-muted)]',
+        className,
+      )}
       {...props}
     />
-  )
-);
-TableRow.displayName = "TableRow";
+  ),
+)
+TableRow.displayName = 'TableRow'
 
-const TableHead = React.forwardRef<HTMLTableCellElement, React.ThHTMLAttributes<HTMLTableCellElement>>(
-  ({ className, ...props }, ref) => (
+const TableHead = React.forwardRef<
+  HTMLTableCellElement,
+  React.ThHTMLAttributes<HTMLTableCellElement>
+>(({ className, ...props }, ref) => {
+  const density = React.useContext(TableDensityContext)
+
+  return (
     <th
       ref={ref}
       className={cn(
-        "h-10 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0",
-        className
+        density === 'dense'
+          ? 'h-10 px-2 text-left align-middle text-[13px] font-medium text-[var(--fips-fg-muted)]'
+          : 'h-14 px-4 text-left align-middle text-sm font-semibold text-[var(--fips-fg-muted)]',
+        className,
       )}
       {...props}
     />
   )
-);
-TableHead.displayName = "TableHead";
+})
+TableHead.displayName = 'TableHead'
 
-const TableCell = React.forwardRef<HTMLTableCellElement, React.TdHTMLAttributes<HTMLTableCellElement>>(
-  ({ className, ...props }, ref) => (
-    <td ref={ref} className={cn("p-4 align-middle [&:has([role=checkbox])]:pr-0", className)} {...props} />
+const TableCell = React.forwardRef<
+  HTMLTableCellElement,
+  React.TdHTMLAttributes<HTMLTableCellElement>
+>(({ className, ...props }, ref) => {
+  const density = React.useContext(TableDensityContext)
+
+  return (
+    <td
+      ref={ref}
+      className={cn(
+        density === 'dense'
+          ? 'px-2 py-2.5 align-middle text-[13.5px] text-[var(--fips-fg)]'
+          : 'px-4 py-5 align-middle text-[15px] text-[var(--fips-fg)]',
+        className,
+      )}
+      {...props}
+    />
   )
-);
-TableCell.displayName = "TableCell";
+})
+TableCell.displayName = 'TableCell'
 
-const TableEmpty = React.forwardRef<HTMLTableRowElement, React.HTMLAttributes<HTMLTableRowElement> & { colSpan?: number; message?: string }>(
-  ({ colSpan = 1, message = "Nenhum registro encontrado.", ...props }, ref) => (
-    <TableRow ref={ref} {...props}>
-      <TableCell colSpan={colSpan} className="h-24 text-center text-muted-foreground">
-        {message}
-      </TableCell>
-    </TableRow>
-  )
-);
-TableEmpty.displayName = "TableEmpty";
+interface TableEmptyProps extends React.HTMLAttributes<HTMLTableRowElement> {
+  colSpan: number
+  title?: string
+  description?: string
+}
 
-export { Table, TableHeader, TableBody, TableHead, TableRow, TableCell, TableEmpty };
+const TableEmpty = React.forwardRef<HTMLTableRowElement, TableEmptyProps>(
+  ({ className, colSpan, title = 'Nenhum registro encontrado', description, ...props }, ref) => (
+    <tr ref={ref} className={className} {...props}>
+      <td colSpan={colSpan} className="px-6 py-14 text-center">
+        <div className="mx-auto max-w-sm space-y-2">
+          <p className="font-medium text-[var(--fips-fg)]">{title}</p>
+          {description ? (
+            <p className="text-sm leading-relaxed text-[var(--fips-fg-muted)]">{description}</p>
+          ) : null}
+        </div>
+      </td>
+    </tr>
+  ),
+)
+TableEmpty.displayName = 'TableEmpty'
+
+export { Table, TableHeader, TableBody, TableHead, TableRow, TableCell, TableEmpty }
