@@ -1,8 +1,52 @@
-import type { ReactNode } from 'react'
+import type { ReactNode, SVGAttributes } from 'react'
 import { cn } from '@/lib/utils'
 
 /** Arte de trem/fundo usada nos produtos FIPS (public/). */
 export const PAGE_HERO_DEFAULT_DECORATION = '/backgrounds/app-shell-home-trains.png'
+
+/**
+ * Trilhos decorativos do DS-FIPS (DataListingDemo / Header do painel).
+ * `currentColor` herda branco do container para funcionar em fundo navy.
+ */
+export function FipsJunctionLines({
+  className,
+  ...props
+}: SVGAttributes<SVGSVGElement> & { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 320 200"
+      fill="none"
+      className={cn('pointer-events-none text-white', className)}
+      aria-hidden
+      {...props}
+    >
+      <path
+        d="M0 60H100C120 60 120 60 140 40L200 40H320"
+        stroke="currentColor"
+        strokeWidth="6"
+        strokeLinecap="round"
+      />
+      <path
+        d="M0 60H100C120 60 120 60 140 80L200 80H320"
+        stroke="currentColor"
+        strokeWidth="6"
+        strokeLinecap="round"
+      />
+      <path
+        d="M0 120H60C80 120 80 120 100 100L160 100H320"
+        stroke="currentColor"
+        strokeWidth="6"
+        strokeLinecap="round"
+      />
+      <path
+        d="M0 120H60C80 120 80 120 100 140L160 140H320"
+        stroke="currentColor"
+        strokeWidth="6"
+        strokeLinecap="round"
+      />
+    </svg>
+  )
+}
 
 export type PageHeroProps = {
   children: ReactNode
@@ -36,17 +80,17 @@ export function PageHero({
         className,
       )}
     >
+      {/*
+        Padrão FIPS (DataListingDemo): um único gradiente 135° — sem vinheta escura
+        nem segunda camada que “suje” o navy institucional.
+      */}
       <div
-        className="absolute inset-0 bg-gradient-to-br from-[#031a3d] via-[var(--color-fips-blue-900)] to-[#1b6fd4]"
+        className="absolute inset-0 bg-[linear-gradient(135deg,#004B9B_0%,#002A68_58%,#001A4A_100%)]"
         aria-hidden
       />
-      <div
-        className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.08] to-white/[0.03]"
-        aria-hidden
-      />
-      <div
-        className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent"
-        aria-hidden
+      <FipsJunctionLines
+        className="absolute -top-5 -right-8 h-[200px] w-[min(92vw,360px)] opacity-[0.07] sm:h-[220px] sm:w-[min(80vw,420px)] sm:opacity-[0.085]"
+        style={{ maxWidth: 'none' }}
       />
 
       {hasPhoto ? (

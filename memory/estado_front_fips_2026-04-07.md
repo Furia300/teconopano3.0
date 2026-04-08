@@ -1,12 +1,19 @@
 # Estado do front — Tecnopano 3.0 / FIPS (referência interna)
 
-**Atualizado:** 2026-04-07  
+**Atualizado:** 2026-04-08  
 **Projeto:** raiz do repositório (`origin` → `https://github.com/Furia300/teconopano3.0.git`)
 
 ## Commit de referência (UI FIPS / RH / motorista)
 
 - `a35e0f9` — *feat(ui): RH Data List FIPS, motorista e ajustes de layout*
-- Este arquivo foi adicionado ao repo para manter a referência junto ao código.
+- `d25765d` — *docs: referência FIPS/RH e front em memory/*
+- Ver último commit em `main` para ajustes de **PageHero / hero do dashboard** alinhados ao DataListingDemo (gradiente único + JunctionLines).
+
+## Hero navy FIPS (PageHero + Painel admin)
+
+- **`client/src/composites/PageHero.tsx`:** gradiente institucional único `135deg #004B9B → #002A68 → #001A4A`; sem vinheta `from-black/25`; decoração **`FipsJunctionLines`** (trilhos do demo).
+- **`client/src/pages/dashboard/DashboardAdmin.tsx`:** header “Painel operacional” com o mesmo navy FIPS, raio `12px 12px 12px 24px`, sombra e JunctionLines (não usar cinza no dark só no hero).
+- Export: `FipsJunctionLines` em `client/src/composites/index.ts`.
 
 ## Decisões / padrões que importam
 
@@ -18,6 +25,7 @@
 6. **Layout:** `AppLayout` usa estado de hover do sidebar para evitar sobreposição do conteúdo quando o menu expande no hover.
 7. **Header:** toggle claro/escuro; ícone alinhado à cor dos ícones do sidebar em um dos ajustes.
 8. **Tabela admin:** menu de colunas em `client/src/components/ui/admin-listing.tsx` (popover com **z-50**).
+9. Ver secção **Hero navy FIPS** acima.
 
 ## Referência externa DS
 

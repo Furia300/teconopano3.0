@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import type { DashboardData } from "@/types/dashboard";
+import { FipsJunctionLines } from "@/composites/PageHero";
 
 type Props = { data: DashboardData };
 
@@ -326,9 +327,31 @@ export default function DashboardAdmin({ data }: Props) {
     <div style={{ minHeight: "100vh", fontFamily: Fn.body, color: C.cinzaEscuro, background: C.bg, transition: "background .3s, color .3s" }}>
       <style>{`@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}`}</style>
 
-      {/* ═══ HERO ═══ */}
-      <header style={{ background: `linear-gradient(135deg,${dark ? "#27272a" : C.azulProfundo} 0%,${dark ? "#232326" : C.azulEscuro} 58%,${dark ? "#1f1f23" : "#001A4A"} 100%)`, padding: mob ? "24px 16px 18px" : "36px 40px 24px", margin: mob ? "0 12px" : "0 32px", position: "relative", overflow: "hidden", borderRadius: "0 0 16px 16px" }}>
-        <div style={{ position: "relative", display: "flex", alignItems: mob ? "flex-start" : "center", justifyContent: "space-between", flexDirection: mob ? "column" : "row", gap: mob ? 12 : 0 }}>
+      {/* ═══ HERO — navy institucional FIPS (DataListingDemo), igual em light/dark ═══ */}
+      <header
+        style={{
+          background: "linear-gradient(135deg, #004B9B 0%, #002A68 58%, #001A4A 100%)",
+          padding: mob ? "22px 18px 18px" : "36px 40px 28px",
+          margin: mob ? "0 12px" : "0 32px",
+          position: "relative",
+          overflow: "hidden",
+          borderRadius: "12px 12px 12px 24px",
+          boxShadow: "0 4px 20px rgba(0,42,104,0.12)",
+          border: "1px solid rgba(255,255,255,0.10)",
+        }}
+      >
+        <FipsJunctionLines
+          className="absolute text-white"
+          style={{
+            top: mob ? -8 : -10,
+            right: mob ? -16 : -24,
+            width: mob ? 200 : 380,
+            height: mob ? 160 : 200,
+            opacity: 0.06,
+            pointerEvents: "none",
+          }}
+        />
+        <div style={{ position: "relative", zIndex: 1, display: "flex", alignItems: mob ? "flex-start" : "center", justifyContent: "space-between", flexDirection: mob ? "column" : "row", gap: mob ? 12 : 0 }}>
           <div>
             <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(237,27,36,0.12)", border: "1px solid rgba(237,27,36,0.35)", borderRadius: 20, padding: "4px 12px", fontSize: 10, fontWeight: 600, color: "#ed1b24", fontFamily: Fn.body, marginBottom: 8 }}>Super Admin · Tecnopano 3.0</div>
             <h1 style={{ fontSize: mob ? 22 : 30, fontWeight: 700, color: C.branco, margin: "0 0 4px", fontFamily: Fn.title, lineHeight: 1.15 }}>Painel <span style={{ color: "#ed1b24" }}>Operacional</span></h1>

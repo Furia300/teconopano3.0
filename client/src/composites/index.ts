@@ -1,1 +1,6 @@
-export { PageHero, PAGE_HERO_DEFAULT_DECORATION, type PageHeroProps } from './PageHero'
+export {
+  FipsJunctionLines,
+  PageHero,
+  PAGE_HERO_DEFAULT_DECORATION,
+  type PageHeroProps,
+} from './PageHero'
