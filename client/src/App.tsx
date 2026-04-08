@@ -15,6 +15,7 @@ import ClientesList from "./pages/clientes/ClientesList";
 import FornecedoresList from "./pages/fornecedores/FornecedoresList";
 import ProdutosList from "./pages/produtos/ProdutosList";
 import FuncionariosList from "./pages/funcionarios/FuncionariosList";
+import PontoDiario from "./pages/rh/PontoDiario";
 import ProducaoDiariaPage from "./pages/producao-diaria/ProducaoDiariaPage";
 import AutomaticoPage from "./pages/automatico/AutomaticoPage";
 import MotoristaList from "./pages/motorista/MotoristaList";
@@ -38,6 +39,7 @@ function AppContent() {
         <Route path="/fornecedores" component={FornecedoresList} />
         <Route path="/produtos" component={ProdutosList} />
         <Route path="/funcionarios" component={FuncionariosList} />
+        <Route path="/ponto-diario" component={PontoDiario} />
         <Route path="/producao-diaria" component={ProducaoDiariaPage} />
         <Route path="/motorista" component={MotoristaList} />
         <Route path="/automatico" component={AutomaticoPage} />

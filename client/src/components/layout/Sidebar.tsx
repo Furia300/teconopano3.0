@@ -6,7 +6,7 @@ import {
   LayoutDashboard, Truck, Package, Users, Settings, Box,
   ClipboardList, LogOut, Factory, ShoppingCart, DollarSign,
   FileText, Scissors, Droplets, ChevronDown, ChevronRight,
-  Warehouse, CalendarDays, UserCog, Zap, X, Send,
+  Warehouse, CalendarDays, UserCog, Zap, X, Send, Clock,
 } from "lucide-react";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
@@ -90,6 +90,7 @@ const MENU: MenuItem[] = [
     perfis: ["administrador", "rh"],
     children: [
       { icon: UserCog, label: "Funcionários", href: "/funcionarios", perfis: ["administrador", "rh"] },
+      { icon: Clock, label: "Ponto diário", href: "/ponto-diario", perfis: ["administrador", "rh"] },
     ],
   },
   {
