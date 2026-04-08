@@ -3,6 +3,10 @@
 **Atualizado:** 2026-04-08  
 **Projeto:** raiz do repositório (`origin` → `https://github.com/Furia300/teconopano3.0.git`)
 
+**Backup local de ambiente:** cópia do `.env` do projeto (não versionada) em  
+`../memory/teconopano3.0.env.backup-2026-04-08` dentro da pasta de trabalho `tecnopano/`.  
+Template seguro: `teconopano3.0/.env.example` (versionado).
+
 ## Commit de referência (UI FIPS / RH / motorista)
 
 - `a35e0f9` — *feat(ui): RH Data List FIPS, motorista e ajustes de layout*
@@ -34,3 +38,8 @@
 ## Porta dev
 
 - Cliente Vite: porta **3002** (`vite.config.ts`).
+
+## Ponto diário (`/ponto-diário`)
+
+- **`client/src/pages/rh/PontoDiario.tsx`:** listagem estilo Data List FIPS (hero + toolbar + card de tabela); colunas extras Apuração / Cálculo / Ajuste; persistência de colunas em `localStorage` (`tecnopano-ponto-diario-prefs-v1`); filtro por nome/PIS com painel **Mostrar/Ocultar filtros** (chips de resumo + busca no mesmo bloco); paginação `AdminTablePagination`; simulação de horários por dia; merge opcional com `/api/colaboradores`.
+- **Build servidor:** `tsconfig.server.json` inclui só `server/` (evita TS6059 com `shared/`); **`server/routes.ts`:** normalização de `req.params.depto` para `string` antes de `toLowerCase()`.

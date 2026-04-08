@@ -664,7 +664,8 @@ export function registerRoutes(app: Express) {
 
   // GET por departamento
   app.get("/api/colaboradores/departamento/:depto", async (req: Request, res: Response) => {
-    const depto = req.params.depto.toLowerCase();
+    const deptoRaw = req.params.depto;
+    const depto = (typeof deptoRaw === "string" ? deptoRaw : deptoRaw?.[0] ?? "").toLowerCase();
     if (isRHiDConfigured()) {
       try {
         const [pessoas, departamentos] = await Promise.all([fetchPessoas(), fetchDepartamentos()]);
