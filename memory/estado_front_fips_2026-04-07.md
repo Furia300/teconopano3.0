@@ -1,0 +1,28 @@
+# Estado do front — Tecnopano 3.0 / FIPS (referência interna)
+
+**Atualizado:** 2026-04-07  
+**Projeto:** raiz do repositório (`origin` → `https://github.com/Furia300/teconopano3.0.git`)
+
+## Commit de referência (UI FIPS / RH / motorista)
+
+- `a35e0f9` — *feat(ui): RH Data List FIPS, motorista e ajustes de layout*
+- Este arquivo foi adicionado ao repo para manter a referência junto ao código.
+
+## Decisões / padrões que importam
+
+1. **Design system FIPS** integrado em `client/` com tokens `--fips-*` em `client/src/styles/globals.css`. Não alterar por padrão: **paleta do botão principal Tecnopano**, **sidebar** e **tela de login** (regras do produto).
+2. **Página RH / Colaboradores** (`client/src/pages/funcionarios/FuncionariosList.tsx`) segue o fluxo do demo **Data List** do repositório FIPS: *Header → KPIs → Toolbar única → Card de tabela com header obrigatório (ícone, título, subtítulo, Filtrado, Configurar)*.
+3. **KPIs** no padrão demo: `client/src/components/domain/FipsDataListingKpiCard.tsx` (raio `10px 10px 10px 18px`, ícone top-right, delta com seta, sparkline com área em gradiente e hover).
+4. **Menu lateral:** RH pai de Funcionários; Configurações pai de Usuários; Expedição com Coleta/Estoque/Motorista; Financeiro com NF; Produção com filhos definidos. Ver `client/src/components/layout/Sidebar.tsx`.
+5. **Motorista:** `DashboardMotorista`, rota `/motorista`, `MotoristaList.tsx`; perfil `motorista` em `client/src/pages/Dashboard.tsx`.
+6. **Layout:** `AppLayout` usa estado de hover do sidebar para evitar sobreposição do conteúdo quando o menu expande no hover.
+7. **Header:** toggle claro/escuro; ícone alinhado à cor dos ícones do sidebar em um dos ajustes.
+8. **Tabela admin:** menu de colunas em `client/src/components/ui/admin-listing.tsx` (popover com **z-50**).
+
+## Referência externa DS
+
+- Padrão Data List: `Design-system-FIPS` → `src/docs/pages/patterns/DataListingDemo.tsx`
+
+## Porta dev
+
+- Cliente Vite: porta **3002** (`vite.config.ts`).
