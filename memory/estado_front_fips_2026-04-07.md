@@ -7,7 +7,7 @@
 
 - `a35e0f9` — *feat(ui): RH Data List FIPS, motorista e ajustes de layout*
 - `d25765d` — *docs: referência FIPS/RH e front em memory/*
-- Ver último commit em `main` para ajustes de **PageHero / hero do dashboard** alinhados ao DataListingDemo (gradiente único + JunctionLines).
+- `ac002d6` — *fix(ui): hero FIPS — PageHero com gradiente DS e JunctionLines; dashboard admin alinhado; docs memory*
 
 ## Hero navy FIPS (PageHero + Painel admin)
 
