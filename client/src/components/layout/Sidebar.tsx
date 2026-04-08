@@ -6,7 +6,7 @@ import {
   LayoutDashboard, Truck, Package, Users, Settings, Box,
   ClipboardList, LogOut, Factory, ShoppingCart, DollarSign,
   FileText, Scissors, Droplets, ChevronDown, ChevronRight,
-  Warehouse, CalendarDays, UserCog, Zap, X,
+  Warehouse, CalendarDays, UserCog, Zap, X, Send,
 } from "lucide-react";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
@@ -53,18 +53,31 @@ interface MenuItem {
 /* ─── Menu ─── */
 const MENU: MenuItem[] = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/" },
-  { icon: Truck, label: "Coleta", href: "/coleta", perfis: ["administrador", "expedicao", "motorista", "galpao"] },
-  { icon: ClipboardList, label: "Separação", href: "/separacao", perfis: ["administrador", "galpao", "separacao"] },
-  { icon: Factory, label: "Produção", href: "/producao", badge: "producaoEmAndamento", perfis: ["administrador", "galpao", "producao"] },
-  { icon: CalendarDays, label: "Produção Diária", href: "/producao-diaria", perfis: ["administrador", "galpao", "producao"] },
-  { icon: Droplets, label: "Repanol", href: "/repanol", perfis: ["administrador", "galpao"] },
-  { icon: Scissors, label: "Costureira", href: "/costureira", perfis: ["administrador", "galpao", "motorista"] },
-  { icon: Warehouse, label: "Estoque", href: "/estoque", perfis: ["administrador", "expedicao", "galpao"] },
   {
-    icon: DollarSign, label: "Expedição",
+    icon: Factory, label: "Produção", badge: "producaoEmAndamento",
+    perfis: ["administrador", "galpao", "producao", "separacao"],
+    children: [
+      { icon: Factory, label: "Produção", href: "/producao", badge: "producaoEmAndamento", perfis: ["administrador", "galpao", "producao"] },
+      { icon: ClipboardList, label: "Separação", href: "/separacao", perfis: ["administrador", "galpao", "separacao"] },
+      { icon: CalendarDays, label: "Produção Diária", href: "/producao-diaria", perfis: ["administrador", "galpao", "producao"] },
+      { icon: Droplets, label: "Repanol", href: "/repanol", perfis: ["administrador", "galpao"] },
+      { icon: Scissors, label: "Costureira", href: "/costureira", perfis: ["administrador", "galpao"] },
+    ],
+  },
+  {
+    icon: Send, label: "Expedição",
+    perfis: ["administrador", "expedicao", "motorista", "galpao"],
+    children: [
+      { icon: Truck, label: "Coleta", href: "/coleta" },
+      { icon: Package, label: "Pedidos", href: "/expedicao" },
+      { icon: Truck, label: "Motorista", href: "/motorista", perfis: ["administrador", "motorista", "expedicao", "galpao"] },
+      { icon: Warehouse, label: "Estoque", href: "/estoque", perfis: ["administrador", "expedicao", "galpao"] },
+    ],
+  },
+  {
+    icon: DollarSign, label: "Financeiro", badge: "financeiroPendente",
     perfis: ["administrador", "expedicao", "financeiro", "emissao_nf"],
     children: [
-      { icon: Package, label: "Pedidos", href: "/expedicao" },
       { icon: DollarSign, label: "Financeiro", href: "/financeiro", badge: "financeiroPendente", perfis: ["administrador", "expedicao", "financeiro"] },
       { icon: FileText, label: "Emissão NF", href: "/emissao-nf", badge: "notaPendente", perfis: ["administrador", "expedicao", "emissao_nf"] },
     ],
@@ -72,9 +85,21 @@ const MENU: MenuItem[] = [
   { icon: ShoppingCart, label: "Clientes", href: "/clientes", perfis: ["administrador", "expedicao"] },
   { icon: Truck, label: "Fornecedores", href: "/fornecedores", perfis: ["administrador", "expedicao"] },
   { icon: Box, label: "Produtos", href: "/produtos", perfis: ["administrador", "expedicao"] },
-  { icon: Users, label: "Funcionários", href: "/funcionarios", perfis: ["administrador", "rh"] },
-  { icon: UserCog, label: "Usuários", href: "/usuarios", perfis: ["administrador"] },
-  { icon: Settings, label: "Configurações", href: "/configuracoes", perfis: ["administrador"] },
+  {
+    icon: Users, label: "RH",
+    perfis: ["administrador", "rh"],
+    children: [
+      { icon: UserCog, label: "Funcionários", href: "/funcionarios", perfis: ["administrador", "rh"] },
+    ],
+  },
+  {
+    icon: Settings, label: "Configurações",
+    perfis: ["administrador"],
+    children: [
+      { icon: Settings, label: "Configurações", href: "/configuracoes", perfis: ["administrador"] },
+      { icon: UserCog, label: "Usuários", href: "/usuarios", perfis: ["administrador"] },
+    ],
+  },
   { icon: Zap, label: "Automático", action: "autoCollapse", perfis: ["administrador"] },
 ];
 
@@ -312,7 +337,7 @@ function SidebarItem({
 /* ═══════════════════════════════════════════════
    Sidebar
    ═══════════════════════════════════════════════ */
-export function Sidebar() {
+export function Sidebar({ onHoveringChange }: { onHoveringChange?: (hovering: boolean) => void }) {
   const badges = useSidebarBadges();
   const { collapsed, setCollapsed } = useSidebarCollapse();
   const [hovering, setHovering] = useState(false);
@@ -368,13 +393,15 @@ export function Sidebar() {
   // ── Mouse events ──
   const onEnter = useCallback(() => {
     setHovering(true);
+    onHoveringChange?.(true);
     clearTimer();
-  }, [clearTimer]);
+  }, [clearTimer, onHoveringChange]);
 
   const onLeave = useCallback(() => {
     setHovering(false);
+    onHoveringChange?.(false);
     if (autoCollapse && !modalOpen) startTimer();
-  }, [autoCollapse, modalOpen, startTimer]);
+  }, [autoCollapse, modalOpen, startTimer, onHoveringChange]);
 
   const onAction = useCallback((a: string) => {
     if (a === "autoCollapse") setModalOpen(true);

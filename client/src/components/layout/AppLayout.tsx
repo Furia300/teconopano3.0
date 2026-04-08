@@ -9,21 +9,23 @@ interface AppLayoutProps {
 
 export function AppLayout({ children }: AppLayoutProps) {
   const [collapsed, setCollapsed] = useState(false);
+  const [sidebarHovering, setSidebarHovering] = useState(false);
+  const sidebarWidth = collapsed ? (sidebarHovering ? 256 : 72) : 256;
 
   return (
     <SidebarCollapseContext.Provider value={{ collapsed, setCollapsed }}>
-      <div className="min-h-screen bg-muted/30">
-        <Sidebar />
+      <div className="min-h-screen bg-muted/30 dark:bg-[#1A1A1A]">
+        <Sidebar onHoveringChange={setSidebarHovering} />
         <div
           className="flex flex-col min-h-screen"
           style={{
-            paddingLeft: collapsed ? 72 : 256,
+            paddingLeft: sidebarWidth,
             transition: "padding-left .25s cubic-bezier(.4,0,.2,1)",
           }}
         >
           <Header />
-          <main className="flex-1 p-6 overflow-x-hidden overflow-y-auto">
-            <div className="max-w-7xl mx-auto space-y-6">
+          <main className="flex-1 p-0 overflow-x-hidden overflow-y-auto">
+            <div className="mx-auto">
               {children}
             </div>
           </main>

@@ -30,12 +30,12 @@ const LIGHT = {
 const DARK = {
   azulProfundo: "#5B9BD5", azulEscuro: "#E2E8F0", azulClaro: "#7EAED6",
   cinzaChumbo: "#8B95A0", cinzaEscuro: "#E2E2E8", cinzaClaro: "#4A4A5A",
-  azulCeu: "#5B9BD5", azulCeuClaro: "#1E293B",
+  azulCeu: "#5B9BD5", azulCeuClaro: "#252525",
   amareloOuro: "#FDC24E", amareloEscuro: "#F6921E",
   verdeFloresta: "#34D870", verdeEscuro: "#34D870",
   danger: "#EF6B6B",
-  branco: "#FFFFFF", bg: "#0C0C14",
-  cardBg: "#14141F", cardBorder: "#1E2033",
+  branco: "#FFFFFF", bg: "#1A1A1A",
+  cardBg: "#222222", cardBorder: "#2E2E2E",
   textMuted: "#6B7280", textLight: "#4B5563",
 };
 /* Module-level reactive color ref — updated by DashboardAdmin on each render */
@@ -68,7 +68,44 @@ const Ic = {
 };
 
 function JunctionLines({ style }: { style?: React.CSSProperties }) {
-  return <svg viewBox="0 0 320 200" fill="none" style={{ opacity: .12, ...style }}><path d="M0 60H100C120 60 120 60 140 40L200 40H320" stroke={C.branco} strokeWidth="6" strokeLinecap="round" /><path d="M0 60H100C120 60 120 60 140 80L200 80H320" stroke={C.branco} strokeWidth="6" strokeLinecap="round" /><path d="M0 120H60C80 120 80 120 100 100L160 100H320" stroke={C.branco} strokeWidth="6" strokeLinecap="round" /><path d="M0 120H60C80 120 80 120 100 140L160 140H320" stroke={C.branco} strokeWidth="6" strokeLinecap="round" /></svg>;
+  return (
+    <svg viewBox="0 0 320 200" fill="none" style={{ opacity: .12, ...style }} aria-hidden>
+      <defs>
+        <linearGradient id="curtainL" x1="148" y1="18" x2="78" y2="178" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="rgba(255,255,255,0.30)" />
+          <stop offset="1" stopColor="rgba(255,255,255,0.06)" />
+        </linearGradient>
+        <linearGradient id="curtainR" x1="172" y1="18" x2="242" y2="178" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="rgba(255,255,255,0.30)" />
+          <stop offset="1" stopColor="rgba(255,255,255,0.06)" />
+        </linearGradient>
+        <linearGradient id="windowPane" x1="160" y1="28" x2="160" y2="170" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="rgba(255,255,255,0.10)" />
+          <stop offset="1" stopColor="rgba(255,255,255,0.03)" />
+        </linearGradient>
+      </defs>
+
+      {/* janela aberta */}
+      <path d="M160 22V168" stroke="rgba(255,255,255,0.16)" strokeWidth="1.6" />
+      <path d="M102 95H218" stroke="rgba(255,255,255,0.16)" strokeWidth="1.6" />
+
+      {/* varão */}
+      <path d="M82 32H238" stroke="rgba(255,255,255,0.24)" strokeWidth="3" strokeLinecap="round" />
+
+      {/* pano esquerdo */}
+      <path d="M106 44C118 58 122 74 122 92C122 112 114 134 96 156" stroke="rgba(255,255,255,0.20)" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M90 56C100 70 102 86 100 106" stroke="rgba(255,255,255,0.16)" strokeWidth="1.2" strokeLinecap="round" />
+
+      {/* pano direito */}
+      <path d="M232 34C208 48 198 66 194 86C190 108 198 132 224 170L248 170C230 138 224 112 228 90C232 70 240 52 252 40L232 34Z" fill="url(#curtainR)" />
+      <path d="M214 44C202 58 198 74 198 92C198 112 206 134 224 156" stroke="rgba(255,255,255,0.20)" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M230 56C220 70 218 86 220 106" stroke="rgba(255,255,255,0.16)" strokeWidth="1.2" strokeLinecap="round" />
+
+      {/* abraçadeiras */}
+      <rect x="116" y="110" width="12" height="4" rx="2" fill="rgba(237,27,36,0.36)" />
+      <rect x="192" y="110" width="12" height="4" rx="2" fill="rgba(237,27,36,0.36)" />
+    </svg>
+  );
 }
 
 /* ═══ DS FIPS Select ═══ */
@@ -79,7 +116,7 @@ function DSSelect({ label, value, onChange, options, placeholder = "Todos", icon
   useEffect(() => { const h = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false) }; document.addEventListener("mousedown", h); return () => document.removeEventListener("mousedown", h) }, []);
   const bc = open ? C.azulProfundo : "#CBD5E1";
   return (
-    <div ref={ref} style={{ display: "flex", flexDirection: "column", minWidth: 0, position: "relative", zIndex: open ? 30 : 1 }}>
+    <div ref={ref} style={{ display: "flex", flexDirection: "column", minWidth: 0, position: "relative", zIndex: open ? 400 : 1 }}>
       {label && <label style={{ fontSize: 11, fontWeight: 600, color: C.cinzaEscuro, fontFamily: Fn.body, marginBottom: 1, marginLeft: 7 }}>{label}</label>}
       <div onClick={() => setOpen(!open)} style={{ display: "flex", alignItems: "center", gap: 8, height: 30, padding: "0 12px", background: C.cardBg, border: `1.5px solid ${bc}`, borderRadius: open ? "8px 8px 0 0" : 8, transition: "all .18s", boxShadow: open ? "0 0 0 3px rgba(147,189,228,0.35)" : "none", cursor: "pointer", fontFamily: Fn.body, fontSize: 12, userSelect: "none" }}>
         {icon && <span style={{ display: "flex", flexShrink: 0, opacity: .55 }}>{icon}</span>}
@@ -290,8 +327,7 @@ export default function DashboardAdmin({ data }: Props) {
       <style>{`@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}`}</style>
 
       {/* ═══ HERO ═══ */}
-      <header style={{ background: "linear-gradient(135deg,#27272a 0%,#232326 58%,#1f1f23 100%)", padding: mob ? "24px 16px" : "36px 40px 32px", position: "relative", overflow: "hidden", borderRadius: "0 0 16px 16px" }}>
-        <JunctionLines style={{ position: "absolute", top: -20, right: -30, width: mob ? 220 : 500, height: 280, opacity: .08 }} />
+      <header style={{ background: `linear-gradient(135deg,${dark ? "#27272a" : C.azulProfundo} 0%,${dark ? "#232326" : C.azulEscuro} 58%,${dark ? "#1f1f23" : "#001A4A"} 100%)`, padding: mob ? "24px 16px 18px" : "36px 40px 24px", margin: mob ? "0 12px" : "0 32px", position: "relative", overflow: "hidden", borderRadius: "0 0 16px 16px" }}>
         <div style={{ position: "relative", display: "flex", alignItems: mob ? "flex-start" : "center", justifyContent: "space-between", flexDirection: mob ? "column" : "row", gap: mob ? 12 : 0 }}>
           <div>
             <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(237,27,36,0.12)", border: "1px solid rgba(237,27,36,0.35)", borderRadius: 20, padding: "4px 12px", fontSize: 10, fontWeight: 600, color: "#ed1b24", fontFamily: Fn.body, marginBottom: 8 }}>Super Admin · Tecnopano 3.0</div>
@@ -309,10 +345,9 @@ export default function DashboardAdmin({ data }: Props) {
         </div>
       </header>
 
-      <div style={{ padding: mob ? "16px 12px 32px" : "24px 32px 48px" }}>
-
-        {/* ═══ BARRA DE FILTROS ═══ */}
-        <div style={{ background: C.cardBg, borderRadius: "10px 10px 10px 18px", border: `1px solid ${C.cardBorder}`, padding: mob ? "12px" : "14px 20px", marginBottom: mob ? 16 : 20, boxShadow: "0 1px 3px rgba(0,75,155,.04)" }}>
+      <div style={{ padding: mob ? "12px" : "16px 32px" }}>
+        {/* ═══ BARRA DE FILTROS (abaixo do hero) ═══ */}
+        <div style={{ background: dark ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.1)", borderRadius: 10, padding: mob ? "12px" : "14px 20px", marginTop: 20, marginBottom: 20, backdropFilter: "blur(8px)", border: dark ? "1px solid rgba(255,255,255,0.10)" : "1px solid rgba(255,255,255,0.15)", position: "relative", zIndex: 300, overflow: "visible" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
               {Ic.grid(16, C.azulProfundo)}
@@ -332,6 +367,7 @@ export default function DashboardAdmin({ data }: Props) {
             <DSSelect label="Material" value={filter.material} onChange={v => setF("material", v)} options={allMaterials} placeholder="Todos" icon={Ic.scale(14, C.cinzaChumbo)} />
           </div>
         </div>
+
 
         {/* ═══ ACTIVE FILTER BADGES ═══ */}
         {hasFilter && (

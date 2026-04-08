@@ -8,6 +8,7 @@ import DashboardEmissaoNF from "./dashboard/DashboardEmissaoNF";
 import DashboardRH from "./dashboard/DashboardRH";
 import DashboardProducaoPessoal from "./dashboard/DashboardProducaoPessoal";
 import DashboardSeparacaoPessoal from "./dashboard/DashboardSeparacaoPessoal";
+import DashboardMotorista from "./dashboard/DashboardMotorista";
 import DashboardAdmin from "./dashboard/DashboardAdmin";
 
 function useCurrentUser() {
@@ -102,6 +103,8 @@ export default function Dashboard() {
       return <DashboardProducaoPessoal data={data} userName={nome} />;
     case "separacao":
       return <DashboardSeparacaoPessoal data={data} userName={nome} />;
+    case "motorista":
+      return <DashboardMotorista data={data} userName={nome} />;
     default:
       return <DashboardAdmin data={data} />;
   }

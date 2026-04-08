@@ -155,7 +155,7 @@ function AdminTableColumnMenu({
       </Button>
 
       {open ? (
-        <div className="absolute top-full right-0 z-20 mt-2 w-[270px] rounded-2xl border border-[var(--fips-border)] bg-[var(--fips-surface)] p-3 shadow-[var(--shadow-float)]">
+        <div className="absolute top-full right-0 z-50 mt-2 w-[270px] rounded-2xl border border-[var(--fips-border)] bg-[var(--fips-surface)] p-3 shadow-[var(--shadow-float)]">
           <p className="flex items-center gap-2 text-sm font-semibold text-[var(--fips-fg)]">
             <GripVertical className="h-4 w-4 text-[var(--fips-fg-muted)]" aria-hidden />
             Arraste para ordenar

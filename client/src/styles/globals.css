@@ -280,6 +280,12 @@ body {
   font-family: var(--font-sans);
   background: var(--fips-surface-muted);
   color: var(--fips-fg);
+}
+
+.dark body,
+:is(.dark) body {
+  background: #1A1A1A;
+  color: #E2E2E8;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
