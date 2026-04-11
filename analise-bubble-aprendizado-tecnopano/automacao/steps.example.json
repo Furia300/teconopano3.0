@@ -1,0 +1,23 @@
+{
+  "start_url": "https://bubble.io/",
+  "viewport": { "width": 1440, "height": 900 },
+  "steps": [
+    {
+      "comment": "Aguarda carregar e tira print inicial",
+      "wait_ms": 3000,
+      "screenshot": "00-pagina-inicial.png"
+    },
+    {
+      "comment": "Exemplo: clique por texto visível (ajuste ao seu app)",
+      "click": "text=Log in",
+      "wait_after_ms": 2000,
+      "screenshot": "01-apos-clique-login.png"
+    },
+    {
+      "comment": "Exemplo: seletor CSS",
+      "click": "css=button.submit",
+      "wait_after_ms": 1500,
+      "screenshot": "02-apos-submit.png"
+    }
+  ]
+}
