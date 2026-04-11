@@ -18,14 +18,14 @@ export function useSidebarBadges(): SidebarBadges {
   useEffect(() => {
     async function fetchCounts() {
       try {
-        const [expRes, prodRes] = await Promise.all([
+        const [expRes, prodCounts] = await Promise.all([
           fetch("/api/expedicoes").then(r => r.json()),
-          fetch("/api/producoes").then(r => r.json()),
+          fetch("/api/producoes/counts").then(r => r.json()),
         ]);
         setBadges({
           financeiroPendente: expRes.filter((e: any) => e.statusFinanceiro === "pendente_aprovacao").length,
           notaPendente: expRes.filter((e: any) => e.statusFinanceiro === "aprovado" && e.statusNota === "pendente_emissao").length,
-          producaoEmAndamento: prodRes.filter((p: any) => p.statusEstoque === "pendente").length,
+          producaoEmAndamento: Number(prodCounts?.pendente) || 0,
           estoqueAbaixoMinimo: 0,
         });
       } catch { /* silently fail */ }

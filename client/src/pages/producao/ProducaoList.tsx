@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Factory, Plus, Search, QrCode, Weight, Package, Ruler } from "lucide-react";
 import { PageHeader } from "@/components/domain/PageHeader";
 import { StatsCard } from "@/components/domain/StatsCard";
@@ -57,6 +57,10 @@ const statusConfig: Record<string, { label: string; variant: "warning" | "info" 
   em_andamento: { label: "Em Andamento", variant: "info" },
 };
 
+function formatProducaoDate(dateStr: string) {
+  return new Date(dateStr).toLocaleDateString("pt-BR");
+}
+
 export default function ProducaoList() {
   const [producoes, setProducoes] = useState<Producao[]>([]);
   const [loading, setLoading] = useState(true);
@@ -65,7 +69,7 @@ export default function ProducaoList() {
   const [filterStatus, setFilterStatus] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  const fetchProducoes = async () => {
+  const fetchProducoes = useCallback(async () => {
     try {
       const res = await fetch("/api/producoes");
       const data = await res.json();
@@ -75,32 +79,55 @@ export default function ProducaoList() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchProducoes();
-  }, []);
+  }, [fetchProducoes]);
 
-  const filtered = producoes.filter((p) => {
-    const matchSearch =
-      !search ||
-      p.fornecedor.toLowerCase().includes(search.toLowerCase()) ||
-      p.tipoMaterial.toLowerCase().includes(search.toLowerCase()) ||
-      p.sala.toLowerCase().includes(search.toLowerCase()) ||
-      String(p.coletaNumero).includes(search);
-    const matchSala = !filterSala || p.sala === filterSala;
-    const matchStatus = !filterStatus || p.statusEstoque === filterStatus;
-    return matchSearch && matchSala && matchStatus;
-  });
+  const searchNorm = useMemo(() => search.trim().toLowerCase(), [search]);
 
-  const stats = {
-    total: producoes.length,
-    pesoTotal: producoes.reduce((acc, p) => acc + p.kilo, 0),
-    porUnidade: producoes.filter((p) => p.unidadeSaida === "unidade").length,
-    porKilo: producoes.filter((p) => p.unidadeSaida === "kilo").length,
-  };
+  const countBySala = useMemo(() => {
+    const m: Record<string, number> = {};
+    for (let i = 0; i < producoes.length; i++) {
+      const s = producoes[i].sala;
+      m[s] = (m[s] || 0) + 1;
+    }
+    return m;
+  }, [producoes]);
 
-  const formatDate = (dateStr: string) => new Date(dateStr).toLocaleDateString("pt-BR");
+  const filtered = useMemo(() => {
+    if (!searchNorm && !filterSala && !filterStatus) return producoes;
+    return producoes.filter((p) => {
+      const matchSearch =
+        !searchNorm ||
+        p.fornecedor.toLowerCase().includes(searchNorm) ||
+        p.tipoMaterial.toLowerCase().includes(searchNorm) ||
+        p.sala.toLowerCase().includes(searchNorm) ||
+        String(p.coletaNumero).includes(searchNorm);
+      const matchSala = !filterSala || p.sala === filterSala;
+      const matchStatus = !filterStatus || p.statusEstoque === filterStatus;
+      return matchSearch && matchSala && matchStatus;
+    });
+  }, [producoes, searchNorm, filterSala, filterStatus]);
+
+  const stats = useMemo(() => {
+    let pesoTotal = 0;
+    let porUnidade = 0;
+    let porKilo = 0;
+    for (let i = 0; i < producoes.length; i++) {
+      const p = producoes[i];
+      pesoTotal += p.kilo;
+      if (p.unidadeSaida === "unidade") porUnidade++;
+      else if (p.unidadeSaida === "kilo") porKilo++;
+    }
+    return {
+      total: producoes.length,
+      pesoTotal,
+      porUnidade,
+      porKilo,
+    };
+  }, [producoes]);
 
   return (
     <div className="space-y-6">
@@ -125,7 +152,7 @@ export default function ProducaoList() {
       {/* Salas - visual cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
         {SALAS.map((sala) => {
-          const count = producoes.filter((p) => p.sala === sala).length;
+          const count = countBySala[sala] ?? 0;
           const isKilo = salaSaidaMap[sala] === "kilo";
           const isActive = filterSala === sala;
           return (
@@ -224,7 +251,7 @@ export default function ProducaoList() {
                     <TableCell>
                       <Badge variant={sc.variant} dot>{sc.label}</Badge>
                     </TableCell>
-                    <TableCell>{formatDate(prod.dataCriacao)}</TableCell>
+                    <TableCell>{formatProducaoDate(prod.dataCriacao)}</TableCell>
                   </TableRow>
                 );
               })

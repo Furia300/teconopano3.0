@@ -500,6 +500,15 @@ export function registerRoutes(app: Express) {
   });
 
   // ==================== PRODUCOES ====================
+  /** Contagens leves para badge/polling — evita serializar a lista completa. */
+  app.get("/api/producoes/counts", (_req: Request, res: Response) => {
+    let pendente = 0;
+    for (let i = 0; i < producoes.length; i++) {
+      if (producoes[i].statusEstoque === "pendente") pendente++;
+    }
+    res.json({ pendente, total: producoes.length });
+  });
+
   app.get("/api/producoes", (_req: Request, res: Response) => {
     res.json(producoes);
   });

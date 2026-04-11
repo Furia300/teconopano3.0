@@ -1,0 +1,20 @@
+---
+description: Exigir entregas completas no projeto Tecnopano
+alwaysApply: true
+---
+
+# Tecnopano: completo ou nao concluido
+
+- Toda solicitacao de implementacao deve ser entregue completa.
+- Nao considerar "feito" quando houver corte, resumo, placeholder ou trecho faltando.
+- Ao salvar codigo enviado pelo usuario:
+  - preservar conteudo integral;
+  - manter ordem e estrutura;
+  - nao truncar.
+- Se o conteudo for grande demais para uma unica gravacao:
+  - dividir em partes;
+  - montar no mesmo arquivo final;
+  - confirmar explicitamente quando estiver 100% completo.
+- Antes de declarar conclusao:
+  - validar que o arquivo final contem todo o conteudo esperado;
+  - em caso de duvida, tratar como nao concluido.

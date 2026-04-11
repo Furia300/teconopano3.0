@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ClipboardList, Plus, Calendar, Clock, User, Factory,
   CheckCircle2, AlertTriangle, Trash2,
@@ -53,14 +53,28 @@ export default function ProducaoDiariaPage() {
     if (res.ok) setRegistros(prev => prev.filter(r => r.id !== id));
   };
 
-  const registrosDia = registros.filter(r => r.data === filtroData);
-
-  // Agrupar por dupla
-  const porDupla: Record<string, ProducaoDiariaItem[]> = {};
-  registrosDia.forEach(r => {
-    if (!porDupla[r.nomeDupla]) porDupla[r.nomeDupla] = [];
-    porDupla[r.nomeDupla].push(r);
-  });
+  const { registrosDia, porDupla, resumoDia } = useMemo(() => {
+    const dia = registros.filter((r) => r.data === filtroData);
+    const porDupla: Record<string, ProducaoDiariaItem[]> = {};
+    let completas = 0;
+    for (let i = 0; i < dia.length; i++) {
+      const r = dia[i];
+      if (r.status === "completa") completas++;
+      const k = r.nomeDupla;
+      if (!porDupla[k]) porDupla[k] = [];
+      porDupla[k].push(r);
+    }
+    return {
+      registrosDia: dia,
+      porDupla,
+      resumoDia: {
+        total: dia.length,
+        duplas: Object.keys(porDupla).length,
+        completas,
+        incompletas: dia.length - completas,
+      },
+    };
+  }, [registros, filtroData]);
 
   if (loading) {
     return (
@@ -105,22 +119,22 @@ export default function ProducaoDiariaPage() {
       {registrosDia.length > 0 && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <div className="fips-surface-card p-4 text-center">
-            <p className="text-2xl font-bold">{registrosDia.length}</p>
+            <p className="text-2xl font-bold">{resumoDia.total}</p>
             <p className="text-xs text-muted-foreground">Total Registros</p>
           </div>
           <div className="fips-surface-card p-4 text-center">
-            <p className="text-2xl font-bold">{Object.keys(porDupla).length}</p>
+            <p className="text-2xl font-bold">{resumoDia.duplas}</p>
             <p className="text-xs text-muted-foreground">Duplas/Operadores</p>
           </div>
           <div className="fips-surface-card p-4 text-center">
             <p className="text-2xl font-bold text-emerald-500">
-              {registrosDia.filter(r => r.status === "completa").length}
+              {resumoDia.completas}
             </p>
             <p className="text-xs text-muted-foreground">Completas</p>
           </div>
           <div className="fips-surface-card p-4 text-center">
             <p className="text-2xl font-bold text-amber-500">
-              {registrosDia.filter(r => r.status === "incompleta").length}
+              {resumoDia.incompletas}
             </p>
             <p className="text-xs text-muted-foreground">Incompletas</p>
           </div>
