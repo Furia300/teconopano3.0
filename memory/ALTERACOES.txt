@@ -1,0 +1,6 @@
+Tecnopano — registo de alterações nesta pasta
+Commit: d270731 (2026-04-10 21:00:05 -0300)
+Assunto: Shell FIPS: header/sidebar, logos, vidro escuro e alinhamento ao login
+Este ficheiro foi gerado em: 2026-04-10T21:05:10-03:00
+
+Nenhum ficheiro sob memory/ foi alterado neste commit.

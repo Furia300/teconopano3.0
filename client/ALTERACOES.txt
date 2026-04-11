@@ -1,0 +1,65 @@
+Tecnopano — registo de alterações nesta pasta
+Commit: d270731 (2026-04-10 21:00:05 -0300)
+Assunto: Shell FIPS: header/sidebar, logos, vidro escuro e alinhamento ao login
+Este ficheiro foi gerado em: 2026-04-10T21:05:10-03:00
+
+Ficheiros alterados neste commit (relativos à raiz do repo):
+
+A	client/public/shell-hero-art.svg
+M	client/src/App.tsx
+A	client/src/assets/logo-collapsed-light.png
+A	client/src/assets/logo-dark-full.png
+A	client/src/assets/logo-light-full.png
+M	client/src/components/domain/PageHeader.tsx
+M	client/src/components/domain/StatsCard.tsx
+M	client/src/components/layout/AppLayout.tsx
+A	client/src/components/layout/DocHeaderNeuIconButton.tsx
+A	client/src/components/layout/DocHeaderPageTrail.tsx
+A	client/src/components/layout/DocHeaderStandard.tsx
+M	client/src/components/layout/Header.tsx
+A	client/src/components/layout/HeaderDocSearch.tsx
+A	client/src/components/layout/HeaderDocSectionNav.tsx
+A	client/src/components/layout/HeaderDocUserChip.tsx
+A	client/src/components/layout/ReplicaFipsDocHeader.tsx
+M	client/src/components/layout/Sidebar.tsx
+A	client/src/components/ui/header-tabs.tsx
+M	client/src/components/ui/index.ts
+M	client/src/components/ui/tabs.tsx
+A	client/src/composites/FipsModulePageHero.tsx
+M	client/src/composites/index.ts
+A	client/src/hooks/useAppUserPerfil.ts
+M	client/src/hooks/useAuth.ts
+A	client/src/hooks/useTecnopanoTheme.tsx
+A	client/src/lib/appMenu.ts
+A	client/src/lib/authEvents.ts
+A	client/src/lib/docHeaderChrome.ts
+A	client/src/lib/docHeaderTrail.ts
+A	client/src/lib/dsTecnopanoChrome.ts
+A	client/src/lib/dsTecnopanoShellArt.ts
+A	client/src/lib/fipsTabUnderline.ts
+A	client/src/lib/headerNav.ts
+A	client/src/lib/routePathMatch.ts
+M	client/src/main.tsx
+M	client/src/pages/auth/Login.tsx
+M	client/src/pages/automatico/AutomaticoPage.tsx
+M	client/src/pages/clientes/ClientesList.tsx
+M	client/src/pages/coleta/ColetaList.tsx
+M	client/src/pages/costureira/CostureiraList.tsx
+M	client/src/pages/dashboard/DashboardAdmin.tsx
+M	client/src/pages/emissao-nf/EmissaoNFPage.tsx
+M	client/src/pages/estoque/EstoqueList.tsx
+M	client/src/pages/expedicao/ExpedicaoList.tsx
+M	client/src/pages/financeiro/FinanceiroPage.tsx
+M	client/src/pages/fornecedores/FornecedoresList.tsx
+M	client/src/pages/funcionarios/FuncionariosList.tsx
+M	client/src/pages/motorista/MotoristaList.tsx
+M	client/src/pages/producao-diaria/ProducaoDiariaPage.tsx
+M	client/src/pages/producao/ProducaoList.tsx
+M	client/src/pages/produtos/ProdutosList.tsx
+M	client/src/pages/repanol/RepanolList.tsx
+M	client/src/pages/rh/PontoDiario.tsx
+M	client/src/pages/separacao/SeparacaoList.tsx
+M	client/src/styles/globals.css
+M	client/src/tokens/colors.ts
+A	client/tecnopano/ApplicationShellDemo.tsx
+A	client/tsconfig.app.json
