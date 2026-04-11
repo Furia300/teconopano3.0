@@ -1,18 +1,54 @@
 import { Link, useLocation } from "wouter";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useSidebarBadges, type SidebarBadges } from "@/hooks/useSidebarBadges";
 import { useSidebarCollapse } from "@/hooks/useSidebarCollapse";
-import {
-  LayoutDashboard, Truck, Package, Users, Settings, Box,
-  ClipboardList, LogOut, Factory, ShoppingCart, DollarSign,
-  FileText, Scissors, Droplets, ChevronDown, ChevronRight,
-  Warehouse, CalendarDays, UserCog, Zap, X, Send, Clock,
-} from "lucide-react";
+import { LogOut, X } from "lucide-react";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
+import { useTecnopanoTheme } from "@/hooks/useTecnopanoTheme";
+import { useAppUserPerfil } from "@/hooks/useAppUserPerfil";
+import { APP_MENU, filterMenuByPerfil, getPrimaryNavHref, type AppMenuItem } from "@/lib/appMenu";
+import { routePathMatches } from "@/lib/routePathMatch";
+import { cn } from "@/lib/utils";
+import logoCollapsedLight from "@/assets/logo-collapsed-light.png";
 
 const W_FULL = 256;
 const W_MINI = 72;
+
+/**
+ * Modo escuro — neu legível sobre o mesmo canvas que `main` (`#1A1A1A`); claro: `bg-muted/30` como o conteúdo.
+ * (evita azulejo “colado” ao fundo). Ativo/hover: halo vermelho + inset suave (não só “afundado”).
+ */
+const SB_ICON_TILE_DARK = {
+  borderIdle: "#3f3f46",
+  borderHover: "rgba(255,7,58,0.4)",
+  borderActive: "rgba(255,7,58,0.5)",
+  bgIdle: "linear-gradient(160deg, #303036 0%, #222226 55%, #1c1c20 100%)",
+  bgHover: "linear-gradient(135deg,#FF073A,#B20028)",
+  shadowIdle:
+    "0 3px 10px rgba(0,0,0,0.55), 0 1px 0 rgba(255,255,255,0.08) inset, 0 -1px 0 rgba(0,0,0,0.45) inset",
+  shadowHover:
+    "0 6px 22px -4px rgba(255,7,58,0.5), 0 3px 10px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.12) inset, 0 -1px 0 rgba(0,0,0,0.35) inset",
+  shadowActive:
+    "0 4px 18px -2px rgba(255,7,58,0.42), inset 0 1px 0 rgba(255,255,255,0.14), inset 0 -2px 6px rgba(0,0,0,0.45)",
+  iconIdle: "#a1a1aa",
+  iconOnAccent: "#ffffff",
+} as const;
+
+/** Modo claro — só repouso (neu claro). Hover/active vermelhos = mesmos tokens que `SB_ICON_TILE_DARK`. */
+const SB_ICON_TILE_LIGHT = {
+  borderIdle: "rgba(0,0,0,0.10)",
+  bgIdle: "linear-gradient(145deg, #ffffff 0%, #ebebeb 55%, #e0e0e0 100%)",
+  shadowIdle: "0 1px 2px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.85)",
+  iconIdle: "rgba(55,55,55,0.82)",
+} as const;
+
+/** Brilho translúcido no sweep — claro sobre vermelho / cinza. */
+const SHIMMER_ACCENT =
+  "linear-gradient(135deg,transparent,rgba(255,255,255,0.25) 50%,transparent)";
+/** Sobre azulejo vermelho (claro/escuro) — sweep mais visível e translúcido. */
+const SHIMMER_ON_RED =
+  "linear-gradient(135deg,transparent,rgba(255,255,255,0.38) 50%,transparent)";
 
 /* ─── CSS ─── */
 const CSS = `
@@ -29,7 +65,7 @@ const CSS = `
   -webkit-appearance: none; appearance: none;
   width: 18px; height: 18px; border-radius: 50%;
   background: #fff; border: 2px solid #004B9B;
-  box-shadow: 0 1px 4px rgba(0,42,104,.18); cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0,0,0,.1); cursor: pointer;
 }
 `;
 if (typeof document !== "undefined" && !document.getElementById("sb-css")) {
@@ -38,71 +74,6 @@ if (typeof document !== "undefined" && !document.getElementById("sb-css")) {
   s.textContent = CSS;
   document.head.appendChild(s);
 }
-
-/* ─── Types ─── */
-interface MenuItem {
-  icon: React.ElementType;
-  label: string;
-  href?: string;
-  action?: string;
-  badge?: keyof SidebarBadges;
-  children?: MenuItem[];
-  perfis?: string[];
-}
-
-/* ─── Menu ─── */
-const MENU: MenuItem[] = [
-  { icon: LayoutDashboard, label: "Dashboard", href: "/" },
-  {
-    icon: Factory, label: "Produção", badge: "producaoEmAndamento",
-    perfis: ["administrador", "galpao", "producao", "separacao"],
-    children: [
-      { icon: Factory, label: "Produção", href: "/producao", badge: "producaoEmAndamento", perfis: ["administrador", "galpao", "producao"] },
-      { icon: ClipboardList, label: "Separação", href: "/separacao", perfis: ["administrador", "galpao", "separacao"] },
-      { icon: CalendarDays, label: "Produção Diária", href: "/producao-diaria", perfis: ["administrador", "galpao", "producao"] },
-      { icon: Droplets, label: "Repanol", href: "/repanol", perfis: ["administrador", "galpao"] },
-      { icon: Scissors, label: "Costureira", href: "/costureira", perfis: ["administrador", "galpao"] },
-    ],
-  },
-  {
-    icon: Send, label: "Expedição",
-    perfis: ["administrador", "expedicao", "motorista", "galpao"],
-    children: [
-      { icon: Truck, label: "Coleta", href: "/coleta" },
-      { icon: Package, label: "Pedidos", href: "/expedicao" },
-      { icon: Truck, label: "Motorista", href: "/motorista", perfis: ["administrador", "motorista", "expedicao", "galpao"] },
-      { icon: Warehouse, label: "Estoque", href: "/estoque", perfis: ["administrador", "expedicao", "galpao"] },
-    ],
-  },
-  {
-    icon: DollarSign, label: "Financeiro", badge: "financeiroPendente",
-    perfis: ["administrador", "expedicao", "financeiro", "emissao_nf"],
-    children: [
-      { icon: DollarSign, label: "Financeiro", href: "/financeiro", badge: "financeiroPendente", perfis: ["administrador", "expedicao", "financeiro"] },
-      { icon: FileText, label: "Emissão NF", href: "/emissao-nf", badge: "notaPendente", perfis: ["administrador", "expedicao", "emissao_nf"] },
-    ],
-  },
-  { icon: ShoppingCart, label: "Clientes", href: "/clientes", perfis: ["administrador", "expedicao"] },
-  { icon: Truck, label: "Fornecedores", href: "/fornecedores", perfis: ["administrador", "expedicao"] },
-  { icon: Box, label: "Produtos", href: "/produtos", perfis: ["administrador", "expedicao"] },
-  {
-    icon: Users, label: "RH",
-    perfis: ["administrador", "rh"],
-    children: [
-      { icon: UserCog, label: "Funcionários", href: "/funcionarios", perfis: ["administrador", "rh"] },
-      { icon: Clock, label: "Ponto diário", href: "/ponto-diario", perfis: ["administrador", "rh"] },
-    ],
-  },
-  {
-    icon: Settings, label: "Configurações",
-    perfis: ["administrador"],
-    children: [
-      { icon: Settings, label: "Configurações", href: "/configuracoes", perfis: ["administrador"] },
-      { icon: UserCog, label: "Usuários", href: "/usuarios", perfis: ["administrador"] },
-    ],
-  },
-  { icon: Zap, label: "Automático", action: "autoCollapse", perfis: ["administrador"] },
-];
 
 /* ═══════════════════════════════════════════════
    Modal — "Comportamento do menu"
@@ -178,7 +149,7 @@ function AutoModal({
               background: MC.thumb,
               transform: autoCollapse ? "translateX(20px)" : "translateX(0)",
               transition: "transform .2s ease",
-              boxShadow: "0 1px 3px rgba(0,42,104,.2)",
+              boxShadow: "0 1px 3px rgba(0,0,0,.12)",
             }} />
           </button>
         </div>
@@ -213,21 +184,52 @@ function AutoModal({
    SidebarItem
    ═══════════════════════════════════════════════ */
 function SidebarItem({
-  item, badges, mini, depth = 0, onAction,
+  item, badges, mini, dark, onAction,
 }: {
-  item: MenuItem; badges: SidebarBadges; mini: boolean;
-  depth?: number; onAction?: (a: string) => void;
+  item: AppMenuItem;
+  badges: SidebarBadges;
+  mini: boolean;
+  dark: boolean;
+  onAction?: (a: string) => void;
 }) {
   const [location] = useLocation();
   const [hovered, setHovered] = useState(false);
-  const [open, setOpen] = useState(() =>
-    item.children?.some((c) => c.href === location) ?? false,
-  );
 
   const badgeCount = item.badge ? badges[item.badge] : 0;
   const hasChildren = !!item.children?.length;
-  const isActive = item.href === location ||
-    (hasChildren && item.children!.some((c) => c.href === location));
+  const isActive = Boolean(
+    (item.href && routePathMatches(location, item.href)) ||
+      (hasChildren &&
+        item.children!.some((c) => c.href && routePathMatches(location, c.href))),
+  );
+
+  const linkHref = !item.action ? getPrimaryNavHref(item) : undefined;
+
+  const D = SB_ICON_TILE_DARK;
+  const L = SB_ICON_TILE_LIGHT;
+
+  const tileBorder = isActive
+    ? D.borderActive
+    : hovered
+      ? D.borderHover
+      : dark
+        ? D.borderIdle
+        : L.borderIdle;
+
+  const tileBackground =
+    isActive || hovered ? D.bgHover : dark ? D.bgIdle : L.bgIdle;
+
+  const tileShadow =
+    !isActive && !hovered
+      ? dark
+        ? D.shadowIdle
+        : L.shadowIdle
+      : isActive
+        ? D.shadowActive
+        : D.shadowHover;
+
+  const tileIconColor =
+    isActive || hovered ? D.iconOnAccent : dark ? D.iconIdle : L.iconIdle;
 
   const content = (
     <div
@@ -235,7 +237,7 @@ function SidebarItem({
       title={mini ? item.label : undefined}
       style={{
         gap: mini ? 0 : 12,
-        padding: mini ? "8px 0" : depth > 0 ? "6px 12px 6px 28px" : "6px 12px",
+        padding: mini ? "8px 0" : "6px 12px",
         margin: mini ? "2px 8px" : "1px 8px",
         borderRadius: 8,
         justifyContent: mini ? "center" : "flex-start",
@@ -245,45 +247,56 @@ function SidebarItem({
       onMouseLeave={() => setHovered(false)}
       onClick={() => {
         if (item.action && onAction) onAction(item.action);
-        else if (hasChildren) setOpen(!open);
       }}
     >
       {/* Icon */}
       <div
-        className="relative flex items-center justify-center flex-shrink-0 overflow-hidden"
+        className="relative flex flex-shrink-0 items-center justify-center overflow-hidden"
         style={{
-          width: 36, height: 36, borderRadius: 10,
-          border: `1px solid ${isActive ? "rgba(255,7,58,.5)" : hovered ? "rgba(255,7,58,.4)" : "#3f3f46"}`,
-          background: isActive || hovered ? "linear-gradient(135deg,#FF073A,#B20028)" : "#27272a",
-          boxShadow: isActive
-            ? "inset 3px 3px 6px rgba(0,0,0,.3),inset -3px -3px 6px rgba(255,255,255,.04)"
-            : hovered
-            ? "0 8px 24px -8px rgba(255,7,58,.4),4px 4px 8px #0a0a0a,-4px -4px 8px #2a2a2a"
-            : "4px 4px 8px #0a0a0a,-4px -4px 8px #2a2a2a",
+          width: 36,
+          height: 36,
+          borderRadius: 10,
+          border: `1px solid ${tileBorder}`,
+          background: tileBackground,
+          boxShadow: tileShadow,
           transform: hovered && !isActive ? "translateY(-1px)" : "none",
-          transition: "all .3s ease",
+          transition: isActive || hovered ? "all .3s ease" : "all .25s ease",
         }}
       >
         <div style={{
           position: "absolute", inset: 0,
-          background: "linear-gradient(135deg,transparent,rgba(255,255,255,.25) 50%,transparent)",
+          background: hovered || isActive ? SHIMMER_ON_RED : SHIMMER_ACCENT,
           transform: hovered || isActive ? "translateX(0)" : "translateX(-100%)",
           animation: hovered || isActive ? "shimmerSweep .5s ease forwards" : "none",
           pointerEvents: "none",
         }} />
-        <item.icon size={17} style={{
-          position: "relative", zIndex: 1,
-          color: isActive || hovered ? "#fff" : "#a1a1aa",
-          transition: "color .2s",
-        }} />
+        <item.icon
+          size={17}
+          style={{
+            position: "relative",
+            zIndex: 1,
+            color: tileIconColor,
+            transition: "color .2s",
+          }}
+        />
       </div>
 
       {/* Label */}
       {!mini && (
         <span style={{
-          fontSize: 13, fontWeight: isActive ? 500 : 400,
+          fontSize: 13, fontWeight: isActive ? 600 : 400,
           letterSpacing: ".01em", flex: 1,
-          color: isActive ? "#fafafa" : hovered ? "#d4d4d8" : "#a1a1aa",
+          color: dark
+            ? isActive
+              ? "#fafafa"
+              : hovered
+                ? "#d4d4d8"
+                : "#a1a1aa"
+            : isActive
+              ? "#002A68"
+              : hovered
+                ? "#1d4ed8"
+                : "#404040",
           transition: "color .15s",
           whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
         }}>
@@ -299,38 +312,12 @@ function SidebarItem({
           {badgeCount > 99 ? "99+" : badgeCount}
         </motion.span>
       )}
-
-      {/* Chevron */}
-      {!mini && hasChildren && (
-        <motion.div animate={{ rotate: open ? 180 : 0 }} transition={{ duration: .2 }}>
-          {open ? <ChevronDown size={14} style={{ color: "#52525b" }} />
-            : <ChevronRight size={14} style={{ color: "#52525b" }} />}
-        </motion.div>
-      )}
     </div>
   );
 
   return (
     <div>
-      {item.href && !hasChildren && !item.action
-        ? <Link href={item.href}>{content}</Link>
-        : content}
-      <AnimatePresence>
-        {hasChildren && open && !mini && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: .2 }}
-            className="overflow-hidden"
-          >
-            {item.children!.map((ch) => (
-              <SidebarItem key={ch.href ?? ch.label} item={ch} badges={badges}
-                mini={mini} depth={depth + 1} onAction={onAction} />
-            ))}
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {linkHref ? <Link href={linkHref}>{content}</Link> : content}
     </div>
   );
 }
@@ -339,6 +326,7 @@ function SidebarItem({
    Sidebar
    ═══════════════════════════════════════════════ */
 export function Sidebar({ onHoveringChange }: { onHoveringChange?: (hovering: boolean) => void }) {
+  const { dark } = useTecnopanoTheme();
   const badges = useSidebarBadges();
   const { collapsed, setCollapsed } = useSidebarCollapse();
   const [hovering, setHovering] = useState(false);
@@ -410,14 +398,14 @@ export function Sidebar({ onHoveringChange }: { onHoveringChange?: (hovering: bo
 
   // ── Visual state ──
   const mini = collapsed && !hovering;
-  const isOverlay = collapsed && hovering;
 
-  const perfil = "administrador";
-  const filteredMenu = MENU.filter((m) => !m.perfis || m.perfis.includes(perfil));
+  const perfil = useAppUserPerfil();
+  const filteredMenu = filterMenuByPerfil(APP_MENU, perfil);
 
   return (
     <>
       <aside
+        className={cn("bg-muted/30 dark:bg-[#1A1A1A]")}
         onMouseEnter={onEnter}
         onMouseLeave={onLeave}
         style={{
@@ -425,24 +413,59 @@ export function Sidebar({ onHoveringChange }: { onHoveringChange?: (hovering: bo
           width: mini ? W_MINI : W_FULL,
           height: "100vh",
           display: "flex", flexDirection: "column",
-          backgroundColor: "#1a1a1a",
-          borderRight: "1px solid rgba(255,255,255,.06)",
-          transition: "width .25s cubic-bezier(.4,0,.2,1)",
+          borderRight: dark ? "1px solid rgba(255,255,255,0.06)" : "1px solid #e5e5e5",
+          transition: "width .25s cubic-bezier(.4,0,.2,1), background-color .25s ease, border-color .25s ease",
           zIndex: 30,
-          boxShadow: isOverlay ? "8px 0 24px rgba(0,0,0,.35)" : "none",
+          /* Sem sombra à direita: evita “degrau” sobre o main ao colapsar/expandir ou hover no rail. */
+          boxShadow: "none",
           overflow: "hidden",
         }}
       >
-        {/* Logo */}
-        <div style={{
-          display: "flex", alignItems: "center", justifyContent: "center",
-          height: 56, flexShrink: 0,
-          borderBottom: "1px solid rgba(255,255,255,.06)",
-        }}>
-          {mini
-            ? <img src="/src/assets/logo-30anos.png" alt="Tecnopano 30 Anos"
-                style={{ width: 36, height: 36, objectFit: "contain", borderRadius: 10 }} />
-            : <img src="/src/assets/logo.png" alt="Tecnopano" style={{ width: 144 }} />}
+        {/* Logo — rail expandido: faixa mais alta para logo horizontal ocupar largura/altura como no dark */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            height: mini ? 56 : dark ? 80 : 80,
+            flexShrink: 0,
+            padding: mini ? 0 : dark ? "2px 4px" : "2px 4px",
+            boxSizing: "border-box",
+            overflow: "hidden",
+            /* Dark: sem linha por baixo — fundava com o nav e evitava “risco”/degrau visual */
+            borderBottom: dark ? "none" : "1px solid #e5e5e5",
+          }}
+        >
+          {mini ? (
+            <img
+              src={dark ? "/src/assets/logo-30anos.png" : logoCollapsedLight}
+              alt="Tecnopano 30 Anos"
+              style={{
+                width: 40,
+                height: 40,
+                maxWidth: "100%",
+                objectFit: "contain",
+                objectPosition: "center",
+                borderRadius: dark ? 10 : 12,
+                display: "block",
+                flexShrink: 0,
+              }}
+            />
+          ) : (
+            <img
+              src={dark ? "/src/assets/logo-dark-full.png" : "/src/assets/logo-light-full.png"}
+              alt="Tecnopano"
+              style={{
+                display: "block",
+                maxWidth: "100%",
+                maxHeight: 78,
+                width: "auto",
+                height: "auto",
+                objectFit: "contain",
+                objectPosition: "center",
+              }}
+            />
+          )}
         </div>
 
         {/* Nav */}
@@ -453,25 +476,29 @@ export function Sidebar({ onHoveringChange }: { onHoveringChange?: (hovering: bo
         }}>
           {filteredMenu.map((item) => (
             <SidebarItem key={item.href ?? item.label}
-              item={item} badges={badges} mini={mini} onAction={onAction} />
+              item={item} badges={badges} mini={mini} dark={dark} onAction={onAction} />
           ))}
         </nav>
 
         {/* Logout */}
-        <div style={{ borderTop: "1px solid rgba(255,255,255,.06)", padding: "10px 12px 16px" }}>
+        <div style={{ borderTop: dark ? "1px solid rgba(255,255,255,0.06)" : "1px solid #e5e5e5", padding: "10px 12px 16px" }}>
           <button
             style={{
               display: "flex", alignItems: "center", gap: mini ? 0 : 12,
               justifyContent: mini ? "center" : "flex-start",
               width: "100%", padding: "8px", borderRadius: 8,
               background: "none", border: "none", cursor: "pointer",
-              color: "#52525b", transition: "color .2s",
+              color: dark ? "#52525b" : "#737373", transition: "color .2s",
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = "#FF073A")}
-            onMouseLeave={(e) => (e.currentTarget.style.color = "#52525b")}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = dark ? "#FF073A" : "#2563EB";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = dark ? "#52525b" : "#737373";
+            }}
           >
             <LogOut size={17} />
-            {!mini && <span style={{ fontSize: 13, fontWeight: 400 }}>Sair</span>}
+            {!mini && <span style={{ fontSize: 13, fontWeight: 500 }}>Sair</span>}
           </button>
         </div>
       </aside>

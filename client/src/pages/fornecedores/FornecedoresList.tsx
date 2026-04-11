@@ -99,11 +99,11 @@ export default function FornecedoresList() {
         <StatsCard label="Com E-mail" value={fornecedores.filter((f) => f.email).length} icon={Mail} color="text-purple-500" bg="bg-purple-500/10" />
       </div>
 
-      <div className="bg-card rounded-xl border shadow p-4">
+      <div className="fips-surface-panel p-4">
         <Input placeholder="Buscar por nome, CNPJ ou razão social..." icon={<Search />} value={search} onChange={(e) => setSearch(e.target.value)} />
       </div>
 
-      <div className="bg-card rounded-xl border shadow">
+      <div className="fips-surface-panel">
         <Table>
           <TableHeader>
             <TableRow>

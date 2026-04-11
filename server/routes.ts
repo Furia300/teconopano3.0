@@ -189,26 +189,71 @@ let nextCostureiraId = 5;
 let nextEstoqueId = 6;
 let nextExpedicaoId = 6;
 
+/** Sessão em memória (dev) — substituir por cookie/session + DB. */
+type AuthSessionUser = { id: string; username: string; nome: string; perfil: string };
+
+const PERFIL_LOGIN_VALUES = new Set([
+  "administrador",
+  "super_admin",
+  "galpao",
+  "emissao_nf",
+  "financeiro",
+  "expedicao",
+  "rh",
+  "producao",
+  "separacao",
+  "motorista",
+  "costureira",
+]);
+
+const DEFAULT_AUTH: AuthSessionUser = {
+  id: "1",
+  username: "admin",
+  nome: "Admin",
+  perfil: "administrador",
+};
+
+let authSession: AuthSessionUser = { ...DEFAULT_AUTH };
+
+function resolvePerfilFromLogin(email: string, perfilOverride: unknown): string {
+  if (typeof perfilOverride === "string") {
+    const o = perfilOverride.trim().toLowerCase();
+    if (PERFIL_LOGIN_VALUES.has(o)) return o;
+  }
+  const local = (email.split("@")[0] || "").trim().toLowerCase();
+  if (local === "admin") return "administrador";
+  if (PERFIL_LOGIN_VALUES.has(local)) return local;
+  return "administrador";
+}
+
 export function registerRoutes(app: Express) {
   // ==================== AUTH ====================
   app.post("/api/auth/login", (req: Request, res: Response) => {
-    const { email, password } = req.body;
-    if (email && password) {
-      res.json({
-        user: { id: "1", username: email, nome: "Admin", perfil: "administrador" },
-      });
-    } else {
-      res.status(401).json({ message: "Credenciais inválidas" });
+    const { email, password, perfil: perfilBody } = req.body;
+    if (!email || !password) {
+      return res.status(401).json({ message: "Credenciais inválidas" });
     }
+    const emailStr = String(email);
+    const perfil = resolvePerfilFromLogin(emailStr, perfilBody);
+    const rawLocal = emailStr.split("@")[0] || "utilizador";
+    const nome = rawLocal.charAt(0).toUpperCase() + rawLocal.slice(1).toLowerCase();
+    authSession = {
+      id: "1",
+      username: emailStr,
+      nome,
+      perfil,
+    };
+    res.json({ user: authSession });
   });
 
   app.post("/api/auth/logout", (_req: Request, res: Response) => {
+    authSession = { ...DEFAULT_AUTH };
     res.json({ ok: true });
   });
 
-  // Retorna usuário logado (simulado — será session real com DB)
+  // Retorna utilizador da sessão em memória (mesmo perfil que o menu Header/Sidebar usa)
   app.get("/api/auth/me", (_req: Request, res: Response) => {
-    res.json({ id: "1", username: "admin", nome: "Admin", perfil: "administrador" });
+    res.json(authSession);
   });
 
   // ==================== COLETAS ====================

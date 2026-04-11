@@ -120,7 +120,7 @@ export default function SeparacaoList() {
       </div>
 
       {/* Filtros */}
-      <div className="bg-card rounded-xl border shadow p-4">
+      <div className="fips-surface-panel p-4">
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="flex-1">
             <Input
@@ -152,7 +152,7 @@ export default function SeparacaoList() {
       </div>
 
       {/* Tabela */}
-      <div className="bg-card rounded-xl border shadow">
+      <div className="fips-surface-panel">
         <Table>
           <TableHeader>
             <TableRow>

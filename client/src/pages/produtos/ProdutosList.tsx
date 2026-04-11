@@ -107,7 +107,7 @@ export default function ProdutosList() {
         <StatsCard label="Com Peso Médio" value={produtos.filter((p) => p.pesoMedio > 0).length} icon={Weight} color="text-amber-500" bg="bg-amber-500/10" />
       </div>
 
-      <div className="bg-card rounded-xl border shadow p-4">
+      <div className="fips-surface-panel p-4">
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="flex-1"><Input placeholder="Buscar por descrição ou material..." icon={<Search />} value={search} onChange={(e) => setSearch(e.target.value)} /></div>
           <div className="w-full sm:w-44">
@@ -119,7 +119,7 @@ export default function ProdutosList() {
         </div>
       </div>
 
-      <div className="bg-card rounded-xl border shadow">
+      <div className="fips-surface-panel">
         <Table>
           <TableHeader>
             <TableRow>

@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { useLocation } from 'wouter';
 import { useAuth } from '@/hooks/useAuth';
+import { useTecnopanoTheme } from '@/hooks/useTecnopanoTheme';
 import { toast } from 'sonner';
 import { MeshGradient } from '@paper-design/shaders-react';
 import { Mail, Lock, Eye, EyeOff, CheckCircle2 } from 'lucide-react';
 import './Login.css';
 
 export default function Login() {
+  const { dark } = useTecnopanoTheme();
   const { login } = useAuth();
   const [, navigate] = useLocation();
   const [formData, setFormData] = useState({
@@ -79,7 +81,11 @@ export default function Login() {
       <div className="login-card">
         <div className="login-header">
           <div className="logo">
-            <img src="/src/assets/logo.png" alt="Tecnopano" className="login-logo-img" />
+            <img
+              src={dark ? '/src/assets/logo-dark-full.png' : '/src/assets/logo-light-full.png'}
+              alt="Tecnopano"
+              className="login-logo-img"
+            />
           </div>
           <h1 className="login-title">Bem-vindo de volta</h1>
           <p className="login-subtitle">Sistema de Gestão Industrial</p>

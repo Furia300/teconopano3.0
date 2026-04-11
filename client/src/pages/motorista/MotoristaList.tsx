@@ -92,7 +92,7 @@ export default function MotoristaList() {
         <StatsCard label="Entregas para Clientes" value={tarefasEntrega.length} icon={Truck} color="text-emerald-500" bg="bg-emerald-500/10" />
       </div>
 
-      <div className="bg-card rounded-xl border shadow p-4">
+      <div className="fips-surface-panel p-4">
         <Input
           placeholder="Buscar por cliente, costureira, galpão, rota..."
           value={search}
@@ -101,7 +101,7 @@ export default function MotoristaList() {
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
-        <section className="bg-card rounded-xl border shadow p-4">
+        <section className="fips-surface-panel p-4">
           <h3 className="font-semibold mb-3 flex items-center gap-2">
             <Factory className="h-4 w-4 text-blue-500" />
             Coleta de Matéria-Prima
@@ -129,7 +129,7 @@ export default function MotoristaList() {
           </div>
         </section>
 
-        <section className="bg-card rounded-xl border shadow p-4">
+        <section className="fips-surface-panel p-4">
           <h3 className="font-semibold mb-3 flex items-center gap-2">
             <Scissors className="h-4 w-4 text-fuchsia-500" />
             Rotas para Costureiras
@@ -158,7 +158,7 @@ export default function MotoristaList() {
           </div>
         </section>
 
-        <section className="bg-card rounded-xl border shadow p-4">
+        <section className="fips-surface-panel p-4">
           <h3 className="font-semibold mb-3 flex items-center gap-2">
             <Package className="h-4 w-4 text-emerald-500" />
             Entregas ao Cliente
@@ -187,7 +187,7 @@ export default function MotoristaList() {
         </section>
       </div>
 
-      <div className="bg-card rounded-xl border shadow p-4 text-sm text-muted-foreground flex items-center gap-2">
+      <div className="fips-surface-panel p-4 text-sm text-muted-foreground flex items-center gap-2">
         <Clock3 className="h-4 w-4" />
         O painel consolida ordens da Expedição (coleta e entrega) e do Galpão (fluxo com costureiras externas).
       </div>

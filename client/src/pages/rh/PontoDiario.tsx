@@ -8,7 +8,7 @@ import {
   Search,
   X,
 } from "lucide-react";
-import { PageHero } from "@/composites/PageHero";
+import { PageHeader } from "@/components/domain/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -464,29 +464,16 @@ export default function PontoDiario() {
 
   return (
     <div className="space-y-5">
-      <PageHero
-        className="rounded-[12px_12px_12px_24px] border border-white/10 shadow-[0_4px_20px_rgba(0,42,104,0.12)]"
-        decorationSrc=""
-        showTrainSilhouette={false}
-      >
-        <div className="flex flex-wrap items-center gap-3 p-[18px] sm:gap-4 sm:p-[22px]">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[11px] border border-[#FDC24E]/30 bg-[#FDC24E]/18 sm:h-11 sm:w-11">
-            <Clock className="h-5 w-5 text-[#FDC24E]" strokeWidth={1.75} />
-          </div>
-          <div className="min-w-0 flex-1">
-            <h2 className="font-heading text-[17px] font-bold tracking-tight text-white sm:text-[21px]">
-              Ponto diário
-            </h2>
-            <p className="mt-1 text-[11px] leading-snug text-white/65 sm:text-xs">
-              Colunas e visibilidade ficam guardadas neste navegador. Troque o dia para recalcular horários simulados nos
-              registos válidos.
-            </p>
-          </div>
+      <PageHeader
+        title="Ponto diário"
+        description="Colunas e visibilidade ficam guardadas neste navegador. Troque o dia para recalcular horários simulados nos registos válidos."
+        icon={Clock}
+        badge={
           <Badge className="border border-white/20 bg-white/10 px-2.5 py-1 text-[10px] text-white backdrop-blur-sm">
             RH · Frequência
           </Badge>
-        </div>
-      </PageHero>
+        }
+      />
 
       <Card className="overflow-visible rounded-[10px_10px_10px_18px] shadow-[0_1px_3px_rgba(0,75,155,0.04)]">
         <CardContent className="space-y-3 p-4 sm:p-[14px_18px]">

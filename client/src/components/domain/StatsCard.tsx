@@ -12,7 +12,7 @@ interface StatsCardProps {
 
 export function StatsCard({ label, value, icon: Icon, color = "text-primary", bg = "bg-primary/10", trend }: StatsCardProps) {
   return (
-    <div className="bg-card rounded-xl border shadow p-6">
+    <div className="fips-surface-card p-6">
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm font-medium text-muted-foreground">{label}</p>

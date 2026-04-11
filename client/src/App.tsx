@@ -1,5 +1,8 @@
+import { lazy, Suspense } from "react";
 import { Route, Switch } from "wouter";
 import { Toaster } from "sonner";
+
+const ApplicationShellDemo = lazy(() => import("../tecnopano/ApplicationShellDemo"));
 import { AppLayout } from "./components/layout/AppLayout";
 import Dashboard from "./pages/Dashboard";
 import ColetaList from "./pages/coleta/ColetaList";
@@ -60,6 +63,11 @@ export default function App() {
       <Toaster position="top-right" richColors />
       <Switch>
         <Route path="/login" component={Login} />
+        <Route path="/shell-demo">
+          <Suspense fallback={<div className="p-8 text-center text-muted-foreground">A carregar…</div>}>
+            <ApplicationShellDemo />
+          </Suspense>
+        </Route>
         <Route>
           <AppContent />
         </Route>

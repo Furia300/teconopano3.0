@@ -17,6 +17,6 @@
       "@shared/*": ["shared/*"]
     }
   },
-  "include": ["client/src", "shared"],
+  "include": ["client/src", "client/tecnopano", "shared"],
   "exclude": ["node_modules"]
 }

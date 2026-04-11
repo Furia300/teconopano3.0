@@ -99,11 +99,11 @@ export default function ClientesList() {
         <StatsCard label="Com Contato" value={clientes.filter((c) => c.contato).length} icon={Phone} color="text-purple-500" bg="bg-purple-500/10" />
       </div>
 
-      <div className="bg-card rounded-xl border shadow p-4">
+      <div className="fips-surface-panel p-4">
         <Input placeholder="Buscar por nome, CNPJ ou e-mail..." icon={<Search />} value={search} onChange={(e) => setSearch(e.target.value)} />
       </div>
 
-      <div className="bg-card rounded-xl border shadow">
+      <div className="fips-surface-panel">
         <Table>
           <TableHeader>
             <TableRow>

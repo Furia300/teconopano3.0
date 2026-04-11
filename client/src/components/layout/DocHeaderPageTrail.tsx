@@ -1,0 +1,52 @@
+import { cn } from "@/lib/utils";
+
+/**
+ * Trilho “grupo / página” do header documentação — tipografia alinhada ao DS (corpo + `font-heading` no título).
+ */
+export function DocHeaderPageTrail({
+  groupLabel,
+  pageTitle,
+  dark,
+}: {
+  groupLabel: string;
+  pageTitle: string;
+  dark?: boolean;
+}) {
+  const titleClass = cn(
+    "min-w-0 truncate font-heading text-base font-semibold leading-snug tracking-tight sm:text-lg",
+    dark ? "text-[#fafafa]" : "text-[#171717]",
+  );
+
+  if (groupLabel === pageTitle) {
+    return (
+      <nav aria-label="Trilho da documentação" className="min-w-0 flex-1">
+        <p className={cn("m-0", titleClass)}>{pageTitle}</p>
+      </nav>
+    );
+  }
+
+  return (
+    <nav aria-label="Trilho da documentação" className="min-w-0 flex-1">
+      <ol className="m-0 flex min-w-0 list-none items-baseline gap-2 p-0 sm:gap-2.5">
+        <li
+          className={cn(
+            "min-w-0 max-w-[min(11rem,42vw)] shrink truncate font-sans text-[13px] font-medium leading-snug sm:max-w-[13rem] sm:text-sm",
+            dark ? "text-[#A1A1AA]" : "text-neutral-600",
+          )}
+        >
+          {groupLabel}
+        </li>
+        <li
+          aria-hidden
+          className={cn(
+            "shrink-0 select-none font-sans text-[13px] font-light leading-none sm:text-sm",
+            dark ? "text-[#52525B]" : "text-neutral-300",
+          )}
+        >
+          /
+        </li>
+        <li className={cn("min-w-0 flex-1", titleClass)}>{pageTitle}</li>
+      </ol>
+    </nav>
+  );
+}

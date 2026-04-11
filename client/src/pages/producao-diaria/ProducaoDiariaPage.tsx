@@ -104,21 +104,21 @@ export default function ProducaoDiariaPage() {
       {/* Resumo do dia */}
       {registrosDia.length > 0 && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <div className="bg-card rounded-xl border shadow p-4 text-center">
+          <div className="fips-surface-card p-4 text-center">
             <p className="text-2xl font-bold">{registrosDia.length}</p>
             <p className="text-xs text-muted-foreground">Total Registros</p>
           </div>
-          <div className="bg-card rounded-xl border shadow p-4 text-center">
+          <div className="fips-surface-card p-4 text-center">
             <p className="text-2xl font-bold">{Object.keys(porDupla).length}</p>
             <p className="text-xs text-muted-foreground">Duplas/Operadores</p>
           </div>
-          <div className="bg-card rounded-xl border shadow p-4 text-center">
+          <div className="fips-surface-card p-4 text-center">
             <p className="text-2xl font-bold text-emerald-500">
               {registrosDia.filter(r => r.status === "completa").length}
             </p>
             <p className="text-xs text-muted-foreground">Completas</p>
           </div>
-          <div className="bg-card rounded-xl border shadow p-4 text-center">
+          <div className="fips-surface-card p-4 text-center">
             <p className="text-2xl font-bold text-amber-500">
               {registrosDia.filter(r => r.status === "incompleta").length}
             </p>
@@ -129,14 +129,14 @@ export default function ProducaoDiariaPage() {
 
       {/* Tabela por dupla */}
       {Object.keys(porDupla).length === 0 ? (
-        <div className="bg-card rounded-xl border shadow p-10 text-center">
+        <div className="fips-surface-panel p-10 text-center">
           <ClipboardList className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
           <p className="font-medium">Nenhum registro para {new Date(filtroData + "T12:00:00").toLocaleDateString("pt-BR")}</p>
           <p className="text-sm text-muted-foreground mt-1">Clique em "Novo Registro" para começar</p>
         </div>
       ) : (
         Object.entries(porDupla).map(([dupla, items]) => (
-          <div key={dupla} className="bg-card rounded-xl border shadow overflow-hidden">
+          <div key={dupla} className="fips-surface-panel overflow-hidden">
             <div className="bg-gradient-to-r from-[#001443] to-[#1a3a6b] px-6 py-3 flex items-center gap-3">
               <User className="h-5 w-5 text-white" />
               <h3 className="text-white font-semibold">{dupla}</h3>

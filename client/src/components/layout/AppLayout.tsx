@@ -17,17 +17,15 @@ export function AppLayout({ children }: AppLayoutProps) {
       <div className="min-h-screen bg-muted/30 dark:bg-[#1A1A1A]">
         <Sidebar onHoveringChange={setSidebarHovering} />
         <div
-          className="flex flex-col min-h-screen"
+          className="flex min-h-screen flex-col"
           style={{
             paddingLeft: sidebarWidth,
             transition: "padding-left .25s cubic-bezier(.4,0,.2,1)",
           }}
         >
           <Header />
-          <main className="flex-1 p-0 overflow-x-hidden overflow-y-auto">
-            <div className="mx-auto">
-              {children}
-            </div>
+          <main className="flex-1 overflow-x-hidden overflow-y-auto bg-muted/30 dark:bg-[#1A1A1A] dark:bg-none">
+            <div className="mx-auto w-full max-w-[1680px] px-4 py-5 sm:px-6 sm:py-7">{children}</div>
           </main>
         </div>
       </div>

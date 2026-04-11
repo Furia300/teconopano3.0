@@ -38,6 +38,6 @@ export const semanticColors = {
   border: fipsPalette.cinzaMetal,
   foreground: fipsPalette.cinzaChumbo,
   foregroundMuted: '#4b5563',
-  sidebar: fipsPalette.azulProfundo,
-  sidebarMuted: fipsPalette.azulProfundoDark,
+  sidebar: '#f5f5f5',
+  sidebarMuted: '#e5e5e5',
 } as const

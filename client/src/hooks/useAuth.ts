@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { TECNOPANO_AUTH_CHANGED } from "@/lib/authEvents";
 
 interface AuthUser {
   id: string;
@@ -33,12 +34,14 @@ export function useAuth() {
     const data = await res.json();
     setUser(data.user);
     setIsAuthenticated(true);
+    window.dispatchEvent(new Event(TECNOPANO_AUTH_CHANGED));
   }, []);
 
   const logout = useCallback(async () => {
     await fetch("/api/auth/logout", { method: "POST" });
     setUser(null);
     setIsAuthenticated(false);
+    window.dispatchEvent(new Event(TECNOPANO_AUTH_CHANGED));
   }, []);
 
   return { user, isAuthenticated, login, logout };

@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import type { DashboardData } from "@/types/dashboard";
 import { FipsJunctionLines } from "@/composites/PageHero";
+import { shellDarkGlassPanel } from "@/lib/docHeaderChrome";
 
 type Props = { data: DashboardData };
 
@@ -102,9 +103,9 @@ function JunctionLines({ style }: { style?: React.CSSProperties }) {
       <path d="M214 44C202 58 198 74 198 92C198 112 206 134 224 156" stroke="rgba(255,255,255,0.20)" strokeWidth="1.5" strokeLinecap="round" />
       <path d="M230 56C220 70 218 86 220 106" stroke="rgba(255,255,255,0.16)" strokeWidth="1.2" strokeLinecap="round" />
 
-      {/* abraçadeiras */}
-      <rect x="116" y="110" width="12" height="4" rx="2" fill="rgba(237,27,36,0.36)" />
-      <rect x="192" y="110" width="12" height="4" rx="2" fill="rgba(237,27,36,0.36)" />
+      {/* abraçadeiras — acento ouro FIPS */}
+      <rect x="116" y="110" width="12" height="4" rx="2" fill="rgba(253,194,78,0.45)" />
+      <rect x="192" y="110" width="12" height="4" rx="2" fill="rgba(253,194,78,0.45)" />
     </svg>
   );
 }
@@ -169,7 +170,8 @@ function ChartTooltip({ title, color, rows, x, y, total }: { title: string; colo
 const GALPOES = ["Oceânica", "Vicente", "Nova Mirim", "Goiânia"];
 const GALPAO_COLORS = [C.azulProfundo, C.azulCeu, C.verdeFloresta, C.amareloEscuro];
 const ETAPAS = ["Coleta", "Separação", "Produção", "Estoque", "Expedição"];
-const ETAPA_COLORS = [C.azulProfundo, C.azulCeu, C.verdeFloresta, C.amareloEscuro, C.amareloOuro];
+/** Cores por etapa — fluxo azul→verde; estoque em verde escuro; expedição em ouro FIPS (não laranja de alerta no meio do fluxo). */
+const ETAPA_COLORS = [C.azulProfundo, C.azulCeu, C.verdeFloresta, C.verdeEscuro, C.amareloOuro];
 const STATUS_COLETA = ["pendente", "agendado", "recebido", "em_separacao", "em_producao", "concluido"];
 const STATUS_COLETA_LABELS: Record<string, string> = { pendente: "Pendente", agendado: "Agendado", recebido: "Recebido", em_separacao: "Em separação", em_producao: "Em produção", concluido: "Concluído" };
 const STATUS_COLETA_COLORS: Record<string, string> = { pendente: C.amareloEscuro, agendado: C.azulCeu, recebido: C.azulProfundo, em_separacao: C.azulClaro, em_producao: C.verdeFloresta, concluido: C.verdeEscuro };
@@ -327,17 +329,29 @@ export default function DashboardAdmin({ data }: Props) {
     <div style={{ minHeight: "100vh", fontFamily: Fn.body, color: C.cinzaEscuro, background: C.bg, transition: "background .3s, color .3s" }}>
       <style>{`@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}`}</style>
 
-      {/* ═══ HERO — navy institucional FIPS (DataListingDemo), igual em light/dark ═══ */}
+      {/* ═══ HERO — claro: navy sólido FIPS · escuro: vidro fosco (login-card: blur 20px + camadas translúcidas) ═══ */}
       <header
         style={{
-          background: "linear-gradient(135deg, #004B9B 0%, #002A68 58%, #001A4A 100%)",
+          ...(dark
+            ? {
+                background:
+                  "linear-gradient(135deg, rgba(0, 75, 155, 0.5) 0%, rgba(0, 42, 104, 0.55) 50%, rgba(0, 26, 74, 0.58) 100%), rgba(26, 26, 26, 0.45)",
+                backdropFilter: "blur(20px)",
+                WebkitBackdropFilter: "blur(20px)",
+                border: "1px solid rgba(255, 255, 255, 0.12)",
+                boxShadow:
+                  "0 25px 50px -12px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.06) inset, 0 -20px 40px -20px rgba(255, 7, 58, 0.1) inset",
+              }
+            : {
+                background: "linear-gradient(135deg, #004B9B 0%, #002A68 58%, #001A4A 100%)",
+                border: "1px solid rgba(255,255,255,0.10)",
+                boxShadow: "0 4px 20px rgba(0,42,104,0.12)",
+              }),
           padding: mob ? "22px 18px 18px" : "36px 40px 28px",
           margin: mob ? "0 12px" : "0 32px",
           position: "relative",
           overflow: "hidden",
           borderRadius: "12px 12px 12px 24px",
-          boxShadow: "0 4px 20px rgba(0,42,104,0.12)",
-          border: "1px solid rgba(255,255,255,0.10)",
         }}
       >
         <FipsJunctionLines
@@ -347,21 +361,21 @@ export default function DashboardAdmin({ data }: Props) {
             right: mob ? -16 : -24,
             width: mob ? 200 : 380,
             height: mob ? 160 : 200,
-            opacity: 0.06,
+            opacity: dark ? 0.1 : 0.06,
             pointerEvents: "none",
           }}
         />
         <div style={{ position: "relative", zIndex: 1, display: "flex", alignItems: mob ? "flex-start" : "center", justifyContent: "space-between", flexDirection: mob ? "column" : "row", gap: mob ? 12 : 0 }}>
           <div>
-            <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(237,27,36,0.12)", border: "1px solid rgba(237,27,36,0.35)", borderRadius: 20, padding: "4px 12px", fontSize: 10, fontWeight: 600, color: "#ed1b24", fontFamily: Fn.body, marginBottom: 8 }}>Super Admin · Tecnopano 3.0</div>
-            <h1 style={{ fontSize: mob ? 22 : 30, fontWeight: 700, color: C.branco, margin: "0 0 4px", fontFamily: Fn.title, lineHeight: 1.15 }}>Painel <span style={{ color: "#ed1b24" }}>Operacional</span></h1>
+            <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(253,194,78,0.16)", border: "1px solid rgba(253,194,78,0.42)", borderRadius: 20, padding: "4px 12px", fontSize: 10, fontWeight: 600, color: C.amareloOuro, fontFamily: Fn.body, marginBottom: 8 }}>Super Admin · Tecnopano 3.0</div>
+            <h1 style={{ fontSize: mob ? 22 : 30, fontWeight: 700, color: C.branco, margin: "0 0 4px", fontFamily: Fn.title, lineHeight: 1.15 }}>Painel <span style={{ color: C.amareloOuro }}>Operacional</span></h1>
             <p style={{ fontSize: mob ? 11 : 13, color: `${C.branco}80`, margin: 0 }}>Tecnologia Ambiental em Panos · {totalRegistros} registros operacionais{hasFilter ? " (filtrado)" : ""} · {formatKg(pesoTotal)} no fluxo</p>
             <p style={{ fontSize: 10, color: `${C.branco}50`, margin: "6px 0 0" }}>{new Date().toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</p>
             <p style={{ fontSize: 10, color: `${C.branco}70`, margin: "6px 0 0", letterSpacing: ".02em" }}>30 anos de atuação · 2.000+ clientes · atendimento nacional · coleta e destinação ambiental</p>
           </div>
           {totalAlertas > 0 && (
-            <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 16px", background: "rgba(237,27,36,0.14)", border: "1px solid rgba(237,27,36,0.35)", borderRadius: 10 }}>
-              {Ic.alert(18, "#ed1b24")}
+            <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 16px", background: "rgba(246,146,30,0.14)", border: "1px solid rgba(246,146,30,0.38)", borderRadius: 10 }}>
+              {Ic.alert(18, C.amareloEscuro)}
               <div><span style={{ fontSize: 13, fontWeight: 700, color: C.branco, display: "block" }}>{totalAlertas} pendências</span><span style={{ fontSize: 10, color: `${C.branco}70` }}>Financeiro, NF e logística ambiental</span></div>
             </div>
           )}
@@ -370,7 +384,24 @@ export default function DashboardAdmin({ data }: Props) {
 
       <div style={{ padding: mob ? "12px" : "16px 32px" }}>
         {/* ═══ BARRA DE FILTROS (abaixo do hero) ═══ */}
-        <div style={{ background: dark ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.1)", borderRadius: 10, padding: mob ? "12px" : "14px 20px", marginTop: 20, marginBottom: 20, backdropFilter: "blur(8px)", border: dark ? "1px solid rgba(255,255,255,0.10)" : "1px solid rgba(255,255,255,0.15)", position: "relative", zIndex: 300, overflow: "visible" }}>
+        <div
+          style={{
+            ...(dark
+              ? shellDarkGlassPanel
+              : {
+                  background: "rgba(255,255,255,0.1)",
+                  border: "1px solid rgba(255,255,255,0.15)",
+                }),
+            borderRadius: 10,
+            padding: mob ? "12px" : "14px 20px",
+            marginTop: 20,
+            marginBottom: 20,
+            ...(dark ? {} : { backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)" }),
+            position: "relative",
+            zIndex: 300,
+            overflow: "visible",
+          }}
+        >
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
               {Ic.grid(16, C.azulProfundo)}
@@ -413,16 +444,36 @@ export default function DashboardAdmin({ data }: Props) {
             const uid = k.color.replace('#', '') + 'k' + i;
             const hovPt = hovKpiPt && hovKpiPt.c === i ? hovKpiPt.p : -1;
             return (
-              <div key={i} onMouseEnter={() => setHovKpiCard(i)} onMouseLeave={() => setHovKpiCard(-1)} onMouseMove={trackMouse} style={{ background: C.cardBg, borderRadius: "10px 10px 10px 18px", border: `1px solid ${C.cardBorder}`, animation: `fadeUp .35s ease ${i * 0.06}s both`, position: "relative" }}>
+              <div
+                key={i}
+                onMouseEnter={() => setHovKpiCard(i)}
+                onMouseLeave={() => setHovKpiCard(-1)}
+                onMouseMove={trackMouse}
+                style={{
+                  ...(dark
+                    ? { ...shellDarkGlassPanel, boxShadow: "none" }
+                    : {
+                        background: C.cardBg,
+                        border: `1px solid ${C.cardBorder}`,
+                        boxShadow: "0 1px 3px rgba(0,75,155,0.04)",
+                      }),
+                  borderRadius: "12px 12px 12px 24px",
+                  animation: `fadeUp .35s ease ${i * 0.06}s both`,
+                  position: "relative",
+                }}
+              >
                 <div style={{ padding: mob ? "14px 12px 6px" : "18px 20px 6px", position: "relative", zIndex: 2 }}>
-                  <div style={{ position: "absolute", top: mob ? 12 : 16, right: mob ? 10 : 16, width: mob ? 34 : 40, height: mob ? 34 : 40, borderRadius: mob ? 9 : 12, background: `${k.color}0A`, display: "flex", alignItems: "center", justifyContent: "center" }}>{k.icon(mob ? 16 : 20, k.color)}</div>
-                  <span style={{ fontSize: 11, fontWeight: 600, color: C.cinzaChumbo, display: "block", marginBottom: mob ? 6 : 8 }}>{k.label}</span>
-                  <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
-                    <span style={{ fontSize: mob ? 22 : 28, fontWeight: 800, fontFamily: Fn.title, color: C.azulEscuro, lineHeight: 1 }}>{k.value}</span>
-                    <span style={{ fontSize: 10, fontWeight: 600, fontFamily: Fn.mono, color: k.up ? C.verdeEscuro : C.amareloEscuro }}>{k.delta}</span>
+                  <div style={{ position: "absolute", top: mob ? 12 : 16, right: mob ? 10 : 16, width: mob ? 34 : 40, height: mob ? 34 : 40, borderRadius: mob ? 9 : 12, background: `${k.color}0F`, border: `1px solid ${k.color}22`, display: "flex", alignItems: "center", justifyContent: "center" }}>{k.icon(mob ? 16 : 20, k.color)}</div>
+                  <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: C.cinzaChumbo, display: "block", marginBottom: mob ? 6 : 8, fontFamily: Fn.title }}>{k.label}</span>
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 6, paddingRight: mob ? 40 : 48 }}>
+                    <span style={{ fontSize: mob ? 22 : 26, fontWeight: 800, fontFamily: Fn.title, color: C.azulEscuro, lineHeight: 1, letterSpacing: "-0.02em" }}>{k.value}</span>
+                    <span style={{ fontSize: 11, fontWeight: 600, fontFamily: Fn.body, color: C.textMuted, lineHeight: 1.35, maxWidth: "100%" }}>
+                      <span style={{ color: k.up ? C.verdeEscuro : C.amareloEscuro, fontFamily: Fn.mono, fontWeight: 700 }}>{k.up ? "▲ " : "▼ "}</span>
+                      {k.delta}
+                    </span>
                   </div>
                 </div>
-                <div style={{ overflow: "hidden", borderRadius: "0 0 0 18px", marginLeft: -1, marginRight: -1, marginBottom: -1 }}>
+                <div style={{ overflow: "hidden", borderRadius: "0 0 12px 24px", marginLeft: -1, marginRight: -1, marginBottom: -1 }}>
                   <svg width="100%" height={sh + 16} viewBox={`-2 -12 ${sw2 + 4} ${sh + 28}`} preserveAspectRatio="none" style={{ display: "block" }} onMouseLeave={() => setHovKpiPt(null)}>
                     <defs><linearGradient id={`ga${uid}`} x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor={k.color} stopOpacity=".18" /><stop offset="100%" stopColor={k.color} stopOpacity="0" /></linearGradient></defs>
                     <polygon points={`0,${sh} ${line} ${sw2},${sh}`} fill={`url(#ga${uid})`} />
@@ -444,7 +495,7 @@ export default function DashboardAdmin({ data }: Props) {
             const max = Math.max(...pipelineCounts, 1);
             const bw = 48, gp = 20, chartW = ETAPAS.length * (bw + gp) - gp, chartH = 110;
             return (
-              <div style={{ background: C.cardBg, borderRadius: "10px 10px 10px 18px", border: `1px solid ${C.cardBorder}`, padding: mob ? 14 : 20, boxShadow: "0 1px 3px rgba(0,75,155,.04)" }}>
+              <div style={{ background: C.cardBg, borderRadius: "12px 12px 12px 24px", border: `1px solid ${C.cardBorder}`, padding: mob ? 14 : 20, boxShadow: "0 1px 3px rgba(0,75,155,.04)" }}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
                   <div><span style={{ fontSize: 13, fontWeight: 700, color: C.azulEscuro, fontFamily: Fn.title, display: "block" }}>Pipeline de Produção</span><span style={{ fontSize: 10, color: C.cinzaChumbo }}>Contagem por etapa do fluxo{hasFilter ? " (filtrado)" : ""}</span></div>
                   <div style={{ width: 30, height: 30, borderRadius: 8, background: `${C.azulProfundo}0A`, display: "flex", alignItems: "center", justifyContent: "center" }}>{Ic.chart(14, C.azulProfundo)}</div>
@@ -456,7 +507,7 @@ export default function DashboardAdmin({ data }: Props) {
                       const bh = Math.max(6, (pipelineCounts[i] / max) * chartH); const x = i * (bw + gp); const isH = hovPipeline === i;
                       return <g key={i} onMouseEnter={() => setHovPipeline(i)} onMouseLeave={() => setHovPipeline(-1)} style={{ cursor: "pointer" }}>
                         <rect x={x} y={-20} width={bw} height={chartH + 50} fill="transparent" />
-                        <rect x={x} y={chartH - bh} width={bw} height={bh} rx={6} fill={ETAPA_COLORS[i]} opacity={isH ? 1 : .7} style={{ transition: "all .15s" }} />
+                        <rect x={x} y={chartH - bh} width={bw} height={bh} rx={6} fill={ETAPA_COLORS[i]} opacity={isH ? 1 : 0.82} style={{ transition: "all .15s" }} />
                         <text x={x + bw / 2} y={chartH - bh - 6} textAnchor="middle" fontSize="11" fontWeight="700" fill={C.azulEscuro} fontFamily={Fn.mono}>{pipelineCounts[i]}</text>
                         <text x={x + bw / 2} y={chartH + 16} textAnchor="middle" fontSize="9" fill={isH ? ETAPA_COLORS[i] : C.cinzaChumbo} fontFamily={Fn.body} fontWeight={isH ? 700 : 400}>{label}</text>
                         {isH && <rect x={x - 2} y={chartH - bh - 2} width={bw + 4} height={bh + 4} rx={7} fill="none" stroke={ETAPA_COLORS[i]} strokeWidth="1.5" strokeDasharray="4 2" />}

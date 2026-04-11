@@ -66,18 +66,18 @@ export default function FinanceiroPage() {
       </div>
 
       {pendentes.length === 0 ? (
-        <div className="bg-card rounded-xl border shadow p-12 text-center">
+        <div className="fips-surface-panel p-12 text-center">
           <CheckCircle2 className="h-12 w-12 text-success mx-auto mb-3" />
           <h3 className="text-lg font-semibold">Nenhuma pendência financeira</h3>
           <p className="text-muted-foreground text-sm mt-1">Todos os pagamentos estão aprovados</p>
         </div>
       ) : (
         <>
-          <div className="bg-card rounded-xl border shadow p-4">
+          <div className="fips-surface-panel p-4">
             <Input placeholder="Buscar por cliente ou produto..." icon={<DollarSign />} value={search} onChange={(e) => setSearch(e.target.value)} />
           </div>
 
-          <div className="bg-card rounded-xl border shadow">
+          <div className="fips-surface-panel">
             <Table>
               <TableHeader>
                 <TableRow>

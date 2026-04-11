@@ -49,6 +49,16 @@
   }
 }
 
+/* Header doc FIPS — botões neumórficos (`ReplicaFipsDocHeader`) */
+@keyframes docsSidebarNeuShimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
 @layer utilities {
   .btn-shimmer:hover {
     background-image: linear-gradient(
@@ -162,7 +172,7 @@
   --fips-fg: var(--color-fips-gray-900);
   --fips-fg-muted: #6b7784;
   --fips-ring: var(--color-fips-sky-600);
-  --fips-sidebar-deep: var(--color-fips-blue-950);
+  --fips-sidebar-deep: #334155;
 }
 
 .dark {
@@ -278,7 +288,8 @@ body {
   margin: 0;
   min-height: 100svh;
   font-family: var(--font-sans);
-  background: var(--fips-surface-muted);
+  /* Mesmo critério que `sidebar_tecnopano` AppLayout: `bg-muted/30` */
+  background: hsl(var(--muted) / 0.3);
   color: var(--fips-fg);
 }
 
@@ -288,6 +299,16 @@ body {
   color: #E2E2E8;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Sweep sobre vermelho — sidebar + abas do header (mesmo nome que `Sidebar.tsx`) */
+@keyframes shimmerSweep {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
 }
 
 /* Shimmer (loaders Tecnopano) */
@@ -315,4 +336,20 @@ body {
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Cartão compacto — KPIs, chips (DS Tecnopano / card.jsx família compacta) */
+.fips-surface-card {
+  border-radius: 10px 10px 10px 18px;
+  border: 1px solid var(--fips-border);
+  background-color: var(--fips-surface);
+  box-shadow: 0 1px 3px rgba(0, 75, 155, 0.04);
+}
+
+/* Painel principal de listagem — mesmo raio que CardResumo no DS Tecnopano */
+.fips-surface-panel {
+  border-radius: 12px 12px 12px 24px;
+  border: 1px solid var(--fips-border);
+  background-color: var(--fips-surface);
+  box-shadow: 0 1px 3px rgba(0, 75, 155, 0.04);
 }

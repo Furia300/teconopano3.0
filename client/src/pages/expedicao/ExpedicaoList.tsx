@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Tabs, TabsListUnderline, TabsTriggerUnderline, TabsContent } from "@/components/ui/tabs";
 import {
   Table,
   TableHeader,
@@ -163,24 +163,24 @@ export default function ExpedicaoList() {
 
       {/* Tabs da cadeia de aprovação */}
       <Tabs value={tab} onValueChange={setTab}>
-        <TabsList>
-          <TabsTrigger value="todos">
+        <TabsListUnderline>
+          <TabsTriggerUnderline value="todos">
             Todos ({expedicoes.length})
-          </TabsTrigger>
-          <TabsTrigger value="financeiro">
+          </TabsTriggerUnderline>
+          <TabsTriggerUnderline value="financeiro">
             Financeiro ({stats.pendFinanceiro})
-          </TabsTrigger>
-          <TabsTrigger value="nf">
+          </TabsTriggerUnderline>
+          <TabsTriggerUnderline value="nf">
             Emissão NF ({stats.pendNF})
-          </TabsTrigger>
-          <TabsTrigger value="entrega">
+          </TabsTriggerUnderline>
+          <TabsTriggerUnderline value="entrega">
             Entrega ({stats.prontoEntrega})
-          </TabsTrigger>
-        </TabsList>
+          </TabsTriggerUnderline>
+        </TabsListUnderline>
       </Tabs>
 
       {/* Filtros */}
-      <div className="bg-card rounded-xl border shadow p-4">
+      <div className="fips-surface-panel p-4">
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="flex-1">
             <Input
@@ -207,7 +207,7 @@ export default function ExpedicaoList() {
       </div>
 
       {/* Tabela */}
-      <div className="bg-card rounded-xl border shadow">
+      <div className="fips-surface-panel">
         <Table>
           <TableHeader>
             <TableRow>

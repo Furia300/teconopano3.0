@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { PageHero } from "@/composites/PageHero";
+import { PageHeader } from "@/components/domain/PageHeader";
 import { AdminTableColumnMenu, AdminTablePagination, AdminTableSortHeader } from "@/components/ui/admin-listing";
 import { cn } from "@/lib/utils";
 import {
@@ -186,25 +186,18 @@ export default function FuncionariosList() {
 
   return (
     <div className="space-y-6">
-      <PageHero className="rounded-[12px_12px_12px_24px] border border-white/10 shadow-[0_4px_20px_rgba(0,42,104,0.12)]" decorationSrc="" showTrainSilhouette={false}>
-        <div className="relative flex flex-wrap items-center gap-3 p-[18px] sm:gap-4 sm:p-[22px]">
-          <div
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[11px] border border-[#FDC24E]/30 bg-[#FDC24E]/18 sm:h-11 sm:w-11"
-            aria-hidden
-          >
-            <Users className="h-5 w-5 text-[#FDC24E] sm:h-[22px] sm:w-[22px]" strokeWidth={1.75} />
-          </div>
-          <div className="min-w-0 flex-1">
-            <h2 className="font-heading text-[17px] font-bold tracking-tight text-white sm:text-[21px]">RH · Colaboradores</h2>
-            <p className="mt-1 max-w-2xl text-[11px] leading-snug text-white/65 sm:text-xs">
-              Quadro de colaboradores e vínculos com o RHiD — padrão visual Data List do DS-FIPS (header → KPIs → toolbar → tabela).
-            </p>
-          </div>
-          <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto sm:justify-end">
-            <Badge variant={fonte === "rhid" ? "success" : "warning"} className="border border-white/20 bg-white/10 px-2.5 py-1 text-[10px] text-white backdrop-blur-sm">
-              {fonte === "rhid" ? <Wifi className="h-3 w-3" /> : <WifiOff className="h-3 w-3" />}
-              {fonte === "rhid" ? "RHiD" : "Local"}
-            </Badge>
+      <PageHeader
+        title="RH · Colaboradores"
+        description="Quadro de colaboradores e vínculos com o RHiD — padrão visual Data List do DS-FIPS (header → KPIs → toolbar → tabela)."
+        icon={Users}
+        badge={
+          <Badge variant={fonte === "rhid" ? "success" : "warning"} className="border border-white/20 bg-white/10 px-2.5 py-1 text-[10px] text-white backdrop-blur-sm">
+            {fonte === "rhid" ? <Wifi className="h-3 w-3" /> : <WifiOff className="h-3 w-3" />}
+            {fonte === "rhid" ? "RHiD" : "Local"}
+          </Badge>
+        }
+        actions={
+          <>
             <Button variant="secondary" size="sm" onClick={handleSync} disabled={syncing}>
               <RefreshCw className={`h-3 w-3 ${syncing ? "animate-spin" : ""}`} />
               Sincronizar
@@ -213,9 +206,9 @@ export default function FuncionariosList() {
               <Plus className="h-4 w-4" />
               Novo
             </Button>
-          </div>
-        </div>
-      </PageHero>
+          </>
+        }
+      />
 
       {fonte === "local" && (
         <Card className="rounded-[10px_10px_10px_18px] shadow-[0_1px_3px_rgba(0,75,155,0.04)]">
