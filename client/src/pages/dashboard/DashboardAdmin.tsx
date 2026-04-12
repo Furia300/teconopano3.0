@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect, useRef } from "react";
 import type { DashboardData } from "@/types/dashboard";
 import { FipsJunctionLines } from "@/composites/PageHero";
 import { shellDarkGlassPanel } from "@/lib/docHeaderChrome";
+import { GALPOES } from "@/lib/galpoes";
 
 type Props = { data: DashboardData };
 
@@ -167,7 +168,6 @@ function ChartTooltip({ title, color, rows, x, y, total }: { title: string; colo
 }
 
 /* ═══ CONSTANTS ═══ */
-const GALPOES = ["Oceânica", "Vicente", "Nova Mirim", "Goiânia"];
 const GALPAO_COLORS = [C.azulProfundo, C.azulCeu, C.verdeFloresta, C.amareloEscuro];
 const ETAPAS = ["Coleta", "Separação", "Produção", "Estoque", "Expedição"];
 /** Cores por etapa — fluxo azul→verde; estoque em verde escuro; expedição em ouro FIPS (não laranja de alerta no meio do fluxo). */

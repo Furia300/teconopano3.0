@@ -1,196 +1,391 @@
-import { useEffect, useMemo, useState } from "react";
-import { Truck, MapPin, Factory, Scissors, Package, Route, Clock3 } from "lucide-react";
+import { useEffect, useState, useMemo } from "react";
+import { toast } from "sonner";
+import {
+  Truck,
+  Plus,
+  Pencil,
+  Trash2,
+  CheckCircle2,
+  IdCard,
+  Car,
+} from "lucide-react";
 import { PageHeader } from "@/components/domain/PageHeader";
 import { StatsCard } from "@/components/domain/StatsCard";
+import { DataListingToolbar } from "@/components/domain/DataListingToolbar";
+import { Avatar } from "@/components/domain/Avatar";
+import {
+  DataListingTable,
+  type DataListingColumn,
+  CellMonoMuted,
+  CellMuted,
+  CellActions,
+  CellActionButton,
+} from "@/components/domain/DataListingTable";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
+import { NovoMotoristaDialog } from "./NovoMotoristaDialog";
 
-type Coleta = {
+interface Motorista {
   id: string;
-  numero?: number;
-  nomeFantasia?: string;
-  galpao?: string;
-  status?: string;
-  dataChegada?: string | null;
-};
+  nome: string;
+  cpf?: string | null;
+  cnh?: string | null;
+  categoriaCnh?: string | null;
+  validadeCnh?: string | null;
+  telefone?: string | null;
+  whatsapp?: string | null;
+  email?: string | null;
+  veiculo?: string | null;
+  placa?: string | null;
+  capacidadeKg?: number | null;
+  ativo?: boolean;
+}
 
-type Costureira = {
-  id: string;
-  costureira?: string;
-  galpaoEnvio?: string;
-  galpaoRetorno?: string;
-  tipoMaterial?: string;
-  status?: string;
-};
-
-type Expedicao = {
-  id: string;
-  nomeFantasia?: string;
-  rota?: string;
-  galpao?: string;
-  statusEntrega?: string;
-  statusNota?: string;
+const FIPS_COLORS = {
+  azulProfundo: "#004B9B",
+  verdeFloresta: "#00C64C",
+  amareloEscuro: "#F6921E",
+  azulEscuro: "#002A68",
 };
 
 export default function MotoristaList() {
-  const [coletas, setColetas] = useState<Coleta[]>([]);
-  const [costureira, setCostureira] = useState<Costureira[]>([]);
-  const [expedicoes, setExpedicoes] = useState<Expedicao[]>([]);
-  const [search, setSearch] = useState("");
+  const [motoristas, setMotoristas] = useState<Motorista[]>([]);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [periodo, setPeriodo] = useState("Últimos 30 dias");
+  const [filterCategoria, setFilterCategoria] = useState<string>("");
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingMotorista, setEditingMotorista] = useState<Motorista | null>(null);
+
+  const fetchMotoristas = async () => {
+    try {
+      const res = await fetch("/api/motoristas");
+      const data = await res.json();
+      setMotoristas(data);
+    } catch {
+      toast.error("Erro ao carregar motoristas");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    Promise.all([
-      fetch("/api/coletas").then((r) => r.json()).catch(() => []),
-      fetch("/api/costureira").then((r) => r.json()).catch(() => []),
-      fetch("/api/expedicoes").then((r) => r.json()).catch(() => []),
-    ])
-      .then(([coletaRes, costureiraRes, expedicaoRes]) => {
-        setColetas(Array.isArray(coletaRes) ? coletaRes : []);
-        setCostureira(Array.isArray(costureiraRes) ? costureiraRes : []);
-        setExpedicoes(Array.isArray(expedicaoRes) ? expedicaoRes : []);
-      })
-      .finally(() => setLoading(false));
+    fetchMotoristas();
   }, []);
 
-  const tarefasColeta = useMemo(
-    () =>
-      coletas.filter((c) => ["pendente", "agendado", "em_rota"].includes((c.status || "").toLowerCase())),
-    [coletas],
-  );
+  const isCnhVencida = (m: Motorista) => {
+    if (!m.validadeCnh) return false;
+    return new Date(m.validadeCnh) < new Date();
+  };
+  const isCnhExpirando = (m: Motorista) => {
+    if (!m.validadeCnh) return false;
+    const dias = Math.ceil(
+      (new Date(m.validadeCnh).getTime() - Date.now()) / (1000 * 60 * 60 * 24),
+    );
+    return dias > 0 && dias <= 30;
+  };
 
-  const tarefasCostureira = useMemo(
-    () =>
-      costureira.filter((c) => ["enviado", "retorno_pendente", "aguardando_retorno"].includes((c.status || "").toLowerCase())),
-    [costureira],
-  );
+  const filtered = useMemo(() => {
+    return motoristas.filter((m) => {
+      const q = search.trim().toLowerCase();
+      const matchSearch =
+        !q ||
+        m.nome.toLowerCase().includes(q) ||
+        (m.cpf ?? "").toLowerCase().includes(q) ||
+        (m.cnh ?? "").toLowerCase().includes(q) ||
+        (m.placa ?? "").toLowerCase().includes(q) ||
+        (m.veiculo ?? "").toLowerCase().includes(q);
+      const matchCategoria = !filterCategoria || m.categoriaCnh === filterCategoria;
+      return matchSearch && matchCategoria;
+    });
+  }, [motoristas, search, filterCategoria]);
 
-  const tarefasEntrega = useMemo(
-    () =>
-      expedicoes.filter((e) => {
-        const stEntrega = (e.statusEntrega || "").toLowerCase();
-        const stNota = (e.statusNota || "").toLowerCase();
-        return stNota === "emitida" && ["pronto_entrega", "em_rota", "pendente"].includes(stEntrega);
-      }),
-    [expedicoes],
-  );
+  const stats = useMemo(() => {
+    const total = motoristas.length;
+    const ativos = motoristas.filter((m) => m.ativo !== false).length;
+    const comCnh = motoristas.filter((m) => m.cnh && m.cnh.trim() !== "").length;
+    const cnhVencida = motoristas.filter(isCnhVencida).length;
+    return { total, ativos, comCnh, cnhVencida };
+  }, [motoristas]);
 
-  const searchNorm = search.toLowerCase();
-  const match = (txt?: string) => !search || (txt || "").toLowerCase().includes(searchNorm);
+  const categorias = useMemo(() => {
+    const set = new Set<string>();
+    motoristas.forEach((m) => m.categoriaCnh && set.add(m.categoriaCnh));
+    return Array.from(set).sort();
+  }, [motoristas]);
+
+  const openNew = () => {
+    setEditingMotorista(null);
+    setDialogOpen(true);
+  };
+
+  const openEdit = (m: Motorista) => {
+    setEditingMotorista(m);
+    setDialogOpen(true);
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Inativar este motorista?")) return;
+    try {
+      const res = await fetch(`/api/motoristas/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error();
+      toast.success("Motorista inativado.");
+      fetchMotoristas();
+    } catch {
+      toast.error("Erro ao inativar motorista.");
+    }
+  };
 
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Painel do Motorista"
-        description="Ordens da Expedição e do Galpão: coletas, costureiras e entregas em rota"
-        icon={Route}
+        title="Motoristas"
+        description="Cadastro dos colaboradores motoristas — busca de matéria-prima e entrega ao cliente"
+        icon={Truck}
+        actions={
+          <Button onClick={openNew}>
+            <Plus className="h-4 w-4" />
+            Novo motorista
+          </Button>
+        }
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <StatsCard label="Coletas de Matéria-Prima" value={tarefasColeta.length} icon={Factory} color="text-blue-500" bg="bg-blue-500/10" />
-        <StatsCard label="Envios para Costureiras" value={tarefasCostureira.length} icon={Scissors} color="text-fuchsia-500" bg="bg-fuchsia-500/10" />
-        <StatsCard label="Entregas para Clientes" value={tarefasEntrega.length} icon={Truck} color="text-emerald-500" bg="bg-emerald-500/10" />
-      </div>
-
-      <div className="fips-surface-panel p-4">
-        <Input
-          placeholder="Buscar por cliente, costureira, galpão, rota..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
+        <StatsCard
+          label="Total Motoristas"
+          value={stats.total}
+          subtitle="Cadastrados no sistema"
+          icon={Truck}
+          color={FIPS_COLORS.azulProfundo}
+        />
+        <StatsCard
+          label="Ativos"
+          value={stats.ativos}
+          subtitle={`${stats.total > 0 ? Math.round((stats.ativos / stats.total) * 100) : 0}% do total`}
+          icon={CheckCircle2}
+          color={FIPS_COLORS.verdeFloresta}
+        />
+        <StatsCard
+          label="Com CNH"
+          value={stats.comCnh}
+          subtitle="Habilitação cadastrada"
+          icon={IdCard}
+          color={FIPS_COLORS.azulEscuro}
+        />
+        <StatsCard
+          label="CNH Vencida"
+          value={stats.cnhVencida}
+          subtitle="Atenção — renovar"
+          icon={Car}
+          color={FIPS_COLORS.amareloEscuro}
         />
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
-        <section className="fips-surface-panel p-4">
-          <h3 className="font-semibold mb-3 flex items-center gap-2">
-            <Factory className="h-4 w-4 text-blue-500" />
-            Coleta de Matéria-Prima
-          </h3>
-          <div className="space-y-2">
-            {loading ? (
-              <p className="text-sm text-muted-foreground">Carregando...</p>
-            ) : tarefasColeta.filter((c) => match(c.nomeFantasia) || match(c.galpao)).length === 0 ? (
-              <p className="text-sm text-muted-foreground">Sem ordens de coleta.</p>
-            ) : (
-              tarefasColeta
-                .filter((c) => match(c.nomeFantasia) || match(c.galpao))
-                .map((c) => (
-                  <div key={c.id} className="rounded-lg border bg-muted/30 p-3">
-                    <div className="flex items-center justify-between gap-2">
-                      <p className="font-medium text-sm">#{c.numero || c.id} · {c.nomeFantasia || "Fornecedor"}</p>
-                      <Badge variant="info">{c.status || "pendente"}</Badge>
-                    </div>
-                    <p className="mt-1 text-xs text-muted-foreground flex items-center gap-1">
-                      <MapPin className="h-3 w-3" /> {c.galpao || "Galpão não informado"}
-                    </p>
-                  </div>
-                ))
-            )}
+      <DataListingToolbar
+        search={search}
+        onSearchChange={setSearch}
+        searchPlaceholder="Buscar por nome, CPF, CNH ou placa..."
+        activeFilters={filterCategoria ? 1 : 0}
+        filtersContent={
+          <div className="px-4 py-3">
+            <p className="mb-2 text-[9px] font-bold uppercase tracking-[1px] text-[var(--fips-fg-muted)]">
+              Categoria CNH
+            </p>
+            <div className="flex flex-col gap-1">
+              <button
+                onClick={() => setFilterCategoria("")}
+                className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
+                  !filterCategoria
+                    ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                    : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
+                }`}
+              >
+                Todas as categorias
+              </button>
+              {categorias.map((c) => (
+                <button
+                  key={c}
+                  onClick={() => setFilterCategoria(c)}
+                  className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
+                    filterCategoria === c
+                      ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                      : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
+                  }`}
+                >
+                  {c}
+                </button>
+              ))}
+            </div>
           </div>
-        </section>
+        }
+        periodo={periodo}
+        onPeriodoChange={setPeriodo}
+        onExportExcel={() => alert("Export Excel — placeholder")}
+        onExportPdf={() => alert("Export PDF — placeholder")}
+      />
 
-        <section className="fips-surface-panel p-4">
-          <h3 className="font-semibold mb-3 flex items-center gap-2">
-            <Scissors className="h-4 w-4 text-fuchsia-500" />
-            Rotas para Costureiras
-          </h3>
-          <div className="space-y-2">
-            {loading ? (
-              <p className="text-sm text-muted-foreground">Carregando...</p>
-            ) : tarefasCostureira.filter((c) => match(c.costureira) || match(c.galpaoEnvio) || match(c.galpaoRetorno)).length === 0 ? (
-              <p className="text-sm text-muted-foreground">Sem ordens para costureira.</p>
-            ) : (
-              tarefasCostureira
-                .filter((c) => match(c.costureira) || match(c.galpaoEnvio) || match(c.galpaoRetorno))
-                .map((c) => (
-                  <div key={c.id} className="rounded-lg border bg-muted/30 p-3">
-                    <div className="flex items-center justify-between gap-2">
-                      <p className="font-medium text-sm">{c.costureira || "Costureira externa"}</p>
-                      <Badge variant="warning">{c.status || "enviado"}</Badge>
-                    </div>
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      {c.galpaoEnvio || "Galpão"} → Costureira → {c.galpaoRetorno || "Retorno"}
-                    </p>
-                    {c.tipoMaterial && <p className="text-xs text-muted-foreground">{c.tipoMaterial}</p>}
-                  </div>
-                ))
-            )}
-          </div>
-        </section>
+      <DataListingTable<Motorista>
+        icon={<Truck className="h-[22px] w-[22px]" />}
+        title="Motoristas"
+        subtitle={`${filtered.length} ${filtered.length === 1 ? "registro" : "registros"} ${
+          search || filterCategoria ? "filtrados" : "no total"
+        } · Atualizado agora`}
+        filtered={!!(search || filterCategoria)}
+        data={filtered}
+        getRowId={(m) => m.id}
+        emptyState={
+          loading
+            ? "Carregando motoristas..."
+            : "Nenhum motorista cadastrado — clique em + Novo motorista"
+        }
+        columns={motoristaColumns({
+          onEdit: openEdit,
+          onDelete: handleDelete,
+          isCnhVencida,
+          isCnhExpirando,
+        })}
+      />
 
-        <section className="fips-surface-panel p-4">
-          <h3 className="font-semibold mb-3 flex items-center gap-2">
-            <Package className="h-4 w-4 text-emerald-500" />
-            Entregas ao Cliente
-          </h3>
-          <div className="space-y-2">
-            {loading ? (
-              <p className="text-sm text-muted-foreground">Carregando...</p>
-            ) : tarefasEntrega.filter((e) => match(e.nomeFantasia) || match(e.rota) || match(e.galpao)).length === 0 ? (
-              <p className="text-sm text-muted-foreground">Sem entregas em rota.</p>
-            ) : (
-              tarefasEntrega
-                .filter((e) => match(e.nomeFantasia) || match(e.rota) || match(e.galpao))
-                .map((e) => (
-                  <div key={e.id} className="rounded-lg border bg-muted/30 p-3">
-                    <div className="flex items-center justify-between gap-2">
-                      <p className="font-medium text-sm">{e.nomeFantasia || "Cliente"}</p>
-                      <Badge variant={e.statusEntrega === "em_rota" ? "info" : "default"}>{e.statusEntrega || "pendente"}</Badge>
-                    </div>
-                    <p className="mt-1 text-xs text-muted-foreground flex items-center gap-1">
-                      <Route className="h-3 w-3" /> Rota {e.rota || "não definida"} · {e.galpao || "Galpão"}
-                    </p>
-                  </div>
-                ))
-            )}
-          </div>
-        </section>
-      </div>
-
-      <div className="fips-surface-panel p-4 text-sm text-muted-foreground flex items-center gap-2">
-        <Clock3 className="h-4 w-4" />
-        O painel consolida ordens da Expedição (coleta e entrega) e do Galpão (fluxo com costureiras externas).
-      </div>
+      <NovoMotoristaDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        onSuccess={fetchMotoristas}
+        motorista={editingMotorista}
+      />
     </div>
   );
+}
+
+interface MotoristaActions {
+  onEdit: (m: Motorista) => void;
+  onDelete: (id: string) => void;
+  isCnhVencida: (m: Motorista) => boolean;
+  isCnhExpirando: (m: Motorista) => boolean;
+}
+
+const formatDateBR = (s: string | null | undefined) =>
+  s ? new Date(s).toLocaleDateString("pt-BR") : "—";
+
+function motoristaColumns({
+  onEdit,
+  onDelete,
+  isCnhVencida,
+  isCnhExpirando,
+}: MotoristaActions): DataListingColumn<Motorista>[] {
+  return [
+    {
+      id: "nome",
+      label: "Motorista",
+      fixed: true,
+      sortable: true,
+      render: (m, { density }) => (
+        <div className="flex items-center gap-2">
+          <Avatar
+            name={m.nome}
+            size={density === "compact" ? 22 : density === "normal" ? 28 : 34}
+          />
+          <div className="min-w-0">
+            <div className="font-semibold text-[var(--fips-fg)]">{m.nome}</div>
+            {m.cpf && <div className="text-[10px] text-[var(--fips-fg-muted)]">{m.cpf}</div>}
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: "cnh",
+      label: "CNH",
+      sortable: true,
+      render: (m) => (
+        <div className="flex items-center gap-1.5">
+          <CellMonoMuted>{m.cnh || "—"}</CellMonoMuted>
+          {m.categoriaCnh && <Badge variant="info">{m.categoriaCnh}</Badge>}
+        </div>
+      ),
+    },
+    {
+      id: "validadeCnh",
+      label: "Validade",
+      sortable: true,
+      render: (m) => {
+        const vencida = isCnhVencida(m);
+        const expirando = isCnhExpirando(m);
+        return (
+          <span
+            className={
+              vencida
+                ? "font-mono text-[var(--fips-danger)]"
+                : expirando
+                  ? "font-mono text-[var(--fips-warning)]"
+                  : "font-mono text-[var(--fips-fg-muted)]"
+            }
+          >
+            {formatDateBR(m.validadeCnh)}
+          </span>
+        );
+      },
+    },
+    {
+      id: "telefone",
+      label: "Telefone",
+      render: (m) => <CellMonoMuted>{m.telefone || m.whatsapp || "—"}</CellMonoMuted>,
+    },
+    {
+      id: "veiculo",
+      label: "Veículo",
+      render: (m) => (
+        <div>
+          <div className="text-[var(--fips-fg)]">{m.veiculo || "—"}</div>
+          {m.placa && (
+            <div className="font-mono text-[10px] text-[var(--fips-fg-muted)]">{m.placa}</div>
+          )}
+        </div>
+      ),
+    },
+    {
+      id: "capacidade",
+      label: "Capacidade",
+      align: "right",
+      render: (m) => (
+        <CellMuted>
+          {m.capacidadeKg ? `${m.capacidadeKg.toLocaleString("pt-BR")} kg` : "—"}
+        </CellMuted>
+      ),
+    },
+    {
+      id: "status",
+      label: "Status",
+      sortable: true,
+      render: (m) =>
+        m.ativo === false ? (
+          <Badge variant="secondary" dot>
+            Inativo
+          </Badge>
+        ) : (
+          <Badge variant="success" dot>
+            Ativo
+          </Badge>
+        ),
+    },
+    {
+      id: "actions",
+      label: "Ações",
+      fixed: true,
+      align: "center",
+      width: "80px",
+      render: (m) => (
+        <CellActions>
+          <CellActionButton
+            title="Editar"
+            icon={<Pencil className="h-3.5 w-3.5" />}
+            onClick={() => onEdit(m)}
+          />
+          <CellActionButton
+            title="Inativar"
+            icon={<Trash2 className="h-3.5 w-3.5 text-[var(--fips-danger)]" />}
+            onClick={() => onDelete(m.id)}
+          />
+        </CellActions>
+      ),
+    },
+  ];
 }

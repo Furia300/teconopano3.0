@@ -1,22 +1,31 @@
 import { useEffect, useState } from "react";
-import { Truck, Plus, Search, Filter, Eye, Trash2, Package } from "lucide-react";
+import { Truck, Plus, Eye, Trash2, Package, Activity, CheckCircle2, Inbox, MoreHorizontal } from "lucide-react";
 import { PageHeader } from "@/components/domain/PageHeader";
 import { StatsCard } from "@/components/domain/StatsCard";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
+import { DataListingToolbar } from "@/components/domain/DataListingToolbar";
+import { Avatar } from "@/components/domain/Avatar";
 import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableEmpty,
-} from "@/components/ui/table";
+  DataListingTable,
+  type DataListingColumn,
+  CellCodigo,
+  CellMonoStrong,
+  CellMonoMuted,
+  CellMuted,
+  CellActions,
+  CellActionButton,
+} from "@/components/domain/DataListingTable";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { NovaColetaDialog } from "./NovaColetaDialog";
 import { ColetaDetalhes } from "./ColetaDetalhes";
+
+// Cores FIPS DS canônicas para os Cards Relatório
+const FIPS_COLORS = {
+  azulProfundo: "#004B9B",
+  verdeFloresta: "#00C64C",
+  amareloEscuro: "#F6921E",
+  azulEscuro: "#002A68",
+};
 
 interface Coleta {
   id: string;
@@ -52,6 +61,7 @@ export default function ColetaList() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
+  const [periodo, setPeriodo] = useState("Últimos 30 dias");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [detalhesColeta, setDetalhesColeta] = useState<Coleta | null>(null);
 
@@ -84,7 +94,7 @@ export default function ColetaList() {
   const stats = {
     total: coletas.length,
     pendentes: coletas.filter((c) => c.status === "pendente" || c.status === "agendado").length,
-    emAndamento: coletas.filter((c) => ["recebido", "em_separacao", "em_producao"].includes(c.status)).length,
+    emAndamento: coletas.filter((c) => ["em_rota", "recebido", "em_separacao", "em_producao"].includes(c.status)).length,
     finalizados: coletas.filter((c) => c.status === "finalizado").length,
   };
 
@@ -108,108 +118,103 @@ export default function ColetaList() {
     <div className="space-y-6">
       <PageHeader
         title="Coleta"
-        description="Entrada de matéria-prima dos fornecedores"
+        description="Início do fluxo: pedidos e agendamento de matéria-prima (retirada no fornecedor / chegada ao galpão)"
         icon={Truck}
         actions={
           <Button onClick={() => setDialogOpen(true)}>
             <Plus className="h-4 w-4" />
-            Nova Coleta
+            Pedido de coleta
           </Button>
         }
       />
 
-      {/* KPIs */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatsCard label="Total Coletas" value={stats.total} icon={Truck} color="text-blue-500" bg="bg-blue-500/10" />
-        <StatsCard label="Pendentes" value={stats.pendentes} icon={Package} color="text-amber-500" bg="bg-amber-500/10" />
-        <StatsCard label="Em Andamento" value={stats.emAndamento} icon={Filter} color="text-purple-500" bg="bg-purple-500/10" />
-        <StatsCard label="Finalizados" value={stats.finalizados} icon={Package} color="text-emerald-500" bg="bg-emerald-500/10" />
+      {/* Cards Relatório — padrão FIPS DS (`/docs/components/card` § 03 Card Relatório) */}
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
+        <StatsCard
+          label="Total Coletas"
+          value={stats.total}
+          subtitle="Cadastradas no sistema"
+          icon={Truck}
+          color={FIPS_COLORS.azulProfundo}
+        />
+        <StatsCard
+          label="Pendentes"
+          value={stats.pendentes}
+          subtitle="Aguardando agendamento"
+          icon={Package}
+          color={FIPS_COLORS.amareloEscuro}
+        />
+        <StatsCard
+          label="Em Andamento"
+          value={stats.emAndamento}
+          subtitle="Em rota / produção"
+          icon={Activity}
+          color={FIPS_COLORS.azulEscuro}
+        />
+        <StatsCard
+          label="Finalizados"
+          value={stats.finalizados}
+          subtitle="Concluídos no período"
+          icon={CheckCircle2}
+          color={FIPS_COLORS.verdeFloresta}
+        />
       </div>
 
-      {/* Filtros */}
-      <div className="fips-surface-panel p-4">
-        <div className="flex flex-col sm:flex-row gap-3">
-          <div className="flex-1">
-            <Input
-              placeholder="Buscar por fornecedor, NF ou número..."
-              icon={<Search />}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
+      {/* Toolbar — padrão FIPS DS Data Listing */}
+      <DataListingToolbar
+        search={search}
+        onSearchChange={setSearch}
+        searchPlaceholder="Buscar por fornecedor, NF ou número..."
+        activeFilters={filterStatus ? 1 : 0}
+        filtersContent={
+          <div className="px-4 py-3">
+            <p className="mb-2 text-[9px] font-bold uppercase tracking-[1px] text-[var(--fips-fg-muted)]">Status</p>
+            <div className="flex flex-col gap-1">
+              {[
+                { v: "", l: "Todos os status" },
+                { v: "pendente", l: "Pendente" },
+                { v: "agendado", l: "Agendado" },
+                { v: "em_rota", l: "Em rota" },
+                { v: "recebido", l: "Recebido" },
+                { v: "em_separacao", l: "Em Separação" },
+                { v: "em_producao", l: "Em Produção" },
+                { v: "finalizado", l: "Finalizado" },
+                { v: "cancelado", l: "Cancelado" },
+              ].map((opt) => (
+                <button
+                  key={opt.v || "todos"}
+                  onClick={() => setFilterStatus(opt.v)}
+                  className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
+                    filterStatus === opt.v
+                      ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                      : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
+                  }`}
+                >
+                  {opt.l}
+                </button>
+              ))}
+            </div>
           </div>
-          <div className="w-full sm:w-48">
-            <Select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
-              <option value="">Todos os status</option>
-              <option value="pendente">Pendente</option>
-              <option value="agendado">Agendado</option>
-              <option value="recebido">Recebido</option>
-              <option value="em_separacao">Em Separação</option>
-              <option value="em_producao">Em Produção</option>
-              <option value="finalizado">Finalizado</option>
-              <option value="cancelado">Cancelado</option>
-            </Select>
-          </div>
-        </div>
-      </div>
+        }
+        periodo={periodo}
+        onPeriodoChange={setPeriodo}
+        onExportExcel={() => alert("Export Excel — placeholder")}
+        onExportPdf={() => alert("Export PDF — placeholder")}
+      />
 
-      {/* Tabela */}
-      <div className="fips-surface-panel">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Nº</TableHead>
-              <TableHead>Fornecedor</TableHead>
-              <TableHead>Nota Fiscal</TableHead>
-              <TableHead>Peso NF</TableHead>
-              <TableHead>Peso Atual</TableHead>
-              <TableHead>Data Pedido</TableHead>
-              <TableHead>Chegada</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Ações</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {loading ? (
-              <TableEmpty colSpan={9} message="Carregando..." />
-            ) : filtered.length === 0 ? (
-              <TableEmpty colSpan={9} />
-            ) : (
-              filtered.map((coleta) => {
-                const sc = statusConfig[coleta.status] || { label: coleta.status, variant: "secondary" as const };
-                return (
-                  <TableRow key={coleta.id}>
-                    <TableCell className="font-bold">#{coleta.numero}</TableCell>
-                    <TableCell>
-                      <div>
-                        <p className="font-medium">{coleta.nomeFantasia}</p>
-                        <p className="text-xs text-muted-foreground">{coleta.cnpjFornecedor}</p>
-                      </div>
-                    </TableCell>
-                    <TableCell>{coleta.notaFiscal || "—"}</TableCell>
-                    <TableCell>{formatWeight(coleta.pesoTotalNF)}</TableCell>
-                    <TableCell>{formatWeight(coleta.pesoTotalAtual)}</TableCell>
-                    <TableCell>{formatDate(coleta.dataPedido)}</TableCell>
-                    <TableCell>{formatDate(coleta.dataChegada)}</TableCell>
-                    <TableCell>
-                      <Badge variant={sc.variant} dot>{sc.label}</Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-1">
-                        <Button variant="ghost" size="iconSm" onClick={() => setDetalhesColeta(coleta)}>
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="iconSm" onClick={() => handleDelete(coleta.id)}>
-                          <Trash2 className="h-4 w-4 text-destructive" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                );
-              })
-            )}
-          </TableBody>
-        </Table>
-      </div>
+      {/* Tabela canônica DS-FIPS — Data Listing */}
+      <DataListingTable<Coleta>
+        icon={<Inbox className="h-[22px] w-[22px]" />}
+        title="Coletas"
+        subtitle={`${filtered.length} ${filtered.length === 1 ? "registro" : "registros"} ${
+          search || filterStatus ? "filtrados" : "no total"
+        } · Atualizado agora`}
+        filtered={!!(search || filterStatus)}
+        data={filtered}
+        getRowId={(c) => c.id}
+        emptyState={loading ? "Carregando..." : "Nenhuma coleta encontrada"}
+        columns={coletaColumns({ onView: setDetalhesColeta, onDelete: handleDelete })}
+      />
 
       {/* Modal Nova Coleta */}
       <NovaColetaDialog
@@ -228,4 +233,111 @@ export default function ColetaList() {
       )}
     </div>
   );
+}
+
+/* ──────────────────────────── COLUMNS DEFINITION ──────────────────────────── */
+
+interface ColetaColumnActions {
+  onView: (c: Coleta) => void;
+  onDelete: (id: string) => void;
+}
+
+const formatDateBR = (s: string | null) =>
+  s ? new Date(s).toLocaleDateString("pt-BR") : "—";
+const formatKg = (n: number) => (n ? `${n.toLocaleString("pt-BR")} kg` : "—");
+
+function coletaColumns({ onView, onDelete }: ColetaColumnActions): DataListingColumn<Coleta>[] {
+  return [
+    {
+      id: "numero",
+      label: "Nº",
+      fixed: true,
+      sortable: true,
+      width: "80px",
+      render: (c) => <CellCodigo>#{c.numero}</CellCodigo>,
+    },
+    {
+      id: "fornecedor",
+      label: "Fornecedor",
+      sortable: true,
+      render: (c, { density }) => (
+        <div className="flex items-center gap-2">
+          <Avatar
+            name={c.nomeFantasia}
+            size={density === "compact" ? 22 : density === "normal" ? 28 : 34}
+          />
+          <div className="min-w-0">
+            <div className="font-semibold text-[var(--fips-fg)]">{c.nomeFantasia}</div>
+            <div className="text-[10px] text-[var(--fips-fg-muted)]">{c.cnpjFornecedor}</div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: "notaFiscal",
+      label: "NF",
+      sortable: true,
+      render: (c) => <CellMuted>{c.notaFiscal || "—"}</CellMuted>,
+    },
+    {
+      id: "pesoNF",
+      label: "Peso NF",
+      sortable: true,
+      align: "right",
+      render: (c) => <CellMonoMuted>{formatKg(c.pesoTotalNF)}</CellMonoMuted>,
+    },
+    {
+      id: "pesoAtual",
+      label: "Peso Atual",
+      sortable: true,
+      align: "right",
+      render: (c) => <CellMonoStrong align="right">{formatKg(c.pesoTotalAtual)}</CellMonoStrong>,
+    },
+    {
+      id: "dataPedido",
+      label: "Pedido",
+      sortable: true,
+      render: (c) => <CellMonoMuted>{formatDateBR(c.dataPedido)}</CellMonoMuted>,
+    },
+    {
+      id: "chegada",
+      label: "Chegada",
+      sortable: true,
+      render: (c) => <CellMonoMuted>{formatDateBR(c.dataChegada)}</CellMonoMuted>,
+    },
+    {
+      id: "status",
+      label: "Status",
+      sortable: true,
+      render: (c) => {
+        const sc = statusConfig[c.status] || { label: c.status, variant: "secondary" as const };
+        return (
+          <Badge variant={sc.variant} dot>
+            {sc.label}
+          </Badge>
+        );
+      },
+    },
+    {
+      id: "actions",
+      label: "Ações",
+      fixed: true,
+      align: "center",
+      width: "80px",
+      render: (c) => (
+        <CellActions>
+          <CellActionButton
+            title="Ver detalhes"
+            icon={<Eye className="h-3.5 w-3.5" />}
+            onClick={() => onView(c)}
+          />
+          <CellActionButton
+            title="Excluir coleta"
+            icon={<Trash2 className="h-3.5 w-3.5 text-[var(--fips-danger)]" />}
+            onClick={() => onDelete(c.id)}
+          />
+        </CellActions>
+      ),
+    },
+  ];
 }

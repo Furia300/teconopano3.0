@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Redirect } from "wouter";
 import type { DashboardData } from "@/types/dashboard";
 import { MOCK_ADMIN_DASHBOARD } from "@/data/mockAdminDashboard";
 import DashboardGalpao from "./dashboard/DashboardGalpao";
@@ -33,6 +34,11 @@ export default function Dashboard() {
     if (userLoading) return;
 
     const perfil = currentUser?.perfil || "administrador";
+    if (perfil.toLowerCase() === "michele") {
+      setDataLoading(false);
+      return;
+    }
+
     const isSuperAdmin = perfil === "administrador" || perfil === "super_admin";
 
     if (isSuperAdmin) {
@@ -72,6 +78,10 @@ export default function Dashboard() {
       .finally(() => setDataLoading(false));
   }, [currentUser, userLoading]);
 
+  if (!userLoading && currentUser?.perfil?.toLowerCase() === "michele") {
+    return <Redirect to="/coleta" />;
+  }
+
   if (userLoading || dataLoading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
@@ -105,6 +115,8 @@ export default function Dashboard() {
       return <DashboardSeparacaoPessoal data={data} userName={nome} />;
     case "motorista":
       return <DashboardMotorista data={data} userName={nome} />;
+    case "michele":
+      return <Redirect to="/coleta" />;
     default:
       return <DashboardAdmin data={data} />;
   }

@@ -2,7 +2,21 @@
 
 Esta pasta guarda **tudo que for extraído** de um app **Bubble.io** de referência: telas, fluxos, dados, regras e decisões de UX — para **alinhar ou evoluir** o sistema Tecnopano (React + Express deste repositório).
 
-## O que fazer no Bubble (captura)
+## Protocolo obrigatório — **cada página**
+
+**Sempre** que uma tela do Bubble for analisada (MCP, print manual ou Playwright):
+
+| Passo | O quê |
+|-------|--------|
+| 1 | **PNG** em `imagens/capturas-bubble/NN-slug-descritivo.png` (número alinhado ao índice). |
+| 2 | **Nota** em `notas/NN-….md` com URL, UI, campos, tabela, botões — **link no topo** para o PNG. |
+| 3 | **Atualizar** `notas/00-indice.md`. |
+
+Detalhe do fluxo (incl. copiar screenshot do MCP de `/tmp` para o repo): **`notas/PROTOCOLO-CAPTURA-PAGINAS.md`**.
+
+---
+
+## O que fazer no Bubble (captura manual — checklist)
 
 Para cada tela ou fluxo importante:
 
@@ -12,11 +26,7 @@ Para cada tela ou fluxo importante:
 4. **Campos visíveis** (rótulos, tipos: texto, número, data, dropdown).
 5. **Comportamentos** (validações, mensagens, redirecionamentos) — anote o que notar na tela.
 
-Coloque as imagens em `imagens/` com nome claro, por exemplo:
-
-- `01-login.png`
-- `02-dashboard-admin.png`
-- `03-lista-coletas.png`
+Imagens avulsas podem ficar em `imagens/` com nome claro (`01-login.png`, …). **Páginas documentadas pelo agente** devem seguir `imagens/capturas-bubble/` + nota numerada.
 
 ## O que é gerado aqui (texto)
 

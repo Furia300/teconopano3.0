@@ -1,177 +1,342 @@
-import { useEffect, useState } from "react";
-import { Truck, Plus, Search, Edit, Trash2, Phone, Mail, Building2, MapPin } from "lucide-react";
+import { useEffect, useState, useMemo } from "react";
 import { toast } from "sonner";
+import {
+  Building2,
+  Plus,
+  Pencil,
+  Trash2,
+  CheckCircle2,
+  FileBadge,
+  Mail as MailIcon,
+} from "lucide-react";
 import { PageHeader } from "@/components/domain/PageHeader";
 import { StatsCard } from "@/components/domain/StatsCard";
+import { DataListingToolbar } from "@/components/domain/DataListingToolbar";
+import { Avatar } from "@/components/domain/Avatar";
+import {
+  DataListingTable,
+  type DataListingColumn,
+  CellMonoMuted,
+  CellMuted,
+  CellActions,
+  CellActionButton,
+} from "@/components/domain/DataListingTable";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import {
-  Table, TableHeader, TableBody, TableHead, TableRow, TableCell, TableEmpty,
-} from "@/components/ui/table";
-import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
-} from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
+import { NovoFornecedorDialog } from "./NovoFornecedorDialog";
 
 interface Fornecedor {
   id: string;
   nome: string;
-  razaoSocial: string;
-  cnpj: string;
-  contato: string;
-  email: string;
-  endereco?: string;
-  cidade?: string;
-  estado?: string;
-  ativo: boolean;
+  razaoSocial?: string | null;
+  cnpj?: string | null;
+  endereco?: string | null;
+  cidade?: string | null;
+  estado?: string | null;
+  cep?: string | null;
+  telefone?: string | null;
+  contato?: string | null;
+  email?: string | null;
+  ativo?: boolean;
+  createdAt?: string | null;
 }
+
+const FIPS_COLORS = {
+  azulProfundo: "#004B9B",
+  verdeFloresta: "#00C64C",
+  amareloEscuro: "#F6921E",
+  azulEscuro: "#002A68",
+};
 
 export default function FornecedoresList() {
   const [fornecedores, setFornecedores] = useState<Fornecedor[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [periodo, setPeriodo] = useState("Últimos 30 dias");
+  const [filterUf, setFilterUf] = useState<string>("");
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [editItem, setEditItem] = useState<Fornecedor | null>(null);
-  const [saving, setSaving] = useState(false);
-  const [form, setForm] = useState({ nome: "", razaoSocial: "", cnpj: "", contato: "", email: "", endereco: "", cidade: "", estado: "" });
+  const [editingFornecedor, setEditingFornecedor] = useState<Fornecedor | null>(null);
 
   const fetchFornecedores = async () => {
     try {
       const res = await fetch("/api/fornecedores");
-      setFornecedores(await res.json());
-    } catch { } finally { setLoading(false); }
+      const data = await res.json();
+      setFornecedores(data);
+    } catch {
+      toast.error("Erro ao carregar fornecedores");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  useEffect(() => { fetchFornecedores(); }, []);
+  useEffect(() => {
+    fetchFornecedores();
+  }, []);
 
-  const filtered = fornecedores.filter((f) =>
-    !search ||
-    f.nome.toLowerCase().includes(search.toLowerCase()) ||
-    f.cnpj.includes(search) ||
-    (f.razaoSocial || "").toLowerCase().includes(search.toLowerCase())
-  );
+  // Filtragem reativa
+  const filtered = useMemo(() => {
+    return fornecedores.filter((f) => {
+      const q = search.trim().toLowerCase();
+      const matchSearch =
+        !q ||
+        f.nome.toLowerCase().includes(q) ||
+        (f.razaoSocial ?? "").toLowerCase().includes(q) ||
+        (f.cnpj ?? "").toLowerCase().includes(q) ||
+        (f.cidade ?? "").toLowerCase().includes(q);
+      const matchUf = !filterUf || f.estado === filterUf;
+      return matchSearch && matchUf;
+    });
+  }, [fornecedores, search, filterUf]);
+
+  // KPIs (Cards Relatório)
+  const stats = useMemo(() => {
+    const total = fornecedores.length;
+    const ativos = fornecedores.filter((f) => f.ativo !== false).length;
+    const comCnpj = fornecedores.filter((f) => f.cnpj && f.cnpj.trim() !== "").length;
+    const comEmail = fornecedores.filter((f) => f.email && f.email.trim() !== "").length;
+    return { total, ativos, comCnpj, comEmail };
+  }, [fornecedores]);
+
+  // UFs únicas para filtro
+  const ufs = useMemo(() => {
+    const set = new Set<string>();
+    fornecedores.forEach((f) => f.estado && set.add(f.estado));
+    return Array.from(set).sort();
+  }, [fornecedores]);
 
   const openNew = () => {
-    setEditItem(null);
-    setForm({ nome: "", razaoSocial: "", cnpj: "", contato: "", email: "", endereco: "", cidade: "", estado: "" });
+    setEditingFornecedor(null);
     setDialogOpen(true);
   };
 
   const openEdit = (f: Fornecedor) => {
-    setEditItem(f);
-    setForm({ nome: f.nome, razaoSocial: f.razaoSocial || "", cnpj: f.cnpj, contato: f.contato || "", email: f.email || "", endereco: f.endereco || "", cidade: f.cidade || "", estado: f.estado || "" });
+    setEditingFornecedor(f);
     setDialogOpen(true);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!form.nome) { toast.error("Nome é obrigatório"); return; }
-    setSaving(true);
-    try {
-      const method = editItem ? "PUT" : "POST";
-      const url = editItem ? `/api/fornecedores/${editItem.id}` : "/api/fornecedores";
-      const res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
-      if (!res.ok) throw new Error();
-      toast.success(editItem ? "Fornecedor atualizado!" : "Fornecedor cadastrado!");
-      setDialogOpen(false);
-      fetchFornecedores();
-    } catch { toast.error("Erro ao salvar"); } finally { setSaving(false); }
-  };
-
   const handleDelete = async (id: string) => {
-    if (!confirm("Excluir este fornecedor?")) return;
-    await fetch(`/api/fornecedores/${id}`, { method: "DELETE" });
-    toast.success("Fornecedor excluído");
-    fetchFornecedores();
+    if (!confirm("Inativar este fornecedor? (registro permanece para histórico de coletas)")) return;
+    try {
+      const res = await fetch(`/api/fornecedores/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error();
+      toast.success("Fornecedor inativado.");
+      fetchFornecedores();
+    } catch {
+      toast.error("Erro ao inativar fornecedor.");
+    }
   };
-
-  const update = (f: string, v: string) => setForm((prev) => ({ ...prev, [f]: v }));
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Fornecedores" description="Hotéis, empresas e outros que vendem matéria-prima" icon={Truck}
-        actions={<Button onClick={openNew}><Plus className="h-4 w-4" />Novo Fornecedor</Button>} />
+      <PageHeader
+        title="Fornecedores"
+        description="Empresas que vendem matéria-prima — uma filial = um cadastro próprio"
+        icon={Building2}
+        actions={
+          <Button onClick={openNew}>
+            <Plus className="h-4 w-4" />
+            Novo fornecedor
+          </Button>
+        }
+      />
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <StatsCard label="Total Fornecedores" value={fornecedores.length} icon={Building2} color="text-blue-500" bg="bg-blue-500/10" />
-        <StatsCard label="Ativos" value={fornecedores.filter((f) => f.ativo !== false).length} icon={Truck} color="text-emerald-500" bg="bg-emerald-500/10" />
-        <StatsCard label="Com E-mail" value={fornecedores.filter((f) => f.email).length} icon={Mail} color="text-purple-500" bg="bg-purple-500/10" />
+      {/* Cards Relatório — padrão FIPS DS § 03 Card Relatório */}
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
+        <StatsCard
+          label="Total Fornecedores"
+          value={stats.total}
+          subtitle="Cadastrados no sistema"
+          icon={Building2}
+          color={FIPS_COLORS.azulProfundo}
+        />
+        <StatsCard
+          label="Ativos"
+          value={stats.ativos}
+          subtitle={`${stats.total > 0 ? Math.round((stats.ativos / stats.total) * 100) : 0}% do total`}
+          icon={CheckCircle2}
+          color={FIPS_COLORS.verdeFloresta}
+        />
+        <StatsCard
+          label="Com CNPJ"
+          value={stats.comCnpj}
+          subtitle="Pessoa jurídica formal"
+          icon={FileBadge}
+          color={FIPS_COLORS.azulEscuro}
+        />
+        <StatsCard
+          label="Com E-mail"
+          value={stats.comEmail}
+          subtitle="Comunicação digital ativa"
+          icon={MailIcon}
+          color={FIPS_COLORS.amareloEscuro}
+        />
       </div>
 
-      <div className="fips-surface-panel p-4">
-        <Input placeholder="Buscar por nome, CNPJ ou razão social..." icon={<Search />} value={search} onChange={(e) => setSearch(e.target.value)} />
-      </div>
+      {/* Toolbar canônica */}
+      <DataListingToolbar
+        search={search}
+        onSearchChange={setSearch}
+        searchPlaceholder="Buscar por nome, razão social, CNPJ ou cidade..."
+        activeFilters={filterUf ? 1 : 0}
+        filtersContent={
+          <div className="px-4 py-3">
+            <p className="mb-2 text-[9px] font-bold uppercase tracking-[1px] text-[var(--fips-fg-muted)]">
+              Estado (UF)
+            </p>
+            <div className="flex flex-col gap-1">
+              <button
+                onClick={() => setFilterUf("")}
+                className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
+                  !filterUf
+                    ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                    : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
+                }`}
+              >
+                Todos os estados
+              </button>
+              {ufs.map((uf) => (
+                <button
+                  key={uf}
+                  onClick={() => setFilterUf(uf)}
+                  className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
+                    filterUf === uf
+                      ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                      : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
+                  }`}
+                >
+                  {uf}
+                </button>
+              ))}
+            </div>
+          </div>
+        }
+        periodo={periodo}
+        onPeriodoChange={setPeriodo}
+        onExportExcel={() => alert("Export Excel — placeholder")}
+        onExportPdf={() => alert("Export PDF — placeholder")}
+      />
 
-      <div className="fips-surface-panel">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Fornecedor</TableHead>
-              <TableHead>Razão Social</TableHead>
-              <TableHead>CNPJ</TableHead>
-              <TableHead>Contato</TableHead>
-              <TableHead>E-mail</TableHead>
-              <TableHead className="text-right">Ações</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {loading ? <TableEmpty colSpan={6} message="Carregando..." /> :
-             filtered.length === 0 ? <TableEmpty colSpan={6} /> :
-             filtered.map((f) => (
-              <TableRow key={f.id}>
-                <TableCell>
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-amber-500/20 to-amber-500/5 flex items-center justify-center text-amber-600 font-bold text-xs">
-                      {f.nome.split(" ").map((n) => n[0]).slice(0, 2).join("")}
-                    </div>
-                    <span className="font-medium">{f.nome}</span>
-                  </div>
-                </TableCell>
-                <TableCell className="text-sm text-muted-foreground">{f.razaoSocial || "—"}</TableCell>
-                <TableCell className="font-mono text-sm">{f.cnpj}</TableCell>
-                <TableCell>{f.contato || "—"}</TableCell>
-                <TableCell>{f.email || "—"}</TableCell>
-                <TableCell className="text-right">
-                  <div className="flex justify-end gap-1">
-                    <Button variant="ghost" size="iconSm" onClick={() => openEdit(f)}><Edit className="h-4 w-4" /></Button>
-                    <Button variant="ghost" size="iconSm" onClick={() => handleDelete(f.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+      {/* Tabela canônica DS-FIPS Data Listing */}
+      <DataListingTable<Fornecedor>
+        icon={<Building2 className="h-[22px] w-[22px]" />}
+        title="Fornecedores"
+        subtitle={`${filtered.length} ${filtered.length === 1 ? "registro" : "registros"} ${
+          search || filterUf ? "filtrados" : "no total"
+        } · Atualizado agora`}
+        filtered={!!(search || filterUf)}
+        data={filtered}
+        getRowId={(f) => f.id}
+        emptyState={loading ? "Carregando fornecedores..." : "Nenhum fornecedor encontrado"}
+        columns={fornecedorColumns({ onEdit: openEdit, onDelete: handleDelete })}
+      />
 
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle>{editItem ? "Editar Fornecedor" : "Novo Fornecedor"}</DialogTitle>
-            <DialogDescription>Hotéis, empresas e outros que fornecem matéria-prima</DialogDescription>
-          </DialogHeader>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2"><label className="text-sm font-medium">Nome Fantasia *</label><Input value={form.nome} onChange={(e) => update("nome", e.target.value)} /></div>
-              <div className="space-y-2"><label className="text-sm font-medium">CNPJ</label><Input value={form.cnpj} onChange={(e) => update("cnpj", e.target.value)} /></div>
-            </div>
-            <div className="space-y-2"><label className="text-sm font-medium">Razão Social</label><Input value={form.razaoSocial} onChange={(e) => update("razaoSocial", e.target.value)} /></div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2"><label className="text-sm font-medium">Contato</label><Input value={form.contato} onChange={(e) => update("contato", e.target.value)} /></div>
-              <div className="space-y-2"><label className="text-sm font-medium">E-mail</label><Input type="email" value={form.email} onChange={(e) => update("email", e.target.value)} /></div>
-            </div>
-            <div className="space-y-2"><label className="text-sm font-medium">Endereço</label><Input value={form.endereco} onChange={(e) => update("endereco", e.target.value)} /></div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2"><label className="text-sm font-medium">Cidade</label><Input value={form.cidade} onChange={(e) => update("cidade", e.target.value)} /></div>
-              <div className="space-y-2"><label className="text-sm font-medium">UF</label><Input value={form.estado} onChange={(e) => update("estado", e.target.value)} maxLength={2} /></div>
-            </div>
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>Cancelar</Button>
-              <Button type="submit" loading={saving}>{editItem ? "Salvar" : "Cadastrar"}</Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
+      {/* Modal canônico FIPS DS Modal Form */}
+      <NovoFornecedorDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        onSuccess={fetchFornecedores}
+        fornecedor={editingFornecedor}
+      />
     </div>
   );
+}
+
+/* ──────────────────────────── COLUMNS ──────────────────────────── */
+
+interface FornecedorActions {
+  onEdit: (f: Fornecedor) => void;
+  onDelete: (id: string) => void;
+}
+
+function fornecedorColumns({ onEdit, onDelete }: FornecedorActions): DataListingColumn<Fornecedor>[] {
+  return [
+    {
+      id: "nome",
+      label: "Fornecedor",
+      fixed: true,
+      sortable: true,
+      render: (f, { density }) => (
+        <div className="flex items-center gap-2">
+          <Avatar
+            name={f.nome}
+            size={density === "compact" ? 22 : density === "normal" ? 28 : 34}
+          />
+          <div className="min-w-0">
+            <div className="font-semibold text-[var(--fips-fg)]">{f.nome}</div>
+            {f.razaoSocial && f.razaoSocial !== f.nome && (
+              <div className="text-[10px] text-[var(--fips-fg-muted)]">{f.razaoSocial}</div>
+            )}
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: "cnpj",
+      label: "CNPJ",
+      sortable: true,
+      render: (f) => <CellMonoMuted>{f.cnpj || "—"}</CellMonoMuted>,
+    },
+    {
+      id: "cidade",
+      label: "Cidade / UF",
+      sortable: true,
+      render: (f) => (
+        <CellMuted>
+          {f.cidade ? `${f.cidade}${f.estado ? ` / ${f.estado}` : ""}` : f.estado || "—"}
+        </CellMuted>
+      ),
+    },
+    {
+      id: "telefone",
+      label: "Telefone",
+      render: (f) => <CellMonoMuted>{f.telefone || "—"}</CellMonoMuted>,
+    },
+    {
+      id: "email",
+      label: "E-mail",
+      render: (f) => (
+        <CellMuted>
+          <span className="truncate" title={f.email ?? undefined}>
+            {f.email || "—"}
+          </span>
+        </CellMuted>
+      ),
+    },
+    {
+      id: "status",
+      label: "Status",
+      sortable: true,
+      render: (f) =>
+        f.ativo === false ? (
+          <Badge variant="secondary" dot>
+            Inativo
+          </Badge>
+        ) : (
+          <Badge variant="success" dot>
+            Ativo
+          </Badge>
+        ),
+    },
+    {
+      id: "actions",
+      label: "Ações",
+      fixed: true,
+      align: "center",
+      width: "80px",
+      render: (f) => (
+        <CellActions>
+          <CellActionButton
+            title="Editar"
+            icon={<Pencil className="h-3.5 w-3.5" />}
+            onClick={() => onEdit(f)}
+          />
+          <CellActionButton
+            title="Inativar"
+            icon={<Trash2 className="h-3.5 w-3.5 text-[var(--fips-danger)]" />}
+            onClick={() => onDelete(f.id)}
+          />
+        </CellActions>
+      ),
+    },
+  ];
 }

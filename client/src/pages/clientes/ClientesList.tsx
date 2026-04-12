@@ -1,178 +1,341 @@
-import { useEffect, useState } from "react";
-import { ShoppingCart, Plus, Search, Edit, Trash2, Phone, Mail, MapPin, Building2 } from "lucide-react";
+import { useEffect, useState, useMemo } from "react";
 import { toast } from "sonner";
+import {
+  ShoppingCart,
+  Plus,
+  Pencil,
+  Trash2,
+  CheckCircle2,
+  FileBadge,
+  Mail as MailIcon,
+} from "lucide-react";
 import { PageHeader } from "@/components/domain/PageHeader";
 import { StatsCard } from "@/components/domain/StatsCard";
+import { DataListingToolbar } from "@/components/domain/DataListingToolbar";
+import { Avatar } from "@/components/domain/Avatar";
+import {
+  DataListingTable,
+  type DataListingColumn,
+  CellMonoMuted,
+  CellMuted,
+  CellActions,
+  CellActionButton,
+} from "@/components/domain/DataListingTable";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import {
-  Table, TableHeader, TableBody, TableHead, TableRow, TableCell, TableEmpty,
-} from "@/components/ui/table";
-import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
-} from "@/components/ui/dialog";
-import { Select } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
+import { NovoClienteDialog } from "./NovoClienteDialog";
 
 interface Cliente {
   id: string;
-  nome: string;
-  cnpj: string;
-  contato: string;
-  email: string;
-  endereco?: string;
-  cidade?: string;
-  estado?: string;
-  observacao?: string;
+  nomeFantasia: string;
+  razaoSocial?: string | null;
+  tipo?: string | null;
+  cnpj?: string | null;
+  endereco?: string | null;
+  bairro?: string | null;
+  cidade?: string | null;
+  estado?: string | null;
+  cep?: string | null;
+  telefone?: string | null;
+  contato?: string | null;
+  email?: string | null;
+  ativo?: boolean;
+  createdAt?: string | null;
 }
+
+const FIPS_COLORS = {
+  azulProfundo: "#004B9B",
+  verdeFloresta: "#00C64C",
+  amareloEscuro: "#F6921E",
+  azulEscuro: "#002A68",
+};
 
 export default function ClientesList() {
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [periodo, setPeriodo] = useState("Últimos 30 dias");
+  const [filterUf, setFilterUf] = useState<string>("");
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [editItem, setEditItem] = useState<Cliente | null>(null);
-  const [saving, setSaving] = useState(false);
-  const [form, setForm] = useState({ nome: "", cnpj: "", contato: "", email: "", endereco: "", cidade: "", estado: "", observacao: "" });
+  const [editingCliente, setEditingCliente] = useState<Cliente | null>(null);
 
   const fetchClientes = async () => {
     try {
       const res = await fetch("/api/clientes");
-      setClientes(await res.json());
-    } catch { } finally { setLoading(false); }
+      const data = await res.json();
+      setClientes(data);
+    } catch {
+      toast.error("Erro ao carregar clientes");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  useEffect(() => { fetchClientes(); }, []);
+  useEffect(() => {
+    fetchClientes();
+  }, []);
 
-  const filtered = clientes.filter((c) =>
-    !search ||
-    c.nome.toLowerCase().includes(search.toLowerCase()) ||
-    c.cnpj.includes(search) ||
-    (c.email || "").toLowerCase().includes(search.toLowerCase())
-  );
+  const filtered = useMemo(() => {
+    return clientes.filter((c) => {
+      const q = search.trim().toLowerCase();
+      const matchSearch =
+        !q ||
+        c.nomeFantasia.toLowerCase().includes(q) ||
+        (c.razaoSocial ?? "").toLowerCase().includes(q) ||
+        (c.cnpj ?? "").toLowerCase().includes(q) ||
+        (c.cidade ?? "").toLowerCase().includes(q);
+      const matchUf = !filterUf || c.estado === filterUf;
+      return matchSearch && matchUf;
+    });
+  }, [clientes, search, filterUf]);
+
+  const stats = useMemo(() => {
+    const total = clientes.length;
+    const ativos = clientes.filter((c) => c.ativo !== false).length;
+    const comCnpj = clientes.filter((c) => c.cnpj && c.cnpj.trim() !== "").length;
+    const comEmail = clientes.filter((c) => c.email && c.email.trim() !== "").length;
+    return { total, ativos, comCnpj, comEmail };
+  }, [clientes]);
+
+  const ufs = useMemo(() => {
+    const set = new Set<string>();
+    clientes.forEach((c) => c.estado && set.add(c.estado));
+    return Array.from(set).sort();
+  }, [clientes]);
 
   const openNew = () => {
-    setEditItem(null);
-    setForm({ nome: "", cnpj: "", contato: "", email: "", endereco: "", cidade: "", estado: "", observacao: "" });
+    setEditingCliente(null);
     setDialogOpen(true);
   };
 
   const openEdit = (c: Cliente) => {
-    setEditItem(c);
-    setForm({ nome: c.nome, cnpj: c.cnpj, contato: c.contato || "", email: c.email || "", endereco: c.endereco || "", cidade: c.cidade || "", estado: c.estado || "", observacao: c.observacao || "" });
+    setEditingCliente(c);
     setDialogOpen(true);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!form.nome) { toast.error("Nome é obrigatório"); return; }
-    setSaving(true);
-    try {
-      const method = editItem ? "PUT" : "POST";
-      const url = editItem ? `/api/clientes/${editItem.id}` : "/api/clientes";
-      const res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
-      if (!res.ok) throw new Error();
-      toast.success(editItem ? "Cliente atualizado!" : "Cliente cadastrado!");
-      setDialogOpen(false);
-      fetchClientes();
-    } catch { toast.error("Erro ao salvar"); } finally { setSaving(false); }
-  };
-
   const handleDelete = async (id: string) => {
-    if (!confirm("Excluir este cliente?")) return;
-    await fetch(`/api/clientes/${id}`, { method: "DELETE" });
-    toast.success("Cliente excluído");
-    fetchClientes();
+    if (!confirm("Inativar este cliente? (registro permanece para histórico de pedidos)")) return;
+    try {
+      const res = await fetch(`/api/clientes/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error();
+      toast.success("Cliente inativado.");
+      fetchClientes();
+    } catch {
+      toast.error("Erro ao inativar cliente.");
+    }
   };
-
-  const update = (f: string, v: string) => setForm((prev) => ({ ...prev, [f]: v }));
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Clientes" description="Empresas que compram panos prontos" icon={ShoppingCart}
-        actions={<Button onClick={openNew}><Plus className="h-4 w-4" />Novo Cliente</Button>} />
+      <PageHeader
+        title="Clientes"
+        description="Empresas B2B que recebem produtos prontos — uma filial = um cadastro próprio"
+        icon={ShoppingCart}
+        actions={
+          <Button onClick={openNew}>
+            <Plus className="h-4 w-4" />
+            Novo cliente
+          </Button>
+        }
+      />
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <StatsCard label="Total Clientes" value={clientes.length} icon={Building2} color="text-blue-500" bg="bg-blue-500/10" />
-        <StatsCard label="Com E-mail" value={clientes.filter((c) => c.email).length} icon={Mail} color="text-emerald-500" bg="bg-emerald-500/10" />
-        <StatsCard label="Com Contato" value={clientes.filter((c) => c.contato).length} icon={Phone} color="text-purple-500" bg="bg-purple-500/10" />
+      {/* Cards Relatório FIPS DS */}
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
+        <StatsCard
+          label="Total Clientes"
+          value={stats.total}
+          subtitle="Cadastrados no sistema"
+          icon={ShoppingCart}
+          color={FIPS_COLORS.azulProfundo}
+        />
+        <StatsCard
+          label="Ativos"
+          value={stats.ativos}
+          subtitle={`${stats.total > 0 ? Math.round((stats.ativos / stats.total) * 100) : 0}% do total`}
+          icon={CheckCircle2}
+          color={FIPS_COLORS.verdeFloresta}
+        />
+        <StatsCard
+          label="Com CNPJ"
+          value={stats.comCnpj}
+          subtitle="Pessoa jurídica formal"
+          icon={FileBadge}
+          color={FIPS_COLORS.azulEscuro}
+        />
+        <StatsCard
+          label="Com E-mail"
+          value={stats.comEmail}
+          subtitle="Comunicação digital ativa"
+          icon={MailIcon}
+          color={FIPS_COLORS.amareloEscuro}
+        />
       </div>
 
-      <div className="fips-surface-panel p-4">
-        <Input placeholder="Buscar por nome, CNPJ ou e-mail..." icon={<Search />} value={search} onChange={(e) => setSearch(e.target.value)} />
-      </div>
+      {/* Toolbar canônica */}
+      <DataListingToolbar
+        search={search}
+        onSearchChange={setSearch}
+        searchPlaceholder="Buscar por nome, razão social, CNPJ ou cidade..."
+        activeFilters={filterUf ? 1 : 0}
+        filtersContent={
+          <div className="px-4 py-3">
+            <p className="mb-2 text-[9px] font-bold uppercase tracking-[1px] text-[var(--fips-fg-muted)]">
+              Estado (UF)
+            </p>
+            <div className="flex max-h-[300px] flex-col gap-1 overflow-y-auto">
+              <button
+                onClick={() => setFilterUf("")}
+                className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
+                  !filterUf
+                    ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                    : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
+                }`}
+              >
+                Todos os estados
+              </button>
+              {ufs.map((uf) => (
+                <button
+                  key={uf}
+                  onClick={() => setFilterUf(uf)}
+                  className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
+                    filterUf === uf
+                      ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                      : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
+                  }`}
+                >
+                  {uf}
+                </button>
+              ))}
+            </div>
+          </div>
+        }
+        periodo={periodo}
+        onPeriodoChange={setPeriodo}
+        onExportExcel={() => alert("Export Excel — placeholder")}
+        onExportPdf={() => alert("Export PDF — placeholder")}
+      />
 
-      <div className="fips-surface-panel">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Cliente</TableHead>
-              <TableHead>CNPJ</TableHead>
-              <TableHead>Contato</TableHead>
-              <TableHead>E-mail</TableHead>
-              <TableHead>Cidade/UF</TableHead>
-              <TableHead className="text-right">Ações</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {loading ? <TableEmpty colSpan={6} message="Carregando..." /> :
-             filtered.length === 0 ? <TableEmpty colSpan={6} /> :
-             filtered.map((c) => (
-              <TableRow key={c.id}>
-                <TableCell>
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center text-primary font-bold text-xs">
-                      {c.nome.split(" ").map((n) => n[0]).slice(0, 2).join("")}
-                    </div>
-                    <span className="font-medium">{c.nome}</span>
-                  </div>
-                </TableCell>
-                <TableCell className="font-mono text-sm">{c.cnpj}</TableCell>
-                <TableCell>{c.contato || "—"}</TableCell>
-                <TableCell>{c.email || "—"}</TableCell>
-                <TableCell>{c.cidade && c.estado ? `${c.cidade}/${c.estado}` : "—"}</TableCell>
-                <TableCell className="text-right">
-                  <div className="flex justify-end gap-1">
-                    <Button variant="ghost" size="iconSm" onClick={() => openEdit(c)}><Edit className="h-4 w-4" /></Button>
-                    <Button variant="ghost" size="iconSm" onClick={() => handleDelete(c.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+      {/* Tabela canônica DS-FIPS Data Listing */}
+      <DataListingTable<Cliente>
+        icon={<ShoppingCart className="h-[22px] w-[22px]" />}
+        title="Clientes"
+        subtitle={`${filtered.length} ${filtered.length === 1 ? "registro" : "registros"} ${
+          search || filterUf ? "filtrados" : "no total"
+        } · Atualizado agora`}
+        filtered={!!(search || filterUf)}
+        data={filtered}
+        getRowId={(c) => c.id}
+        emptyState={loading ? "Carregando clientes..." : "Nenhum cliente encontrado"}
+        columns={clienteColumns({ onEdit: openEdit, onDelete: handleDelete })}
+      />
 
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle>{editItem ? "Editar Cliente" : "Novo Cliente"}</DialogTitle>
-            <DialogDescription>Cadastro de empresa compradora de panos</DialogDescription>
-          </DialogHeader>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Nome Fantasia *</label>
-              <Input value={form.nome} onChange={(e) => update("nome", e.target.value)} placeholder="Nome da empresa" />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2"><label className="text-sm font-medium">CNPJ</label><Input value={form.cnpj} onChange={(e) => update("cnpj", e.target.value)} placeholder="00.000.000/0000-00" /></div>
-              <div className="space-y-2"><label className="text-sm font-medium">Contato</label><Input value={form.contato} onChange={(e) => update("contato", e.target.value)} placeholder="(00) 0000-0000" /></div>
-            </div>
-            <div className="space-y-2"><label className="text-sm font-medium">E-mail</label><Input type="email" value={form.email} onChange={(e) => update("email", e.target.value)} placeholder="email@empresa.com" /></div>
-            <div className="space-y-2"><label className="text-sm font-medium">Endereço</label><Input value={form.endereco} onChange={(e) => update("endereco", e.target.value)} placeholder="Rua, número" /></div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2"><label className="text-sm font-medium">Cidade</label><Input value={form.cidade} onChange={(e) => update("cidade", e.target.value)} /></div>
-              <div className="space-y-2"><label className="text-sm font-medium">Estado</label><Input value={form.estado} onChange={(e) => update("estado", e.target.value)} placeholder="SP" maxLength={2} /></div>
-            </div>
-            <div className="space-y-2"><label className="text-sm font-medium">Observação</label><Textarea value={form.observacao} onChange={(e) => update("observacao", e.target.value)} rows={2} /></div>
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>Cancelar</Button>
-              <Button type="submit" loading={saving}>{editItem ? "Salvar" : "Cadastrar"}</Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
+      {/* Modal canônico FIPS DS Modal Form */}
+      <NovoClienteDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        onSuccess={fetchClientes}
+        cliente={editingCliente}
+      />
     </div>
   );
+}
+
+/* ──────────────────────────── COLUMNS ──────────────────────────── */
+
+interface ClienteActions {
+  onEdit: (c: Cliente) => void;
+  onDelete: (id: string) => void;
+}
+
+function clienteColumns({ onEdit, onDelete }: ClienteActions): DataListingColumn<Cliente>[] {
+  return [
+    {
+      id: "nome",
+      label: "Cliente",
+      fixed: true,
+      sortable: true,
+      render: (c, { density }) => (
+        <div className="flex items-center gap-2">
+          <Avatar
+            name={c.nomeFantasia}
+            size={density === "compact" ? 22 : density === "normal" ? 28 : 34}
+          />
+          <div className="min-w-0">
+            <div className="font-semibold text-[var(--fips-fg)]">{c.nomeFantasia}</div>
+            {c.razaoSocial && c.razaoSocial !== c.nomeFantasia && (
+              <div className="text-[10px] text-[var(--fips-fg-muted)]">{c.razaoSocial}</div>
+            )}
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: "cnpj",
+      label: "CNPJ",
+      sortable: true,
+      render: (c) => <CellMonoMuted>{c.cnpj || "—"}</CellMonoMuted>,
+    },
+    {
+      id: "cidade",
+      label: "Cidade / UF",
+      sortable: true,
+      render: (c) => (
+        <CellMuted>
+          {c.cidade ? `${c.cidade}${c.estado ? ` / ${c.estado}` : ""}` : c.estado || "—"}
+        </CellMuted>
+      ),
+    },
+    {
+      id: "telefone",
+      label: "Telefone",
+      render: (c) => <CellMonoMuted>{c.telefone || "—"}</CellMonoMuted>,
+    },
+    {
+      id: "email",
+      label: "E-mail",
+      render: (c) => (
+        <CellMuted>
+          <span className="truncate" title={c.email ?? undefined}>
+            {c.email || "—"}
+          </span>
+        </CellMuted>
+      ),
+    },
+    {
+      id: "status",
+      label: "Status",
+      sortable: true,
+      render: (c) =>
+        c.ativo === false ? (
+          <Badge variant="secondary" dot>
+            Inativo
+          </Badge>
+        ) : (
+          <Badge variant="success" dot>
+            Ativo
+          </Badge>
+        ),
+    },
+    {
+      id: "actions",
+      label: "Ações",
+      fixed: true,
+      align: "center",
+      width: "80px",
+      render: (c) => (
+        <CellActions>
+          <CellActionButton
+            title="Editar"
+            icon={<Pencil className="h-3.5 w-3.5" />}
+            onClick={() => onEdit(c)}
+          />
+          <CellActionButton
+            title="Inativar"
+            icon={<Trash2 className="h-3.5 w-3.5 text-[var(--fips-danger)]" />}
+            onClick={() => onDelete(c.id)}
+          />
+        </CellActions>
+      ),
+    },
+  ];
 }

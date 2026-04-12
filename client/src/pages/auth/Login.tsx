@@ -54,8 +54,8 @@ export default function Login() {
     setSubmitError('');
     setLoading(true);
     try {
-      await login(formData.email, formData.password);
-      navigate('/');
+      const user = await login(formData.email, formData.password);
+      navigate(user.perfil.toLowerCase() === 'michele' ? '/coleta' : '/');
     } catch (error) {
       const msg = error instanceof Error ? error.message : 'Credenciais inválidas. Tente novamente.';
       setSubmitError(msg);

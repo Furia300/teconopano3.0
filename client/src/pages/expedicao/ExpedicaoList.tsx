@@ -1,343 +1,387 @@
-import { useEffect, useState } from "react";
-import { Package, Plus, Search, DollarSign, FileText, Truck, Eye } from "lucide-react";
+import { useEffect, useState, useMemo } from "react";
+import { toast } from "sonner";
+import {
+  Package,
+  Plus,
+  Eye,
+  Trash2,
+  Lock,
+  CheckCircle2,
+  FileText,
+  Send,
+} from "lucide-react";
 import { PageHeader } from "@/components/domain/PageHeader";
 import { StatsCard } from "@/components/domain/StatsCard";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsListUnderline, TabsTriggerUnderline, TabsContent } from "@/components/ui/tabs";
+import { DataListingToolbar } from "@/components/domain/DataListingToolbar";
+import { Avatar } from "@/components/domain/Avatar";
 import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableEmpty,
-} from "@/components/ui/table";
-import { NovaExpedicaoDialog } from "./NovaExpedicaoDialog";
-import { ExpedicaoDetalhes } from "./ExpedicaoDetalhes";
+  DataListingTable,
+  type DataListingColumn,
+  CellMonoStrong,
+  CellMonoMuted,
+  CellMuted,
+  CellActions,
+  CellActionButton,
+} from "@/components/domain/DataListingTable";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { NovoPedidoDialog } from "./NovoPedidoDialog";
 
 interface Expedicao {
   id: string;
-  nomeFantasia: string;
-  razaoSocial: string;
-  cnpj: string;
-  contato: string;
-  descricaoProduto: string;
-  tipoMaterial: string;
-  cor: string;
-  medida: string;
-  kilo: number;
-  kiloSolicitada: number;
-  unidade: number;
-  qtdePedido: number;
-  unidadeMedida: string;
-  statusPedido: string;
-  statusEntrega: string;
-  statusFinanceiro: string;
-  statusNota: string;
-  galpao: string;
-  rota: string;
-  prioridade: string;
-  notaFiscal: string;
-  observacaoEscritorio: string;
-  observacaoGalpao: string;
-  createdAt: string;
+  nomeFantasia?: string | null;
+  cnpj?: string | null;
+  descricaoProduto?: string | null;
+  tipoMaterial?: string | null;
+  cor?: string | null;
+  medida?: string | null;
+  qtdePedido?: number | null;
+  qtdeEstoque?: number | null;
+  unidadeMedida?: string | null;
+  galpao?: string | null;
+  rota?: string | null;
+  prioridade?: string | null;
+  statusEntrega?: string | null;
+  statusFinanceiro?: string | null;
+  statusNota?: string | null;
+  notaFiscal?: string | null;
+  dataEntrega?: string | null;
+  createdAt?: string | null;
 }
 
-const entregaConfig: Record<string, { label: string; variant: "warning" | "info" | "success" | "secondary" | "danger" }> = {
+const FIPS_COLORS = {
+  azulProfundo: "#004B9B",
+  verdeFloresta: "#00C64C",
+  amareloEscuro: "#F6921E",
+  azulEscuro: "#002A68",
+};
+
+const STATUS_VARIANTS: Record<
+  string,
+  { label: string; variant: "default" | "secondary" | "success" | "warning" | "danger" | "info" }
+> = {
   pendente: { label: "Pendente", variant: "warning" },
   reservado: { label: "Reservado", variant: "info" },
-  separado: { label: "Separado", variant: "secondary" },
-  aguardando_financeiro: { label: "Aguard. Financeiro", variant: "warning" },
-  aguardando_nf: { label: "Aguard. NF", variant: "warning" },
-  pronto_entrega: { label: "Pronto Entrega", variant: "info" },
+  aguardando_financeiro: { label: "Aguardando Financeiro", variant: "warning" },
+  aguardando_nf: { label: "Aguardando NF", variant: "info" },
+  pronto_entrega: { label: "Pronto p/ Entrega", variant: "success" },
   em_rota: { label: "Em Rota", variant: "info" },
   entregue: { label: "Entregue", variant: "success" },
   cancelado: { label: "Cancelado", variant: "danger" },
 };
 
-const financeiroConfig: Record<string, { label: string; variant: "warning" | "success" | "danger" }> = {
-  pendente_aprovacao: { label: "Pend. Aprovação", variant: "warning" },
-  aprovado: { label: "Aprovado", variant: "success" },
-  rejeitado: { label: "Rejeitado", variant: "danger" },
-};
-
-const notaConfig: Record<string, { label: string; variant: "warning" | "success" | "danger" }> = {
-  pendente_emissao: { label: "Pend. Emissão", variant: "warning" },
-  emitida: { label: "Emitida", variant: "success" },
-  cancelada: { label: "Cancelada", variant: "danger" },
-};
-
 export default function ExpedicaoList() {
-  const [expedicoes, setExpedicoes] = useState<Expedicao[]>([]);
+  const [pedidos, setPedidos] = useState<Expedicao[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [filterEntrega, setFilterEntrega] = useState("");
+  const [periodo, setPeriodo] = useState("Últimos 30 dias");
+  const [filterStatus, setFilterStatus] = useState<string>("");
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [detalhesItem, setDetalhesItem] = useState<Expedicao | null>(null);
-  const [tab, setTab] = useState("todos");
 
-  const fetchExpedicoes = async () => {
+  const fetchPedidos = async () => {
     try {
       const res = await fetch("/api/expedicoes");
       const data = await res.json();
-      setExpedicoes(data);
-    } catch (err) {
-      console.error("Erro ao buscar expedições:", err);
+      setPedidos(data);
+    } catch {
+      toast.error("Erro ao carregar pedidos");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchExpedicoes();
+    fetchPedidos();
   }, []);
 
-  const filtered = expedicoes.filter((e) => {
-    const matchSearch =
-      !search ||
-      e.nomeFantasia.toLowerCase().includes(search.toLowerCase()) ||
-      e.descricaoProduto.toLowerCase().includes(search.toLowerCase()) ||
-      e.tipoMaterial.toLowerCase().includes(search.toLowerCase());
-    const matchEntrega = !filterEntrega || e.statusEntrega === filterEntrega;
+  const filtered = useMemo(() => {
+    return pedidos.filter((p) => {
+      const q = search.trim().toLowerCase();
+      const matchSearch =
+        !q ||
+        (p.nomeFantasia ?? "").toLowerCase().includes(q) ||
+        (p.descricaoProduto ?? "").toLowerCase().includes(q) ||
+        (p.tipoMaterial ?? "").toLowerCase().includes(q) ||
+        (p.notaFiscal ?? "").toLowerCase().includes(q);
+      const matchStatus = !filterStatus || p.statusEntrega === filterStatus;
+      return matchSearch && matchStatus;
+    });
+  }, [pedidos, search, filterStatus]);
 
-    // Tab filter
-    if (tab === "financeiro") return matchSearch && e.statusFinanceiro === "pendente_aprovacao";
-    if (tab === "nf") return matchSearch && e.statusFinanceiro === "aprovado" && e.statusNota === "pendente_emissao";
-    if (tab === "entrega") return matchSearch && e.statusNota === "emitida" && e.statusEntrega !== "entregue";
+  const stats = useMemo(() => {
+    const total = pedidos.length;
+    const aguardando = pedidos.filter(
+      (p) => p.statusFinanceiro === "pendente_aprovacao",
+    ).length;
+    const aprovados = pedidos.filter((p) => p.statusFinanceiro === "aprovado").length;
+    const entregues = pedidos.filter((p) => p.statusEntrega === "entregue").length;
+    return { total, aguardando, aprovados, entregues };
+  }, [pedidos]);
 
-    return matchSearch && matchEntrega;
-  });
-
-  const stats = {
-    total: expedicoes.length,
-    pendFinanceiro: expedicoes.filter((e) => e.statusFinanceiro === "pendente_aprovacao").length,
-    pendNF: expedicoes.filter((e) => e.statusFinanceiro === "aprovado" && e.statusNota === "pendente_emissao").length,
-    prontoEntrega: expedicoes.filter((e) => e.statusNota === "emitida" && e.statusEntrega !== "entregue").length,
+  const handleDelete = async (id: string) => {
+    if (!confirm("Excluir este pedido?")) return;
+    try {
+      const res = await fetch(`/api/expedicoes/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error();
+      toast.success("Pedido excluído.");
+      fetchPedidos();
+    } catch {
+      toast.error("Erro ao excluir pedido.");
+    }
   };
-
-  const formatDate = (dateStr: string) => new Date(dateStr).toLocaleDateString("pt-BR");
 
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Expedição"
-        description="Pedidos dos clientes — do estoque até a entrega"
-        icon={Package}
+        title="Pedidos"
+        description="Pedidos de cliente B2B — fluxo Michele → Lane (libera) → Financeiro (aprova) → NF → Motorista"
+        icon={Send}
         actions={
           <Button onClick={() => setDialogOpen(true)}>
             <Plus className="h-4 w-4" />
-            Nova Expedição
+            Novo pedido
           </Button>
         }
       />
 
-      {/* KPIs */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatsCard label="Total Expedições" value={stats.total} icon={Package} color="text-blue-500" bg="bg-blue-500/10" />
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
         <StatsCard
-          label="Pend. Financeiro"
-          value={stats.pendFinanceiro}
-          icon={DollarSign}
-          color="text-amber-500"
-          bg="bg-amber-500/10"
+          label="Total Pedidos"
+          value={stats.total}
+          subtitle="Cadastrados no sistema"
+          icon={Package}
+          color={FIPS_COLORS.azulProfundo}
         />
         <StatsCard
-          label="Pend. Emissão NF"
-          value={stats.pendNF}
+          label="Aguardando Aprovação"
+          value={stats.aguardando}
+          subtitle="Financeiro pendente"
+          icon={Lock}
+          color={FIPS_COLORS.amareloEscuro}
+        />
+        <StatsCard
+          label="Aprovados"
+          value={stats.aprovados}
+          subtitle="Prontos para NF / entrega"
           icon={FileText}
-          color="text-purple-500"
-          bg="bg-purple-500/10"
+          color={FIPS_COLORS.azulEscuro}
         />
         <StatsCard
-          label="Pronto p/ Entrega"
-          value={stats.prontoEntrega}
-          icon={Truck}
-          color="text-emerald-500"
-          bg="bg-emerald-500/10"
+          label="Entregues"
+          value={stats.entregues}
+          subtitle="Concluídos no período"
+          icon={CheckCircle2}
+          color={FIPS_COLORS.verdeFloresta}
         />
       </div>
 
-      {/* Tabs da cadeia de aprovação */}
-      <Tabs value={tab} onValueChange={setTab}>
-        <TabsListUnderline>
-          <TabsTriggerUnderline value="todos">
-            Todos ({expedicoes.length})
-          </TabsTriggerUnderline>
-          <TabsTriggerUnderline value="financeiro">
-            Financeiro ({stats.pendFinanceiro})
-          </TabsTriggerUnderline>
-          <TabsTriggerUnderline value="nf">
-            Emissão NF ({stats.pendNF})
-          </TabsTriggerUnderline>
-          <TabsTriggerUnderline value="entrega">
-            Entrega ({stats.prontoEntrega})
-          </TabsTriggerUnderline>
-        </TabsListUnderline>
-      </Tabs>
-
-      {/* Filtros */}
-      <div className="fips-surface-panel p-4">
-        <div className="flex flex-col sm:flex-row gap-3">
-          <div className="flex-1">
-            <Input
-              placeholder="Buscar por cliente, produto, material..."
-              icon={<Search />}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
+      <DataListingToolbar
+        search={search}
+        onSearchChange={setSearch}
+        searchPlaceholder="Buscar por cliente, produto, NF..."
+        activeFilters={filterStatus ? 1 : 0}
+        filtersContent={
+          <div className="px-4 py-3">
+            <p className="mb-2 text-[9px] font-bold uppercase tracking-[1px] text-[var(--fips-fg-muted)]">
+              Status entrega
+            </p>
+            <div className="flex flex-col gap-1">
+              <button
+                onClick={() => setFilterStatus("")}
+                className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
+                  !filterStatus
+                    ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                    : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
+                }`}
+              >
+                Todos os status
+              </button>
+              {Object.entries(STATUS_VARIANTS).map(([key, { label }]) => (
+                <button
+                  key={key}
+                  onClick={() => setFilterStatus(key)}
+                  className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
+                    filterStatus === key
+                      ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                      : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
           </div>
-          {tab === "todos" && (
-            <div className="w-full sm:w-52">
-              <Select value={filterEntrega} onChange={(e) => setFilterEntrega(e.target.value)}>
-                <option value="">Todos status entrega</option>
-                <option value="pendente">Pendente</option>
-                <option value="aguardando_financeiro">Aguard. Financeiro</option>
-                <option value="aguardando_nf">Aguard. NF</option>
-                <option value="pronto_entrega">Pronto Entrega</option>
-                <option value="em_rota">Em Rota</option>
-                <option value="entregue">Entregue</option>
-              </Select>
+        }
+        periodo={periodo}
+        onPeriodoChange={setPeriodo}
+        onExportExcel={() => alert("Export Excel — placeholder")}
+        onExportPdf={() => alert("Export PDF — placeholder")}
+      />
+
+      <DataListingTable<Expedicao>
+        icon={<Send className="h-[22px] w-[22px]" />}
+        title="Pedidos"
+        subtitle={`${filtered.length} ${filtered.length === 1 ? "registro" : "registros"} ${
+          search || filterStatus ? "filtrados" : "no total"
+        } · Atualizado agora`}
+        filtered={!!(search || filterStatus)}
+        data={filtered}
+        getRowId={(p) => p.id}
+        emptyState={
+          loading
+            ? "Carregando pedidos..."
+            : "Nenhum pedido cadastrado — clique em + Novo pedido"
+        }
+        columns={pedidoColumns({ onView: () => {}, onDelete: handleDelete })}
+      />
+
+      <NovoPedidoDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        onSuccess={fetchPedidos}
+      />
+    </div>
+  );
+}
+
+interface PedidoActions {
+  onView: (p: Expedicao) => void;
+  onDelete: (id: string) => void;
+}
+
+const formatDateBR = (s: string | null | undefined) =>
+  s ? new Date(s).toLocaleDateString("pt-BR") : "—";
+
+function pedidoColumns({ onView, onDelete }: PedidoActions): DataListingColumn<Expedicao>[] {
+  return [
+    {
+      id: "cliente",
+      label: "Cliente",
+      fixed: true,
+      sortable: true,
+      render: (p, { density }) => (
+        <div className="flex items-center gap-2">
+          <Avatar
+            name={p.nomeFantasia || "—"}
+            size={density === "compact" ? 22 : density === "normal" ? 28 : 34}
+          />
+          <div className="min-w-0">
+            <div className="font-semibold text-[var(--fips-fg)]">{p.nomeFantasia || "—"}</div>
+            {p.cnpj && <div className="text-[10px] text-[var(--fips-fg-muted)]">{p.cnpj}</div>}
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: "produto",
+      label: "Produto",
+      sortable: true,
+      render: (p) => (
+        <div>
+          <div className="text-[var(--fips-fg)]">{p.tipoMaterial || p.descricaoProduto || "—"}</div>
+          {(p.cor || p.medida) && (
+            <div className="text-[10px] text-[var(--fips-fg-muted)]">
+              {[p.cor, p.medida].filter(Boolean).join(" · ")}
             </div>
           )}
         </div>
-      </div>
-
-      {/* Tabela */}
-      <div className="fips-surface-panel">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Cliente</TableHead>
-              <TableHead>Produto</TableHead>
-              <TableHead>Qtde/Peso</TableHead>
-              <TableHead>Entrega</TableHead>
-              <TableHead>Financeiro</TableHead>
-              <TableHead>Nota Fiscal</TableHead>
-              <TableHead>Rota</TableHead>
-              <TableHead>Data</TableHead>
-              <TableHead className="text-right">Ações</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {loading ? (
-              <TableEmpty colSpan={9} message="Carregando..." />
-            ) : filtered.length === 0 ? (
-              <TableEmpty colSpan={9} />
-            ) : (
-              filtered.map((exp) => {
-                const ec = entregaConfig[exp.statusEntrega] || { label: exp.statusEntrega, variant: "secondary" as const };
-                const fc = financeiroConfig[exp.statusFinanceiro] || { label: exp.statusFinanceiro, variant: "warning" as const };
-                const nc = notaConfig[exp.statusNota] || { label: exp.statusNota, variant: "warning" as const };
-                return (
-                  <TableRow key={exp.id}>
-                    <TableCell>
-                      <div>
-                        <p className="font-medium">{exp.nomeFantasia}</p>
-                        <p className="text-xs text-muted-foreground">{exp.cnpj}</p>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div>
-                        <p className="text-sm">{exp.descricaoProduto}</p>
-                        <Badge variant="outline" className="text-[10px] mt-0.5">{exp.tipoMaterial}</Badge>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="text-xs">
-                        {exp.unidade > 0 && <p>{exp.unidade} un</p>}
-                        <p className="font-semibold">{exp.kilo} kg</p>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={ec.variant} dot>{ec.label}</Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={fc.variant} dot>{fc.label}</Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div>
-                        <Badge variant={nc.variant} dot>{nc.label}</Badge>
-                        {exp.notaFiscal && (
-                          <p className="text-xs text-muted-foreground mt-0.5">{exp.notaFiscal}</p>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      {exp.rota ? (
-                        <Badge variant="outline">{exp.rota}</Badge>
-                      ) : "—"}
-                    </TableCell>
-                    <TableCell>{formatDate(exp.createdAt)}</TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-1">
-                        <Button variant="ghost" size="iconSm" onClick={() => setDetalhesItem(exp)}>
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        {tab === "financeiro" && (
-                          <Button
-                            variant="success"
-                            size="sm"
-                            onClick={async () => {
-                              await fetch(`/api/expedicoes/${exp.id}/aprovar-financeiro`, { method: "PUT" });
-                              fetchExpedicoes();
-                            }}
-                          >
-                            <DollarSign className="h-3 w-3" />
-                            Aprovar
-                          </Button>
-                        )}
-                        {tab === "nf" && (
-                          <Button
-                            size="sm"
-                            onClick={async () => {
-                              await fetch(`/api/expedicoes/${exp.id}/emitir-nf`, { method: "PUT" });
-                              fetchExpedicoes();
-                            }}
-                          >
-                            <FileText className="h-3 w-3" />
-                            Emitir NF
-                          </Button>
-                        )}
-                        {tab === "entrega" && (
-                          <Button
-                            variant="success"
-                            size="sm"
-                            onClick={async () => {
-                              await fetch(`/api/expedicoes/${exp.id}/entregar`, { method: "PUT" });
-                              fetchExpedicoes();
-                            }}
-                          >
-                            <Truck className="h-3 w-3" />
-                            Entregar
-                          </Button>
-                        )}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                );
-              })
-            )}
-          </TableBody>
-        </Table>
-      </div>
-
-      <NovaExpedicaoDialog
-        open={dialogOpen}
-        onOpenChange={setDialogOpen}
-        onSuccess={fetchExpedicoes}
-      />
-
-      {detalhesItem && (
-        <ExpedicaoDetalhes
-          expedicao={detalhesItem}
-          open={!!detalhesItem}
-          onOpenChange={(open) => { if (!open) setDetalhesItem(null); }}
-        />
-      )}
-    </div>
-  );
+      ),
+    },
+    {
+      id: "qtde",
+      label: "Qtde",
+      sortable: true,
+      align: "right",
+      render: (p) => (
+        <div className="text-right">
+          <CellMonoStrong align="right">{p.qtdePedido ?? "—"}</CellMonoStrong>
+          {(p.qtdeEstoque ?? 0) > 0 && (
+            <div className="text-[10px] text-[var(--fips-success-strong)]">
+              {p.qtdeEstoque} reservado
+            </div>
+          )}
+        </div>
+      ),
+    },
+    {
+      id: "rota",
+      label: "Rota",
+      sortable: true,
+      width: "70px",
+      render: (p) => <CellMonoMuted>{p.rota || "—"}</CellMonoMuted>,
+    },
+    {
+      id: "dataEntrega",
+      label: "Entrega",
+      sortable: true,
+      render: (p) => <CellMonoMuted>{formatDateBR(p.dataEntrega)}</CellMonoMuted>,
+    },
+    {
+      id: "statusEntrega",
+      label: "Status",
+      sortable: true,
+      render: (p) => {
+        const sc = STATUS_VARIANTS[p.statusEntrega ?? "pendente"] || {
+          label: p.statusEntrega || "—",
+          variant: "secondary" as const,
+        };
+        return (
+          <Badge variant={sc.variant} dot>
+            {sc.label}
+          </Badge>
+        );
+      },
+    },
+    {
+      id: "statusFinanceiro",
+      label: "Financeiro",
+      sortable: true,
+      render: (p) => {
+        const sf = p.statusFinanceiro;
+        if (sf === "aprovado")
+          return (
+            <Badge variant="success" dot>
+              Aprovado
+            </Badge>
+          );
+        if (sf === "rejeitado")
+          return (
+            <Badge variant="danger" dot>
+              Rejeitado
+            </Badge>
+          );
+        return (
+          <Badge variant="warning" dot>
+            Pendente
+          </Badge>
+        );
+      },
+    },
+    {
+      id: "notaFiscal",
+      label: "NF",
+      render: (p) => <CellMuted>{p.notaFiscal || "—"}</CellMuted>,
+    },
+    {
+      id: "actions",
+      label: "Ações",
+      fixed: true,
+      align: "center",
+      width: "80px",
+      render: (p) => (
+        <CellActions>
+          <CellActionButton
+            title="Ver detalhes"
+            icon={<Eye className="h-3.5 w-3.5" />}
+            onClick={() => onView(p)}
+          />
+          <CellActionButton
+            title="Excluir"
+            icon={<Trash2 className="h-3.5 w-3.5 text-[var(--fips-danger)]" />}
+            onClick={() => onDelete(p.id)}
+          />
+        </CellActions>
+      ),
+    },
+  ];
 }

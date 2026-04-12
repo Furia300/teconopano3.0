@@ -1,65 +1,70 @@
-import { useEffect, useState } from "react";
-import { Warehouse, Plus, Search, Package, Weight, QrCode, ArrowDownToLine } from "lucide-react";
+import { useEffect, useState, useMemo } from "react";
+import { toast } from "sonner";
+import {
+  Warehouse,
+  Package,
+  Scale,
+  Lock,
+  CheckCircle2,
+  Trash2,
+  Eye,
+} from "lucide-react";
 import { PageHeader } from "@/components/domain/PageHeader";
 import { StatsCard } from "@/components/domain/StatsCard";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
+import { DataListingToolbar } from "@/components/domain/DataListingToolbar";
+import { Avatar } from "@/components/domain/Avatar";
 import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableEmpty,
-} from "@/components/ui/table";
-import { NovoEstoqueDialog } from "./NovoEstoqueDialog";
+  DataListingTable,
+  type DataListingColumn,
+  CellMonoStrong,
+  CellMonoMuted,
+  CellMuted,
+  CellActions,
+  CellActionButton,
+} from "@/components/domain/DataListingTable";
+import { Badge } from "@/components/ui/badge";
 
 interface EstoqueItem {
   id: string;
-  coletaNumero: number;
-  fornecedor: string;
   descricaoProduto: string;
-  tipoMaterial: string;
-  cor: string;
-  medida: string;
-  acabamento: string;
-  kilo: number;
-  unidade: number;
-  pesoMedioPct: number;
-  unidadeMedida: string;
-  qtdeReservadaPacote: number;
-  galpao: string;
-  status: string;
-  statusMaterial: string;
-  data: string;
+  novaDescricao?: string | null;
+  tipoMaterial?: string | null;
+  cor?: string | null;
+  medida?: string | null;
+  acabamento?: string | null;
+  kilo?: number | null;
+  unidade?: number | null;
+  qtdeReservadaPacote?: number | null;
+  pesoMedioPct?: number | null;
+  unidadeMedida?: string | null;
+  galpao?: string | null;
+  nomeFantasia?: string | null;
+  notaFiscal?: string | null;
+  status?: string | null;
+  data?: string | null;
 }
 
-const statusConfig: Record<string, { label: string; variant: "warning" | "info" | "success" | "secondary" | "danger" }> = {
-  Pendente: { label: "Pendente", variant: "warning" },
-  Disponivel: { label: "Disponível", variant: "success" },
-  Reservado: { label: "Reservado", variant: "info" },
-  Expedido: { label: "Expedido", variant: "secondary" },
-  Esgotado: { label: "Esgotado", variant: "danger" },
+const FIPS_COLORS = {
+  azulProfundo: "#004B9B",
+  verdeFloresta: "#00C64C",
+  amareloEscuro: "#F6921E",
+  azulEscuro: "#002A68",
 };
 
 export default function EstoqueList() {
-  const [itens, setItens] = useState<EstoqueItem[]>([]);
+  const [estoque, setEstoque] = useState<EstoqueItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [filterStatus, setFilterStatus] = useState("");
-  const [filterMaterial, setFilterMaterial] = useState("");
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const [periodo, setPeriodo] = useState("Últimos 30 dias");
+  const [filterGalpao, setFilterGalpao] = useState<string>("");
 
   const fetchEstoque = async () => {
     try {
       const res = await fetch("/api/estoque");
       const data = await res.json();
-      setItens(data);
-    } catch (err) {
-      console.error("Erro ao buscar estoque:", err);
+      setEstoque(data);
+    } catch {
+      toast.error("Erro ao carregar estoque");
     } finally {
       setLoading(false);
     }
@@ -69,166 +74,258 @@ export default function EstoqueList() {
     fetchEstoque();
   }, []);
 
-  const filtered = itens.filter((i) => {
-    const matchSearch =
-      !search ||
-      i.descricaoProduto.toLowerCase().includes(search.toLowerCase()) ||
-      i.tipoMaterial.toLowerCase().includes(search.toLowerCase()) ||
-      i.fornecedor.toLowerCase().includes(search.toLowerCase()) ||
-      String(i.coletaNumero).includes(search);
-    const matchStatus = !filterStatus || i.status === filterStatus;
-    const matchMaterial = !filterMaterial || i.tipoMaterial === filterMaterial;
-    return matchSearch && matchStatus && matchMaterial;
-  });
+  const filtered = useMemo(() => {
+    return estoque.filter((e) => {
+      const q = search.trim().toLowerCase();
+      const matchSearch =
+        !q ||
+        e.descricaoProduto.toLowerCase().includes(q) ||
+        (e.tipoMaterial ?? "").toLowerCase().includes(q) ||
+        (e.cor ?? "").toLowerCase().includes(q);
+      const matchGalpao = !filterGalpao || e.galpao === filterGalpao;
+      return matchSearch && matchGalpao;
+    });
+  }, [estoque, search, filterGalpao]);
 
-  const materiais = [...new Set(itens.map((i) => i.tipoMaterial))].sort();
+  // ⚠️ Regra R2 do user (nota 69): stock total ≠ stock reservado ≠ disponível
+  const stats = useMemo(() => {
+    const total = estoque.length;
+    const totalKg = estoque.reduce((sum, e) => sum + (e.kilo ?? 0), 0);
+    const totalReservado = estoque.reduce((sum, e) => sum + (e.qtdeReservadaPacote ?? 0), 0);
+    const totalUnidade = estoque.reduce((sum, e) => sum + (e.unidade ?? 0), 0);
+    const totalDisponivel = totalUnidade - totalReservado;
+    return { total, totalKg, totalReservado, totalDisponivel };
+  }, [estoque]);
 
-  const stats = {
-    totalItens: itens.length,
-    pesoTotal: itens.reduce((acc, i) => acc + i.kilo, 0),
-    disponiveis: itens.filter((i) => i.status === "Disponivel").length,
-    reservados: itens.filter((i) => i.status === "Reservado").reduce((acc, i) => acc + i.qtdeReservadaPacote, 0),
-  };
-
-  const formatDate = (dateStr: string) => new Date(dateStr).toLocaleDateString("pt-BR");
+  const galpoes = useMemo(() => {
+    const set = new Set<string>();
+    estoque.forEach((e) => e.galpao && set.add(e.galpao));
+    return Array.from(set).sort();
+  }, [estoque]);
 
   return (
     <div className="space-y-6">
       <PageHeader
         title="Estoque"
-        description="Produto pronto empacotado — entrada pós-produção e acabamento"
+        description="Produtos prontos no galpão — distinção total / reservado / disponível (regra R2)"
         icon={Warehouse}
-        actions={
-          <div className="flex gap-2">
-            <Button variant="outline">
-              <QrCode className="h-4 w-4" />
-              Scan Fardo
-            </Button>
-            <Button onClick={() => setDialogOpen(true)}>
-              <ArrowDownToLine className="h-4 w-4" />
-              Entrada Manual
-            </Button>
-          </div>
-        }
       />
 
-      {/* KPIs */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatsCard label="Itens em Estoque" value={stats.totalItens} icon={Package} color="text-blue-500" bg="bg-blue-500/10" />
-        <StatsCard label="Peso Total" value={`${stats.pesoTotal.toLocaleString("pt-BR")} kg`} icon={Weight} color="text-emerald-500" bg="bg-emerald-500/10" />
-        <StatsCard label="Disponíveis" value={stats.disponiveis} icon={Warehouse} color="text-purple-500" bg="bg-purple-500/10" />
-        <StatsCard label="Pacotes Reservados" value={stats.reservados} icon={Package} color="text-amber-500" bg="bg-amber-500/10" />
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
+        <StatsCard
+          label="Total Itens"
+          value={stats.total}
+          subtitle="Linhas de estoque ativas"
+          icon={Package}
+          color={FIPS_COLORS.azulProfundo}
+        />
+        <StatsCard
+          label="Total em Kg"
+          value={stats.totalKg.toLocaleString("pt-BR")}
+          subtitle="Soma de todas as variantes"
+          icon={Scale}
+          color={FIPS_COLORS.azulEscuro}
+        />
+        <StatsCard
+          label="Reservado"
+          value={stats.totalReservado.toLocaleString("pt-BR")}
+          subtitle="Aguardando expedição"
+          icon={Lock}
+          color={FIPS_COLORS.amareloEscuro}
+        />
+        <StatsCard
+          label="Disponível"
+          value={Math.max(0, stats.totalDisponivel).toLocaleString("pt-BR")}
+          subtitle="Pronto para novo pedido"
+          icon={CheckCircle2}
+          color={FIPS_COLORS.verdeFloresta}
+        />
       </div>
 
-      {/* Filtros */}
-      <div className="fips-surface-panel p-4">
-        <div className="flex flex-col sm:flex-row gap-3">
-          <div className="flex-1">
-            <Input
-              placeholder="Buscar por produto, material, fornecedor..."
-              icon={<Search />}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </div>
-          <div className="w-full sm:w-40">
-            <Select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
-              <option value="">Todos status</option>
-              <option value="Disponivel">Disponível</option>
-              <option value="Reservado">Reservado</option>
-              <option value="Pendente">Pendente</option>
-              <option value="Expedido">Expedido</option>
-            </Select>
-          </div>
-          <div className="w-full sm:w-40">
-            <Select value={filterMaterial} onChange={(e) => setFilterMaterial(e.target.value)}>
-              <option value="">Todos materiais</option>
-              {materiais.map((m) => (
-                <option key={m} value={m}>{m}</option>
+      <DataListingToolbar
+        search={search}
+        onSearchChange={setSearch}
+        searchPlaceholder="Buscar por produto, tipo material ou cor..."
+        activeFilters={filterGalpao ? 1 : 0}
+        filtersContent={
+          <div className="px-4 py-3">
+            <p className="mb-2 text-[9px] font-bold uppercase tracking-[1px] text-[var(--fips-fg-muted)]">
+              Galpão
+            </p>
+            <div className="flex flex-col gap-1">
+              <button
+                onClick={() => setFilterGalpao("")}
+                className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
+                  !filterGalpao
+                    ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                    : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
+                }`}
+              >
+                Todos os galpões
+              </button>
+              {galpoes.map((g) => (
+                <button
+                  key={g}
+                  onClick={() => setFilterGalpao(g)}
+                  className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
+                    filterGalpao === g
+                      ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                      : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
+                  }`}
+                >
+                  {g}
+                </button>
               ))}
-            </Select>
+            </div>
           </div>
-        </div>
-      </div>
+        }
+        periodo={periodo}
+        onPeriodoChange={setPeriodo}
+        onExportExcel={() => alert("Export Excel — placeholder")}
+        onExportPdf={() => alert("Export PDF — placeholder")}
+      />
 
-      {/* Tabela */}
-      <div className="fips-surface-panel">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Coleta</TableHead>
-              <TableHead>Produto</TableHead>
-              <TableHead>Material</TableHead>
-              <TableHead>Cor</TableHead>
-              <TableHead>Medida</TableHead>
-              <TableHead>Peso</TableHead>
-              <TableHead>Unidades</TableHead>
-              <TableHead>Reservado</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Entrada</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {loading ? (
-              <TableEmpty colSpan={10} message="Carregando..." />
-            ) : filtered.length === 0 ? (
-              <TableEmpty colSpan={10} />
-            ) : (
-              filtered.map((item) => {
-                const sc = statusConfig[item.status] || { label: item.status, variant: "secondary" as const };
-                const disponivel = (item.unidade || 0) - item.qtdeReservadaPacote;
-                return (
-                  <TableRow key={item.id}>
-                    <TableCell className="font-bold">#{item.coletaNumero}</TableCell>
-                    <TableCell>
-                      <div>
-                        <p className="font-medium">{item.descricaoProduto}</p>
-                        <p className="text-xs text-muted-foreground">{item.fornecedor}</p>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline">{item.tipoMaterial}</Badge>
-                    </TableCell>
-                    <TableCell>{item.cor || "—"}</TableCell>
-                    <TableCell>{item.medida || "—"}</TableCell>
-                    <TableCell className="font-medium">{item.kilo.toLocaleString("pt-BR")} kg</TableCell>
-                    <TableCell>
-                      {item.unidade > 0 ? (
-                        <div className="text-xs">
-                          <p className="font-semibold">{item.unidade} un</p>
-                          <p className="text-muted-foreground">~{item.pesoMedioPct} kg/pct</p>
-                        </div>
-                      ) : (
-                        <span className="text-muted-foreground">Por kilo</span>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      {item.qtdeReservadaPacote > 0 ? (
-                        <div className="text-xs">
-                          <p className="font-semibold text-amber-600">{item.qtdeReservadaPacote} pct</p>
-                          <p className="text-muted-foreground">Disp: {disponivel}</p>
-                        </div>
-                      ) : (
-                        "—"
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={sc.variant} dot>{sc.label}</Badge>
-                    </TableCell>
-                    <TableCell>{formatDate(item.data)}</TableCell>
-                  </TableRow>
-                );
-              })
-            )}
-          </TableBody>
-        </Table>
-      </div>
-
-      <NovoEstoqueDialog
-        open={dialogOpen}
-        onOpenChange={setDialogOpen}
-        onSuccess={fetchEstoque}
+      <DataListingTable<EstoqueItem>
+        icon={<Warehouse className="h-[22px] w-[22px]" />}
+        title="Estoque"
+        subtitle={`${filtered.length} ${filtered.length === 1 ? "registro" : "registros"} ${
+          search || filterGalpao ? "filtrados" : "no total"
+        } · Atualizado agora`}
+        filtered={!!(search || filterGalpao)}
+        data={filtered}
+        getRowId={(e) => e.id}
+        emptyState={
+          loading
+            ? "Carregando estoque..."
+            : "Estoque vazio — ainda não há produção concluída encaminhada"
+        }
+        columns={estoqueColumns({ onView: () => {}, onDelete: () => {} })}
       />
     </div>
   );
+}
+
+interface EstoqueActions {
+  onView: (e: EstoqueItem) => void;
+  onDelete: (id: string) => void;
+}
+
+function estoqueColumns({ onView, onDelete }: EstoqueActions): DataListingColumn<EstoqueItem>[] {
+  return [
+    {
+      id: "produto",
+      label: "Produto",
+      fixed: true,
+      sortable: true,
+      render: (e, { density }) => (
+        <div className="flex items-center gap-2">
+          <Avatar
+            name={e.descricaoProduto || e.tipoMaterial || "—"}
+            size={density === "compact" ? 22 : density === "normal" ? 28 : 34}
+          />
+          <div className="min-w-0">
+            <div className="font-semibold text-[var(--fips-fg)]">
+              {e.tipoMaterial || e.descricaoProduto}
+            </div>
+            <div className="text-[10px] text-[var(--fips-fg-muted)]">
+              {[e.cor, e.medida, e.acabamento].filter(Boolean).join(" · ") || "—"}
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: "kilo",
+      label: "Kilo",
+      sortable: true,
+      align: "right",
+      render: (e) => (
+        <CellMonoStrong align="right">
+          {e.kilo ? `${e.kilo.toLocaleString("pt-BR")} kg` : "—"}
+        </CellMonoStrong>
+      ),
+    },
+    {
+      id: "unidade",
+      label: "Total un.",
+      sortable: true,
+      align: "right",
+      render: (e) => <CellMonoMuted>{e.unidade ?? "—"}</CellMonoMuted>,
+    },
+    {
+      id: "reservado",
+      label: "Reservado",
+      align: "right",
+      render: (e) => (
+        <span className="font-mono font-bold text-[var(--fips-warning)]">
+          {e.qtdeReservadaPacote ?? 0}
+        </span>
+      ),
+    },
+    {
+      id: "disponivel",
+      label: "Disponível",
+      align: "right",
+      render: (e) => {
+        const disp = (e.unidade ?? 0) - (e.qtdeReservadaPacote ?? 0);
+        return (
+          <span
+            className={`font-mono font-bold ${
+              disp > 0 ? "text-[var(--fips-success-strong)]" : "text-[var(--fips-fg-muted)]"
+            }`}
+          >
+            {disp}
+          </span>
+        );
+      },
+    },
+    {
+      id: "galpao",
+      label: "Galpão",
+      sortable: true,
+      render: (e) => <CellMuted>{e.galpao || "—"}</CellMuted>,
+    },
+    {
+      id: "status",
+      label: "Status",
+      sortable: true,
+      render: (e) => {
+        const status = (e.status || "Pendente").toLowerCase();
+        const variant =
+          status === "disponivel" || status === "disponível"
+            ? "success"
+            : status === "reservado"
+              ? "warning"
+              : status === "pendente"
+                ? "info"
+                : "secondary";
+        return (
+          <Badge variant={variant} dot>
+            {e.status || "—"}
+          </Badge>
+        );
+      },
+    },
+    {
+      id: "actions",
+      label: "Ações",
+      fixed: true,
+      align: "center",
+      width: "80px",
+      render: (e) => (
+        <CellActions>
+          <CellActionButton
+            title="Ver detalhes"
+            icon={<Eye className="h-3.5 w-3.5" />}
+            onClick={() => onView(e)}
+          />
+          <CellActionButton
+            title="Remover"
+            icon={<Trash2 className="h-3.5 w-3.5 text-[var(--fips-danger)]" />}
+            onClick={() => onDelete(e.id)}
+          />
+        </CellActions>
+      ),
+    },
+  ];
 }

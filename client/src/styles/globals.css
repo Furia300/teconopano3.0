@@ -206,6 +206,16 @@
   --warning-foreground: 0 0% 100%;
   --info: 201 96% 32%;
   --info-foreground: 0 0% 100%;
+
+  /* FIPS DS — overrides para dark mode (cards, tables, tooltips, inputs) */
+  --fips-surface: #0f1115;
+  --fips-surface-soft: #15181f;
+  --fips-surface-muted: #1b1f27;
+  --fips-border: #2a2f3a;
+  --fips-border-strong: #3a4151;
+  --fips-fg: #f5f7fa;
+  --fips-fg-muted: #94a3b8;
+  --fips-sidebar-deep: #0a0c10;
 }
 
 @theme inline {

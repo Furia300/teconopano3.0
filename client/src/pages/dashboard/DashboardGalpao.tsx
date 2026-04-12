@@ -1,9 +1,11 @@
 import {
   Truck, Factory, Warehouse, ClipboardList, Droplets, Scissors,
-  TrendingUp, ArrowRight, AlertCircle, CheckCircle2,
+  TrendingUp, ArrowRight, AlertCircle, CheckCircle2, Table2,
 } from "lucide-react";
+import { Link } from "wouter";
 import { StatsCard } from "@/components/domain/StatsCard";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 interface Props {
   data: any;
@@ -34,6 +36,20 @@ export default function DashboardGalpao({ data }: Props) {
       <div className="bg-gradient-to-r from-[#001443] to-[#1a3a6b] rounded-2xl p-6 text-white">
         <h1 className="text-2xl font-bold">Dashboard Galpão</h1>
         <p className="text-white/70 text-sm mt-1">Operações do galpão — {new Date().toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" })}</p>
+        <p className="text-white/60 text-xs mt-3 max-w-2xl">
+          Os totais abaixo devem refletir os mesmos estados que a coluna <strong className="text-white/90">Status</strong> na lista de coletas. Use a tabela para ver cada pedido linha a linha.
+        </p>
+        <Button
+          asChild
+          variant="secondary"
+          size="sm"
+          className="mt-4 bg-white/15 text-white border-white/25 hover:bg-white/25"
+        >
+          <Link href="/coleta">
+            <Table2 className="h-4 w-4 mr-2" />
+            Abrir tabela de coletas
+          </Link>
+        </Button>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">

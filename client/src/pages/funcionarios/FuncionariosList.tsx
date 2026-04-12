@@ -1,18 +1,36 @@
 import { useEffect, useMemo, useState } from "react";
-import { Users, Plus, Search, Wifi, WifiOff, Truck, Scissors, Warehouse, Edit, Trash2, RefreshCw, X } from "lucide-react";
 import { toast } from "sonner";
-import { FipsDataListingKpiCard, fipsListingSparkFromSeed } from "@/components/domain/FipsDataListingKpiCard";
-import { Button } from "@/components/ui/button";
-import { Select } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { PageHeader } from "@/components/domain/PageHeader";
-import { AdminTableColumnMenu, AdminTablePagination, AdminTableSortHeader } from "@/components/ui/admin-listing";
-import { cn } from "@/lib/utils";
 import {
-  Table, TableHeader, TableBody, TableHead, TableRow, TableCell, TableEmpty,
-} from "@/components/ui/table";
+  Users,
+  Plus,
+  Pencil,
+  Trash2,
+  Truck,
+  Scissors,
+  Warehouse,
+  Factory,
+  RefreshCw,
+  Wifi,
+  WifiOff,
+  CheckCircle2,
+  IdCard,
+} from "lucide-react";
+import { PageHeader } from "@/components/domain/PageHeader";
+import { StatsCard } from "@/components/domain/StatsCard";
+import { DataListingToolbar } from "@/components/domain/DataListingToolbar";
+import { Avatar } from "@/components/domain/Avatar";
+import {
+  DataListingTable,
+  type DataListingColumn,
+  CellMonoMuted,
+  CellMuted,
+  CellActions,
+  CellActionButton,
+} from "@/components/domain/DataListingTable";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { ColaboradorDialog } from "./ColaboradorDialog";
+import { cn } from "@/lib/utils";
 
 interface Colaborador {
   id: number;
@@ -25,10 +43,17 @@ interface Colaborador {
   fonte: "rhid" | "local" | "rhid+local";
 }
 
-interface ColaboradoresResponse {
-  fonte: "rhid" | "local";
-  colaboradores: Colaborador[];
-}
+const FIPS_COLORS = {
+  azulProfundo: "#004B9B",
+  verdeFloresta: "#00C64C",
+  amareloEscuro: "#F6921E",
+  azulEscuro: "#002A68",
+};
+
+const formatCPF = (cpf: string) => {
+  const d = cpf.replace(/\D/g, "").padStart(11, "0");
+  return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6, 9)}-${d.slice(9)}`;
+};
 
 export default function FuncionariosList() {
   const [colaboradores, setColaboradores] = useState<Colaborador[]>([]);
@@ -36,97 +61,61 @@ export default function FuncionariosList() {
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
   const [search, setSearch] = useState("");
+  const [periodo, setPeriodo] = useState("Últimos 30 dias");
   const [filterDepto, setFilterDepto] = useState("");
-  const [tab, setTab] = useState("todos");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editItem, setEditItem] = useState<Colaborador | null>(null);
-  const [searchFocused, setSearchFocused] = useState(false);
-  const [page, setPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [sortBy, setSortBy] = useState<{ col: "name" | "cpf" | "registration" | "departamento" | "status" | "fonte"; dir: "asc" | "desc" }>({
-    col: "name",
-    dir: "asc",
-  });
-  const [columnOrder, setColumnOrder] = useState<string[]>(["colaborador", "cpf", "matricula", "departamento", "status", "fonte", "acoes"]);
-  const [visibleColumns, setVisibleColumns] = useState<Record<string, boolean>>({
-    colaborador: true,
-    cpf: true,
-    matricula: true,
-    departamento: true,
-    status: true,
-    fonte: true,
-    acoes: true,
-  });
 
   const fetchColaboradores = async () => {
     try {
       const res = await fetch("/api/colaboradores");
-      const data: ColaboradoresResponse = await res.json();
-      setColaboradores(data.colaboradores);
-      setFonte(data.fonte);
-    } catch { } finally { setLoading(false); }
+      const data = await res.json();
+      setColaboradores(data.colaboradores ?? []);
+      setFonte(data.fonte ?? "local");
+    } catch {
+      toast.error("Erro ao carregar colaboradores");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  useEffect(() => { fetchColaboradores(); }, []);
+  useEffect(() => {
+    fetchColaboradores();
+  }, []);
 
-  const departamentos = [...new Set(colaboradores.map((c) => c.departamento).filter(Boolean))].sort();
-
-  const filtered = colaboradores.filter((c) => {
-    const matchSearch = !search ||
-      c.name.toLowerCase().includes(search.toLowerCase()) ||
-      c.cpf.includes(search.replace(/\D/g, "")) ||
-      c.registration.toLowerCase().includes(search.toLowerCase());
-    const matchDepto = !filterDepto || c.departamento === filterDepto;
-    const matchTab = tab === "todos" ||
-      (tab === "motorista" && c.departamento.toLowerCase().includes("motorista")) ||
-      (tab === "galpao" && c.departamento.toLowerCase().includes("galp")) ||
-      (tab === "costura" && c.departamento.toLowerCase().includes("costur"));
-    return matchSearch && matchDepto && matchTab;
-  });
-
-  const sorted = useMemo(() => {
-    const arr = [...filtered];
-    const dir = sortBy.dir === "asc" ? 1 : -1;
-    arr.sort((a, b) => {
-      const av = sortBy.col === "status" ? String(a.status) : String((a as any)[sortBy.col] ?? "");
-      const bv = sortBy.col === "status" ? String(b.status) : String((b as any)[sortBy.col] ?? "");
-      return av.localeCompare(bv, "pt-BR", { numeric: true, sensitivity: "base" }) * dir;
+  const departamentos = useMemo(() => {
+    const set = new Set<string>();
+    colaboradores.forEach((c) => {
+      if (c.departamento && !["*", ".", ".."].includes(c.departamento)) {
+        set.add(c.departamento);
+      }
     });
-    return arr;
-  }, [filtered, sortBy]);
+    return Array.from(set).sort();
+  }, [colaboradores]);
 
-  const pageCount = Math.max(1, Math.ceil(sorted.length / itemsPerPage));
-  const paged = useMemo(() => {
-    const start = (page - 1) * itemsPerPage;
-    return sorted.slice(start, start + itemsPerPage);
-  }, [sorted, page, itemsPerPage]);
+  const filtered = useMemo(() => {
+    return colaboradores.filter((c) => {
+      const q = search.trim().toLowerCase();
+      const matchSearch =
+        !q ||
+        c.name.toLowerCase().includes(q) ||
+        c.cpf.includes(q.replace(/\D/g, "")) ||
+        (c.registration ?? "").toLowerCase().includes(q) ||
+        (c.departamento ?? "").toLowerCase().includes(q);
+      const matchDepto = !filterDepto || c.departamento === filterDepto;
+      return matchSearch && matchDepto;
+    });
+  }, [colaboradores, search, filterDepto]);
 
-  useEffect(() => {
-    setPage(1);
-  }, [search, filterDepto, tab, itemsPerPage]);
-
-  useEffect(() => {
-    if (page > pageCount) setPage(pageCount);
-  }, [page, pageCount]);
-
-  const stats = {
-    total: colaboradores.length,
-    motoristas: colaboradores.filter((c) => c.departamento.toLowerCase().includes("motorista")).length,
-    galpao: colaboradores.filter((c) => c.departamento.toLowerCase().includes("galp")).length,
-    costura: colaboradores.filter((c) => c.departamento.toLowerCase().includes("costur")).length,
-  };
-
-  const formatCPF = (cpf: string) => {
-    const d = cpf.replace(/\D/g, "").padStart(11, "0");
-    return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6, 9)}-${d.slice(9)}`;
-  };
-
-  const deptoIcon = (depto: string) => {
-    const d = depto.toLowerCase();
-    if (d.includes("motorista")) return <Truck className="h-3 w-3" />;
-    if (d.includes("costur")) return <Scissors className="h-3 w-3" />;
-    return <Warehouse className="h-3 w-3" />;
-  };
+  const stats = useMemo(() => {
+    const total = colaboradores.length;
+    const ativos = colaboradores.filter((c) => c.status === 1).length;
+    const inativos = total - ativos;
+    const producao = colaboradores.filter((c) =>
+      (c.departamento ?? "").toLowerCase().includes("produ"),
+    ).length;
+    return { total, ativos, inativos, producao };
+  }, [colaboradores]);
 
   const handleSync = async () => {
     setSyncing(true);
@@ -135,74 +124,53 @@ export default function FuncionariosList() {
     toast.success(fonte === "rhid" ? "Sincronizado com RHiD!" : "Dados locais atualizados");
   };
 
-  const openNew = () => { setEditItem(null); setDialogOpen(true); };
-  const openEdit = (c: Colaborador) => { setEditItem(c); setDialogOpen(true); };
+  const openNew = () => {
+    setEditItem(null);
+    setDialogOpen(true);
+  };
+  const openEdit = (c: Colaborador) => {
+    setEditItem(c);
+    setDialogOpen(true);
+  };
 
   const handleDelete = async (id: number) => {
-    if (!confirm("Excluir este colaborador? Isso também removerá do RHiD se estiver conectado.")) return;
-    await fetch(`/api/colaboradores/${id}`, { method: "DELETE" });
-    toast.success("Colaborador excluído");
-    fetchColaboradores();
+    if (!confirm("Excluir este colaborador? Isso também removerá do RHiD se estiver conectado."))
+      return;
+    try {
+      await fetch(`/api/colaboradores/${id}`, { method: "DELETE" });
+      toast.success("Colaborador excluído");
+      fetchColaboradores();
+    } catch {
+      toast.error("Erro ao excluir");
+    }
   };
-
-  const toggleSort = (col: typeof sortBy.col) => {
-    setSortBy((s) =>
-      s.col === col
-        ? { col, dir: s.dir === "asc" ? "desc" : "asc" }
-        : { col, dir: "asc" },
-    );
-  };
-
-  const onToggleColumn = (columnId: string) => {
-    setVisibleColumns((prev) => ({ ...prev, [columnId]: !(prev[columnId] ?? true) }));
-  };
-
-  const onReorderColumn = (sourceId: string, targetId: string) => {
-    setColumnOrder((prev) => {
-      const next = [...prev];
-      const from = next.indexOf(sourceId);
-      const to = next.indexOf(targetId);
-      if (from === -1 || to === -1) return prev;
-      const [item] = next.splice(from, 1);
-      next.splice(to, 0, item);
-      return next;
-    });
-  };
-
-  const allColumns = [
-    { id: "colaborador", label: "Colaborador" },
-    { id: "cpf", label: "CPF" },
-    { id: "matricula", label: "Matrícula" },
-    { id: "departamento", label: "Departamento" },
-    { id: "status", label: "Status" },
-    { id: "fonte", label: "Fonte" },
-    { id: "acoes", label: "Ações" },
-  ];
-
-  const orderedVisibleColumns = columnOrder.filter((id) => visibleColumns[id] ?? true);
-
-  const pctOfTotal = (n: number) => (stats.total > 0 ? `${Math.round((n / stats.total) * 100)}%` : "0%");
-  const isFiltered = Boolean(search || filterDepto || tab !== "todos");
 
   return (
     <div className="space-y-6">
       <PageHeader
         title="RH · Colaboradores"
-        description="Quadro de colaboradores e vínculos com o RHiD — padrão visual Data List do DS-FIPS (header → KPIs → toolbar → tabela)."
+        description="Quadro de colaboradores com sincronização bidirecional RHiD ControlID"
         icon={Users}
         badge={
-          <Badge variant={fonte === "rhid" ? "success" : "warning"} className="border border-white/20 bg-white/10 px-2.5 py-1 text-[10px] text-white backdrop-blur-sm">
-            {fonte === "rhid" ? <Wifi className="h-3 w-3" /> : <WifiOff className="h-3 w-3" />}
+          <Badge
+            variant={fonte === "rhid" ? "success" : "warning"}
+            className="border border-white/20 bg-white/10 px-2.5 py-1 text-[10px] text-white backdrop-blur-sm"
+          >
+            {fonte === "rhid" ? (
+              <Wifi className="h-3 w-3" />
+            ) : (
+              <WifiOff className="h-3 w-3" />
+            )}
             {fonte === "rhid" ? "RHiD" : "Local"}
           </Badge>
         }
         actions={
           <>
             <Button variant="secondary" size="sm" onClick={handleSync} disabled={syncing}>
-              <RefreshCw className={`h-3 w-3 ${syncing ? "animate-spin" : ""}`} />
+              <RefreshCw className={cn("h-3 w-3", syncing && "animate-spin")} />
               Sincronizar
             </Button>
-            <Button size="sm" onClick={openNew} className="shadow-sm">
+            <Button size="sm" onClick={openNew}>
               <Plus className="h-4 w-4" />
               Novo
             </Button>
@@ -210,312 +178,95 @@ export default function FuncionariosList() {
         }
       />
 
-      {fonte === "local" && (
-        <Card className="rounded-[10px_10px_10px_18px] shadow-[0_1px_3px_rgba(0,75,155,0.04)]">
-          <CardContent className="flex items-start gap-3 py-4">
-            <WifiOff className="h-5 w-5 text-[var(--fips-warning)] mt-0.5 shrink-0" />
-            <div>
-              <p className="text-sm font-semibold text-[var(--fips-fg)]">API RHiD não configurada</p>
-              <p className="text-xs text-[var(--fips-fg-muted)] mt-0.5">
-                Cadastros feitos aqui serão salvos localmente. Quando o RHiD for configurado, novos cadastros serão enviados automaticamente.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {fonte === "rhid" && (
-        <Card className="rounded-[10px_10px_10px_18px] shadow-[0_1px_3px_rgba(0,75,155,0.04)]">
-          <CardContent className="flex items-start gap-3 py-4">
-            <Wifi className="h-5 w-5 text-[var(--fips-success)] mt-0.5 shrink-0" />
-            <div>
-              <p className="text-sm font-semibold text-[var(--fips-fg)]">Sincronização Bidirecional Ativa</p>
-              <p className="text-xs text-[var(--fips-fg-muted)] mt-0.5">
-                Alterações feitas aqui são enviadas para o RHiD. Alterações no RHiD aparecem aqui ao sincronizar.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      <div className="grid grid-cols-2 gap-2.5 md:gap-3.5 xl:grid-cols-4">
-        <FipsDataListingKpiCard
-          label="Total de colaboradores"
+      {/* Cards Relatório */}
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
+        <StatsCard
+          label="Total Colaboradores"
           value={stats.total}
-          delta={stats.total ? `+${Math.min(99, 12 + (stats.total % 7))}%` : "0%"}
+          subtitle="Registrados no sistema"
           icon={Users}
-          accent="blue"
-          spark={fipsListingSparkFromSeed(11 + stats.total)}
+          color={FIPS_COLORS.azulProfundo}
         />
-        <FipsDataListingKpiCard
-          label="Motoristas"
-          value={stats.motoristas}
-          delta={pctOfTotal(stats.motoristas)}
-          icon={Truck}
-          accent="amber"
-          spark={fipsListingSparkFromSeed(23 + stats.motoristas)}
+        <StatsCard
+          label="Ativos"
+          value={stats.ativos}
+          subtitle={`${stats.total > 0 ? Math.round((stats.ativos / stats.total) * 100) : 0}% do total`}
+          icon={CheckCircle2}
+          color={FIPS_COLORS.verdeFloresta}
         />
-        <FipsDataListingKpiCard
-          label="Galpão"
-          value={stats.galpao}
-          delta={pctOfTotal(stats.galpao)}
-          icon={Warehouse}
-          accent="teal"
-          spark={fipsListingSparkFromSeed(37 + stats.galpao)}
+        <StatsCard
+          label="Inativos"
+          value={stats.inativos}
+          subtitle="Desligados ou afastados"
+          icon={IdCard}
+          color={FIPS_COLORS.amareloEscuro}
         />
-        <FipsDataListingKpiCard
-          label="Costura"
-          value={stats.costura}
-          delta={pctOfTotal(stats.costura)}
-          icon={Scissors}
-          accent="green"
-          spark={fipsListingSparkFromSeed(53 + stats.costura)}
+        <StatsCard
+          label="Produção"
+          value={stats.producao}
+          subtitle="Colaboradores na produção"
+          icon={Factory}
+          color={FIPS_COLORS.azulEscuro}
         />
       </div>
 
-      <Card className="overflow-visible rounded-[10px_10px_10px_18px] shadow-[0_1px_3px_rgba(0,75,155,0.04)]">
-        <CardContent className="flex flex-wrap items-center gap-2.5 p-[14px] sm:gap-3 sm:px-[18px] sm:py-3.5">
-          <div className="flex w-full min-w-0 sm:w-auto">
-            <div className="flex flex-wrap gap-0.5 rounded-lg border border-[var(--fips-border)] bg-[var(--fips-surface-muted)] p-0.5">
-              {(
-                [
-                  { id: "todos" as const, label: `Todos (${stats.total})` },
-                  { id: "motorista" as const, label: `Motoristas (${stats.motoristas})` },
-                  { id: "galpao" as const, label: `Galpão (${stats.galpao})` },
-                  { id: "costura" as const, label: `Costura (${stats.costura})` },
-                ] as const
-              ).map(({ id, label }) => (
+      {/* Toolbar */}
+      <DataListingToolbar
+        search={search}
+        onSearchChange={setSearch}
+        searchPlaceholder="Buscar por nome, CPF, matrícula ou departamento..."
+        activeFilters={filterDepto ? 1 : 0}
+        filtersContent={
+          <div className="px-4 py-3">
+            <p className="mb-2 text-[9px] font-bold uppercase tracking-[1px] text-[var(--fips-fg-muted)]">
+              Departamento
+            </p>
+            <div className="flex max-h-[300px] flex-col gap-1 overflow-y-auto">
+              <button
+                onClick={() => setFilterDepto("")}
+                className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
+                  !filterDepto
+                    ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                    : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
+                }`}
+              >
+                Todos
+              </button>
+              {departamentos.map((d) => (
                 <button
-                  key={id}
-                  type="button"
-                  onClick={() => setTab(id)}
-                  className={cn(
-                    "shrink-0 rounded-md px-2.5 py-1.5 text-[11px] font-semibold transition-all",
-                    tab === id
-                      ? "bg-[var(--fips-surface)] text-[var(--fips-primary)] shadow-[0_1px_2px_rgba(0,42,104,0.08)]"
-                      : "text-[var(--fips-fg-muted)] hover:text-[var(--fips-fg)]",
-                  )}
+                  key={d}
+                  onClick={() => setFilterDepto(d)}
+                  className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
+                    filterDepto === d
+                      ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                      : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
+                  }`}
                 >
-                  {label}
+                  {d}
                 </button>
               ))}
             </div>
           </div>
+        }
+        periodo={periodo}
+        onPeriodoChange={setPeriodo}
+        onExportExcel={() => alert("Export Excel — placeholder")}
+        onExportPdf={() => alert("Export PDF — placeholder")}
+      />
 
-          <div
-            role="search"
-            onClick={(e) => (e.currentTarget.querySelector("input") as HTMLInputElement | null)?.focus()}
-            className={cn(
-              "flex h-9 min-w-[200px] flex-1 cursor-text items-center gap-2 rounded-lg border bg-[var(--fips-surface)] px-3 transition-all duration-150 sm:max-w-[320px]",
-              searchFocused ? "border-[var(--fips-primary)] shadow-[0_0_0_3px_var(--color-fips-sky-100)]" : "border-[#CBD5E1] dark:border-[var(--fips-border)]",
-            )}
-            style={{ borderWidth: "1.5px" }}
-          >
-            <Search className="h-4 w-4 shrink-0 opacity-60 text-[var(--fips-fg-muted)]" aria-hidden />
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              onFocus={() => setSearchFocused(true)}
-              onBlur={() => setSearchFocused(false)}
-              placeholder="Buscar por nome, CPF ou matrícula..."
-              className="min-w-0 flex-1 border-0 bg-transparent py-1 text-[13px] text-[var(--fips-fg)] outline-none placeholder:text-[var(--fips-fg-muted)]"
-            />
-            {search ? (
-              <button
-                type="button"
-                className="flex shrink-0 text-[var(--fips-fg-muted)] hover:text-[var(--fips-fg)]"
-                aria-label="Limpar busca"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setSearch("");
-                }}
-              >
-                <X className="h-4 w-4" />
-              </button>
-            ) : null}
-          </div>
-
-          <div className="w-full sm:w-auto sm:min-w-[11rem]">
-            <Select density="compact" value={filterDepto} onChange={(e) => setFilterDepto(e.target.value)} aria-label="Departamento">
-              <option value="">Todos os departamentos</option>
-              {departamentos.map((d) => (
-                <option key={d} value={d}>
-                  {d}
-                </option>
-              ))}
-            </Select>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="overflow-visible rounded-[12px_12px_12px_24px] shadow-[0_1px_3px_rgba(0,75,155,0.04)]">
-        <div className="flex flex-col gap-3 border-b border-[var(--fips-border)] px-5 py-4 sm:flex-row sm:items-center sm:gap-3.5">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[14px] border border-[var(--fips-primary)]/15 bg-[var(--fips-primary)]/[0.06]">
-            <Users className="h-6 w-6 text-[var(--fips-primary)]" aria-hidden />
-          </div>
-          <div className="min-w-0 flex-1">
-            <h3 className="font-heading text-base font-bold text-[var(--fips-fg)]">Colaboradores</h3>
-            <p className="mt-0.5 text-[11px] text-[var(--fips-fg-muted)]">
-              {sorted.length} {sorted.length === 1 ? "registro" : "registros"} {isFiltered ? "filtrados" : "no quadro"}
-              {loading ? "" : " · atualizado agora"}
-            </p>
-          </div>
-          <div className="flex flex-wrap items-center justify-end gap-2 sm:shrink-0">
-            {isFiltered ? (
-              <span className="rounded-xl bg-[var(--color-fips-sky-100)] px-2.5 py-1 font-heading text-[10px] font-bold tracking-wide text-[var(--fips-primary)] uppercase dark:bg-[var(--fips-primary)]/20 dark:text-[var(--color-fips-sky-200)]">
-                Filtrado
-              </span>
-            ) : null}
-            <AdminTableColumnMenu
-              buttonLabel="Configurar"
-              columns={allColumns}
-              visibleColumns={visibleColumns}
-              onToggleColumn={onToggleColumn}
-              onReorderColumn={onReorderColumn}
-            />
-          </div>
-        </div>
-
-        <Table framed={false}>
-          <TableHeader className="bg-[var(--fips-surface-muted)]">
-            <TableRow className="hover:bg-transparent">
-              {orderedVisibleColumns.includes("colaborador") && (
-                <TableHead className="!h-auto !px-3 !py-2 align-middle">
-                  <AdminTableSortHeader
-                    className="!gap-1 !text-[9px] !font-bold tracking-[0.08em] text-[var(--fips-fg-muted)] uppercase hover:text-[var(--fips-fg)]"
-                    label="Colaborador"
-                    active={sortBy.col === "name"}
-                    direction={sortBy.dir}
-                    onClick={() => toggleSort("name")}
-                  />
-                </TableHead>
-              )}
-              {orderedVisibleColumns.includes("cpf") && (
-                <TableHead className="!h-auto !px-3 !py-2 align-middle">
-                  <AdminTableSortHeader
-                    className="!gap-1 !text-[9px] !font-bold tracking-[0.08em] text-[var(--fips-fg-muted)] uppercase hover:text-[var(--fips-fg)]"
-                    label="CPF"
-                    active={sortBy.col === "cpf"}
-                    direction={sortBy.dir}
-                    onClick={() => toggleSort("cpf")}
-                  />
-                </TableHead>
-              )}
-              {orderedVisibleColumns.includes("matricula") && (
-                <TableHead className="!h-auto !px-3 !py-2 align-middle">
-                  <AdminTableSortHeader
-                    className="!gap-1 !text-[9px] !font-bold tracking-[0.08em] text-[var(--fips-fg-muted)] uppercase hover:text-[var(--fips-fg)]"
-                    label="Matrícula"
-                    active={sortBy.col === "registration"}
-                    direction={sortBy.dir}
-                    onClick={() => toggleSort("registration")}
-                  />
-                </TableHead>
-              )}
-              {orderedVisibleColumns.includes("departamento") && (
-                <TableHead className="!h-auto !px-3 !py-2 align-middle">
-                  <AdminTableSortHeader
-                    className="!gap-1 !text-[9px] !font-bold tracking-[0.08em] text-[var(--fips-fg-muted)] uppercase hover:text-[var(--fips-fg)]"
-                    label="Departamento"
-                    active={sortBy.col === "departamento"}
-                    direction={sortBy.dir}
-                    onClick={() => toggleSort("departamento")}
-                  />
-                </TableHead>
-              )}
-              {orderedVisibleColumns.includes("status") && (
-                <TableHead className="!h-auto !px-3 !py-2 align-middle">
-                  <AdminTableSortHeader
-                    className="!gap-1 !text-[9px] !font-bold tracking-[0.08em] text-[var(--fips-fg-muted)] uppercase hover:text-[var(--fips-fg)]"
-                    label="Status"
-                    active={sortBy.col === "status"}
-                    direction={sortBy.dir}
-                    onClick={() => toggleSort("status")}
-                  />
-                </TableHead>
-              )}
-              {orderedVisibleColumns.includes("fonte") && (
-                <TableHead className="!h-auto !px-3 !py-2 align-middle">
-                  <AdminTableSortHeader
-                    className="!gap-1 !text-[9px] !font-bold tracking-[0.08em] text-[var(--fips-fg-muted)] uppercase hover:text-[var(--fips-fg)]"
-                    label="Fonte"
-                    active={sortBy.col === "fonte"}
-                    direction={sortBy.dir}
-                    onClick={() => toggleSort("fonte")}
-                  />
-                </TableHead>
-              )}
-              {orderedVisibleColumns.includes("acoes") && (
-                <TableHead className="!h-auto !px-3 !py-2 text-right align-middle font-heading text-[9px] font-bold tracking-[0.08em] text-[var(--fips-fg-muted)] uppercase">
-                  Ações
-                </TableHead>
-              )}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {loading ? <TableEmpty colSpan={orderedVisibleColumns.length} title="Carregando..." /> :
-             sorted.length === 0 ? <TableEmpty colSpan={orderedVisibleColumns.length} /> :
-             paged.map((colab, rowIdx) => (
-              <TableRow
-                key={`${colab.fonte}-${colab.id}`}
-                className={rowIdx % 2 === 1 ? "bg-[var(--color-fips-sky-50)]/55 dark:bg-white/[0.04]" : undefined}
-              >
-                {orderedVisibleColumns.includes("colaborador") && (
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-full bg-[var(--color-fips-blue-100)] flex items-center justify-center text-[var(--fips-secondary)] font-bold text-xs">
-                        {colab.name.split(" ").map((n) => n[0]).slice(0, 2).join("")}
-                      </div>
-                      <span className="font-medium">{colab.name}</span>
-                    </div>
-                  </TableCell>
-                )}
-                {orderedVisibleColumns.includes("cpf") && <TableCell className="font-mono text-sm">{formatCPF(colab.cpf)}</TableCell>}
-                {orderedVisibleColumns.includes("matricula") && <TableCell>{colab.registration || "—"}</TableCell>}
-                {orderedVisibleColumns.includes("departamento") && (
-                  <TableCell>
-                    {colab.departamento ? (
-                      <Badge variant="outline" className="gap-1">
-                        {deptoIcon(colab.departamento)}
-                        {colab.departamento}
-                      </Badge>
-                    ) : "—"}
-                  </TableCell>
-                )}
-                {orderedVisibleColumns.includes("status") && (
-                  <TableCell>
-                    <Badge variant={colab.status === 1 ? "success" : "danger"} dot>
-                      {colab.status === 1 ? "Ativo" : "Inativo"}
-                    </Badge>
-                  </TableCell>
-                )}
-                {orderedVisibleColumns.includes("fonte") && (
-                  <TableCell>
-                    <Badge variant={colab.fonte === "rhid" ? "info" : colab.fonte === "rhid+local" ? "success" : "secondary"} className="text-[10px]">
-                      {colab.fonte === "rhid" ? "RHiD" : colab.fonte === "rhid+local" ? "Sync" : "Local"}
-                    </Badge>
-                  </TableCell>
-                )}
-                {orderedVisibleColumns.includes("acoes") && (
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-1">
-                      <Button variant="ghost" size="iconSm" onClick={() => openEdit(colab)}><Edit className="h-4 w-4" /></Button>
-                      <Button variant="ghost" size="iconSm" onClick={() => handleDelete(colab.id)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
-                    </div>
-                  </TableCell>
-                )}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-        <AdminTablePagination
-          page={page}
-          pageCount={pageCount}
-          itemsPerPage={itemsPerPage}
-          onPageChange={setPage}
-          onItemsPerPageChange={setItemsPerPage}
-        />
-      </Card>
+      {/* Tabela */}
+      <DataListingTable<Colaborador>
+        icon={<Users className="h-[22px] w-[22px]" />}
+        title="Colaboradores"
+        subtitle={`${filtered.length} ${filtered.length === 1 ? "registro" : "registros"} ${
+          search || filterDepto ? "filtrados" : "no total"
+        } · Fonte: ${fonte === "rhid" ? "RHiD em tempo real" : "local"}`}
+        filtered={!!(search || filterDepto)}
+        data={filtered}
+        getRowId={(c) => `${c.fonte}-${c.id}`}
+        emptyState={loading ? "Carregando colaboradores..." : "Nenhum colaborador encontrado"}
+        columns={colaboradorColumns({ onEdit: openEdit, onDelete: handleDelete })}
+      />
 
       <ColaboradorDialog
         open={dialogOpen}
@@ -526,4 +277,113 @@ export default function FuncionariosList() {
       />
     </div>
   );
+}
+
+/* ──────────────────────────── COLUMNS ──────────────────────────── */
+
+interface ColabActions {
+  onEdit: (c: Colaborador) => void;
+  onDelete: (id: number) => void;
+}
+
+const deptoIcon = (depto: string) => {
+  const d = depto.toLowerCase();
+  if (d.includes("motorista") || d.includes("logis")) return <Truck className="h-3 w-3" />;
+  if (d.includes("costur")) return <Scissors className="h-3 w-3" />;
+  if (d.includes("produ")) return <Factory className="h-3 w-3" />;
+  return <Warehouse className="h-3 w-3" />;
+};
+
+function colaboradorColumns({ onEdit, onDelete }: ColabActions): DataListingColumn<Colaborador>[] {
+  return [
+    {
+      id: "nome",
+      label: "Colaborador",
+      fixed: true,
+      sortable: true,
+      render: (c, { density }) => (
+        <div className="flex items-center gap-2">
+          <Avatar
+            name={c.name}
+            size={density === "compact" ? 22 : density === "normal" ? 28 : 34}
+          />
+          <div className="min-w-0">
+            <div className="font-semibold text-[var(--fips-fg)]">{c.name}</div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: "cpf",
+      label: "CPF",
+      sortable: true,
+      render: (c) => <CellMonoMuted>{formatCPF(c.cpf)}</CellMonoMuted>,
+    },
+    {
+      id: "registration",
+      label: "Matrícula",
+      sortable: true,
+      render: (c) => <CellMonoMuted>{c.registration || "—"}</CellMonoMuted>,
+    },
+    {
+      id: "departamento",
+      label: "Departamento",
+      sortable: true,
+      render: (c) =>
+        c.departamento ? (
+          <Badge variant="outline" className="gap-1">
+            {deptoIcon(c.departamento)}
+            {c.departamento}
+          </Badge>
+        ) : (
+          <CellMuted>—</CellMuted>
+        ),
+    },
+    {
+      id: "status",
+      label: "Status",
+      sortable: true,
+      render: (c) => (
+        <Badge variant={c.status === 1 ? "success" : "danger"} dot>
+          {c.status === 1 ? "Ativo" : "Inativo"}
+        </Badge>
+      ),
+    },
+    {
+      id: "fonte",
+      label: "Fonte",
+      sortable: true,
+      render: (c) => (
+        <Badge
+          variant={
+            c.fonte === "rhid" ? "info" : c.fonte === "rhid+local" ? "success" : "secondary"
+          }
+          className="text-[10px]"
+        >
+          {c.fonte === "rhid" ? "RHiD" : c.fonte === "rhid+local" ? "Sync" : "Local"}
+        </Badge>
+      ),
+    },
+    {
+      id: "actions",
+      label: "Ações",
+      fixed: true,
+      align: "center",
+      width: "80px",
+      render: (c) => (
+        <CellActions>
+          <CellActionButton
+            title="Editar"
+            icon={<Pencil className="h-3.5 w-3.5" />}
+            onClick={() => onEdit(c)}
+          />
+          <CellActionButton
+            title="Excluir"
+            icon={<Trash2 className="h-3.5 w-3.5 text-[var(--fips-danger)]" />}
+            onClick={() => onDelete(c.id)}
+          />
+        </CellActions>
+      ),
+    },
+  ];
 }

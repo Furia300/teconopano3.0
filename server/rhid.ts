@@ -75,6 +75,7 @@ async function rhidRequest<T>(method: string, path: string, body?: any): Promise
       headers: {
         Authorization: `Bearer ${authToken}`,
         "Content-Type": "application/json",
+        Accept: "application/json",
       },
     };
     if (body) opts.body = JSON.stringify(body);
@@ -98,8 +99,20 @@ async function rhidRequest<T>(method: string, path: string, body?: any): Promise
 
 export async function fetchPessoas(): Promise<RHiDPerson[]> {
   try {
-    const data = await rhidRequest<{ records: RHiDPerson[] }>("GET", "/person");
-    return data.records || [];
+    // A API RHiD v2 exige paginação (?start=N&length=N) e max 100 por request.
+    // Faz requests sequenciais até totalRecords ser atingido.
+    const PAGE_SIZE = 100;
+    let all: RHiDPerson[] = [];
+    for (let start = 0; ; start += PAGE_SIZE) {
+      const data = await rhidRequest<{ records: RHiDPerson[]; totalRecords?: number }>(
+        "GET",
+        `/person?start=${start}&length=${PAGE_SIZE}`,
+      );
+      const records = data.records || [];
+      all = all.concat(records);
+      if (records.length < PAGE_SIZE) break; // última página
+    }
+    return all;
   } catch (error) {
     console.error("Erro ao buscar pessoas do RHiD:", error);
     return [];
@@ -108,7 +121,7 @@ export async function fetchPessoas(): Promise<RHiDPerson[]> {
 
 export async function fetchDepartamentos(): Promise<RHiDDepartment[]> {
   try {
-    const data = await rhidRequest<{ records: RHiDDepartment[] }>("GET", "/department");
+    const data = await rhidRequest<{ records: RHiDDepartment[] }>("GET", "/department?start=0&length=100");
     return data.records || [];
   } catch (error) {
     console.error("Erro ao buscar departamentos do RHiD:", error);

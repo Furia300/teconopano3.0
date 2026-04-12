@@ -4,6 +4,55 @@ import {
   criarPessoaRHiD, atualizarPessoaRHiD, deletarPessoaRHiD,
   criarDepartamentoRHiD,
 } from "./rhid";
+import {
+  listColetas as dbListColetas,
+  getColeta as dbGetColeta,
+  createColeta as dbCreateColeta,
+  updateColeta as dbUpdateColeta,
+  deleteColeta as dbDeleteColeta,
+} from "./repos/coletas";
+import {
+  listFornecedores as dbListFornecedores,
+  createFornecedor as dbCreateFornecedor,
+  updateFornecedor as dbUpdateFornecedor,
+  deleteFornecedor as dbDeleteFornecedor,
+} from "./repos/fornecedores";
+import {
+  listClientes as dbListClientes,
+  getCliente as dbGetCliente,
+  createCliente as dbCreateCliente,
+  updateCliente as dbUpdateCliente,
+  deleteCliente as dbDeleteCliente,
+} from "./repos/clientes";
+import {
+  listProdutos as dbListProdutos,
+  getProduto as dbGetProduto,
+  createProduto as dbCreateProduto,
+  updateProduto as dbUpdateProduto,
+  deleteProduto as dbDeleteProduto,
+} from "./repos/produtos";
+import {
+  listMotoristas as dbListMotoristas,
+  getMotorista as dbGetMotorista,
+  createMotorista as dbCreateMotorista,
+  updateMotorista as dbUpdateMotorista,
+  deleteMotorista as dbDeleteMotorista,
+} from "./repos/motoristas";
+import {
+  listEstoque as dbListEstoque,
+  getEstoque as dbGetEstoque,
+  createEstoque as dbCreateEstoque,
+  updateEstoque as dbUpdateEstoque,
+  deleteEstoque as dbDeleteEstoque,
+} from "./repos/estoque";
+import {
+  listExpedicoes as dbListExpedicoes,
+  getExpedicao as dbGetExpedicao,
+  createExpedicao as dbCreateExpedicao,
+  updateExpedicao as dbUpdateExpedicao,
+  deleteExpedicao as dbDeleteExpedicao,
+  getDisponibilidade as dbGetDisponibilidade,
+} from "./repos/expedicoes";
 
 // In-memory storage (will be replaced with DB later)
 let coletas: any[] = [
@@ -204,6 +253,7 @@ const PERFIL_LOGIN_VALUES = new Set([
   "separacao",
   "motorista",
   "costureira",
+  "michele",
 ]);
 
 const DEFAULT_AUTH: AuthSessionUser = {
@@ -256,108 +306,200 @@ export function registerRoutes(app: Express) {
     res.json(authSession);
   });
 
-  // ==================== COLETAS ====================
-  app.get("/api/coletas", (_req: Request, res: Response) => {
-    res.json(coletas);
+  // ==================== COLETAS (Supabase) ====================
+  app.get("/api/coletas", async (_req: Request, res: Response) => {
+    try {
+      res.json(await dbListColetas());
+    } catch (err) {
+      console.error("[GET /api/coletas]", err);
+      res.status(500).json({ message: "Erro ao listar coletas" });
+    }
   });
 
-  app.get("/api/coletas/:id", (req: Request, res: Response) => {
-    const coleta = coletas.find((c) => c.id === req.params.id);
-    if (!coleta) return res.status(404).json({ message: "Coleta não encontrada" });
-    res.json(coleta);
+  app.get("/api/coletas/:id", async (req: Request, res: Response) => {
+    try {
+      const coleta = await dbGetColeta(req.params.id);
+      if (!coleta) return res.status(404).json({ message: "Coleta não encontrada" });
+      res.json(coleta);
+    } catch (err) {
+      console.error("[GET /api/coletas/:id]", err);
+      res.status(404).json({ message: "Coleta não encontrada" });
+    }
   });
 
-  app.post("/api/coletas", (req: Request, res: Response) => {
-    const fornecedor = fornecedores.find((f) => f.id === req.body.fornecedorId);
-    const nova = {
-      id: String(nextColetaId++),
-      numero: nextColetaNumero++,
-      fornecedorId: req.body.fornecedorId,
-      nomeFantasia: fornecedor?.nome || req.body.nomeFantasia || "",
-      razaoSocial: fornecedor?.razaoSocial || "",
-      cnpjFornecedor: fornecedor?.cnpj || "",
-      notaFiscal: req.body.notaFiscal || "",
-      pesoTotalNF: Number(req.body.pesoTotalNF) || 0,
-      pesoTotalAtual: Number(req.body.pesoTotalNF) || 0,
-      dataPedido: new Date().toISOString(),
-      dataChegada: req.body.dataChegada || null,
-      galpao: req.body.galpao || "Vicente",
-      status: req.body.dataChegada ? "recebido" : "pendente",
-      statusServico: req.body.dataChegada ? "Em andamento" : "Aguardando",
-      observacao: req.body.observacao || "",
-      createdAt: new Date().toISOString(),
-    };
-    coletas.unshift(nova);
-    res.status(201).json(nova);
+  app.post("/api/coletas", async (req: Request, res: Response) => {
+    try {
+      // Resolver dados do fornecedor se vier só o id
+      const fornecedoresList = await dbListFornecedores();
+      const fornecedor = fornecedoresList.find((f) => f.id === req.body.fornecedorId);
+      const nova = await dbCreateColeta({
+        fornecedorId: req.body.fornecedorId,
+        nomeFantasia: fornecedor?.nome || req.body.nomeFantasia,
+        razaoSocial: (fornecedor as { razaoSocial?: string } | undefined)?.razaoSocial,
+        cnpjFornecedor: fornecedor?.cnpj,
+        notaFiscal: req.body.notaFiscal,
+        pesoTotalNF: Number(req.body.pesoTotalNF) || 0,
+        dataChegada: req.body.dataChegada,
+        galpao: req.body.galpao,
+        observacao: req.body.observacao,
+      });
+      res.status(201).json(nova);
+    } catch (err) {
+      console.error("[POST /api/coletas]", err);
+      res.status(500).json({ message: "Erro ao cadastrar coleta" });
+    }
   });
 
-  app.put("/api/coletas/:id", (req: Request, res: Response) => {
-    const idx = coletas.findIndex((c) => c.id === req.params.id);
-    if (idx === -1) return res.status(404).json({ message: "Coleta não encontrada" });
-    coletas[idx] = { ...coletas[idx], ...req.body };
-    res.json(coletas[idx]);
+  app.put("/api/coletas/:id", async (req: Request, res: Response) => {
+    try {
+      const updated = await dbUpdateColeta(req.params.id, req.body);
+      res.json(updated);
+    } catch (err) {
+      console.error("[PUT /api/coletas/:id]", err);
+      res.status(404).json({ message: "Coleta não encontrada" });
+    }
   });
 
-  app.delete("/api/coletas/:id", (req: Request, res: Response) => {
-    coletas = coletas.filter((c) => c.id !== req.params.id);
-    res.json({ ok: true });
+  app.delete("/api/coletas/:id", async (req: Request, res: Response) => {
+    try {
+      res.json(await dbDeleteColeta(req.params.id));
+    } catch (err) {
+      console.error("[DELETE /api/coletas/:id]", err);
+      res.status(500).json({ message: "Erro ao excluir coleta" });
+    }
   });
 
-  // ==================== FORNECEDORES ====================
-  app.get("/api/fornecedores", (_req: Request, res: Response) => {
-    res.json(fornecedores);
+  // ==================== FORNECEDORES (Supabase) ====================
+  app.get("/api/fornecedores", async (_req: Request, res: Response) => {
+    try {
+      res.json(await dbListFornecedores());
+    } catch (err) {
+      console.error("[GET /api/fornecedores]", err);
+      res.status(500).json({ message: "Erro ao listar fornecedores" });
+    }
   });
 
-  app.post("/api/fornecedores", (req: Request, res: Response) => {
-    const novo = { id: `f${Date.now()}`, ...req.body, ativo: true };
-    fornecedores.push(novo);
-    res.status(201).json(novo);
+  app.post("/api/fornecedores", async (req: Request, res: Response) => {
+    try {
+      res.status(201).json(await dbCreateFornecedor(req.body));
+    } catch (err) {
+      console.error("[POST /api/fornecedores]", err);
+      res.status(500).json({ message: "Erro ao cadastrar fornecedor" });
+    }
   });
 
-  app.put("/api/fornecedores/:id", (req: Request, res: Response) => {
-    const idx = fornecedores.findIndex((f) => f.id === req.params.id);
-    if (idx === -1) return res.status(404).json({ message: "Não encontrado" });
-    fornecedores[idx] = { ...fornecedores[idx], ...req.body };
-    res.json(fornecedores[idx]);
+  app.put("/api/fornecedores/:id", async (req: Request, res: Response) => {
+    try {
+      res.json(await dbUpdateFornecedor(req.params.id, req.body));
+    } catch (err) {
+      console.error("[PUT /api/fornecedores/:id]", err);
+      res.status(404).json({ message: "Fornecedor não encontrado" });
+    }
   });
 
-  app.delete("/api/fornecedores/:id", (req: Request, res: Response) => {
-    fornecedores = fornecedores.filter((f) => f.id !== req.params.id);
-    res.json({ ok: true });
+  app.delete("/api/fornecedores/:id", async (req: Request, res: Response) => {
+    try {
+      res.json(await dbDeleteFornecedor(req.params.id));
+    } catch (err) {
+      console.error("[DELETE /api/fornecedores/:id]", err);
+      res.status(500).json({ message: "Erro ao excluir fornecedor" });
+    }
   });
 
-  // ==================== PRODUTOS ====================
-  let produtosList: any[] = [
-    { id: "pr1", descricao: "Pano Industrial Branco 30x30", tipoMaterial: "TOALHA", cor: "Branco", medida: "30x30 Cm", acabamento: "Corte-Reto", pesoMedio: 0.5, unidadeMedida: "Pacote/Kilo", observacao: "" },
-    { id: "pr2", descricao: "Estopa Escura Industrial", tipoMaterial: "ESTOPA", cor: "Escuro", medida: "", acabamento: "Sem Acabamento", pesoMedio: 0, unidadeMedida: "Kilo", observacao: "" },
-    { id: "pr3", descricao: "Pano GRU Variado", tipoMaterial: "GRU", cor: "Variado", medida: "", acabamento: "Corte-Reto", pesoMedio: 0, unidadeMedida: "Kilo", observacao: "" },
-    { id: "pr4", descricao: "Malha Azul 40x40 Zig-Zag", tipoMaterial: "MALHA", cor: "Azul", medida: "40x40 Cm", acabamento: "Zig-Zag", pesoMedio: 0.4, unidadeMedida: "Pacote/Kilo", observacao: "" },
-    { id: "pr5", descricao: "Enxoval Branco 50x50 Overlock", tipoMaterial: "ENXOVAL", cor: "Branco", medida: "50x50 Cm", acabamento: "Overlock", pesoMedio: 0.8, unidadeMedida: "Pacote/Kilo", observacao: "" },
-    { id: "pr6", descricao: "Faixa Industrial Branca", tipoMaterial: "FAIXA", cor: "Branco", medida: "", acabamento: "Sem Acabamento", pesoMedio: 0, unidadeMedida: "Kilo", observacao: "Saída por kilo" },
-    { id: "pr7", descricao: "Lençol Branco 60x80 Overlock", tipoMaterial: "LENÇOL", cor: "Branco", medida: "60x80 Cm", acabamento: "Overlock", pesoMedio: 1.2, unidadeMedida: "Pacote/Kilo", observacao: "" },
-    { id: "pr8", descricao: "TNT Preto Industrial", tipoMaterial: "TNT", cor: "Preto", medida: "20x20 Cm", acabamento: "Corte-Reto", pesoMedio: 0.3, unidadeMedida: "Pacote/Kilo", observacao: "" },
-  ];
-
-  app.get("/api/produtos", (_req: Request, res: Response) => {
-    res.json(produtosList);
+  // ==================== PRODUTOS (Supabase) ====================
+  app.get("/api/produtos", async (_req: Request, res: Response) => {
+    try {
+      res.json(await dbListProdutos());
+    } catch (err) {
+      console.error("[GET /api/produtos]", err);
+      res.status(500).json({ message: "Erro ao listar produtos" });
+    }
   });
 
-  app.post("/api/produtos", (req: Request, res: Response) => {
-    const novo = { id: `pr${Date.now()}`, ...req.body, pesoMedio: Number(req.body.pesoMedio) || 0 };
-    produtosList.push(novo);
-    res.status(201).json(novo);
+  app.get("/api/produtos/:id", async (req: Request, res: Response) => {
+    try {
+      const p = await dbGetProduto(req.params.id);
+      if (!p) return res.status(404).json({ message: "Produto não encontrado" });
+      res.json(p);
+    } catch (err) {
+      console.error("[GET /api/produtos/:id]", err);
+      res.status(404).json({ message: "Produto não encontrado" });
+    }
   });
 
-  app.put("/api/produtos/:id", (req: Request, res: Response) => {
-    const idx = produtosList.findIndex((p) => p.id === req.params.id);
-    if (idx === -1) return res.status(404).json({ message: "Não encontrado" });
-    produtosList[idx] = { ...produtosList[idx], ...req.body, pesoMedio: Number(req.body.pesoMedio) || produtosList[idx].pesoMedio };
-    res.json(produtosList[idx]);
+  app.post("/api/produtos", async (req: Request, res: Response) => {
+    try {
+      res.status(201).json(await dbCreateProduto(req.body));
+    } catch (err) {
+      console.error("[POST /api/produtos]", err);
+      res.status(500).json({ message: "Erro ao cadastrar produto" });
+    }
   });
 
-  app.delete("/api/produtos/:id", (req: Request, res: Response) => {
-    produtosList = produtosList.filter((p) => p.id !== req.params.id);
-    res.json({ ok: true });
+  app.put("/api/produtos/:id", async (req: Request, res: Response) => {
+    try {
+      res.json(await dbUpdateProduto(req.params.id, req.body));
+    } catch (err) {
+      console.error("[PUT /api/produtos/:id]", err);
+      res.status(404).json({ message: "Produto não encontrado" });
+    }
+  });
+
+  app.delete("/api/produtos/:id", async (req: Request, res: Response) => {
+    try {
+      res.json(await dbDeleteProduto(req.params.id));
+    } catch (err) {
+      console.error("[DELETE /api/produtos/:id]", err);
+      res.status(500).json({ message: "Erro ao inativar produto" });
+    }
+  });
+
+  // ==================== MOTORISTAS (Supabase) ====================
+  app.get("/api/motoristas", async (_req: Request, res: Response) => {
+    try {
+      res.json(await dbListMotoristas());
+    } catch (err) {
+      console.error("[GET /api/motoristas]", err);
+      res.status(500).json({ message: "Erro ao listar motoristas" });
+    }
+  });
+
+  app.get("/api/motoristas/:id", async (req: Request, res: Response) => {
+    try {
+      const m = await dbGetMotorista(req.params.id);
+      if (!m) return res.status(404).json({ message: "Motorista não encontrado" });
+      res.json(m);
+    } catch (err) {
+      console.error("[GET /api/motoristas/:id]", err);
+      res.status(404).json({ message: "Motorista não encontrado" });
+    }
+  });
+
+  app.post("/api/motoristas", async (req: Request, res: Response) => {
+    try {
+      res.status(201).json(await dbCreateMotorista(req.body));
+    } catch (err) {
+      console.error("[POST /api/motoristas]", err);
+      res.status(500).json({ message: "Erro ao cadastrar motorista" });
+    }
+  });
+
+  app.put("/api/motoristas/:id", async (req: Request, res: Response) => {
+    try {
+      res.json(await dbUpdateMotorista(req.params.id, req.body));
+    } catch (err) {
+      console.error("[PUT /api/motoristas/:id]", err);
+      res.status(404).json({ message: "Motorista não encontrado" });
+    }
+  });
+
+  app.delete("/api/motoristas/:id", async (req: Request, res: Response) => {
+    try {
+      res.json(await dbDeleteMotorista(req.params.id));
+    } catch (err) {
+      console.error("[DELETE /api/motoristas/:id]", err);
+      res.status(500).json({ message: "Erro ao inativar motorista" });
+    }
   });
 
   // ==================== SEPARACOES ====================
@@ -543,134 +685,209 @@ export function registerRoutes(app: Express) {
     res.status(201).json(nova);
   });
 
-  // ==================== CLIENTES ====================
-  app.get("/api/clientes", (_req: Request, res: Response) => {
-    res.json(clientesList);
+  // ==================== CLIENTES (Supabase) ====================
+  app.get("/api/clientes", async (_req: Request, res: Response) => {
+    try {
+      res.json(await dbListClientes());
+    } catch (err) {
+      console.error("[GET /api/clientes]", err);
+      res.status(500).json({ message: "Erro ao listar clientes" });
+    }
   });
 
-  app.post("/api/clientes", (req: Request, res: Response) => {
-    const novo = { id: `cl${Date.now()}`, ...req.body };
-    clientesList.push(novo);
-    res.status(201).json(novo);
+  app.get("/api/clientes/:id", async (req: Request, res: Response) => {
+    try {
+      const c = await dbGetCliente(req.params.id);
+      if (!c) return res.status(404).json({ message: "Cliente não encontrado" });
+      res.json(c);
+    } catch (err) {
+      console.error("[GET /api/clientes/:id]", err);
+      res.status(404).json({ message: "Cliente não encontrado" });
+    }
   });
 
-  app.put("/api/clientes/:id", (req: Request, res: Response) => {
-    const idx = clientesList.findIndex((c) => c.id === req.params.id);
-    if (idx === -1) return res.status(404).json({ message: "Não encontrado" });
-    clientesList[idx] = { ...clientesList[idx], ...req.body };
-    res.json(clientesList[idx]);
+  app.post("/api/clientes", async (req: Request, res: Response) => {
+    try {
+      res.status(201).json(await dbCreateCliente(req.body));
+    } catch (err) {
+      console.error("[POST /api/clientes]", err);
+      res.status(500).json({ message: "Erro ao cadastrar cliente" });
+    }
   });
 
-  app.delete("/api/clientes/:id", (req: Request, res: Response) => {
-    clientesList = clientesList.filter((c) => c.id !== req.params.id);
-    res.json({ ok: true });
+  app.put("/api/clientes/:id", async (req: Request, res: Response) => {
+    try {
+      res.json(await dbUpdateCliente(req.params.id, req.body));
+    } catch (err) {
+      console.error("[PUT /api/clientes/:id]", err);
+      res.status(404).json({ message: "Cliente não encontrado" });
+    }
+  });
+
+  app.delete("/api/clientes/:id", async (req: Request, res: Response) => {
+    try {
+      res.json(await dbDeleteCliente(req.params.id));
+    } catch (err) {
+      console.error("[DELETE /api/clientes/:id]", err);
+      res.status(500).json({ message: "Erro ao inativar cliente" });
+    }
   });
 
   // ==================== EXPEDICOES ====================
-  app.get("/api/expedicoes", (_req: Request, res: Response) => {
-    res.json(expedicoesList);
+  // ==================== EXPEDIÇÕES / PEDIDOS (Supabase) ====================
+  app.get("/api/expedicoes", async (_req: Request, res: Response) => {
+    try {
+      res.json(await dbListExpedicoes());
+    } catch (err) {
+      console.error("[GET /api/expedicoes]", err);
+      res.status(500).json({ message: "Erro ao listar pedidos" });
+    }
   });
 
-  app.post("/api/expedicoes", (req: Request, res: Response) => {
-    const cliente = clientesList.find((c) => c.id === req.body.clienteId);
-    const estoqueItem = estoqueList.find((e) => e.id === req.body.estoqueId);
-    if (!cliente || !estoqueItem) return res.status(404).json({ message: "Cliente ou estoque não encontrado" });
+  app.get("/api/expedicoes/:id", async (req: Request, res: Response) => {
+    try {
+      const e = await dbGetExpedicao(req.params.id);
+      if (!e) return res.status(404).json({ message: "Pedido não encontrado" });
+      res.json(e);
+    } catch (err) {
+      console.error("[GET /api/expedicoes/:id]", err);
+      res.status(404).json({ message: "Pedido não encontrado" });
+    }
+  });
 
-    const nova = {
-      id: `ex${nextExpedicaoId++}`,
-      clienteId: cliente.id,
-      nomeFantasia: cliente.nome,
-      razaoSocial: cliente.nome,
-      cnpj: cliente.cnpj,
-      contato: cliente.contato,
-      email: cliente.email,
-      endereco: "",
-      descricaoProduto: estoqueItem.descricaoProduto,
-      tipoMaterial: estoqueItem.tipoMaterial,
-      cor: estoqueItem.cor,
-      medida: estoqueItem.medida,
-      kilo: estoqueItem.kilo,
-      kiloSolicitada: Number(req.body.qtdeSolicitada) || estoqueItem.kilo,
-      unidade: estoqueItem.unidade,
-      qtdePedido: Number(req.body.qtdeSolicitada) || estoqueItem.unidade,
-      unidadeMedida: estoqueItem.unidadeMedida,
-      statusPedido: "",
-      statusEntrega: "aguardando_financeiro",
-      statusFinanceiro: "pendente_aprovacao",
-      statusNota: "pendente_emissao",
-      statusMaterial: "",
-      galpao: "Vicente",
-      rota: req.body.rota || "",
-      prioridade: req.body.prioridade || "Normal",
-      periodicidade: "",
-      notaFiscal: "",
-      observacaoEscritorio: req.body.observacaoEscritorio || "",
-      observacaoGalpao: "",
-      createdAt: new Date().toISOString(),
-    };
-    expedicoesList.push(nova);
-    res.status(201).json(nova);
+  app.post("/api/expedicoes", async (req: Request, res: Response) => {
+    try {
+      res.status(201).json(await dbCreateExpedicao(req.body));
+    } catch (err) {
+      console.error("[POST /api/expedicoes]", err);
+      res.status(500).json({ message: "Erro ao criar pedido" });
+    }
+  });
+
+  app.put("/api/expedicoes/:id", async (req: Request, res: Response) => {
+    try {
+      res.json(await dbUpdateExpedicao(req.params.id, req.body));
+    } catch (err) {
+      console.error("[PUT /api/expedicoes/:id]", err);
+      res.status(404).json({ message: "Pedido não encontrado" });
+    }
+  });
+
+  app.delete("/api/expedicoes/:id", async (req: Request, res: Response) => {
+    try {
+      res.json(await dbDeleteExpedicao(req.params.id));
+    } catch (err) {
+      console.error("[DELETE /api/expedicoes/:id]", err);
+      res.status(500).json({ message: "Erro ao excluir pedido" });
+    }
   });
 
   // Cadeia de aprovação
-  app.put("/api/expedicoes/:id/aprovar-financeiro", (req: Request, res: Response) => {
-    const idx = expedicoesList.findIndex((e) => e.id === req.params.id);
-    if (idx === -1) return res.status(404).json({ message: "Não encontrado" });
-    expedicoesList[idx].statusFinanceiro = "aprovado";
-    expedicoesList[idx].statusEntrega = "aguardando_nf";
-    res.json(expedicoesList[idx]);
+  app.put("/api/expedicoes/:id/aprovar-financeiro", async (req: Request, res: Response) => {
+    try {
+      res.json(
+        await dbUpdateExpedicao(req.params.id, {
+          statusFinanceiro: "aprovado",
+          statusEntrega: "aguardando_nf",
+        }),
+      );
+    } catch (err) {
+      console.error("[PUT aprovar-financeiro]", err);
+      res.status(500).json({ message: "Erro ao aprovar" });
+    }
   });
 
-  app.put("/api/expedicoes/:id/emitir-nf", (req: Request, res: Response) => {
-    const idx = expedicoesList.findIndex((e) => e.id === req.params.id);
-    if (idx === -1) return res.status(404).json({ message: "Não encontrado" });
-    expedicoesList[idx].statusNota = "emitida";
-    expedicoesList[idx].notaFiscal = `NF-2026-${String(Math.floor(Math.random() * 9999)).padStart(4, "0")}`;
-    expedicoesList[idx].statusEntrega = "pronto_entrega";
-    res.json(expedicoesList[idx]);
+  app.put("/api/expedicoes/:id/emitir-nf", async (req: Request, res: Response) => {
+    try {
+      const notaFiscal = `NF-2026-${String(Math.floor(Math.random() * 9999)).padStart(4, "0")}`;
+      res.json(
+        await dbUpdateExpedicao(req.params.id, {
+          statusNota: "emitida",
+          notaFiscal,
+          statusEntrega: "pronto_entrega",
+          dataEmissaoNota: new Date().toISOString(),
+        }),
+      );
+    } catch (err) {
+      console.error("[PUT emitir-nf]", err);
+      res.status(500).json({ message: "Erro ao emitir NF" });
+    }
   });
 
-  app.put("/api/expedicoes/:id/entregar", (req: Request, res: Response) => {
-    const idx = expedicoesList.findIndex((e) => e.id === req.params.id);
-    if (idx === -1) return res.status(404).json({ message: "Não encontrado" });
-    expedicoesList[idx].statusEntrega = "entregue";
-    res.json(expedicoesList[idx]);
+  app.put("/api/expedicoes/:id/entregar", async (req: Request, res: Response) => {
+    try {
+      res.json(await dbUpdateExpedicao(req.params.id, { statusEntrega: "entregue" }));
+    } catch (err) {
+      console.error("[PUT entregar]", err);
+      res.status(500).json({ message: "Erro ao marcar entregue" });
+    }
   });
 
-  // ==================== ESTOQUE ====================
-  app.get("/api/estoque", (_req: Request, res: Response) => {
-    res.json(estoqueList);
+  /**
+   * REGRA R2 — disponibilidade de stock
+   * GET /api/expedicoes/disponibilidade?produtoId=…&galpao=…
+   * Retorna { kiloTotal, unidadeTotal, reservado, unidadeDisponivel }
+   */
+  app.get("/api/expedicoes/disponibilidade", async (req: Request, res: Response) => {
+    try {
+      const { produtoId, galpao } = req.query;
+      if (!produtoId || typeof produtoId !== "string") {
+        return res.status(400).json({ message: "produtoId obrigatório" });
+      }
+      const r = await dbGetDisponibilidade(produtoId, typeof galpao === "string" ? galpao : undefined);
+      res.json(r);
+    } catch (err) {
+      console.error("[GET disponibilidade]", err);
+      res.status(500).json({ message: "Erro ao calcular disponibilidade" });
+    }
   });
 
-  app.post("/api/estoque", (req: Request, res: Response) => {
-    const prod = producoes.find((p) => p.id === req.body.producaoId);
-    if (!prod) return res.status(404).json({ message: "Produção não encontrada" });
+  // ==================== ESTOQUE (Supabase) ====================
+  app.get("/api/estoque", async (_req: Request, res: Response) => {
+    try {
+      res.json(await dbListEstoque());
+    } catch (err) {
+      console.error("[GET /api/estoque]", err);
+      res.status(500).json({ message: "Erro ao listar estoque" });
+    }
+  });
 
-    // Mark production as in estoque
-    prod.statusEstoque = "em_estoque";
+  app.get("/api/estoque/:id", async (req: Request, res: Response) => {
+    try {
+      const e = await dbGetEstoque(req.params.id);
+      if (!e) return res.status(404).json({ message: "Item não encontrado" });
+      res.json(e);
+    } catch (err) {
+      console.error("[GET /api/estoque/:id]", err);
+      res.status(404).json({ message: "Item não encontrado" });
+    }
+  });
 
-    const novo = {
-      id: `e${nextEstoqueId++}`,
-      coletaNumero: prod.coletaNumero,
-      fornecedor: prod.fornecedor,
-      descricaoProduto: req.body.descricaoProduto || `${prod.tipoMaterial} ${prod.cor}`,
-      tipoMaterial: prod.tipoMaterial,
-      cor: prod.cor,
-      medida: prod.medida,
-      acabamento: prod.acabamento,
-      kilo: prod.kilo,
-      unidade: prod.qtdePacote || 0,
-      pesoMedioPct: prod.pesoMedio || 0,
-      unidadeMedida: prod.unidadeSaida === "kilo" ? "Kilo" : "Pacote/Kilo",
-      qtdeReservadaPacote: 0,
-      galpao: req.body.galpao || "Vicente",
-      status: "Disponivel",
-      statusMaterial: "",
-      data: new Date().toISOString(),
-      observacao: req.body.observacao || "",
-    };
-    estoqueList.push(novo);
-    res.status(201).json(novo);
+  app.post("/api/estoque", async (req: Request, res: Response) => {
+    try {
+      res.status(201).json(await dbCreateEstoque(req.body));
+    } catch (err) {
+      console.error("[POST /api/estoque]", err);
+      res.status(500).json({ message: "Erro ao criar item de estoque" });
+    }
+  });
+
+  app.put("/api/estoque/:id", async (req: Request, res: Response) => {
+    try {
+      res.json(await dbUpdateEstoque(req.params.id, req.body));
+    } catch (err) {
+      console.error("[PUT /api/estoque/:id]", err);
+      res.status(404).json({ message: "Item não encontrado" });
+    }
+  });
+
+  app.delete("/api/estoque/:id", async (req: Request, res: Response) => {
+    try {
+      res.json(await dbDeleteEstoque(req.params.id));
+    } catch (err) {
+      console.error("[DELETE /api/estoque/:id]", err);
+      res.status(500).json({ message: "Erro ao remover item de estoque" });
+    }
   });
 
   // ==================== COLABORADORES (Sync Bidirecional RHiD ↔ Tecnopano) ====================

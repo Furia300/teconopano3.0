@@ -8,6 +8,7 @@ import {
   Users,
   Settings,
   Box,
+  Building2,
   ClipboardList,
   DollarSign,
   FileText,
@@ -36,8 +37,40 @@ export interface AppMenuItem {
   navMatchHrefs?: string[];
 }
 
+/** Perfis que veem o dashboard administrativo (exclui `michele` — entra direto em Coleta). */
+const PERFIS_DASHBOARD = [
+  "administrador",
+  "super_admin",
+  "galpao",
+  "emissao_nf",
+  "financeiro",
+  "expedicao",
+  "rh",
+  "producao",
+  "separacao",
+  "motorista",
+  "costureira",
+] as const;
+
 export const APP_MENU: AppMenuItem[] = [
-  { icon: LayoutDashboard, label: "Dashboard", href: "/" },
+  { icon: LayoutDashboard, label: "Dashboard", href: "/", perfis: [...PERFIS_DASHBOARD] },
+
+  /**
+   * COLETA — área upstream (entrada de matéria-prima).
+   * Quando estiver em qualquer rota desta área, a faixa horizontal mostra:
+   * Coleta · Fornecedores · Motorista (Motorista repete também em Expedição).
+   */
+  {
+    icon: Truck,
+    label: "Coleta",
+    perfis: ["michele", "galpao", "administrador", "expedicao", "motorista"],
+    children: [
+      { icon: Truck, label: "Coleta", href: "/coleta", perfis: ["michele", "galpao", "administrador", "expedicao", "motorista"] },
+      { icon: Building2, label: "Fornecedores", href: "/fornecedores", perfis: ["administrador", "expedicao", "galpao", "michele"] },
+      { icon: Truck, label: "Motorista", href: "/motorista", perfis: ["administrador", "motorista", "expedicao", "galpao", "michele"] },
+    ],
+  },
+
   {
     icon: Factory,
     label: "Produção",
@@ -51,17 +84,24 @@ export const APP_MENU: AppMenuItem[] = [
       { icon: Scissors, label: "Costureira", href: "/costureira", perfis: ["administrador", "galpao"] },
     ],
   },
+
+  /**
+   * EXPEDIÇÃO — área downstream (pedido do cliente B2B).
+   * Pedidos / Clientes / Estoque / Motorista (Motorista repete da Coleta — mesma pessoa,
+   * outro contexto operacional).
+   */
   {
     icon: Send,
     label: "Expedição",
-    perfis: ["administrador", "expedicao", "motorista", "galpao"],
+    perfis: ["administrador", "expedicao", "motorista", "galpao", "michele"],
     children: [
-      { icon: Truck, label: "Coleta", href: "/coleta" },
-      { icon: Package, label: "Pedidos", href: "/expedicao" },
-      { icon: Truck, label: "Motorista", href: "/motorista", perfis: ["administrador", "motorista", "expedicao", "galpao"] },
-      { icon: Warehouse, label: "Estoque", href: "/estoque", perfis: ["administrador", "expedicao", "galpao"] },
+      { icon: Package, label: "Pedidos", href: "/expedicao", perfis: ["administrador", "expedicao", "galpao", "michele"] },
+      { icon: ShoppingCart, label: "Clientes", href: "/clientes", perfis: ["administrador", "expedicao", "michele"] },
+      { icon: Warehouse, label: "Estoque", href: "/estoque", perfis: ["administrador", "expedicao", "galpao", "michele"] },
+      { icon: Truck, label: "Motorista", href: "/motorista", perfis: ["administrador", "motorista", "expedicao", "galpao", "michele"] },
     ],
   },
+
   {
     icon: DollarSign,
     label: "Financeiro",
@@ -72,9 +112,9 @@ export const APP_MENU: AppMenuItem[] = [
       { icon: FileText, label: "Emissão NF", href: "/emissao-nf", badge: "notaPendente", perfis: ["administrador", "expedicao", "emissao_nf"] },
     ],
   },
-  { icon: ShoppingCart, label: "Clientes", href: "/clientes", perfis: ["administrador", "expedicao"] },
-  { icon: Truck, label: "Fornecedores", href: "/fornecedores", perfis: ["administrador", "expedicao"] },
-  { icon: Box, label: "Produtos", href: "/produtos", perfis: ["administrador", "expedicao"] },
+
+  /** Catálogo central de produtos — vive fora dos fluxos porque alimenta produção, estoque e expedição. */
+  { icon: Box, label: "Produtos", href: "/produtos", perfis: ["administrador", "expedicao", "michele"] },
   {
     icon: Users,
     label: "RH",
