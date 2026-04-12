@@ -15,7 +15,6 @@ import {
   CheckCircle2,
   IdCard,
 } from "lucide-react";
-import { PageHeader } from "@/components/domain/PageHeader";
 import { StatsCard } from "@/components/domain/StatsCard";
 import { DataListingToolbar } from "@/components/domain/DataListingToolbar";
 import { Avatar } from "@/components/domain/Avatar";
@@ -147,35 +146,15 @@ export default function FuncionariosList() {
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="RH · Colaboradores"
-        description="Quadro de colaboradores com sincronização bidirecional RHiD ControlID"
-        icon={Users}
-        badge={
-          <Badge
-            variant={fonte === "rhid" ? "success" : "warning"}
-            className="border border-white/20 bg-white/10 px-2.5 py-1 text-[10px] text-white backdrop-blur-sm"
-          >
-            {fonte === "rhid" ? (
-              <Wifi className="h-3 w-3" />
-            ) : (
-              <WifiOff className="h-3 w-3" />
-            )}
-            {fonte === "rhid" ? "RHiD" : "Local"}
-          </Badge>
-        }
-        actions={
-          <>
-            <Button variant="secondary" size="sm" onClick={handleSync} disabled={syncing}>
-              <RefreshCw className={cn("h-3 w-3", syncing && "animate-spin")} />
-              Sincronizar
-            </Button>
-            <Button size="sm" onClick={openNew}>
-              <Plus className="h-4 w-4" />
-              Novo
-            </Button>
-          </>
-        }
+      <RhHero
+        total={stats.total}
+        ativos={stats.ativos}
+        inativos={stats.inativos}
+        producao={stats.producao}
+        fonte={fonte}
+        syncing={syncing}
+        onSync={handleSync}
+        onNew={openNew}
       />
 
       {/* Cards Relatório */}
@@ -276,6 +255,252 @@ export default function FuncionariosList() {
         onSuccess={fetchColaboradores}
       />
     </div>
+  );
+}
+
+/* ──────────────────────────── RH HERO — "Trama Têxtil" ────────────────────────────
+   Leve (CSS puro, zero Framer Motion, zero SVG particles).
+   Pattern de trama de tecido via CSS gradients — identidade de pano da Tecnopano.
+   Funciona em mobile/tablet com wifi fraco.
+   ──────────────────────────────────────────────────────────────────────────────────── */
+
+const heroStyle = `
+.rh-hero {
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px 16px 16px 28px;
+  background: linear-gradient(135deg, #001443 0%, #002A68 50%, #001443 100%);
+  border: 1px solid rgba(255,255,255,0.06);
+  box-shadow: 0 4px 20px rgba(0,20,67,0.3);
+}
+/* Dark mode — fundo mais escuro + vidro fosco sobre o SVG */
+:is(.dark) .rh-hero {
+  background: linear-gradient(135deg, #0a0a0f 0%, #12141f 50%, #0a0a0f 100%);
+  border-color: rgba(255,255,255,0.08);
+}
+.rh-frost {
+  display: none;
+}
+:is(.dark) .rh-frost {
+  display: block;
+  position: absolute; inset: 0;
+  pointer-events: none;
+  backdrop-filter: blur(1px) saturate(1.3);
+  -webkit-backdrop-filter: blur(1px) saturate(1.3);
+  background: rgba(10,10,15,0.35);
+  border-radius: inherit;
+}
+.rh-hero-bottom {
+  position: absolute; bottom: 0; left: 8%; right: 8%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #ed1b24 25%, #B20028 50%, #ed1b24 75%, transparent);
+  opacity: 0.35; border-radius: 1px;
+}
+:is(.dark) .rh-hero-bottom { opacity: 0.5; }
+.rh-stat {
+  display: flex; align-items: center; gap: 6px;
+  padding: 4px 10px; border-radius: 8px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+:is(.dark) .rh-stat {
+  background: rgba(255,255,255,0.04);
+  border-color: rgba(255,255,255,0.06);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+`;
+
+/** SVG inline de tecido — linhas onduladas que remetem a fios de pano/trama têxtil.
+ *  Zero JS, zero animação, ~2KB. GPU-friendly em mobile. */
+function FabricSVG() {
+  return (
+    <svg
+      viewBox="0 0 900 220"
+      preserveAspectRatio="none"
+      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none" }}
+      aria-hidden
+    >
+      {/* ── Urdidura (warp) — fios horizontais ondulados brancos ── */}
+      <path d="M0,35 C150,20 300,55 450,30 C600,5 750,50 900,25"
+        stroke="white" strokeWidth="0.6" fill="none" opacity="0.05" />
+      <path d="M0,60 C200,45 350,80 500,55 C650,30 800,70 900,50"
+        stroke="white" strokeWidth="0.5" fill="none" opacity="0.04" />
+      <path d="M0,90 C180,75 320,110 480,85 C640,60 780,100 900,80"
+        stroke="white" strokeWidth="0.6" fill="none" opacity="0.05" />
+      <path d="M0,120 C220,105 400,140 550,115 C700,90 820,130 900,110"
+        stroke="white" strokeWidth="0.5" fill="none" opacity="0.04" />
+      <path d="M0,150 C170,135 330,170 490,145 C650,120 790,160 900,140"
+        stroke="white" strokeWidth="0.6" fill="none" opacity="0.05" />
+      <path d="M0,178 C200,165 380,195 530,172 C680,150 810,185 900,168"
+        stroke="white" strokeWidth="0.5" fill="none" opacity="0.04" />
+      <path d="M0,200 C250,190 400,215 560,195 C720,175 830,205 900,195"
+        stroke="white" strokeWidth="0.5" fill="none" opacity="0.035" />
+
+      {/* ── Trama (weft) — fios verticais ondulados brancos ── */}
+      <path d="M120,0 C110,55 140,110 115,165 C100,200 130,220 120,220"
+        stroke="white" strokeWidth="0.5" fill="none" opacity="0.03" />
+      <path d="M240,0 C255,50 230,100 250,150 C265,190 240,220 245,220"
+        stroke="white" strokeWidth="0.5" fill="none" opacity="0.03" />
+      <path d="M380,0 C370,60 395,120 375,170 C360,210 390,220 380,220"
+        stroke="white" strokeWidth="0.5" fill="none" opacity="0.03" />
+      <path d="M520,0 C530,45 510,105 535,155 C550,195 515,220 525,220"
+        stroke="white" strokeWidth="0.5" fill="none" opacity="0.03" />
+      <path d="M660,0 C650,55 675,115 655,170 C640,205 670,220 660,220"
+        stroke="white" strokeWidth="0.5" fill="none" opacity="0.03" />
+      <path d="M790,0 C800,50 780,110 805,160 C820,200 785,220 795,220"
+        stroke="white" strokeWidth="0.5" fill="none" opacity="0.03" />
+
+      {/* ── Fio vermelho principal — como o fio de costura Tecnopano ── */}
+      <path
+        d="M0,100 C120,70 240,130 360,85 C480,40 600,120 720,75 C810,45 870,90 900,80"
+        stroke="#ed1b24" strokeWidth="1.2" fill="none" opacity="0.18"
+        strokeLinecap="round"
+      />
+      {/* Segundo fio vermelho mais fino — eco */}
+      <path
+        d="M0,115 C140,90 280,145 400,105 C520,65 640,135 760,95 C840,70 880,105 900,98"
+        stroke="#ed1b24" strokeWidth="0.6" fill="none" opacity="0.09"
+        strokeLinecap="round"
+      />
+
+      {/* ── Nós / cruzamentos sutis — onde urdidura e trama se encontram ── */}
+      <circle cx="120" cy="90" r="1.5" fill="#ed1b24" opacity="0.12" />
+      <circle cx="240" cy="115" r="1.5" fill="#ed1b24" opacity="0.10" />
+      <circle cx="380" cy="85" r="1.5" fill="#ed1b24" opacity="0.12" />
+      <circle cx="520" cy="105" r="1.5" fill="#ed1b24" opacity="0.10" />
+      <circle cx="660" cy="78" r="1.5" fill="#ed1b24" opacity="0.12" />
+      <circle cx="790" cy="95" r="1.5" fill="#ed1b24" opacity="0.10" />
+
+      {/* ── Área de respiro — gradiente de fade nas bordas ── */}
+      <defs>
+        <linearGradient id="rh-fade-l" x1="0" x2="0.15" y1="0" y2="0">
+          <stop offset="0" stopColor="#001443" stopOpacity="1" />
+          <stop offset="1" stopColor="#001443" stopOpacity="0" />
+        </linearGradient>
+        <linearGradient id="rh-fade-r" x1="0.85" x2="1" y1="0" y2="0">
+          <stop offset="0" stopColor="#001443" stopOpacity="0" />
+          <stop offset="1" stopColor="#001443" stopOpacity="0.7" />
+        </linearGradient>
+      </defs>
+      <rect x="0" y="0" width="900" height="220" fill="url(#rh-fade-l)" />
+      <rect x="0" y="0" width="900" height="220" fill="url(#rh-fade-r)" />
+    </svg>
+  );
+}
+
+interface RhHeroProps {
+  total: number;
+  ativos: number;
+  inativos: number;
+  producao: number;
+  fonte: "rhid" | "local";
+  syncing: boolean;
+  onSync: () => void;
+  onNew: () => void;
+}
+
+function RhHero({ total, ativos, inativos, producao, fonte, syncing, onSync, onNew }: RhHeroProps) {
+  return (
+    <>
+      <style>{heroStyle}</style>
+      <div className="rh-hero">
+        <FabricSVG />
+        {/* Vidro fosco — só dark mode */}
+        <div className="rh-frost" />
+
+        {/* Content */}
+        <div className="relative z-10 flex flex-col gap-4 px-6 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-7 sm:py-6">
+          {/* Left — icon + text + stats */}
+          <div className="flex items-start gap-4">
+            {/* Icon tile (neumorphic like sidebar) */}
+            <div
+              className="hidden flex-shrink-0 items-center justify-center sm:flex"
+              style={{
+                width: 52, height: 52, borderRadius: 14,
+                background: "linear-gradient(135deg, rgba(237,27,36,0.12), rgba(178,0,40,0.06))",
+                border: "1px solid rgba(237,27,36,0.18)",
+              }}
+            >
+              <Users className="h-6 w-6" style={{ color: "#ed1b24" }} strokeWidth={1.8} />
+            </div>
+
+            <div className="min-w-0">
+              <h2
+                className="font-heading text-xl font-bold tracking-tight text-white sm:text-[22px]"
+                style={{ lineHeight: 1.2 }}
+              >
+                RH <span className="text-white/30">·</span> Colaboradores
+              </h2>
+              <p className="mt-0.5 text-xs text-white/45 sm:text-[13px]">
+                Quadro de colaboradores — sincronização bidirecional RHiD ControlID
+              </p>
+
+              {/* Stats pills inline */}
+              <div className="mt-3 flex flex-wrap gap-1.5">
+                {([
+                  { label: "Total", value: total, color: "#93BDE4" },
+                  { label: "Ativos", value: ativos, color: "#00C64C" },
+                  { label: "Produção", value: producao, color: "#FDC24E" },
+                  { label: "Inativos", value: inativos, color: "#ed1b24" },
+                ] as const).map((s) => (
+                  <div key={s.label} className="rh-stat">
+                    <span
+                      className="h-1.5 w-1.5 rounded-full"
+                      style={{ background: s.color }}
+                    />
+                    <span className="text-[9px] font-semibold uppercase tracking-wider text-white/45">
+                      {s.label}
+                    </span>
+                    <span
+                      className="font-heading text-xs font-extrabold"
+                      style={{ color: s.color }}
+                    >
+                      {s.value}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Right — actions */}
+          <div className="flex flex-shrink-0 flex-wrap items-center gap-2">
+            {/* Source badge */}
+            <span
+              className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider"
+              style={{
+                background: fonte === "rhid" ? "rgba(0,198,76,0.1)" : "rgba(237,27,36,0.1)",
+                border: `1px solid ${fonte === "rhid" ? "rgba(0,198,76,0.2)" : "rgba(237,27,36,0.2)"}`,
+                color: fonte === "rhid" ? "#00C64C" : "#ed1b24",
+              }}
+            >
+              {fonte === "rhid" ? <Wifi className="h-3 w-3" /> : <WifiOff className="h-3 w-3" />}
+              {fonte === "rhid" ? "RHiD" : "Local"}
+            </span>
+
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={onSync}
+              disabled={syncing}
+              className="border-white/15 bg-white/8 text-white hover:bg-white/15"
+            >
+              <RefreshCw className={cn("h-3.5 w-3.5", syncing && "animate-spin")} />
+              Sincronizar
+            </Button>
+
+            <Button size="sm" onClick={onNew}>
+              <Plus className="h-4 w-4" />
+              Novo
+            </Button>
+          </div>
+        </div>
+
+        {/* Bottom thread line */}
+        <div className="rh-hero-bottom" />
+      </div>
+    </>
   );
 }
 

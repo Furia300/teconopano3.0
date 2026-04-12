@@ -77,13 +77,10 @@ if (typeof document !== "undefined" && !document.getElementById("sb-css")) {
 
 /* ═══════════════════════════════════════════════
    Modal — "Comportamento do menu"
-   Renderizado via portal fora da sidebar
+   Renderizado via portal fora da sidebar.
+   Estética dark neumorphic alinhada à sidebar Tecnopano.
    ═══════════════════════════════════════════════ */
-const MC = {
-  on: "#004B9B", off: "#E8EBFF", border: "#E2E8F0",
-  thumb: "#fff", filled: "#004B9B", empty: "#D3E3F4",
-  val: "#002A68", muted: "#64748B",
-};
+import { AnimatePresence } from "framer-motion";
 
 function AutoModal({
   open, onClose,
@@ -96,86 +93,284 @@ function AutoModal({
 }) {
   const pct = ((seconds - 1) / 29) * 100;
 
-  if (!open) return null;
-
   return createPortal(
-    <>
-      {/* Backdrop */}
-      <div
-        onClick={onClose}
-        style={{
-          position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)",
-          zIndex: 9998, animation: "fadeIn .15s ease",
-        }}
-      />
-      {/* Dialog */}
-      <div style={{
-        position: "fixed", top: "50%", left: "50%",
-        transform: "translate(-50%,-50%)", zIndex: 9999,
-        width: 380, maxWidth: "calc(100vw - 32px)",
-        background: "#fff", borderRadius: 16,
-        padding: "24px 28px 28px",
-        boxShadow: "0 25px 50px -12px rgba(0,0,0,.25)",
-        animation: "fadeIn .2s ease",
-      }}>
-        {/* Header */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
-          <h3 style={{ fontSize: 16, fontWeight: 600, color: "#1a1a1a", margin: 0 }}>
-            Comportamento do menu
-          </h3>
-          <button onClick={onClose} style={{
-            background: "none", border: "none", cursor: "pointer",
-            padding: 4, color: "#9ca3af", display: "flex",
-          }}>
-            <X size={18} />
-          </button>
-        </div>
-
-        {/* Toggle */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
-          <span style={{ fontSize: 14, color: "#1a1a1a" }}>Fechar automaticamente</span>
-          <button
-            type="button" role="switch" aria-checked={autoCollapse}
-            onClick={() => onAutoCollapseChange(!autoCollapse)}
+    <AnimatePresence>
+      {open && (
+        <>
+          {/* Backdrop — blur escuro */}
+          <motion.div
+            key="auto-backdrop"
+            onClick={onClose}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
             style={{
-              width: 44, height: 24, borderRadius: 12,
-              border: `1px solid ${autoCollapse ? MC.on : MC.border}`,
-              background: autoCollapse ? MC.on : MC.off,
-              padding: 2, cursor: "pointer", flexShrink: 0,
-            }}
-          >
-            <span style={{
-              display: "block", width: 18, height: 18, borderRadius: "50%",
-              background: MC.thumb,
-              transform: autoCollapse ? "translateX(20px)" : "translateX(0)",
-              transition: "transform .2s ease",
-              boxShadow: "0 1px 3px rgba(0,0,0,.12)",
-            }} />
-          </button>
-        </div>
-
-        {/* Slider */}
-        <div style={{ opacity: autoCollapse ? 1 : 0.45, marginTop: 20, transition: "opacity .2s" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
-            <span style={{ fontSize: 13, color: "#6b7280" }}>Tempo para fechar</span>
-            <span style={{ fontSize: 14, fontWeight: 700, color: MC.val }}>{seconds}s</span>
-          </div>
-          <input
-            type="range" className="sb-range"
-            min={1} max={30} step={1} value={seconds}
-            disabled={!autoCollapse}
-            onChange={(e) => onSecondsChange(Number(e.target.value))}
-            style={{
-              display: "block", width: "100%",
-              background: `linear-gradient(to right,${MC.filled} 0%,${MC.filled} ${pct}%,${MC.empty} ${pct}%,${MC.empty} 100%)`,
+              position: "fixed", inset: 0,
+              background: "rgba(0,0,0,0.6)",
+              backdropFilter: "blur(6px)",
+              WebkitBackdropFilter: "blur(6px)",
+              zIndex: 9998,
             }}
           />
-          <div style={{ display: "flex", justifyContent: "space-between", marginTop: 8, fontSize: 11, color: MC.muted }}>
-            <span>1s</span><span>30s</span>
-          </div>
-        </div>
-      </div>
-    </>,
+          {/* Dialog — dark neumorphic, slide up + scale */}
+          <motion.div
+            key="auto-dialog"
+            initial={{ opacity: 0, y: 40, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.97 }}
+            transition={{ type: "spring", damping: 28, stiffness: 350 }}
+            style={{
+              position: "fixed", top: "50%", left: "50%",
+              transform: "translate(-50%,-50%)",
+              zIndex: 9999,
+              width: 400, maxWidth: "calc(100vw - 32px)",
+              background: "linear-gradient(165deg, #232328 0%, #1a1a1e 50%, #151518 100%)",
+              borderRadius: 20,
+              border: "1px solid rgba(255,255,255,0.08)",
+              padding: 0,
+              boxShadow:
+                "0 30px 60px -15px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04) inset, 0 1px 0 rgba(255,255,255,0.06) inset",
+              overflow: "hidden",
+            }}
+          >
+            {/* Grain texture overlay */}
+            <div style={{
+              position: "absolute", inset: 0, borderRadius: 20, pointerEvents: "none",
+              opacity: 0.03, mixBlendMode: "overlay",
+              backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E")`,
+            }} />
+
+            {/* Red accent line top */}
+            <div style={{
+              height: 3,
+              background: "linear-gradient(90deg, #FF073A, #B20028 50%, transparent)",
+              borderRadius: "20px 20px 0 0",
+            }} />
+
+            {/* Content */}
+            <div style={{ padding: "24px 28px 28px", position: "relative" }}>
+              {/* Header */}
+              <motion.div
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.1, duration: 0.25 }}
+                style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 28 }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  {/* Neumorphic icon tile (matches sidebar) */}
+                  <div style={{
+                    width: 36, height: 36, borderRadius: 10,
+                    background: "linear-gradient(160deg, #303036 0%, #222226 55%, #1c1c20 100%)",
+                    border: "1px solid #3f3f46",
+                    boxShadow: "0 3px 10px rgba(0,0,0,0.55), 0 1px 0 rgba(255,255,255,0.08) inset, 0 -1px 0 rgba(0,0,0,0.45) inset",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                  }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 style={{
+                      fontSize: 15, fontWeight: 700, color: "#fafafa", margin: 0,
+                      fontFamily: "'Saira Expanded', sans-serif", letterSpacing: "-0.02em",
+                    }}>
+                      Automático
+                    </h3>
+                    <p style={{ fontSize: 11, color: "#71717a", margin: "2px 0 0" }}>
+                      Comportamento do menu lateral
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={onClose}
+                  style={{
+                    width: 28, height: 28, borderRadius: 8,
+                    background: "rgba(255,255,255,0.04)",
+                    border: "1px solid rgba(255,255,255,0.08)",
+                    cursor: "pointer", display: "flex",
+                    alignItems: "center", justifyContent: "center",
+                    color: "#71717a", transition: "all .15s",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = "rgba(255,7,58,0.15)";
+                    e.currentTarget.style.borderColor = "rgba(255,7,58,0.3)";
+                    e.currentTarget.style.color = "#FF073A";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = "rgba(255,255,255,0.04)";
+                    e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
+                    e.currentTarget.style.color = "#71717a";
+                  }}
+                >
+                  <X size={14} />
+                </button>
+              </motion.div>
+
+              {/* Toggle row — neumorphic card */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.15, duration: 0.25 }}
+                style={{
+                  display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16,
+                  padding: "14px 16px", borderRadius: 12,
+                  background: "rgba(255,255,255,0.03)",
+                  border: "1px solid rgba(255,255,255,0.06)",
+                }}
+              >
+                <div>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: "#e4e4e7" }}>
+                    Fechar automaticamente
+                  </span>
+                  <p style={{ fontSize: 11, color: "#71717a", margin: "3px 0 0" }}>
+                    {autoCollapse ? "Menu recolhe após inatividade" : "Menu permanece aberto"}
+                  </p>
+                </div>
+                <button
+                  type="button" role="switch" aria-checked={autoCollapse}
+                  onClick={() => onAutoCollapseChange(!autoCollapse)}
+                  style={{
+                    width: 48, height: 26, borderRadius: 13,
+                    border: `1px solid ${autoCollapse ? "rgba(255,7,58,0.4)" : "rgba(255,255,255,0.12)"}`,
+                    background: autoCollapse
+                      ? "linear-gradient(135deg, #FF073A, #B20028)"
+                      : "rgba(255,255,255,0.06)",
+                    padding: 3, cursor: "pointer", flexShrink: 0,
+                    transition: "all .25s ease",
+                    boxShadow: autoCollapse
+                      ? "0 0 16px rgba(255,7,58,0.25), inset 0 1px 0 rgba(255,255,255,0.15)"
+                      : "inset 0 1px 3px rgba(0,0,0,0.3)",
+                  }}
+                >
+                  <motion.span
+                    animate={{ x: autoCollapse ? 22 : 0 }}
+                    transition={{ type: "spring", damping: 20, stiffness: 300 }}
+                    style={{
+                      display: "block", width: 18, height: 18, borderRadius: "50%",
+                      background: "#fff",
+                      boxShadow: "0 2px 6px rgba(0,0,0,0.25)",
+                    }}
+                  />
+                </button>
+              </motion.div>
+
+              {/* Slider section — neumorphic card */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: autoCollapse ? 1 : 0.35, y: 0 }}
+                transition={{ delay: 0.2, duration: 0.25 }}
+                style={{
+                  marginTop: 12, padding: "16px 16px 14px", borderRadius: 12,
+                  background: "rgba(255,255,255,0.03)",
+                  border: "1px solid rgba(255,255,255,0.06)",
+                  transition: "opacity .25s",
+                }}
+              >
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 14 }}>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: "#a1a1aa" }}>
+                    Tempo para fechar
+                  </span>
+                  <div style={{ display: "flex", alignItems: "baseline", gap: 4 }}>
+                    <motion.span
+                      key={seconds}
+                      initial={{ opacity: 0, y: -8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      style={{
+                        fontSize: 22, fontWeight: 800, color: "#FF073A",
+                        fontFamily: "'Saira Expanded', sans-serif",
+                        lineHeight: 1,
+                      }}
+                    >
+                      {seconds}
+                    </motion.span>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: "#71717a" }}>seg</span>
+                  </div>
+                </div>
+
+                {/* Custom slider track */}
+                <div style={{ position: "relative", height: 6, borderRadius: 3, marginBottom: 10 }}>
+                  {/* Background track */}
+                  <div style={{
+                    position: "absolute", inset: 0, borderRadius: 3,
+                    background: "rgba(255,255,255,0.08)",
+                    boxShadow: "inset 0 1px 3px rgba(0,0,0,0.4)",
+                  }} />
+                  {/* Filled portion */}
+                  <motion.div
+                    animate={{ width: `${pct}%` }}
+                    transition={{ type: "spring", damping: 20, stiffness: 200 }}
+                    style={{
+                      position: "absolute", top: 0, left: 0, height: "100%",
+                      borderRadius: 3,
+                      background: "linear-gradient(90deg, #FF073A, #B20028)",
+                      boxShadow: "0 0 10px rgba(255,7,58,0.3)",
+                    }}
+                  />
+                  {/* Native input (invisible, for interaction) */}
+                  <input
+                    type="range" className="sb-range"
+                    min={1} max={30} step={1} value={seconds}
+                    disabled={!autoCollapse}
+                    onChange={(e) => onSecondsChange(Number(e.target.value))}
+                    style={{
+                      position: "absolute", inset: 0, width: "100%",
+                      opacity: 0, cursor: autoCollapse ? "pointer" : "not-allowed",
+                      margin: 0,
+                    }}
+                  />
+                  {/* Custom thumb */}
+                  <motion.div
+                    animate={{ left: `${pct}%` }}
+                    transition={{ type: "spring", damping: 20, stiffness: 200 }}
+                    style={{
+                      position: "absolute", top: "50%",
+                      width: 18, height: 18, borderRadius: "50%",
+                      background: "#fff",
+                      border: "2px solid #FF073A",
+                      boxShadow: "0 2px 8px rgba(255,7,58,0.3), 0 1px 3px rgba(0,0,0,0.2)",
+                      transform: "translate(-50%, -50%)",
+                      pointerEvents: "none",
+                    }}
+                  />
+                </div>
+
+                <div style={{
+                  display: "flex", justifyContent: "space-between",
+                  fontSize: 10, fontWeight: 600, color: "#52525b",
+                  letterSpacing: "0.05em",
+                }}>
+                  <span>1s</span>
+                  <span>15s</span>
+                  <span>30s</span>
+                </div>
+              </motion.div>
+
+              {/* Status indicator */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
+                style={{
+                  marginTop: 16, display: "flex", alignItems: "center", gap: 8,
+                  justifyContent: "center",
+                }}
+              >
+                <div style={{
+                  width: 6, height: 6, borderRadius: "50%",
+                  background: autoCollapse ? "#FF073A" : "#52525b",
+                  boxShadow: autoCollapse ? "0 0 8px rgba(255,7,58,0.5)" : "none",
+                  transition: "all .3s",
+                }} />
+                <span style={{ fontSize: 11, color: "#71717a", fontWeight: 500 }}>
+                  {autoCollapse ? `Ativo — recolhe em ${seconds}s de inatividade` : "Desativado"}
+                </span>
+              </motion.div>
+            </div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>,
     document.body,
   );
 }

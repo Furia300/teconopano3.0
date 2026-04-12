@@ -207,14 +207,16 @@
   --info: 201 96% 32%;
   --info-foreground: 0 0% 100%;
 
-  /* FIPS DS — overrides para dark mode (cards, tables, tooltips, inputs) */
-  --fips-surface: #0f1115;
-  --fips-surface-soft: #15181f;
-  --fips-surface-muted: #1b1f27;
-  --fips-border: #2a2f3a;
-  --fips-border-strong: #3a4151;
-  --fips-fg: #f5f7fa;
-  --fips-fg-muted: #94a3b8;
+  /* FIPS DS — dark mode alinhado ao DashboardAdmin
+     Página: #1A1A1A | Cards: #222222 | Borda: #2E2E2E
+     Extraído de DashboardAdmin.tsx DARK palette + shellDarkGlassPanel */
+  --fips-surface: #222222;
+  --fips-surface-soft: #252525;
+  --fips-surface-muted: #1E1E1E;
+  --fips-border: #2E2E2E;
+  --fips-border-strong: #3a3a3a;
+  --fips-fg: #E2E2E8;
+  --fips-fg-muted: #6B7280;
   --fips-sidebar-deep: #0a0c10;
 }
 
@@ -362,4 +364,25 @@ body {
   border: 1px solid var(--fips-border);
   background-color: var(--fips-surface);
   box-shadow: 0 1px 3px rgba(0, 75, 155, 0.04);
+}
+
+/* ═══ DARK MODE — alinhado ao DashboardAdmin ═══
+   Cards KPI: sólido #222222 + borda #2E2E2E
+   Toolbar/Filtros: vidro rgba(255,255,255,0.08) + blur 8px (shellDarkGlassPanel)
+   ──────────────────────────────────────────────── */
+
+/* Cards KPI (StatsCard / Card Relatório) — sólido como no dashboard */
+:is(.dark) .fips-surface-card {
+  background-color: #222222;
+  border-color: #2E2E2E;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Painéis de listagem (tabela, toolbar) — vidro fosco como shellDarkGlassPanel */
+:is(.dark) .fips-surface-panel {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-color: rgba(255, 255, 255, 0.10);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 }
