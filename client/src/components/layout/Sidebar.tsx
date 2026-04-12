@@ -648,7 +648,7 @@ export function Sidebar({ onHoveringChange }: { onHoveringChange?: (hovering: bo
             />
           ) : (
             <img
-              src={dark ? "/src/assets/logo-dark-full.png" : "/src/assets/logo-light-full.png"}
+              src={dark ? "/src/assets/logo-sidebar-dark.png" : "/src/assets/logo-light-full.png"}
               alt="Tecnopano"
               style={{
                 display: "block",
