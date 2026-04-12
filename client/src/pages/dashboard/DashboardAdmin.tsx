@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import type { DashboardData } from "@/types/dashboard";
-import { FipsJunctionLines } from "@/composites/PageHero";
+import { FipsJunctionLines, PageHero } from "@/composites/PageHero";
 import { shellDarkGlassPanel } from "@/lib/docHeaderChrome";
 import { GALPOES } from "@/lib/galpoes";
 
@@ -329,58 +329,34 @@ export default function DashboardAdmin({ data }: Props) {
     <div style={{ minHeight: "100vh", fontFamily: Fn.body, color: C.cinzaEscuro, background: C.bg, transition: "background .3s, color .3s" }}>
       <style>{`@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}`}</style>
 
-      {/* ═══ HERO — claro: navy sólido FIPS · escuro: vidro fosco (login-card: blur 20px + camadas translúcidas) ═══ */}
-      <header
-        style={{
-          ...(dark
-            ? {
-                background:
-                  "linear-gradient(135deg, rgba(0, 75, 155, 0.5) 0%, rgba(0, 42, 104, 0.55) 50%, rgba(0, 26, 74, 0.58) 100%), rgba(26, 26, 26, 0.45)",
-                backdropFilter: "blur(20px)",
-                WebkitBackdropFilter: "blur(20px)",
-                border: "1px solid rgba(255, 255, 255, 0.12)",
-                boxShadow:
-                  "0 25px 50px -12px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.06) inset, 0 -20px 40px -20px rgba(255, 7, 58, 0.1) inset",
-              }
-            : {
-                background: "linear-gradient(135deg, #004B9B 0%, #002A68 58%, #001A4A 100%)",
-                border: "1px solid rgba(255,255,255,0.10)",
-                boxShadow: "0 4px 20px rgba(0,42,104,0.12)",
-              }),
-          padding: mob ? "22px 18px 18px" : "36px 40px 28px",
-          margin: mob ? "0 12px" : "0 32px",
-          position: "relative",
-          overflow: "hidden",
-          borderRadius: "12px 12px 12px 24px",
-        }}
-      >
-        <FipsJunctionLines
-          className="absolute text-white"
-          style={{
-            top: mob ? -8 : -10,
-            right: mob ? -16 : -24,
-            width: mob ? 200 : 380,
-            height: mob ? 160 : 200,
-            opacity: dark ? 0.1 : 0.06,
-            pointerEvents: "none",
-          }}
-        />
-        <div style={{ position: "relative", zIndex: 1, display: "flex", alignItems: mob ? "flex-start" : "center", justifyContent: "space-between", flexDirection: mob ? "column" : "row", gap: mob ? 12 : 0 }}>
-          <div>
-            <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(253,194,78,0.16)", border: "1px solid rgba(253,194,78,0.42)", borderRadius: 20, padding: "4px 12px", fontSize: 10, fontWeight: 600, color: C.amareloOuro, fontFamily: Fn.body, marginBottom: 8 }}>Super Admin · Tecnopano 3.0</div>
-            <h1 style={{ fontSize: mob ? 22 : 30, fontWeight: 700, color: C.branco, margin: "0 0 4px", fontFamily: Fn.title, lineHeight: 1.15 }}>Painel <span style={{ color: C.amareloOuro }}>Operacional</span></h1>
-            <p style={{ fontSize: mob ? 11 : 13, color: `${C.branco}80`, margin: 0 }}>Tecnologia Ambiental em Panos · {totalRegistros} registros operacionais{hasFilter ? " (filtrado)" : ""} · {formatKg(pesoTotal)} no fluxo</p>
-            <p style={{ fontSize: 10, color: `${C.branco}50`, margin: "6px 0 0" }}>{new Date().toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</p>
-            <p style={{ fontSize: 10, color: `${C.branco}70`, margin: "6px 0 0", letterSpacing: ".02em" }}>30 anos de atuação · 2.000+ clientes · atendimento nacional · coleta e destinação ambiental</p>
-          </div>
-          {totalAlertas > 0 && (
-            <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 16px", background: "rgba(246,146,30,0.14)", border: "1px solid rgba(246,146,30,0.38)", borderRadius: 10 }}>
-              {Ic.alert(18, C.amareloEscuro)}
-              <div><span style={{ fontSize: 13, fontWeight: 700, color: C.branco, display: "block" }}>{totalAlertas} pendências</span><span style={{ fontSize: 10, color: `${C.branco}70` }}>Financeiro, NF e logística ambiental</span></div>
+      {/* ═══ HERO — réplica exata do padrão RH ═══ */}
+      <div style={{ margin: mob ? "0 12px" : "0 32px" }}>
+        <PageHero>
+          <div className="relative flex flex-col gap-4 px-6 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-7 sm:py-6">
+            <div className="flex items-start gap-4">
+              <div className="hidden flex-shrink-0 items-center justify-center sm:flex" style={{ width: 52, height: 52, borderRadius: 14, background: "linear-gradient(135deg, rgba(237,27,36,0.12), rgba(178,0,40,0.06))", border: "1px solid rgba(237,27,36,0.18)" }}>
+                {Ic.alert(24, "#ed1b24")}
+              </div>
+              <div className="min-w-0">
+                <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(253,194,78,0.16)", border: "1px solid rgba(253,194,78,0.42)", borderRadius: 20, padding: "4px 12px", fontSize: 10, fontWeight: 600, color: C.amareloOuro, marginBottom: 8 }}>Super Admin · Tecnopano 3.0</div>
+                <h2 className="font-heading text-xl font-bold tracking-tight text-white sm:text-[22px]" style={{ lineHeight: 1.2 }}>Painel <span style={{ color: C.amareloOuro }}>Operacional</span></h2>
+                <p className="mt-0.5 text-xs text-white/45 sm:text-[13px]">Tecnologia Ambiental em Panos · {totalRegistros} registros operacionais{hasFilter ? " (filtrado)" : ""} · {formatKg(pesoTotal)} no fluxo</p>
+                <p className="mt-1 text-[10px] text-white/30">{new Date().toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</p>
+                <p className="mt-1 text-[10px] text-white/45 tracking-wide">30 anos de atuação · 2.000+ clientes · atendimento nacional · coleta e destinação ambiental</p>
+              </div>
             </div>
-          )}
-        </div>
-      </header>
+            {totalAlertas > 0 && (
+              <div className="flex flex-shrink-0 items-center gap-2 rounded-lg px-4 py-2.5" style={{ background: "rgba(246,146,30,0.14)", border: "1px solid rgba(246,146,30,0.38)" }}>
+                {Ic.alert(18, C.amareloEscuro)}
+                <div>
+                  <span className="block text-[13px] font-bold text-white">{totalAlertas} pendências</span>
+                  <span className="text-[10px] text-white/70">Financeiro, NF e logística ambiental</span>
+                </div>
+              </div>
+            )}
+          </div>
+        </PageHero>
+      </div>
 
       <div style={{ padding: mob ? "12px" : "16px 32px" }}>
         {/* ═══ BARRA DE FILTROS (abaixo do hero) ═══ */}

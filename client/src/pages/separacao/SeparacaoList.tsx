@@ -97,6 +97,12 @@ export default function SeparacaoList() {
         title="Separação"
         description="Triagem e classificação do material recebido"
         icon={ClipboardList}
+        stats={[
+          { label: "Total", value: stats.total, color: "#93BDE4" },
+          { label: "Peso Total", value: `${stats.pesoTotal.toLocaleString("pt-BR")}kg`, color: "#00C64C" },
+          { label: "Produção", value: stats.producao, color: "#FDC24E" },
+          { label: "Repanol", value: stats.repanol, color: "#ed1b24" },
+        ]}
         actions={
           <div className="flex gap-2">
             <Button variant="outline">

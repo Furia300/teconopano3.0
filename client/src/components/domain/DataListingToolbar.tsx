@@ -18,6 +18,8 @@ interface DataListingToolbarProps {
   /** Callbacks dos exports — se omitidos, esconde o ícone correspondente */
   onExportExcel?: () => void;
   onExportPdf?: () => void;
+  /** Conteúdo extra renderizado na mesma linha da toolbar (ao lado da search pill). */
+  extraContent?: React.ReactNode;
 }
 
 const DEFAULT_PERIODOS = [
@@ -52,6 +54,7 @@ export function DataListingToolbar({
   periodoOptions = DEFAULT_PERIODOS,
   onExportExcel,
   onExportPdf,
+  extraContent,
 }: DataListingToolbarProps) {
   const [showFilters, setShowFilters] = useState(false);
   const [showPeriodo, setShowPeriodo] = useState(false);
@@ -134,6 +137,9 @@ export function DataListingToolbar({
               </span>
             )}
           </div>
+
+          {/* Extra content (toggles, etc.) */}
+          {extraContent}
 
           {/* Período */}
           {periodo !== undefined && (

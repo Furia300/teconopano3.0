@@ -142,6 +142,12 @@ export default function MotoristaList() {
         title="Motoristas"
         description="Cadastro dos colaboradores motoristas — busca de matéria-prima e entrega ao cliente"
         icon={Truck}
+        stats={[
+          { label: "Total", value: stats.total, color: "#93BDE4" },
+          { label: "Ativos", value: stats.ativos, color: "#00C64C" },
+          { label: "Com CNH", value: stats.comCnh, color: "#FDC24E" },
+          { label: "CNH Vencida", value: stats.cnhVencida, color: "#ed1b24" },
+        ]}
         actions={
           <Button onClick={openNew}>
             <Plus className="h-4 w-4" />

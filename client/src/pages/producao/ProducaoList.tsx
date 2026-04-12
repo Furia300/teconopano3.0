@@ -135,6 +135,12 @@ export default function ProducaoList() {
         title="Produção"
         description="Salas de corte e processamento de material"
         icon={Factory}
+        stats={[
+          { label: "Total", value: stats.total, color: "#93BDE4" },
+          { label: "Peso Total", value: `${stats.pesoTotal.toLocaleString("pt-BR")}kg`, color: "#00C64C" },
+          { label: "Por Unidade", value: stats.porUnidade, color: "#FDC24E" },
+          { label: "Por Kilo", value: stats.porKilo, color: "#ed1b24" },
+        ]}
         actions={
           <div className="flex gap-2">
             <Button variant="outline">

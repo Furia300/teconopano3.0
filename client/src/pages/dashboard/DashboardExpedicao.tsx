@@ -1,9 +1,10 @@
 import {
-  Package, Truck, Clock, CheckCircle2, AlertCircle, MapPin,
+  Package, Truck, Clock, CheckCircle2, AlertCircle, MapPin, Send,
 } from "lucide-react";
 import { StatsCard } from "@/components/domain/StatsCard";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { PageHero } from "@/composites/PageHero";
 
 interface Props {
   data: any;
@@ -30,20 +31,25 @@ export default function DashboardExpedicao({ data }: Props) {
 
   return (
     <div className="space-y-6">
-      <div className="bg-gradient-to-r from-[#ed1b24] to-[#8b0000] rounded-2xl p-6 text-white">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">Dashboard Expedição</h1>
-            <p className="text-white/70 text-sm mt-1">Pedidos e entregas — {new Date().toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" })}</p>
+      <PageHero>
+        <div className="relative flex flex-col gap-4 px-6 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-7 sm:py-6">
+          <div className="flex items-start gap-4">
+            <div className="hidden flex-shrink-0 items-center justify-center sm:flex" style={{ width: 52, height: 52, borderRadius: 14, background: "linear-gradient(135deg, rgba(237,27,36,0.12), rgba(178,0,40,0.06))", border: "1px solid rgba(237,27,36,0.18)" }}>
+              <Send className="h-6 w-6" style={{ color: "#ed1b24" }} strokeWidth={1.8} />
+            </div>
+            <div className="min-w-0">
+              <h2 className="font-heading text-xl font-bold tracking-tight text-white sm:text-[22px]" style={{ lineHeight: 1.2 }}>Dashboard Expedição</h2>
+              <p className="mt-0.5 text-xs text-white/45 sm:text-[13px]">Pedidos e entregas — {new Date().toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" })}</p>
+            </div>
           </div>
           {prontoEntrega.length > 0 && (
-            <div className="flex items-center gap-2 bg-white/10 backdrop-blur rounded-xl px-4 py-2">
-              <Package className="h-5 w-5 text-green-300" />
-              <span className="text-sm font-semibold">{prontoEntrega.length} pronto(s) para entrega</span>
+            <div className="flex flex-shrink-0 items-center gap-2 rounded-lg px-3 py-2" style={{ background: "rgba(0,198,76,0.1)", border: "1px solid rgba(0,198,76,0.2)" }}>
+              <Package className="h-4 w-4" style={{ color: "#00C64C" }} />
+              <span className="text-xs font-semibold text-white">{prontoEntrega.length} pronto(s) para entrega</span>
             </div>
           )}
         </div>
-      </div>
+      </PageHero>
 
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         <StatsCard label="Pendentes" value={pendentes.length} icon={Clock} color="text-gray-500" bg="bg-gray-500/10" />

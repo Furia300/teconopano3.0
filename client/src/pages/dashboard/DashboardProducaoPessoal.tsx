@@ -3,6 +3,7 @@ import {
 } from "lucide-react";
 import { StatsCard } from "@/components/domain/StatsCard";
 import { Badge } from "@/components/ui/badge";
+import { PageHero } from "@/composites/PageHero";
 
 interface Props {
   data: any;
@@ -17,10 +18,17 @@ export default function DashboardProducaoPessoal({ data, userName }: Props) {
 
   return (
     <div className="space-y-6">
-      <div className="bg-gradient-to-r from-violet-600 to-violet-800 rounded-2xl p-6 text-white">
-        <h1 className="text-2xl font-bold">Minha Produção</h1>
-        <p className="text-white/70 text-sm mt-1">Olá, {userName} — {new Date().toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" })}</p>
-      </div>
+      <PageHero>
+        <div className="relative flex items-start gap-4 px-6 py-5 sm:px-7 sm:py-6">
+          <div className="hidden flex-shrink-0 items-center justify-center sm:flex" style={{ width: 52, height: 52, borderRadius: 14, background: "linear-gradient(135deg, rgba(237,27,36,0.12), rgba(178,0,40,0.06))", border: "1px solid rgba(237,27,36,0.18)" }}>
+            <Factory className="h-6 w-6" style={{ color: "#ed1b24" }} strokeWidth={1.8} />
+          </div>
+          <div className="min-w-0">
+            <h2 className="font-heading text-xl font-bold tracking-tight text-white sm:text-[22px]" style={{ lineHeight: 1.2 }}>Minha Produção</h2>
+            <p className="mt-0.5 text-xs text-white/45 sm:text-[13px]">Olá, {userName} — {new Date().toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" })}</p>
+          </div>
+        </div>
+      </PageHero>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <StatsCard label="Total Registros" value={minhas.length} icon={Factory} color="text-violet-500" bg="bg-violet-500/10" />

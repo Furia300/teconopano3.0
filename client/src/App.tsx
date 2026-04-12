@@ -19,6 +19,7 @@ import FornecedoresList from "./pages/fornecedores/FornecedoresList";
 import ProdutosList from "./pages/produtos/ProdutosList";
 import FuncionariosList from "./pages/funcionarios/FuncionariosList";
 import PontoDiario from "./pages/rh/PontoDiario";
+import DashboardRHPage from "./pages/rh/DashboardRHPage";
 import ProducaoDiariaPage from "./pages/producao-diaria/ProducaoDiariaPage";
 import AutomaticoPage from "./pages/automatico/AutomaticoPage";
 import MotoristaList from "./pages/motorista/MotoristaList";
@@ -41,6 +42,7 @@ function AppContent() {
         <Route path="/clientes" component={ClientesList} />
         <Route path="/fornecedores" component={FornecedoresList} />
         <Route path="/produtos" component={ProdutosList} />
+        <Route path="/dashboard-rh" component={DashboardRHPage} />
         <Route path="/funcionarios" component={FuncionariosList} />
         <Route path="/ponto-diario" component={PontoDiario} />
         <Route path="/producao-diaria" component={ProducaoDiariaPage} />

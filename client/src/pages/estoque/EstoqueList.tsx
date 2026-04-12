@@ -109,6 +109,12 @@ export default function EstoqueList() {
         title="Estoque"
         description="Produtos prontos no galpão — distinção total / reservado / disponível (regra R2)"
         icon={Warehouse}
+        stats={[
+          { label: "Total", value: stats.total, color: "#93BDE4" },
+          { label: "Peso", value: `${stats.totalKg.toLocaleString("pt-BR")}kg`, color: "#00C64C" },
+          { label: "Reservado", value: stats.totalReservado, color: "#FDC24E" },
+          { label: "Disponível", value: stats.totalDisponivel, color: "#ed1b24" },
+        ]}
       />
 
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">

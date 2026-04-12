@@ -93,6 +93,12 @@ export default function ProducaoDiariaPage() {
         title="Produção Diária"
         description="Registro digital de produção por mesa — substitui a folha de papel"
         icon={ClipboardList}
+        stats={[
+          { label: "Total", value: resumoDia.total, color: "#93BDE4" },
+          { label: "Duplas", value: resumoDia.duplas, color: "#00C64C" },
+          { label: "Completas", value: resumoDia.completas, color: "#FDC24E" },
+          { label: "Incompletas", value: resumoDia.incompletas, color: "#ed1b24" },
+        ]}
       />
 
       {/* Filtro por data + botão novo */}

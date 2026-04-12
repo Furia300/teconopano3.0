@@ -99,6 +99,12 @@ export default function RepanolList() {
         title="Repanol"
         description="Envio e retorno de material para tratamento externo (tingimento/lavagem)"
         icon={Droplets}
+        stats={[
+          { label: "Total", value: stats.total, color: "#93BDE4" },
+          { label: "Enviados", value: stats.enviados, color: "#FDC24E" },
+          { label: "Peso Enviado", value: `${stats.pesoEnviado.toLocaleString("pt-BR")}kg`, color: "#00C64C" },
+          { label: "Resíduo", value: `${stats.residuoTotal.toLocaleString("pt-BR")}kg`, color: "#ed1b24" },
+        ]}
         actions={
           <Button onClick={() => setDialogOpen(true)}>
             <Plus className="h-4 w-4" />

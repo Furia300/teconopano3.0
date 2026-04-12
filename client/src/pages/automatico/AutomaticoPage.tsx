@@ -9,7 +9,13 @@ export default function AutomaticoPage() {
       <PageHeader
         icon={Zap}
         title="Automático"
-        description="Regras, gatilhos e integrações que rodam sem intervenção manual — alinhado ao padrão de módulos FIPS (hero institucional, KPIs e blocos de conteúdo)."
+        description="Regras, gatilhos e integrações que rodam sem intervenção manual"
+        stats={[
+          { label: "Regras", value: 0, color: "#93BDE4" },
+          { label: "Ativas", value: 0, color: "#00C64C" },
+          { label: "Gatilhos", value: 0, color: "#FDC24E" },
+          { label: "Erros", value: 0, color: "#ed1b24" },
+        ]}
         badge={
           <Badge className="border border-white/20 bg-white/10 px-2.5 py-1 text-[10px] text-white backdrop-blur-sm">
             Operações · Automação

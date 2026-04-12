@@ -152,7 +152,17 @@ export function DataListingTable<T>({
     dir: "asc",
   });
   const [showConfig, setShowConfig] = useState(false);
+  const [colOrder, setColOrder] = useState<string[]>(() => columns.map((c) => c.id));
+  const [dragColId, setDragColId] = useState<string | null>(null);
   const [configTab, setConfigTab] = useState<"colunas" | "densidade" | "aparencia">("colunas");
+
+  // Sincronizar quando columns prop muda (ex: toggles de Apuração/Cálculo/Ajuste)
+  const colIds = useMemo(() => columns.map((c) => c.id).join(","), [columns]);
+  useEffect(() => {
+    const ids = columns.map((c) => c.id);
+    setColOrder(ids);
+    setVisibleCols(new Set(columns.filter((c) => c.default !== false).map((c) => c.id)));
+  }, [colIds]);
 
   const configRef = useRef<HTMLDivElement>(null);
 
@@ -168,10 +178,10 @@ export function DataListingTable<T>({
 
   /* ── Helpers ── */
   const D = DENSITY_SPEC[density];
-  const visibleColumnList = useMemo(
-    () => columns.filter((c) => visibleCols.has(c.id)),
-    [columns, visibleCols],
-  );
+  const visibleColumnList = useMemo(() => {
+    const colMap = new Map(columns.map((c) => [c.id, c]));
+    return colOrder.filter((id) => visibleCols.has(id) && colMap.has(id)).map((id) => colMap.get(id)!);
+  }, [columns, visibleCols, colOrder]);
 
   const toggleSel = (id: string) => {
     const n = new Set(selected);
@@ -312,15 +322,34 @@ export function DataListingTable<T>({
                         <span className="font-heading mb-1.5 ml-1 text-[9px] font-bold tracking-[1px] text-[var(--fips-fg-muted)] uppercase">
                           Visíveis ({visibleCols.size})
                         </span>
-                        {columns.map((col) => {
+                        {colOrder.map((colId) => {
+                          const col = columns.find((c) => c.id === colId);
+                          if (!col) return null;
                           const isVisible = visibleCols.has(col.id);
                           return (
                             <div
                               key={col.id}
+                              draggable={!col.fixed}
+                              onDragStart={() => setDragColId(col.id)}
+                              onDragOver={(e) => {
+                                e.preventDefault();
+                                if (!dragColId || dragColId === col.id) return;
+                                setColOrder((prev) => {
+                                  const next = [...prev];
+                                  const from = next.indexOf(dragColId);
+                                  const to = next.indexOf(col.id);
+                                  if (from === -1 || to === -1) return prev;
+                                  next.splice(from, 1);
+                                  next.splice(to, 0, dragColId);
+                                  return next;
+                                });
+                              }}
+                              onDragEnd={() => setDragColId(null)}
                               onClick={() => toggleCol(col.id)}
                               className={cn(
                                 "flex items-center gap-2 rounded-md px-2 py-[7px] transition-colors",
-                                col.fixed ? "cursor-not-allowed opacity-60" : "cursor-pointer hover:bg-[var(--fips-surface-soft)]",
+                                col.fixed ? "cursor-not-allowed opacity-60" : "cursor-grab hover:bg-[var(--fips-surface-soft)]",
+                                dragColId === col.id && "opacity-40",
                               )}
                             >
                               <GripVertical className="h-2.5 w-2.5 text-[var(--fips-fg-muted)]" />
@@ -542,7 +571,7 @@ export function DataListingTable<T>({
                         : appearance.zebra && i % 2 === 1
                           ? "bg-[var(--color-fips-blue-200)]/25"
                           : "",
-                      "hover:bg-[var(--color-fips-yellow-100)]/45",
+                      "hover:bg-white/[0.04] dark:hover:bg-white/[0.06]",
                     )}
                   >
                     {selectable && (

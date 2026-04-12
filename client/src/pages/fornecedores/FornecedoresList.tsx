@@ -132,6 +132,12 @@ export default function FornecedoresList() {
         title="Fornecedores"
         description="Empresas que vendem matéria-prima — uma filial = um cadastro próprio"
         icon={Building2}
+        stats={[
+          { label: "Total", value: stats.total, color: "#93BDE4" },
+          { label: "Ativos", value: stats.ativos, color: "#00C64C" },
+          { label: "Com CNPJ", value: stats.comCnpj, color: "#FDC24E" },
+          { label: "Com Email", value: stats.comEmail, color: "#ed1b24" },
+        ]}
         actions={
           <Button onClick={openNew}>
             <Plus className="h-4 w-4" />

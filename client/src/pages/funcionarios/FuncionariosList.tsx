@@ -273,21 +273,29 @@ const heroStyle = `
   border: 1px solid rgba(255,255,255,0.06);
   box-shadow: 0 4px 20px rgba(0,20,67,0.3);
 }
-/* Dark mode — fundo mais escuro + vidro fosco sobre o SVG */
+/* Dark mode — glassmorphism igual card de login */
 :is(.dark) .rh-hero {
-  background: linear-gradient(135deg, #0a0a0f 0%, #12141f 50%, #0a0a0f 100%);
-  border-color: rgba(255,255,255,0.08);
+  background: rgba(26,26,26,0.85);
+  border: 1px solid rgba(255,255,255,0.1);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  box-shadow:
+    0 8px 32px rgba(0,0,0,0.4),
+    inset 0 1px 0 rgba(255,255,255,0.05);
 }
 .rh-frost {
+  display: none;
+}
+:is(.dark) .rh-fade-rect {
   display: none;
 }
 :is(.dark) .rh-frost {
   display: block;
   position: absolute; inset: 0;
   pointer-events: none;
-  backdrop-filter: blur(1px) saturate(1.3);
-  -webkit-backdrop-filter: blur(1px) saturate(1.3);
-  background: rgba(10,10,15,0.35);
+  backdrop-filter: blur(20px) saturate(1.3);
+  -webkit-backdrop-filter: blur(20px) saturate(1.3);
+  background: rgba(26,26,26,0.7);
   border-radius: inherit;
 }
 .rh-hero-bottom {
@@ -383,8 +391,8 @@ function FabricSVG() {
           <stop offset="1" stopColor="#001443" stopOpacity="0.7" />
         </linearGradient>
       </defs>
-      <rect x="0" y="0" width="900" height="220" fill="url(#rh-fade-l)" />
-      <rect x="0" y="0" width="900" height="220" fill="url(#rh-fade-r)" />
+      <rect className="rh-fade-rect" x="0" y="0" width="900" height="220" fill="url(#rh-fade-l)" />
+      <rect className="rh-fade-rect" x="0" y="0" width="900" height="220" fill="url(#rh-fade-r)" />
     </svg>
   );
 }
@@ -511,12 +519,15 @@ interface ColabActions {
   onDelete: (id: number) => void;
 }
 
-const deptoIcon = (depto: string) => {
+const deptoColor = (depto: string) => {
   const d = depto.toLowerCase();
-  if (d.includes("motorista") || d.includes("logis")) return <Truck className="h-3 w-3" />;
-  if (d.includes("costur")) return <Scissors className="h-3 w-3" />;
-  if (d.includes("produ")) return <Factory className="h-3 w-3" />;
-  return <Warehouse className="h-3 w-3" />;
+  if (d.includes("motorista") || d.includes("logis")) return "#93BDE4";
+  if (d.includes("costur")) return "#FDC24E";
+  if (d.includes("produ") || d.includes("galp")) return "#00C64C";
+  if (d.includes("exped")) return "#ed1b24";
+  if (d.includes("financ") || d.includes("escrit")) return "#FDC24E";
+  if (d.includes("admin")) return "#ed1b24";
+  return "#93BDE4";
 };
 
 function colaboradorColumns({ onEdit, onDelete }: ColabActions): DataListingColumn<Colaborador>[] {
@@ -556,8 +567,8 @@ function colaboradorColumns({ onEdit, onDelete }: ColabActions): DataListingColu
       sortable: true,
       render: (c) =>
         c.departamento ? (
-          <Badge variant="outline" className="gap-1">
-            {deptoIcon(c.departamento)}
+          <Badge variant="outline" className="gap-1.5">
+            <span className="h-1.5 w-1.5 rounded-full" style={{ background: deptoColor(c.departamento) }} />
             {c.departamento}
           </Badge>
         ) : (

@@ -136,6 +136,12 @@ export default function ExpedicaoList() {
         title="Pedidos"
         description="Pedidos de cliente B2B — fluxo Michele → Lane (libera) → Financeiro (aprova) → NF → Motorista"
         icon={Send}
+        stats={[
+          { label: "Total", value: stats.total, color: "#93BDE4" },
+          { label: "Aguardando", value: stats.aguardando, color: "#FDC24E" },
+          { label: "Aprovados", value: stats.aprovados, color: "#00C64C" },
+          { label: "Entregues", value: stats.entregues, color: "#ed1b24" },
+        ]}
         actions={
           <Button onClick={() => setDialogOpen(true)}>
             <Plus className="h-4 w-4" />

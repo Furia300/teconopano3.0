@@ -3,6 +3,7 @@ import {
 } from "lucide-react";
 import { StatsCard } from "@/components/domain/StatsCard";
 import { Badge } from "@/components/ui/badge";
+import { PageHero } from "@/composites/PageHero";
 
 interface Props {
   data: any;
@@ -16,20 +17,25 @@ export default function DashboardFinanceiro({ data }: Props) {
 
   return (
     <div className="space-y-6">
-      <div className="bg-gradient-to-r from-amber-600 to-amber-800 rounded-2xl p-6 text-white">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">Dashboard Financeiro</h1>
-            <p className="text-white/70 text-sm mt-1">Aprovações e controle — {new Date().toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" })}</p>
+      <PageHero>
+        <div className="relative flex flex-col gap-4 px-6 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-7 sm:py-6">
+          <div className="flex items-start gap-4">
+            <div className="hidden flex-shrink-0 items-center justify-center sm:flex" style={{ width: 52, height: 52, borderRadius: 14, background: "linear-gradient(135deg, rgba(237,27,36,0.12), rgba(178,0,40,0.06))", border: "1px solid rgba(237,27,36,0.18)" }}>
+              <DollarSign className="h-6 w-6" style={{ color: "#ed1b24" }} strokeWidth={1.8} />
+            </div>
+            <div className="min-w-0">
+              <h2 className="font-heading text-xl font-bold tracking-tight text-white sm:text-[22px]" style={{ lineHeight: 1.2 }}>Dashboard Financeiro</h2>
+              <p className="mt-0.5 text-xs text-white/45 sm:text-[13px]">Aprovações e controle — {new Date().toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" })}</p>
+            </div>
           </div>
           {pendAprovacao.length > 0 && (
-            <div className="flex items-center gap-2 bg-white/10 backdrop-blur rounded-xl px-4 py-2">
-              <AlertCircle className="h-5 w-5 text-yellow-300" />
-              <span className="text-sm font-semibold">{pendAprovacao.length} para aprovar</span>
+            <div className="flex flex-shrink-0 items-center gap-2 rounded-lg px-3 py-2" style={{ background: "rgba(246,146,30,0.14)", border: "1px solid rgba(246,146,30,0.38)" }}>
+              <AlertCircle className="h-4 w-4 text-amber-400" />
+              <span className="text-xs font-semibold text-white">{pendAprovacao.length} para aprovar</span>
             </div>
           )}
         </div>
-      </div>
+      </PageHero>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <StatsCard label="Pend. Aprovação" value={pendAprovacao.length} icon={Clock} color="text-amber-500" bg="bg-amber-500/10" />

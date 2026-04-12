@@ -120,8 +120,9 @@ export const APP_MENU: AppMenuItem[] = [
     label: "RH",
     perfis: ["administrador", "rh"],
     children: [
-      { icon: UserCog, label: "Funcionários", href: "/funcionarios", perfis: ["administrador", "rh"] },
       { icon: Clock, label: "Ponto diário", href: "/ponto-diario", perfis: ["administrador", "rh"] },
+      { icon: UserCog, label: "Funcionários", href: "/funcionarios", perfis: ["administrador", "rh"] },
+      { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard-rh", perfis: ["administrador", "rh"] },
     ],
   },
   {

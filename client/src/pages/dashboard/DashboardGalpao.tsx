@@ -6,6 +6,7 @@ import { Link } from "wouter";
 import { StatsCard } from "@/components/domain/StatsCard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { PageHero } from "@/composites/PageHero";
 
 interface Props {
   data: any;
@@ -33,24 +34,24 @@ export default function DashboardGalpao({ data }: Props) {
 
   return (
     <div className="space-y-6">
-      <div className="bg-gradient-to-r from-[#001443] to-[#1a3a6b] rounded-2xl p-6 text-white">
-        <h1 className="text-2xl font-bold">Dashboard Galpão</h1>
-        <p className="text-white/70 text-sm mt-1">Operações do galpão — {new Date().toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" })}</p>
-        <p className="text-white/60 text-xs mt-3 max-w-2xl">
-          Os totais abaixo devem refletir os mesmos estados que a coluna <strong className="text-white/90">Status</strong> na lista de coletas. Use a tabela para ver cada pedido linha a linha.
-        </p>
-        <Button
-          asChild
-          variant="secondary"
-          size="sm"
-          className="mt-4 bg-white/15 text-white border-white/25 hover:bg-white/25"
-        >
-          <Link href="/coleta">
-            <Table2 className="h-4 w-4 mr-2" />
-            Abrir tabela de coletas
-          </Link>
-        </Button>
-      </div>
+      <PageHero>
+        <div className="relative flex flex-col gap-4 px-6 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-7 sm:py-6">
+          <div className="flex items-start gap-4">
+            <div className="hidden flex-shrink-0 items-center justify-center sm:flex" style={{ width: 52, height: 52, borderRadius: 14, background: "linear-gradient(135deg, rgba(237,27,36,0.12), rgba(178,0,40,0.06))", border: "1px solid rgba(237,27,36,0.18)" }}>
+              <Warehouse className="h-6 w-6" style={{ color: "#ed1b24" }} strokeWidth={1.8} />
+            </div>
+            <div className="min-w-0">
+              <h2 className="font-heading text-xl font-bold tracking-tight text-white sm:text-[22px]" style={{ lineHeight: 1.2 }}>Dashboard Galpão</h2>
+              <p className="mt-0.5 text-xs text-white/45 sm:text-[13px]">Operações do galpão — {new Date().toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" })}</p>
+            </div>
+          </div>
+          <div className="flex flex-shrink-0 flex-wrap items-center gap-2">
+            <Button asChild variant="secondary" size="sm" className="border-white/15 bg-white/8 text-white hover:bg-white/15">
+              <Link href="/coleta"><Table2 className="h-3.5 w-3.5" /> Abrir tabela de coletas</Link>
+            </Button>
+          </div>
+        </div>
+      </PageHero>
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
         <StatsCard label="Coletas Pendentes" value={coletasPendentes} icon={Truck} color="text-blue-500" bg="bg-blue-500/10" />

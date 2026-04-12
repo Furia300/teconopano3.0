@@ -120,6 +120,12 @@ export default function ColetaList() {
         title="Coleta"
         description="Início do fluxo: pedidos e agendamento de matéria-prima (retirada no fornecedor / chegada ao galpão)"
         icon={Truck}
+        stats={[
+          { label: "Total", value: stats.total, color: "#93BDE4" },
+          { label: "Pendentes", value: stats.pendentes, color: "#FDC24E" },
+          { label: "Em andamento", value: stats.emAndamento, color: "#00C64C" },
+          { label: "Finalizados", value: stats.finalizados, color: "#ed1b24" },
+        ]}
         actions={
           <Button onClick={() => setDialogOpen(true)}>
             <Plus className="h-4 w-4" />

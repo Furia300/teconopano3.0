@@ -104,6 +104,12 @@ export default function CostureiraList() {
         title="Costureira"
         description="Envio e retorno de material para costura (CLT interna + terceirizadas)"
         icon={Scissors}
+        stats={[
+          { label: "Total", value: stats.total, color: "#93BDE4" },
+          { label: "Enviados", value: stats.enviados, color: "#FDC24E" },
+          { label: "Em Trânsito", value: `${stats.pesoEmTransito.toLocaleString("pt-BR")}kg`, color: "#00C64C" },
+          { label: "Resíduo", value: `${stats.residuoTotal.toLocaleString("pt-BR")}kg`, color: "#ed1b24" },
+        ]}
         actions={
           <Button onClick={() => setDialogOpen(true)}>
             <Plus className="h-4 w-4" />

@@ -1,6 +1,7 @@
 import { Truck, Factory, Scissors, Package } from "lucide-react";
 import type { DashboardData } from "@/types/dashboard";
 import { StatsCard } from "@/components/domain/StatsCard";
+import { PageHero } from "@/composites/PageHero";
 
 interface Props {
   data: DashboardData;
@@ -18,12 +19,17 @@ export default function DashboardMotorista({ data, userName }: Props) {
 
   return (
     <div className="space-y-6">
-      <div className="bg-gradient-to-r from-slate-700 to-slate-900 rounded-2xl p-6 text-white">
-        <h1 className="text-2xl font-bold">Painel do Motorista</h1>
-        <p className="text-white/70 text-sm mt-1">
-          Olá, {userName}. Você recebe ordens da Expedição e do Galpão.
-        </p>
-      </div>
+      <PageHero>
+        <div className="relative flex items-start gap-4 px-6 py-5 sm:px-7 sm:py-6">
+          <div className="hidden flex-shrink-0 items-center justify-center sm:flex" style={{ width: 52, height: 52, borderRadius: 14, background: "linear-gradient(135deg, rgba(237,27,36,0.12), rgba(178,0,40,0.06))", border: "1px solid rgba(237,27,36,0.18)" }}>
+            <Truck className="h-6 w-6" style={{ color: "#ed1b24" }} strokeWidth={1.8} />
+          </div>
+          <div className="min-w-0">
+            <h2 className="font-heading text-xl font-bold tracking-tight text-white sm:text-[22px]" style={{ lineHeight: 1.2 }}>Painel do Motorista</h2>
+            <p className="mt-0.5 text-xs text-white/45 sm:text-[13px]">Olá, {userName}. Você recebe ordens da Expedição e do Galpão.</p>
+          </div>
+        </div>
+      </PageHero>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <StatsCard label="Coletas de Matéria-Prima" value={coletas.length} icon={Factory} color="text-blue-500" bg="bg-blue-500/10" />

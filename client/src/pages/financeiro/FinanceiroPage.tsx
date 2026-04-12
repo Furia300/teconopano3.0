@@ -57,7 +57,17 @@ export default function FinanceiroPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Financeiro" description="Aprovação de pagamentos para liberação de notas fiscais" icon={DollarSign} />
+      <PageHeader
+        title="Financeiro"
+        description="Aprovação de pagamentos para liberação de notas fiscais"
+        icon={DollarSign}
+        stats={[
+          { label: "Total", value: expedicoes.length, color: "#93BDE4" },
+          { label: "Pendentes", value: pendentes.length, color: "#FDC24E" },
+          { label: "Aprovados", value: aprovados.length, color: "#00C64C" },
+          { label: "Peso Pendente", value: `${pendentes.reduce((a, e) => a + e.kilo, 0).toLocaleString("pt-BR")}kg`, color: "#ed1b24" },
+        ]}
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <StatsCard label="Pendentes Aprovação" value={pendentes.length} icon={Clock} color="text-amber-500" bg="bg-amber-500/10" />

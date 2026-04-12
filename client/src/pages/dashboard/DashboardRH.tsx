@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { Building2, UserCheck, UserX, Users, BriefcaseBusiness, AlertTriangle } from "lucide-react";
 import { KpiSparklineCard, sparklineFromSeed } from "@/components/domain/KpiSparklineCard";
+import { PageHero } from "@/composites/PageHero";
 
 interface Props {
   data: any;
@@ -27,15 +28,22 @@ export default function DashboardRH({ data }: Props) {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-2xl border border-[#0d4f6e]/40 bg-gradient-to-r from-[#005f86] via-[#00698f] to-[#004b9b] p-6 text-white shadow-[0_14px_30px_rgba(0,75,155,0.24)]">
-        <h1 className="font-heading text-2xl font-bold tracking-tight">Painel RH</h1>
-        <p className="mt-1 text-sm text-white/80">
-          Distribuição de equipes, cobertura operacional e leitura rápida de capacidade por departamento.
-        </p>
-        <div className="mt-3 inline-flex items-center rounded-full border border-white/25 bg-white/10 px-3 py-1 text-xs font-semibold">
-          Atualizado em {new Date().toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" })}
+      <PageHero>
+        <div className="relative flex flex-col gap-4 px-6 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-7 sm:py-6">
+          <div className="flex items-start gap-4">
+            <div className="hidden flex-shrink-0 items-center justify-center sm:flex" style={{ width: 52, height: 52, borderRadius: 14, background: "linear-gradient(135deg, rgba(237,27,36,0.12), rgba(178,0,40,0.06))", border: "1px solid rgba(237,27,36,0.18)" }}>
+              <Users className="h-6 w-6" style={{ color: "#ed1b24" }} strokeWidth={1.8} />
+            </div>
+            <div className="min-w-0">
+              <h2 className="font-heading text-xl font-bold tracking-tight text-white sm:text-[22px]" style={{ lineHeight: 1.2 }}>Painel RH</h2>
+              <p className="mt-0.5 text-xs text-white/45 sm:text-[13px]">Distribuição de equipes, cobertura operacional e leitura rápida de capacidade por departamento.</p>
+            </div>
+          </div>
+          <div className="flex flex-shrink-0 items-center gap-2 rounded-full border border-white/15 bg-white/8 px-3 py-1 text-[10px] font-semibold text-white/70">
+            Atualizado em {new Date().toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" })}
+          </div>
         </div>
-      </div>
+      </PageHero>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
         <KpiSparklineCard
