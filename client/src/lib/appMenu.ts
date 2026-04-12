@@ -134,7 +134,7 @@ export const APP_MENU: AppMenuItem[] = [
       { icon: UserCog, label: "Usuários", href: "/usuarios", perfis: ["administrador"] },
     ],
   },
-  { icon: Zap, label: "Automático", action: "autoCollapse", perfis: ["administrador"] },
+  { icon: Zap, label: "Menu Automático", action: "autoCollapse", perfis: ["administrador"] },
 ];
 
 export function filterMenuByPerfil(items: AppMenuItem[], perfil: string): AppMenuItem[] {

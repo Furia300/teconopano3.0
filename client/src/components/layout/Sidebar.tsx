@@ -121,8 +121,8 @@ function AutoModal({
             exit={{ opacity: 0, y: 20, scale: 0.97 }}
             transition={{ type: "spring", damping: 28, stiffness: 350 }}
             style={{
-              position: "fixed", top: "50%", left: "50%",
-              transform: "translate(-50%,-50%)",
+              position: "fixed", top: "50%", left: 80,
+              transform: "translateY(-50%)",
               zIndex: 9999,
               width: 400, maxWidth: "calc(100vw - 32px)",
               background: "linear-gradient(165deg, #232328 0%, #1a1a1e 50%, #151518 100%)",
@@ -175,7 +175,7 @@ function AutoModal({
                       fontSize: 15, fontWeight: 700, color: "#fafafa", margin: 0,
                       fontFamily: "'Saira Expanded', sans-serif", letterSpacing: "-0.02em",
                     }}>
-                      Automático
+                      Menu Automático
                     </h3>
                     <p style={{ fontSize: 11, color: "#71717a", margin: "2px 0 0" }}>
                       Comportamento do menu lateral
@@ -485,12 +485,12 @@ function SidebarItem({
             ? isActive
               ? "#fafafa"
               : hovered
-                ? "#d4d4d8"
+                ? "#fafafa"
                 : "#a1a1aa"
             : isActive
               ? "#002A68"
               : hovered
-                ? "#1d4ed8"
+                ? "#ed1b24"
                 : "#404040",
           transition: "color .15s",
           whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
