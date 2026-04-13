@@ -317,9 +317,17 @@ function pedidoColumns({ onView, onDelete }: PedidoActions): DataListingColumn<E
       render: (p) => <CellMonoMuted>{p.rota || "—"}</CellMonoMuted>,
     },
     {
+      id: "criacao",
+      label: "Criação",
+      sortable: true,
+      width: "85px",
+      render: (p) => <CellMonoMuted>{formatDateBR(p.createdAt)}</CellMonoMuted>,
+    },
+    {
       id: "dataEntrega",
       label: "Entrega",
       sortable: true,
+      width: "85px",
       render: (p) => <CellMonoMuted>{formatDateBR(p.dataEntrega)}</CellMonoMuted>,
     },
     {

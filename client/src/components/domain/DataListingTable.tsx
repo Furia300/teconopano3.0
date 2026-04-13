@@ -5,6 +5,10 @@ import {
   Settings as SettingsIcon,
   X as XIcon,
   ChevronUp,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
   ChevronsUpDown,
   Pencil,
   MoreHorizontal,
@@ -147,6 +151,8 @@ export function DataListingTable<T>({
     () => new Set(columns.filter((c) => c.default !== false).map((c) => c.id)),
   );
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [page, setPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(20);
   const [sortBy, setSortBy] = useState<{ col: string | null; dir: "asc" | "desc" }>({
     col: null,
     dir: "asc",
@@ -547,6 +553,13 @@ export function DataListingTable<T>({
               </tr>
             </thead>
             <tbody>
+              {/* Paginação: calcular slice */}
+              {(() => {
+                // Reset page if data changes
+                const totalPages = Math.max(1, Math.ceil(data.length / itemsPerPage));
+                if (page > totalPages && data.length > 0) setPage(1);
+                return null;
+              })()}
               {data.length === 0 && (
                 <tr>
                   <td
@@ -557,7 +570,7 @@ export function DataListingTable<T>({
                   </td>
                 </tr>
               )}
-              {data.map((row, i) => {
+              {data.slice((page - 1) * itemsPerPage, page * itemsPerPage).map((row, i) => {
                 const id = getRowId(row);
                 const isSel = selected.has(id);
                 return (
@@ -615,7 +628,7 @@ export function DataListingTable<T>({
               {emptyState ?? "Nenhum registro encontrado"}
             </div>
           ) : (
-            data.map((row) => {
+            data.slice((page - 1) * itemsPerPage, page * itemsPerPage).map((row) => {
               const id = getRowId(row);
               const isSel = selected.has(id);
               return (
@@ -645,6 +658,63 @@ export function DataListingTable<T>({
               );
             })
           )}
+        </div>
+      )}
+
+      {/* ───── PAGINAÇÃO FIPS DS ───── */}
+      {data.length > 0 && (
+        <div className="flex flex-col gap-3 border-t border-[var(--fips-border)] px-6 py-3 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex items-center gap-2 text-[11px] text-[var(--fips-fg-muted)]">
+            <span>Itens por página:</span>
+            <select
+              className="rounded-lg px-2 py-1 text-[11px] border"
+              style={{ background: "var(--fips-surface)", borderColor: "var(--fips-border)", color: "var(--fips-fg)" }}
+              value={itemsPerPage}
+              onChange={(e) => { setItemsPerPage(Number(e.target.value)); setPage(1); }}
+            >
+              {[10, 20, 50, 100].map((n) => (
+                <option key={n} value={n}>{n}</option>
+              ))}
+            </select>
+            <span className="ml-2">
+              {Math.min((page - 1) * itemsPerPage + 1, data.length)}–{Math.min(page * itemsPerPage, data.length)} de {data.length}
+            </span>
+          </div>
+          <div className="flex items-center gap-1 text-[11px] text-[var(--fips-fg-muted)]">
+            <span className="mr-2">Página {page} de {Math.max(1, Math.ceil(data.length / itemsPerPage))}</span>
+            <button
+              onClick={() => setPage(1)}
+              disabled={page <= 1}
+              className="flex h-7 w-7 items-center justify-center rounded-lg border transition-colors disabled:opacity-30"
+              style={{ background: "var(--fips-surface)", borderColor: "var(--fips-border)", cursor: page <= 1 ? "not-allowed" : "pointer", color: "var(--fips-fg-muted)" }}
+            >
+              <ChevronsLeft className="h-3.5 w-3.5" />
+            </button>
+            <button
+              onClick={() => setPage(page - 1)}
+              disabled={page <= 1}
+              className="flex h-7 w-7 items-center justify-center rounded-lg border transition-colors disabled:opacity-30"
+              style={{ background: "var(--fips-surface)", borderColor: "var(--fips-border)", cursor: page <= 1 ? "not-allowed" : "pointer", color: "var(--fips-fg-muted)" }}
+            >
+              <ChevronLeft className="h-3.5 w-3.5" />
+            </button>
+            <button
+              onClick={() => setPage(page + 1)}
+              disabled={page >= Math.ceil(data.length / itemsPerPage)}
+              className="flex h-7 w-7 items-center justify-center rounded-lg border transition-colors disabled:opacity-30"
+              style={{ background: "var(--fips-surface)", borderColor: "var(--fips-border)", cursor: page >= Math.ceil(data.length / itemsPerPage) ? "not-allowed" : "pointer", color: "var(--fips-fg-muted)" }}
+            >
+              <ChevronRight className="h-3.5 w-3.5" />
+            </button>
+            <button
+              onClick={() => setPage(Math.ceil(data.length / itemsPerPage))}
+              disabled={page >= Math.ceil(data.length / itemsPerPage)}
+              className="flex h-7 w-7 items-center justify-center rounded-lg border transition-colors disabled:opacity-30"
+              style={{ background: "var(--fips-surface)", borderColor: "var(--fips-border)", cursor: page >= Math.ceil(data.length / itemsPerPage) ? "not-allowed" : "pointer", color: "var(--fips-fg-muted)" }}
+            >
+              <ChevronsRight className="h-3.5 w-3.5" />
+            </button>
+          </div>
         </div>
       )}
     </div>
