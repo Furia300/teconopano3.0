@@ -68,7 +68,6 @@ export const APP_MENU: AppMenuItem[] = [
     children: [
       { icon: Truck, label: "Coleta", href: "/coleta", perfis: ["michele", "galpao", "administrador", "expedicao", "motorista"] },
       { icon: Building2, label: "Fornecedores", href: "/fornecedores", perfis: ["administrador", "expedicao", "galpao", "michele"] },
-      { icon: Truck, label: "Motorista", href: "/motorista", perfis: ["administrador", "motorista", "expedicao", "galpao", "michele"] },
     ],
   },
 
@@ -100,6 +99,14 @@ export const APP_MENU: AppMenuItem[] = [
       { icon: ShoppingCart, label: "Clientes", href: "/clientes", perfis: ["administrador", "expedicao", "michele"] },
       { icon: Box, label: "Produtos", href: "/produtos", perfis: ["administrador", "expedicao", "michele"] },
       { icon: Warehouse, label: "Estoque", href: "/estoque", perfis: ["administrador", "expedicao", "galpao", "michele"] },
+    ],
+  },
+
+  {
+    icon: Truck,
+    label: "Logística",
+    perfis: ["administrador", "motorista", "expedicao", "galpao", "michele"],
+    children: [
       { icon: Truck, label: "Motorista", href: "/motorista", perfis: ["administrador", "motorista", "expedicao", "galpao", "michele"] },
     ],
   },

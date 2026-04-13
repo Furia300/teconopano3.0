@@ -82,11 +82,13 @@ export default function ColetaList() {
   }, []);
 
   const filtered = coletas.filter((c) => {
+    const q = search.trim().toLowerCase();
     const matchSearch =
-      !search ||
-      c.nomeFantasia.toLowerCase().includes(search.toLowerCase()) ||
-      c.notaFiscal.toLowerCase().includes(search.toLowerCase()) ||
-      String(c.numero).includes(search);
+      !q ||
+      (c.nomeFantasia || "").toLowerCase().includes(q) ||
+      (c.notaFiscal || "").toLowerCase().includes(q) ||
+      (c.cnpjFornecedor || "").includes(q) ||
+      String(c.numero).includes(q);
     const matchStatus = !filterStatus || c.status === filterStatus;
     return matchSearch && matchStatus;
   });

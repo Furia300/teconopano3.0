@@ -398,13 +398,6 @@ function financeiroColumns({ onAprovar, onRejeitar }: FinanceiroColumnActions): 
       ),
     },
     {
-      id: "galpao",
-      label: "Galpão",
-      sortable: true,
-      width: "75px",
-      render: (e) => <CellMuted>{e.galpao || "—"}</CellMuted>,
-    },
-    {
       id: "dataCriacao",
       label: "Criação",
       sortable: true,
