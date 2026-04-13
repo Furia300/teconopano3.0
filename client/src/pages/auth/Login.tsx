@@ -189,8 +189,21 @@ export default function Login() {
             )}
           </button>
 
-          <div className="login-footer-inline">
-            <p>Sistema seguro · Tecnopano 3.0</p>
+          <div className="login-footer-inline" style={{ textAlign: "center" }}>
+            <p style={{ marginBottom: 8 }}>Sistema seguro · Tecnopano 3.0</p>
+            <a
+              href="/cadastro"
+              style={{
+                color: "rgba(255,255,255,0.45)",
+                fontSize: 12,
+                textDecoration: "none",
+                transition: "color 0.2s",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "#FF073A")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.45)")}
+            >
+              Não tem acesso? Solicitar cadastro
+            </a>
           </div>
         </form>
       </div>

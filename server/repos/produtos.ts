@@ -2,8 +2,6 @@ import { supabase } from "../supabase";
 
 const PRODUTO_SELECT = `
   id,
-  codigo,
-  nome,
   descricao,
   tipoMaterial:tipo_material,
   cor,
@@ -11,8 +9,6 @@ const PRODUTO_SELECT = `
   acabamento,
   pesoMedio:peso_medio,
   unidadeMedida:unidade_medida,
-  precoCusto:preco_custo,
-  precoVenda:preco_venda,
   foto,
   notaFiscal:nota_fiscal,
   observacao,
@@ -57,7 +53,7 @@ function toRow(input: Partial<ProdutoInput> & Record<string, unknown>): Record<s
 }
 
 export async function listProdutos(includeInativos = false) {
-  let q = supabase.from("produtos").select(PRODUTO_SELECT).order("nome").order("medida");
+  let q = supabase.from("produtos").select(PRODUTO_SELECT).order("descricao").order("medida");
   if (!includeInativos) q = q.eq("ativo", true);
   const { data, error } = await q;
   if (error) throw error;

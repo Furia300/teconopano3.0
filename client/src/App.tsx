@@ -23,7 +23,10 @@ import DashboardRHPage from "./pages/rh/DashboardRHPage";
 import ProducaoDiariaPage from "./pages/producao-diaria/ProducaoDiariaPage";
 import AutomaticoPage from "./pages/automatico/AutomaticoPage";
 import MotoristaList from "./pages/motorista/MotoristaList";
+import AdministracaoPage from "./pages/admin/AdministracaoPage";
 import Login from "./pages/auth/Login";
+import Cadastro from "./pages/auth/Cadastro";
+import DefinirSenha from "./pages/auth/DefinirSenha";
 
 function AppContent() {
   return (
@@ -48,6 +51,7 @@ function AppContent() {
         <Route path="/producao-diaria" component={ProducaoDiariaPage} />
         <Route path="/motorista" component={MotoristaList} />
         <Route path="/automatico" component={AutomaticoPage} />
+        <Route path="/administracao" component={AdministracaoPage} />
         <Route>
           <div className="text-center py-20">
             <h1 className="text-2xl font-bold">404 - Página não encontrada</h1>
@@ -65,6 +69,8 @@ export default function App() {
       <Toaster position="top-right" richColors />
       <Switch>
         <Route path="/login" component={Login} />
+        <Route path="/cadastro" component={Cadastro} />
+        <Route path="/definir-senha" component={DefinirSenha} />
         <Route path="/shell-demo">
           <Suspense fallback={<div className="p-8 text-center text-muted-foreground">A carregar…</div>}>
             <ApplicationShellDemo />

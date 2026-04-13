@@ -67,9 +67,9 @@ export interface DataListingTableProps<T> {
 /* ──────────────────────────── DENSITY MAP ──────────────────────────── */
 
 const DENSITY_SPEC: Record<Density, { rowH: number; fs: number; padX: number }> = {
-  compact: { rowH: 30, fs: 11, padX: 12 },
-  normal: { rowH: 42, fs: 12, padX: 16 },
-  comfortable: { rowH: 56, fs: 13, padX: 20 },
+  compact: { rowH: 28, fs: 11, padX: 8 },
+  normal: { rowH: 34, fs: 12, padX: 12 },
+  comfortable: { rowH: 44, fs: 13, padX: 16 },
 };
 
 /* ──────────────────────────── CHECKBOX ──────────────────────────── */
@@ -503,7 +503,7 @@ export function DataListingTable<T>({
               <tr className="bg-[var(--fips-surface-soft)]">
                 {selectable && (
                   <th
-                    style={{ width: 36, padding: `8px ${D.padX}px` }}
+                    style={{ width: 36, padding: `4px ${D.padX}px` }}
                     className="border-b-2 border-[var(--fips-border)] text-left"
                   >
                     <MiniCheckbox
@@ -517,7 +517,7 @@ export function DataListingTable<T>({
                     key={col.id}
                     onClick={() => col.sortable && handleSort(col.id)}
                     style={{
-                      padding: `8px ${D.padX}px`,
+                      padding: `4px ${D.padX}px`,
                       width: col.width,
                       borderRight: appearance.verticalBorders
                         ? "1px solid var(--fips-border)"
@@ -583,7 +583,7 @@ export function DataListingTable<T>({
                       <td
                         key={col.id}
                         style={{
-                          padding: `0 ${D.padX}px`,
+                          padding: `2px ${D.padX}px`,
                           fontSize: D.fs,
                           borderRight: appearance.verticalBorders
                             ? "1px solid var(--fips-border)"

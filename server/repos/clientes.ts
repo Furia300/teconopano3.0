@@ -4,14 +4,12 @@ const CLIENTE_SELECT = `
   id,
   nomeFantasia:nome_fantasia,
   razaoSocial:razao_social,
-  tipo,
   cnpj,
   endereco,
   bairro,
   cidade,
   estado,
   cep,
-  telefone,
   contato,
   email,
   observacao,
@@ -72,7 +70,7 @@ export async function getCliente(id: string) {
 }
 
 export async function createCliente(input: ClienteInput) {
-  const row = toRow({ ativo: true, tipo: "juridica", ...input });
+  const row = toRow({ ativo: true, ...input });
   const { data, error } = await supabase
     .from("clientes")
     .insert(row)

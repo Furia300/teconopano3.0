@@ -8,6 +8,8 @@ import {
   AlertCircle,
   Inbox,
   Scale,
+  X,
+  Pencil,
 } from "lucide-react";
 import { PageHeader } from "@/components/domain/PageHeader";
 import { StatsCard } from "@/components/domain/StatsCard";
@@ -41,11 +43,14 @@ interface Expedicao {
   tipoMaterial?: string | null;
   kilo?: number | null;
   unidade?: number | null;
+  qtdePedido?: number | null;
   statusFinanceiro?: string | null;
   statusEntrega?: string | null;
   rota?: string | null;
   prioridade?: string | null;
+  galpao?: string | null;
   createdAt?: string | null;
+  dataEntrega?: string | null;
   observacaoEscritorio?: string | null;
 }
 
@@ -135,7 +140,7 @@ export default function FinanceiroPage() {
 
   const activeFilters = [filterStatus, filterPrioridade, filterRota].filter(Boolean).length;
 
-  /* ─── Aprovar financeiro ─── */
+  /* ─── Ações financeiro ─── */
   const handleAprovar = async (id: string) => {
     try {
       const res = await fetch(`/api/expedicoes/${id}/aprovar-financeiro`, { method: "PUT" });
@@ -144,6 +149,18 @@ export default function FinanceiroPage() {
       fetchData();
     } catch {
       toast.error("Erro ao aprovar pagamento.");
+    }
+  };
+
+  const handleRejeitar = async (id: string) => {
+    if (!confirm("Rejeitar este pagamento?")) return;
+    try {
+      const res = await fetch(`/api/expedicoes/${id}/rejeitar-financeiro`, { method: "PUT" });
+      if (!res.ok) throw new Error();
+      toast.success("Pagamento rejeitado");
+      fetchData();
+    } catch {
+      toast.error("Erro ao rejeitar");
     }
   };
 
@@ -314,7 +331,7 @@ export default function FinanceiroPage() {
             ? "Carregando..."
             : "Nenhuma pendência financeira encontrada"
         }
-        columns={financeiroColumns({ onAprovar: handleAprovar })}
+        columns={financeiroColumns({ onAprovar: handleAprovar, onRejeitar: handleRejeitar })}
       />
     </div>
   );
@@ -324,6 +341,7 @@ export default function FinanceiroPage() {
 
 interface FinanceiroColumnActions {
   onAprovar: (id: string) => void;
+  onRejeitar: (id: string) => void;
 }
 
 const formatDateBR = (s: string | null | undefined) =>
@@ -332,28 +350,20 @@ const formatDateBR = (s: string | null | undefined) =>
 const formatKg = (n: number | null | undefined) =>
   n ? `${n.toLocaleString("pt-BR")} kg` : "—";
 
-function financeiroColumns({ onAprovar }: FinanceiroColumnActions): DataListingColumn<Expedicao>[] {
+function financeiroColumns({ onAprovar, onRejeitar }: FinanceiroColumnActions): DataListingColumn<Expedicao>[] {
   return [
     {
       id: "cliente",
       label: "Cliente",
       fixed: true,
       sortable: true,
+      width: "160px",
       render: (e, { density }) => (
-        <div className="flex items-center gap-2">
-          <Avatar
-            name={e.nomeFantasia || "—"}
-            size={density === "compact" ? 22 : density === "normal" ? 28 : 34}
-          />
-          <div className="min-w-0">
-            <div className="font-semibold text-[var(--fips-fg)]">
-              {e.nomeFantasia || "—"}
-            </div>
-            {e.cnpj && (
-              <div className="text-[10px] text-[var(--fips-fg-muted)]">
-                {e.cnpj}
-              </div>
-            )}
+        <div className="flex items-center gap-1.5" title={`${e.nomeFantasia || ""}\n${e.cnpj || ""}`}>
+          <Avatar name={e.nomeFantasia || "—"} size={density === "compact" ? 20 : 24} />
+          <div className="min-w-0 leading-tight">
+            <div className="font-semibold text-[11px] text-[var(--fips-fg)] truncate max-w-[120px]">{e.nomeFantasia || "—"}</div>
+            <div className="text-[9px] leading-none text-[var(--fips-fg-muted)] truncate max-w-[120px]">{e.cnpj || ""}</div>
           </div>
         </div>
       ),
@@ -362,79 +372,63 @@ function financeiroColumns({ onAprovar }: FinanceiroColumnActions): DataListingC
       id: "produto",
       label: "Produto",
       sortable: true,
+      width: "150px",
       render: (e) => (
-        <div>
-          <div className="text-[var(--fips-fg)]">
-            {e.descricaoProduto || "—"}
-          </div>
+        <div className="truncate max-w-[140px]" title={e.descricaoProduto || ""}>
+          <span className="text-[11px] text-[var(--fips-fg)]">{e.descricaoProduto || "—"}</span>
         </div>
       ),
-    },
-    {
-      id: "material",
-      label: "Material",
-      sortable: true,
-      render: (e) => <CellMuted>{e.tipoMaterial || "—"}</CellMuted>,
     },
     {
       id: "qtdePeso",
-      label: "Qtde/Peso",
+      label: "Peso/Qtde",
       sortable: true,
       align: "right",
+      width: "80px",
       render: (e) => (
         <div className="text-right">
-          {(e.unidade ?? 0) > 0 && (
-            <div className="text-[10px] text-[var(--fips-fg-muted)]">
-              {e.unidade} un
-            </div>
-          )}
           <CellMonoStrong align="right">{formatKg(e.kilo)}</CellMonoStrong>
+          {(e.unidade ?? 0) > 0 && (
+            <div className="text-[9px] text-[var(--fips-fg-muted)]">{e.unidade} un</div>
+          )}
+          {(e.qtdePedido ?? 0) > 0 && (
+            <div className="text-[9px] text-[var(--fips-fg-muted)]">{e.qtdePedido} pct</div>
+          )}
         </div>
       ),
     },
     {
-      id: "prioridade",
-      label: "Prioridade",
+      id: "galpao",
+      label: "Galpão",
       sortable: true,
-      render: (e) => {
-        const pc = PRIORIDADE_VARIANTS[e.prioridade ?? "Normal"] || {
-          label: e.prioridade || "—",
-          variant: "secondary" as const,
-        };
-        return (
-          <Badge variant={pc.variant} dot>
-            {pc.label}
-          </Badge>
-        );
-      },
+      width: "75px",
+      render: (e) => <CellMuted>{e.galpao || "—"}</CellMuted>,
     },
     {
-      id: "rota",
-      label: "Rota",
+      id: "dataCriacao",
+      label: "Criação",
       sortable: true,
-      width: "70px",
-      render: (e) => <CellMonoMuted>{e.rota || "—"}</CellMonoMuted>,
-    },
-    {
-      id: "data",
-      label: "Data",
-      sortable: true,
+      width: "80px",
       render: (e) => <CellMonoMuted>{formatDateBR(e.createdAt)}</CellMonoMuted>,
+    },
+    {
+      id: "dataEntrega",
+      label: "Entrega",
+      sortable: true,
+      width: "80px",
+      render: (e) => <CellMonoMuted>{formatDateBR(e.dataEntrega)}</CellMonoMuted>,
     },
     {
       id: "statusFinanceiro",
       label: "Status",
       sortable: true,
+      width: "85px",
       render: (e) => {
         const sc = STATUS_FIN_VARIANTS[e.statusFinanceiro ?? "pendente_aprovacao"] || {
           label: e.statusFinanceiro || "—",
           variant: "secondary" as const,
         };
-        return (
-          <Badge variant={sc.variant} dot>
-            {sc.label}
-          </Badge>
-        );
+        return <Badge variant={sc.variant} dot>{sc.label}</Badge>;
       },
     },
     {
@@ -442,22 +436,18 @@ function financeiroColumns({ onAprovar }: FinanceiroColumnActions): DataListingC
       label: "Ação",
       fixed: true,
       align: "center",
-      width: "80px",
+      width: "70px",
       render: (e) => {
         if (e.statusFinanceiro === "aprovado") {
-          return (
-            <CellActions>
-              <CheckCircle2 className="h-3.5 w-3.5 text-[var(--fips-success-strong)]" />
-            </CellActions>
-          );
+          return <CellActions><CheckCircle2 className="h-3.5 w-3.5 text-[var(--fips-success-strong)]" /></CellActions>;
+        }
+        if (e.statusFinanceiro === "rejeitado") {
+          return <CellActions><CellActionButton title="Reaprovar" icon={<Check className="h-3.5 w-3.5 text-[var(--fips-success)]" />} onClick={() => onAprovar(e.id)} /></CellActions>;
         }
         return (
           <CellActions>
-            <CellActionButton
-              title="Aprovar pagamento"
-              icon={<Check className="h-3.5 w-3.5" />}
-              onClick={() => onAprovar(e.id)}
-            />
+            <CellActionButton title="Aprovar pagamento" icon={<Check className="h-3.5 w-3.5 text-[var(--fips-success)]" />} onClick={() => onAprovar(e.id)} />
+            <CellActionButton title="Rejeitar" icon={<X className="h-3.5 w-3.5 text-[var(--fips-danger)]" />} onClick={() => onRejeitar(e.id)} />
           </CellActions>
         );
       },

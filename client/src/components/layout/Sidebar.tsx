@@ -8,6 +8,8 @@ import { createPortal } from "react-dom";
 import { useTecnopanoTheme } from "@/hooks/useTecnopanoTheme";
 import { useAppUserPerfil } from "@/hooks/useAppUserPerfil";
 import { APP_MENU, filterMenuByPerfil, getPrimaryNavHref, type AppMenuItem } from "@/lib/appMenu";
+import { usePermissions } from "@/hooks/usePermissions";
+import { AccessRequestModal } from "@/components/domain/AccessRequestModal";
 import { routePathMatches } from "@/lib/routePathMatch";
 import { cn } from "@/lib/utils";
 import logoCollapsedLight from "@/assets/logo-collapsed-light.png";
@@ -379,13 +381,15 @@ function AutoModal({
    SidebarItem
    ═══════════════════════════════════════════════ */
 function SidebarItem({
-  item, badges, mini, dark, onAction,
+  item, badges, mini, dark, onAction, locked, onLockedClick,
 }: {
   item: AppMenuItem;
   badges: SidebarBadges;
   mini: boolean;
   dark: boolean;
   onAction?: (a: string) => void;
+  locked?: boolean;
+  onLockedClick?: (item: AppMenuItem) => void;
 }) {
   const [location] = useLocation();
   const [hovered, setHovered] = useState(false);
@@ -440,7 +444,13 @@ function SidebarItem({
       }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      onClick={() => {
+      onClick={(e) => {
+        if (locked && onLockedClick) {
+          e.preventDefault();
+          e.stopPropagation();
+          onLockedClick(item);
+          return;
+        }
         if (item.action && onAction) onAction(item.action);
       }}
     >
@@ -470,10 +480,25 @@ function SidebarItem({
           style={{
             position: "relative",
             zIndex: 1,
-            color: tileIconColor,
+            color: locked ? "#52525b" : tileIconColor,
             transition: "color .2s",
+            opacity: locked ? 0.5 : 1,
           }}
         />
+        {/* Cadeado */}
+        {locked && (
+          <div style={{
+            position: "absolute", top: 2, right: 2, zIndex: 2,
+            width: 14, height: 14, borderRadius: 4,
+            background: "rgba(255,7,58,0.15)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+          }}>
+            <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#FF073A" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          </div>
+        )}
       </div>
 
       {/* Label */}
@@ -512,7 +537,7 @@ function SidebarItem({
 
   return (
     <div>
-      {linkHref ? <Link href={linkHref}>{content}</Link> : content}
+      {linkHref && !locked ? <Link href={linkHref}>{content}</Link> : content}
     </div>
   );
 }
@@ -595,10 +620,36 @@ export function Sidebar({ onHoveringChange }: { onHoveringChange?: (hovering: bo
   const mini = collapsed && !hovering;
 
   const perfil = useAppUserPerfil();
-  const filteredMenu = filterMenuByPerfil(APP_MENU, perfil);
+  const { canAccess, requestAccess } = usePermissions();
+
+  // Mostrar TODOS os menus, marcar locked os que o user não tem acesso
+  const allMenu = APP_MENU.filter((m) => !m.action || m.action === "autoCollapse");
+
+  // Access request modal
+  const [accessModalOpen, setAccessModalOpen] = useState(false);
+  const [accessModalItem, setAccessModalItem] = useState<AppMenuItem | null>(null);
+
+  const handleLockedClick = useCallback((item: AppMenuItem) => {
+    setAccessModalItem(item);
+    setAccessModalOpen(true);
+  }, []);
+
+  const handleAccessRequest = useCallback(async (resource: string, motivo: string) => {
+    await requestAccess(resource, motivo);
+  }, [requestAccess]);
 
   return (
     <>
+      {/* Modal de solicitação de acesso */}
+      {accessModalItem && (
+        <AccessRequestModal
+          open={accessModalOpen}
+          onClose={() => setAccessModalOpen(false)}
+          resourceLabel={accessModalItem.label}
+          resourceHref={getPrimaryNavHref(accessModalItem) || ""}
+          onSubmit={handleAccessRequest}
+        />
+      )}
       <aside
         className={cn("bg-muted/30 dark:bg-[#1A1A1A]")}
         onMouseEnter={onEnter}
@@ -669,10 +720,15 @@ export function Sidebar({ onHoveringChange }: { onHoveringChange?: (hovering: bo
           padding: "12px 0",
           scrollbarWidth: "none",
         }}>
-          {filteredMenu.map((item) => (
-            <SidebarItem key={item.href ?? item.label}
-              item={item} badges={badges} mini={mini} dark={dark} onAction={onAction} />
-          ))}
+          {allMenu.map((item) => {
+            const href = getPrimaryNavHref(item);
+            const isLocked = href ? !canAccess(href, item.perfis) : false;
+            return (
+              <SidebarItem key={item.href ?? item.label}
+                item={item} badges={badges} mini={mini} dark={dark}
+                onAction={onAction} locked={isLocked} onLockedClick={handleLockedClick} />
+            );
+          })}
         </nav>
 
         {/* Logout */}

@@ -259,22 +259,23 @@ function coletaColumns({ onView, onDelete }: ColetaColumnActions): DataListingCo
       label: "Nº",
       fixed: true,
       sortable: true,
-      width: "80px",
+      width: "64px",
       render: (c) => <CellCodigo>#{c.numero}</CellCodigo>,
     },
     {
       id: "fornecedor",
       label: "Fornecedor",
       sortable: true,
+      width: "280px",
       render: (c, { density }) => (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 py-0.5">
           <Avatar
             name={c.nomeFantasia}
-            size={density === "compact" ? 22 : density === "normal" ? 28 : 34}
+            size={density === "compact" ? 20 : density === "normal" ? 24 : 30}
           />
-          <div className="min-w-0">
-            <div className="font-semibold text-[var(--fips-fg)]">{c.nomeFantasia}</div>
-            <div className="text-[10px] text-[var(--fips-fg-muted)]">{c.cnpjFornecedor}</div>
+          <div className="min-w-0 leading-tight">
+            <div className="font-semibold text-[var(--fips-fg)] text-[12px]">{c.nomeFantasia}</div>
+            <div className="text-[9px] leading-none text-[var(--fips-fg-muted)]">{c.cnpjFornecedor}</div>
           </div>
         </div>
       ),
@@ -283,6 +284,7 @@ function coletaColumns({ onView, onDelete }: ColetaColumnActions): DataListingCo
       id: "notaFiscal",
       label: "NF",
       sortable: true,
+      width: "90px",
       render: (c) => <CellMuted>{c.notaFiscal || "—"}</CellMuted>,
     },
     {
@@ -290,6 +292,7 @@ function coletaColumns({ onView, onDelete }: ColetaColumnActions): DataListingCo
       label: "Peso NF",
       sortable: true,
       align: "right",
+      width: "100px",
       render: (c) => <CellMonoMuted>{formatKg(c.pesoTotalNF)}</CellMonoMuted>,
     },
     {
@@ -297,24 +300,28 @@ function coletaColumns({ onView, onDelete }: ColetaColumnActions): DataListingCo
       label: "Peso Atual",
       sortable: true,
       align: "right",
+      width: "110px",
       render: (c) => <CellMonoStrong align="right">{formatKg(c.pesoTotalAtual)}</CellMonoStrong>,
     },
     {
       id: "dataPedido",
       label: "Pedido",
       sortable: true,
+      width: "100px",
       render: (c) => <CellMonoMuted>{formatDateBR(c.dataPedido)}</CellMonoMuted>,
     },
     {
       id: "chegada",
       label: "Chegada",
       sortable: true,
+      width: "100px",
       render: (c) => <CellMonoMuted>{formatDateBR(c.dataChegada)}</CellMonoMuted>,
     },
     {
       id: "status",
       label: "Status",
       sortable: true,
+      width: "110px",
       render: (c) => {
         const sc = statusConfig[c.status] || { label: c.status, variant: "secondary" as const };
         return (

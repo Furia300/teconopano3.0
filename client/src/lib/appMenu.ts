@@ -22,6 +22,7 @@ import {
   UserCog,
   Zap,
   Clock,
+  Shield,
 } from "lucide-react";
 
 /** Item do menu lateral / header — única fonte de verdade para rotas agrupadas. */
@@ -72,8 +73,8 @@ export const APP_MENU: AppMenuItem[] = [
   },
 
   {
-    icon: Factory,
-    label: "Produção",
+    icon: Warehouse,
+    label: "Galpão",
     badge: "producaoEmAndamento",
     perfis: ["administrador", "galpao", "producao", "separacao"],
     children: [
@@ -97,6 +98,7 @@ export const APP_MENU: AppMenuItem[] = [
     children: [
       { icon: Package, label: "Pedidos", href: "/expedicao", perfis: ["administrador", "expedicao", "galpao", "michele"] },
       { icon: ShoppingCart, label: "Clientes", href: "/clientes", perfis: ["administrador", "expedicao", "michele"] },
+      { icon: Box, label: "Produtos", href: "/produtos", perfis: ["administrador", "expedicao", "michele"] },
       { icon: Warehouse, label: "Estoque", href: "/estoque", perfis: ["administrador", "expedicao", "galpao", "michele"] },
       { icon: Truck, label: "Motorista", href: "/motorista", perfis: ["administrador", "motorista", "expedicao", "galpao", "michele"] },
     ],
@@ -113,8 +115,6 @@ export const APP_MENU: AppMenuItem[] = [
     ],
   },
 
-  /** Catálogo central de produtos — vive fora dos fluxos porque alimenta produção, estoque e expedição. */
-  { icon: Box, label: "Produtos", href: "/produtos", perfis: ["administrador", "expedicao", "michele"] },
   {
     icon: Users,
     label: "RH",
@@ -126,12 +126,13 @@ export const APP_MENU: AppMenuItem[] = [
     ],
   },
   {
-    icon: Settings,
-    label: "Configurações",
+    icon: Shield,
+    label: "Administração",
+    badge: "adminPendencias",
     perfis: ["administrador"],
     children: [
+      { icon: Shield, label: "Painel Admin", href: "/administracao", perfis: ["administrador"] },
       { icon: Settings, label: "Configurações", href: "/configuracoes", perfis: ["administrador"] },
-      { icon: UserCog, label: "Usuários", href: "/usuarios", perfis: ["administrador"] },
     ],
   },
   { icon: Zap, label: "Menu Automático", action: "autoCollapse", perfis: ["administrador"] },

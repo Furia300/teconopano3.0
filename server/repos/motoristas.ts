@@ -3,44 +3,29 @@ import { supabase } from "../supabase";
 const MOTORISTA_SELECT = `
   id,
   nome,
-  cpf,
-  cnh,
-  categoriaCnh:categoria_cnh,
-  validadeCnh:validade_cnh,
-  telefone,
+  cargo,
+  matricula,
+  galpao,
   whatsapp,
-  email,
-  veiculo,
-  placa,
-  capacidadeKg:capacidade_kg,
-  observacao,
   foto,
+  observacao,
   ativo,
-  createdAt:created_at,
-  updatedAt:updated_at
+  createdAt:created_at
 `.trim();
 
 export interface MotoristaInput {
   nome: string;
-  cpf?: string | null;
-  cnh?: string | null;
-  categoriaCnh?: string | null;
-  validadeCnh?: string | null;
-  telefone?: string | null;
+  cargo?: string | null;
+  matricula?: string | null;
+  galpao?: string | null;
   whatsapp?: string | null;
-  email?: string | null;
-  veiculo?: string | null;
-  placa?: string | null;
-  capacidadeKg?: number | null;
   observacao?: string | null;
   foto?: string | null;
   ativo?: boolean;
 }
 
 const CAMEL_TO_SNAKE: Record<string, string> = {
-  categoriaCnh: "categoria_cnh",
-  validadeCnh: "validade_cnh",
-  capacidadeKg: "capacidade_kg",
+  dataAdmissao: "data_admissao",
 };
 
 function toRow(input: Partial<MotoristaInput> & Record<string, unknown>): Record<string, unknown> {
@@ -52,7 +37,7 @@ function toRow(input: Partial<MotoristaInput> & Record<string, unknown>): Record
 }
 
 export async function listMotoristas(includeInativos = false) {
-  let q = supabase.from("motoristas").select(MOTORISTA_SELECT).order("nome");
+  let q = supabase.from("funcionarios").select(MOTORISTA_SELECT).order("nome");
   if (!includeInativos) q = q.eq("ativo", true);
   const { data, error } = await q;
   if (error) throw error;
@@ -61,7 +46,7 @@ export async function listMotoristas(includeInativos = false) {
 
 export async function getMotorista(id: string) {
   const { data, error } = await supabase
-    .from("motoristas")
+    .from("funcionarios")
     .select(MOTORISTA_SELECT)
     .eq("id", id)
     .single();
@@ -72,7 +57,7 @@ export async function getMotorista(id: string) {
 export async function createMotorista(input: MotoristaInput) {
   const row = toRow({ ativo: true, ...input });
   const { data, error } = await supabase
-    .from("motoristas")
+    .from("funcionarios")
     .insert(row)
     .select(MOTORISTA_SELECT)
     .single();
@@ -83,7 +68,7 @@ export async function createMotorista(input: MotoristaInput) {
 export async function updateMotorista(id: string, patch: Partial<MotoristaInput>) {
   const row = toRow(patch);
   const { data, error } = await supabase
-    .from("motoristas")
+    .from("funcionarios")
     .update(row)
     .eq("id", id)
     .select(MOTORISTA_SELECT)
@@ -93,7 +78,7 @@ export async function updateMotorista(id: string, patch: Partial<MotoristaInput>
 }
 
 export async function deleteMotorista(id: string) {
-  const { error } = await supabase.from("motoristas").update({ ativo: false }).eq("id", id);
+  const { error } = await supabase.from("funcionarios").update({ ativo: false }).eq("id", id);
   if (error) throw error;
   return { ok: true };
 }

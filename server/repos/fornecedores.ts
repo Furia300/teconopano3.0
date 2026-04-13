@@ -9,7 +9,6 @@ const FORN_SELECT = `
   cidade,
   estado,
   cep,
-  telefone,
   contato,
   email,
   statusServico:status_servico,

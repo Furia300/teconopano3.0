@@ -92,6 +92,7 @@ export type User = typeof users.$inferSelect;
 
 export const fornecedores = pgTable("fornecedores", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  bubbleId: text("bubble_id").unique(),
   nome: text("nome").notNull(),
   razaoSocial: text("razao_social"),
   cnpj: text("cnpj"),
@@ -115,6 +116,7 @@ export type Fornecedor = typeof fornecedores.$inferSelect;
 
 export const clientes = pgTable("clientes", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  bubbleId: text("bubble_id").unique(),
   nomeFantasia: text("nome_fantasia").notNull(),
   razaoSocial: text("razao_social"),
   cnpj: text("cnpj"),
@@ -140,6 +142,7 @@ export type Cliente = typeof clientes.$inferSelect;
 
 export const produtos = pgTable("produtos", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  bubbleId: text("bubble_id").unique(),
   descricao: text("descricao").notNull(),
   tipoMaterial: text("tipo_material").notNull(),
   cor: text("cor"),
@@ -163,6 +166,7 @@ export type Produto = typeof produtos.$inferSelect;
 
 export const funcionarios = pgTable("funcionarios", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  bubbleId: text("bubble_id").unique(),
   nome: text("nome").notNull(),
   cargo: text("cargo"),
   matricula: text("matricula"),
@@ -183,6 +187,7 @@ export type Funcionario = typeof funcionarios.$inferSelect;
 
 export const qrCodes = pgTable("qr_codes", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  bubbleId: text("bubble_id").unique(),
   codigo: text("codigo").notNull().unique(),
   tipo: text("tipo").notNull(), // trouxa, gaiola, fardo
   coletaId: varchar("coleta_id").references(() => coletas.id),
@@ -202,8 +207,9 @@ export type QrCode = typeof qrCodes.$inferSelect;
 
 export const coletas = pgTable("coletas", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  bubbleId: text("bubble_id").unique(),
   numero: integer("numero").notNull(),
-  fornecedorId: varchar("fornecedor_id").notNull().references(() => fornecedores.id),
+  fornecedorId: varchar("fornecedor_id").references(() => fornecedores.id),
   nomeFantasia: text("nome_fantasia"),
   razaoSocial: text("razao_social"),
   cnpjFornecedor: text("cnpj_fornecedor"),
@@ -255,12 +261,13 @@ export type Coleta = typeof coletas.$inferSelect;
 
 export const separacoes = pgTable("separacoes", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  coletaId: varchar("coleta_id").notNull().references(() => coletas.id),
+  bubbleId: text("bubble_id").unique(),
+  coletaId: varchar("coleta_id").references(() => coletas.id),
   qrCodeId: varchar("qr_code_id").references(() => qrCodes.id),
-  tipoMaterial: text("tipo_material").notNull(),
+  tipoMaterial: text("tipo_material"),
   cor: text("cor"),
-  peso: decimal("peso", { precision: 10, scale: 2 }).notNull(),
-  destino: destinoSeparacaoEnum("destino").notNull(),
+  peso: decimal("peso", { precision: 10, scale: 2 }),
+  destino: destinoSeparacaoEnum("destino"),
   colaborador: text("colaborador"),
   galpao: text("galpao"),
   data: timestamp("data").defaultNow(),
@@ -275,7 +282,8 @@ export type Separacao = typeof separacoes.$inferSelect;
 
 export const repanol = pgTable("repanol", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  coletaId: varchar("coleta_id").notNull().references(() => coletas.id),
+  bubbleId: text("bubble_id").unique(),
+  coletaId: varchar("coleta_id").references(() => coletas.id),
   separacaoId: varchar("separacao_id").references(() => separacoes.id),
   empresaFornecedor: text("empresa_fornecedor"),
   tipoMaterial: text("tipo_material"),
@@ -304,7 +312,8 @@ export type Repanol = typeof repanol.$inferSelect;
 
 export const producoes = pgTable("producoes", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  coletaId: varchar("coleta_id").notNull().references(() => coletas.id),
+  bubbleId: text("bubble_id").unique(),
+  coletaId: varchar("coleta_id").references(() => coletas.id),
   qrCodeId: varchar("qr_code_id").references(() => qrCodes.id),
   sala: text("sala"), // CORTE 01, CORTE 02, FAIXA, etc.
   tipoMaterial: text("tipo_material"),
@@ -332,8 +341,9 @@ export type Producao = typeof producoes.$inferSelect;
 
 export const costureiraEnvios = pgTable("costureira_envios", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  coletaId: varchar("coleta_id").notNull().references(() => coletas.id),
-  costureira: text("costureira").notNull(),
+  bubbleId: text("bubble_id").unique(),
+  coletaId: varchar("coleta_id").references(() => coletas.id),
+  costureira: text("costureira"),
   tipoMaterial: text("tipo_material"),
   tipoMedida: text("tipo_medida"),
   status: text("status").default("pendente"),
@@ -368,6 +378,7 @@ export type CostureiraEnvio = typeof costureiraEnvios.$inferSelect;
 
 export const estoque = pgTable("estoque", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  bubbleId: text("bubble_id").unique(),
   coletaId: varchar("coleta_id").references(() => coletas.id),
   producaoId: varchar("producao_id").references(() => producoes.id),
   produtoId: varchar("produto_id").references(() => produtos.id),
@@ -407,6 +418,7 @@ export type Estoque = typeof estoque.$inferSelect;
 
 export const expedicoes = pgTable("expedicoes", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  bubbleId: text("bubble_id").unique(),
   clienteId: varchar("cliente_id").references(() => clientes.id),
   estoqueOrigemId: varchar("estoque_origem_id").references(() => estoque.id),
   produtoId: varchar("produto_id").references(() => produtos.id),
@@ -485,3 +497,67 @@ export const producaoDiaria = pgTable("producao_diaria", {
 export const insertProducaoDiariaSchema = createInsertSchema(producaoDiaria).omit({ id: true, createdAt: true });
 export type InsertProducaoDiaria = z.infer<typeof insertProducaoDiariaSchema>;
 export type ProducaoDiaria = typeof producaoDiaria.$inferSelect;
+
+// ==================== PERMISSÕES ====================
+
+export const permissions = pgTable("permissions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  resource: text("resource").notNull(), // href do menu: /coleta, /financeiro, etc.
+  granted: boolean("granted").default(true),
+  grantedBy: varchar("granted_by").references(() => users.id),
+  grantedAt: timestamp("granted_at").defaultNow(),
+  revokedAt: timestamp("revoked_at"),
+});
+
+export type Permission = typeof permissions.$inferSelect;
+
+// ==================== SOLICITAÇÕES DE ACESSO ====================
+
+export const statusSolicitacaoEnum = pgEnum("status_solicitacao", [
+  "pendente",
+  "aprovado",
+  "negado",
+]);
+
+export const accessRequests = pgTable("access_requests", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  resource: text("resource").notNull(),
+  motivo: text("motivo").notNull(),
+  status: statusSolicitacaoEnum("status").default("pendente"),
+  respondedBy: varchar("responded_by").references(() => users.id),
+  respondedAt: timestamp("responded_at"),
+  motivoResposta: text("motivo_resposta"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export type AccessRequest = typeof accessRequests.$inferSelect;
+
+// ==================== LOG DE AUDITORIA ====================
+
+export const auditLog = pgTable("audit_log", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id),
+  userName: text("user_name"),
+  action: text("action").notNull(), // login, logout, permission_grant, access_request, etc.
+  resource: text("resource"),
+  details: text("details"), // JSON stringified
+  ip: text("ip"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export type AuditLog = typeof auditLog.$inferSelect;
+
+// ==================== SESSÕES ATIVAS ====================
+
+export const userSessions = pgTable("user_sessions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  token: text("token").notNull().unique(),
+  ip: text("ip"),
+  userAgent: text("user_agent"),
+  lastActive: timestamp("last_active").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow(),
+  expiresAt: timestamp("expires_at"),
+});

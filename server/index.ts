@@ -1,6 +1,7 @@
 import "dotenv/config";
 import express from "express";
 import { registerRoutes } from "./routes";
+import { startPolling } from "./bubble-sync";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -24,4 +25,9 @@ if (process.env.NODE_ENV === "production") {
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
+
+  // Iniciar polling do Bubble automaticamente
+  if (process.env.BUBBLE_SYNC_ENABLED === "true") {
+    startPolling();
+  }
 });

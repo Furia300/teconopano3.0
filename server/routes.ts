@@ -1,5 +1,23 @@
 import type { Express, Request, Response } from "express";
 import {
+  syncAll, syncOne, getSyncStatus, startPolling, stopPolling,
+} from "./bubble-sync";
+import {
+  listUsers, getUser, createUser, updateUser, deactivateUser,
+  reactivateUser, changePassword, verifyPassword, getAdminWhatsappNumbers,
+} from "./repos/user-management";
+import {
+  listPermissions, getGrantedResources, grantPermission,
+  revokePermission, setPermissions,
+} from "./repos/permissions";
+import {
+  createAccessRequest, listPendingRequests, listAllRequests,
+  approveRequest, denyRequest,
+} from "./repos/access-requests";
+import { logAudit, listAuditLogs } from "./repos/audit-log";
+import { notifyAdmins, sendWhatsApp } from "./whatsapp";
+import { supabase } from "./supabase";
+import {
   fetchPessoas, fetchDepartamentos, isRHiDConfigured,
   criarPessoaRHiD, atualizarPessoaRHiD, deletarPessoaRHiD,
   criarDepartamentoRHiD,
@@ -278,22 +296,155 @@ function resolvePerfilFromLogin(email: string, perfilOverride: unknown): string 
 
 export function registerRoutes(app: Express) {
   // ==================== AUTH ====================
-  app.post("/api/auth/login", (req: Request, res: Response) => {
-    const { email, password, perfil: perfilBody } = req.body;
+  app.post("/api/auth/login", async (req: Request, res: Response) => {
+    const { email, password } = req.body;
     if (!email || !password) {
       return res.status(401).json({ message: "Credenciais inválidas" });
     }
-    const emailStr = String(email);
-    const perfil = resolvePerfilFromLogin(emailStr, perfilBody);
-    const rawLocal = emailStr.split("@")[0] || "utilizador";
-    const nome = rawLocal.charAt(0).toUpperCase() + rawLocal.slice(1).toLowerCase();
-    authSession = {
-      id: "1",
-      username: emailStr,
-      nome,
-      perfil,
-    };
-    res.json({ user: authSession });
+    const emailStr = String(email).trim().toLowerCase();
+
+    try {
+      // Buscar usuário no Supabase
+      const { data: user } = await supabase
+        .from("users")
+        .select("id, username, nome, password, perfil, acesso")
+        .or(`username.eq.${emailStr},email.eq.${emailStr}`)
+        .limit(1)
+        .single();
+
+      if (!user) {
+        return res.status(401).json({ message: "Usuário não encontrado" });
+      }
+      if (!user.acesso) {
+        return res.status(403).json({ message: "Acesso desativado. Contate o administrador." });
+      }
+      if (user.password !== password) {
+        return res.status(401).json({ message: "Senha incorreta" });
+      }
+
+      authSession = {
+        id: user.id,
+        username: user.username,
+        nome: user.nome,
+        perfil: user.perfil,
+      };
+
+      await logAudit({ userId: user.id, userName: user.nome, action: "login" });
+      res.json({ user: authSession });
+    } catch {
+      // Fallback: modo dev (aceita qualquer credencial)
+      const perfil = resolvePerfilFromLogin(emailStr, req.body.perfil);
+      const rawLocal = emailStr.split("@")[0] || "utilizador";
+      const nome = rawLocal.charAt(0).toUpperCase() + rawLocal.slice(1).toLowerCase();
+      authSession = { id: "dev-1", username: emailStr, nome, perfil };
+      res.json({ user: authSession });
+    }
+  });
+
+  // ── Registro (auto-cadastro, precisa aprovação do admin) ──
+  app.post("/api/auth/register", async (req: Request, res: Response) => {
+    const { nome, email, password, cargo } = req.body;
+    if (!nome || !email || !password) {
+      return res.status(400).json({ message: "Nome, email e senha são obrigatórios" });
+    }
+
+    try {
+      // Verificar se já existe
+      const { data: existing } = await supabase
+        .from("users")
+        .select("id")
+        .or(`username.eq.${email},email.eq.${email}`)
+        .limit(1)
+        .single();
+
+      if (existing) {
+        return res.status(409).json({ message: "Este email já está cadastrado" });
+      }
+
+      // Criar usuário inativo (precisa aprovação)
+      const { data: user, error } = await supabase
+        .from("users")
+        .insert({
+          username: email.trim().toLowerCase(),
+          password,
+          nome: nome.trim(),
+          email: email.trim().toLowerCase(),
+          cargo: cargo || null,
+          perfil: "galpao",
+          acesso: false, // Inativo até admin aprovar
+        })
+        .select("id, nome, email")
+        .single();
+
+      if (error) throw error;
+
+      await logAudit({ userId: user.id, userName: user.nome, action: "user_create", details: { selfRegistration: true } });
+
+      // Notificar admins
+      const adminPhones = await getAdminWhatsappNumbers();
+      if (adminPhones.length > 0) {
+        const msg = `👤 *Novo Cadastro*\n\n${nome} (${email}) se cadastrou e aguarda aprovação.\n\nAcesse Administração para liberar.`;
+        notifyAdmins(adminPhones, msg).catch(() => {});
+      }
+
+      res.status(201).json({ message: "Cadastro realizado! Aguarde aprovação do administrador.", user });
+    } catch (err: any) {
+      res.status(500).json({ message: err.message || "Erro ao cadastrar" });
+    }
+  });
+
+  // ── Definir senha via token (link de convite) ──
+  app.post("/api/auth/set-password", async (req: Request, res: Response) => {
+    const { token, password } = req.body;
+    if (!token || !password) {
+      return res.status(400).json({ message: "Token e senha são obrigatórios" });
+    }
+
+    try {
+      // Token = base64(userId:timestamp)
+      const decoded = Buffer.from(token, "base64").toString();
+      const [userId] = decoded.split(":");
+
+      if (!userId) return res.status(400).json({ message: "Token inválido" });
+
+      const { data: user } = await supabase
+        .from("users")
+        .select("id, nome")
+        .eq("id", userId)
+        .single();
+
+      if (!user) return res.status(404).json({ message: "Usuário não encontrado" });
+
+      await changePassword(userId, password);
+      await logAudit({ userId, userName: user.nome, action: "password_change", details: { viaInviteLink: true } });
+
+      res.json({ message: "Senha definida com sucesso! Faça login." });
+    } catch (err: any) {
+      res.status(500).json({ message: err.message });
+    }
+  });
+
+  // ── Gerar link de convite (admin envia para o user) ──
+  app.post("/api/admin/users/:id/invite-link", async (req: Request, res: Response) => {
+    try {
+      const { data: user } = await supabase
+        .from("users")
+        .select("id, nome, email")
+        .eq("id", req.params.id)
+        .single();
+
+      if (!user) return res.status(404).json({ message: "Usuário não encontrado" });
+
+      // Gerar token simples (base64 do userId + timestamp)
+      const token = Buffer.from(`${user.id}:${Date.now()}`).toString("base64");
+      const link = `${req.protocol}://${req.get("host")}/definir-senha?token=${token}`;
+
+      await logAudit({ action: "password_reset", resource: user.id, details: { inviteLinkGenerated: true, email: user.email } });
+
+      res.json({ link, token, email: user.email, nome: user.nome });
+    } catch (err: any) {
+      res.status(500).json({ message: err.message });
+    }
   });
 
   app.post("/api/auth/logout", (_req: Request, res: Response) => {
@@ -301,9 +452,14 @@ export function registerRoutes(app: Express) {
     res.json({ ok: true });
   });
 
-  // Retorna utilizador da sessão em memória (mesmo perfil que o menu Header/Sidebar usa)
-  app.get("/api/auth/me", (_req: Request, res: Response) => {
-    res.json(authSession);
+  // Retorna utilizador da sessão + permissões
+  app.get("/api/auth/me", async (_req: Request, res: Response) => {
+    try {
+      const perms = authSession.id ? await getGrantedResources(authSession.id) : [];
+      res.json({ ...authSession, permissions: perms });
+    } catch {
+      res.json({ ...authSession, permissions: [] });
+    }
   });
 
   // ==================== COLETAS (Supabase) ====================
@@ -797,6 +953,19 @@ export function registerRoutes(app: Express) {
     }
   });
 
+  app.put("/api/expedicoes/:id/rejeitar-financeiro", async (req: Request, res: Response) => {
+    try {
+      res.json(
+        await dbUpdateExpedicao(req.params.id, {
+          statusFinanceiro: "rejeitado",
+        }),
+      );
+    } catch (err) {
+      console.error("[PUT rejeitar-financeiro]", err);
+      res.status(500).json({ message: "Erro ao rejeitar" });
+    }
+  });
+
   app.put("/api/expedicoes/:id/emitir-nf", async (req: Request, res: Response) => {
     try {
       const notaFiscal = `NF-2026-${String(Math.floor(Math.random() * 9999)).padStart(4, "0")}`;
@@ -1082,6 +1251,351 @@ export function registerRoutes(app: Express) {
     if (idx === -1) return res.status(404).json({ message: "Não encontrado" });
     producaoDiariaList.splice(idx, 1);
     res.json({ ok: true });
+  });
+
+  // ==================== ADMIN: USERS ====================
+
+  app.get("/api/admin/users", async (_req: Request, res: Response) => {
+    try {
+      const data = await listUsers(true);
+      res.json(data);
+    } catch (err: any) {
+      res.status(500).json({ message: err.message });
+    }
+  });
+
+  app.get("/api/admin/users/:id", async (req: Request, res: Response) => {
+    try {
+      const user = await getUser(req.params.id);
+      const perms = await getGrantedResources(req.params.id);
+      res.json({ ...user, permissions: perms });
+    } catch (err: any) {
+      res.status(500).json({ message: err.message });
+    }
+  });
+
+  app.post("/api/admin/users", async (req: Request, res: Response) => {
+    try {
+      const user = await createUser(req.body);
+      await logAudit({ action: "user_create", resource: user.id, details: { nome: user.nome, perfil: user.perfil } });
+      res.status(201).json(user);
+    } catch (err: any) {
+      res.status(500).json({ message: err.message });
+    }
+  });
+
+  app.put("/api/admin/users/:id", async (req: Request, res: Response) => {
+    try {
+      const user = await updateUser(req.params.id, req.body);
+      await logAudit({ action: "user_edit", resource: req.params.id, details: req.body });
+      res.json(user);
+    } catch (err: any) {
+      res.status(500).json({ message: err.message });
+    }
+  });
+
+  app.delete("/api/admin/users/:id", async (req: Request, res: Response) => {
+    try {
+      await deactivateUser(req.params.id);
+      await logAudit({ action: "user_deactivate", resource: req.params.id });
+      res.json({ ok: true });
+    } catch (err: any) {
+      res.status(500).json({ message: err.message });
+    }
+  });
+
+  app.post("/api/admin/users/:id/reactivate", async (req: Request, res: Response) => {
+    try {
+      await reactivateUser(req.params.id);
+      await logAudit({ action: "user_reactivate", resource: req.params.id });
+      res.json({ ok: true });
+    } catch (err: any) {
+      res.status(500).json({ message: err.message });
+    }
+  });
+
+  app.post("/api/admin/users/:id/reset-password", async (req: Request, res: Response) => {
+    try {
+      const newPass = req.body.password || "Tecnopano@2026";
+      await changePassword(req.params.id, newPass);
+      await logAudit({ action: "password_reset", resource: req.params.id });
+      res.json({ ok: true });
+    } catch (err: any) {
+      res.status(500).json({ message: err.message });
+    }
+  });
+
+  // ==================== ADMIN: PERMISSIONS ====================
+
+  app.get("/api/admin/permissions/:userId", async (req: Request, res: Response) => {
+    try {
+      const perms = await getGrantedResources(req.params.userId);
+      res.json(perms);
+    } catch (err: any) {
+      res.status(500).json({ message: err.message });
+    }
+  });
+
+  app.put("/api/admin/permissions/:userId", async (req: Request, res: Response) => {
+    try {
+      const { resources, grantedBy } = req.body;
+      const result = await setPermissions(req.params.userId, resources, grantedBy);
+      await logAudit({
+        action: "permission_bulk_update",
+        resource: req.params.userId,
+        details: { resources },
+        userName: grantedBy,
+      });
+      res.json(result);
+    } catch (err: any) {
+      res.status(500).json({ message: err.message });
+    }
+  });
+
+  // ==================== ACCESS REQUESTS ====================
+
+  app.post("/api/access-requests", async (req: Request, res: Response) => {
+    try {
+      const { userId, resource, motivo, userName } = req.body;
+      const request = await createAccessRequest(userId, resource, motivo);
+      await logAudit({ userId, userName, action: "access_request", resource, details: { motivo } });
+
+      // Notificar admins via WhatsApp
+      const adminPhones = await getAdminWhatsappNumbers();
+      if (adminPhones.length > 0) {
+        const msg = `🔐 *Solicitação de Acesso*\n\n👤 ${userName || "Usuário"}\n📄 Recurso: ${resource}\n💬 Motivo: ${motivo}\n\nAcesse o sistema para aprovar/negar.`;
+        notifyAdmins(adminPhones, msg).catch(() => {});
+      }
+
+      res.status(201).json(request);
+    } catch (err: any) {
+      res.status(500).json({ message: err.message });
+    }
+  });
+
+  app.get("/api/admin/access-requests", async (_req: Request, res: Response) => {
+    try {
+      const data = await listAllRequests();
+      res.json(data);
+    } catch (err: any) {
+      res.status(500).json({ message: err.message });
+    }
+  });
+
+  app.get("/api/admin/access-requests/pending", async (_req: Request, res: Response) => {
+    try {
+      const data = await listPendingRequests();
+      res.json(data);
+    } catch (err: any) {
+      res.status(500).json({ message: err.message });
+    }
+  });
+
+  app.put("/api/admin/access-requests/:id/approve", async (req: Request, res: Response) => {
+    try {
+      const result = await approveRequest(req.params.id, req.body.respondedBy);
+      // Grant permission automatically
+      if (result.userId && result.resource) {
+        await grantPermission(result.userId, result.resource, req.body.respondedBy);
+        await logAudit({
+          userId: req.body.respondedBy,
+          action: "access_approve",
+          resource: result.resource,
+          details: { requestId: req.params.id, targetUser: result.userId },
+        });
+      }
+      res.json(result);
+    } catch (err: any) {
+      res.status(500).json({ message: err.message });
+    }
+  });
+
+  app.put("/api/admin/access-requests/:id/deny", async (req: Request, res: Response) => {
+    try {
+      const result = await denyRequest(req.params.id, req.body.respondedBy, req.body.motivo);
+      await logAudit({
+        userId: req.body.respondedBy,
+        action: "access_deny",
+        resource: result.resource,
+        details: { requestId: req.params.id, motivo: req.body.motivo },
+      });
+      res.json(result);
+    } catch (err: any) {
+      res.status(500).json({ message: err.message });
+    }
+  });
+
+  // ==================== AUDIT LOG ====================
+
+  app.get("/api/admin/audit-log", async (req: Request, res: Response) => {
+    try {
+      const { userId, action, limit, offset } = req.query;
+      const result = await listAuditLogs({
+        userId: userId as string,
+        action: action as string,
+        limit: limit ? Number(limit) : 50,
+        offset: offset ? Number(offset) : 0,
+      });
+      res.json(result);
+    } catch (err: any) {
+      res.status(500).json({ message: err.message });
+    }
+  });
+
+  // ==================== AUTH: SELF-SERVICE ====================
+
+  app.put("/api/auth/change-password", async (req: Request, res: Response) => {
+    try {
+      const { userId, currentPassword, newPassword } = req.body;
+      if (!userId || !newPassword) return res.status(400).json({ message: "Dados incompletos" });
+      if (currentPassword) {
+        const valid = await verifyPassword(userId, currentPassword);
+        if (!valid) return res.status(403).json({ message: "Senha atual incorreta" });
+      }
+      await changePassword(userId, newPassword);
+      await logAudit({ userId, action: "password_change" });
+      res.json({ ok: true });
+    } catch (err: any) {
+      res.status(500).json({ message: err.message });
+    }
+  });
+
+  app.put("/api/auth/profile", async (req: Request, res: Response) => {
+    try {
+      const { userId, ...patch } = req.body;
+      if (!userId) return res.status(400).json({ message: "userId obrigatório" });
+      // Only allow self-service fields
+      const allowed = { nome: patch.nome, whatsapp: patch.whatsapp, foto: patch.foto };
+      const user = await updateUser(userId, allowed);
+      await logAudit({ userId, action: "profile_update", details: allowed });
+      res.json(user);
+    } catch (err: any) {
+      res.status(500).json({ message: err.message });
+    }
+  });
+
+  // ==================== WHATSAPP (Evolution API) ====================
+
+  let whatsappConnected = false;
+  let whatsappPhone: string | null = null;
+
+  app.get("/api/admin/whatsapp/status", (_req: Request, res: Response) => {
+    const configured = !!(process.env.WHATSAPP_API_URL && process.env.WHATSAPP_TOKEN);
+    res.json({
+      configured,
+      connected: whatsappConnected,
+      instance: "tecnopano",
+      qrCode: null, // Será preenchido pela Evolution API
+      phone: whatsappPhone,
+      error: configured ? null : "Evolution API não configurada (será ativada no deploy)",
+    });
+  });
+
+  app.post("/api/admin/whatsapp/connect", async (_req: Request, res: Response) => {
+    const apiUrl = process.env.WHATSAPP_API_URL;
+    const token = process.env.WHATSAPP_TOKEN;
+
+    if (!apiUrl || !token) {
+      return res.json({
+        message: "Evolution API será configurada no deploy da VPS. Por enquanto, pendências aparecem no badge do menu Administração.",
+        configured: false,
+      });
+    }
+
+    try {
+      // Criar instância na Evolution API
+      const createRes = await fetch(`${apiUrl}/instance/create`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", apikey: token },
+        body: JSON.stringify({ instanceName: "tecnopano", qrcode: true }),
+      });
+      const data = await createRes.json();
+      const qr = data?.qrcode?.base64 || null;
+
+      res.json({ message: "Instância criada", qrCode: qr, instance: "tecnopano" });
+    } catch (err: any) {
+      res.json({ message: "Evolution API não disponível. Será configurada no deploy.", error: err.message });
+    }
+  });
+
+  app.post("/api/admin/whatsapp/disconnect", async (_req: Request, res: Response) => {
+    const apiUrl = process.env.WHATSAPP_API_URL;
+    const token = process.env.WHATSAPP_TOKEN;
+
+    if (apiUrl && token) {
+      try {
+        await fetch(`${apiUrl}/instance/logout/tecnopano`, {
+          method: "DELETE",
+          headers: { apikey: token },
+        });
+      } catch { /* ignore */ }
+    }
+
+    whatsappConnected = false;
+    whatsappPhone = null;
+    res.json({ ok: true, message: "Desconectado" });
+  });
+
+  app.post("/api/admin/whatsapp/test", async (req: Request, res: Response) => {
+    const { phone } = req.body;
+    if (!phone) return res.status(400).json({ message: "Número obrigatório" });
+
+    try {
+      const sent = await sendWhatsApp(phone, "✅ *Teste Tecnopano 3.0*\n\nNotificações do sistema estão funcionando!");
+      if (sent) {
+        res.json({ ok: true, message: "Mensagem enviada" });
+      } else {
+        res.json({ ok: false, message: "Falha ao enviar (verifique os logs do servidor)" });
+      }
+    } catch (err: any) {
+      res.status(500).json({ message: err.message });
+    }
+  });
+
+  // ==================== BUBBLE SYNC ====================
+
+  /** Status do sync */
+  app.get("/api/bubble/status", (_req: Request, res: Response) => {
+    res.json(getSyncStatus());
+  });
+
+  /** Sync completo (últimos 3 meses ou desde uma data) */
+  app.post("/api/bubble/sync", async (req: Request, res: Response) => {
+    try {
+      const sinceParam = req.body?.since;
+      const since = sinceParam
+        ? new Date(sinceParam)
+        : new Date(Date.now() - 90 * 24 * 60 * 60 * 1000); // 3 meses
+      const result = await syncAll(since);
+      res.json(result);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  /** Sync de uma tabela específica */
+  app.post("/api/bubble/sync/:tabela", async (req: Request, res: Response) => {
+    try {
+      const sinceParam = req.body?.since;
+      const since = sinceParam
+        ? new Date(sinceParam)
+        : new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
+      const result = await syncOne(req.params.tabela, since);
+      res.json(result);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  /** Iniciar/parar polling automático */
+  app.post("/api/bubble/polling/start", (_req: Request, res: Response) => {
+    startPolling();
+    res.json({ message: "Polling iniciado", ...getSyncStatus() });
+  });
+
+  app.post("/api/bubble/polling/stop", (_req: Request, res: Response) => {
+    stopPolling();
+    res.json({ message: "Polling parado", ...getSyncStatus() });
   });
 
   // ==================== HEALTH ====================
