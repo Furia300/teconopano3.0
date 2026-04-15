@@ -666,14 +666,19 @@ export function registerRoutes(app: Express) {
   });
 
   // ==================== ENTRADA COLETA (Pesagem no Galpão) ====================
-  app.put("/api/coletas/:id/entrada", (req: Request, res: Response) => {
-    const coleta = coletas.find((c) => c.id === req.params.id);
-    if (!coleta) return res.status(404).json({ message: "Coleta não encontrada" });
-    coleta.pesoTotalAtual = Number(req.body.pesoTotalAtual) || coleta.pesoTotalAtual;
-    coleta.notaFiscal = req.body.notaFiscal || coleta.notaFiscal;
-    coleta.status = "recebido";
-    coleta.statusServico = "Entrada de Coleta";
-    res.json(coleta);
+  app.put("/api/coletas/:id/entrada", async (req: Request, res: Response) => {
+    try {
+      const updated = await dbUpdateColeta(req.params.id, {
+        pesoTotalAtual: Number(req.body.pesoTotalAtual) || undefined,
+        notaFiscal: req.body.notaFiscal || undefined,
+        status: "recebido",
+        statusServico: "Entrada de Coleta",
+      });
+      res.json(updated);
+    } catch (err) {
+      console.error("[PUT /api/coletas/:id/entrada]", err);
+      res.status(404).json({ message: "Coleta não encontrada" });
+    }
   });
 
   // ==================== QR CODES (Supabase) ====================
