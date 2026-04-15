@@ -136,12 +136,12 @@ export default function SeparacaoList() {
   const [notaFiscal, setNotaFiscal] = useState("");
   const [savingPesagem, setSavingPesagem] = useState(false);
 
-  /* Trouxa form */
+  /* Lote form */
   const [tipoMaterial, setTipoMaterial] = useState("");
   const [cor, setCor] = useState("");
   const [peso, setPeso] = useState("");
   const [destino, setDestino] = useState("");
-  const [savingTrouxa, setSavingTrouxa] = useState(false);
+  const [savingLote, setSavingLote] = useState(false);
 
   /* Produtos para cascata material → cor/medida */
   const [produtos, setProdutos] = useState<{ tipoMaterial: string; cor: string; medida: string; pesoMedio: number }[]>([]);
@@ -319,14 +319,14 @@ export default function SeparacaoList() {
     }
   };
 
-  /* ─── Adicionar Trouxa + QR ─── */
-  const handleAddTrouxa = async () => {
+  /* ─── Adicionar Lote + QR ─── */
+  const handleAddLote = async () => {
     if (!selectedColetaId || !currentColeta) return;
     if (!tipoMaterial) { toast.error("Selecione o tipo de material"); return; }
-    if (!peso || parseFloat(peso) <= 0) { toast.error("Informe o peso da trouxa"); return; }
+    if (!peso || parseFloat(peso) <= 0) { toast.error("Informe o peso da lote"); return; }
     if (!destino) { toast.error("Selecione o destino"); return; }
 
-    setSavingTrouxa(true);
+    setSavingLote(true);
     try {
       const sepRes = await fetch("/api/separacoes", {
         method: "POST",
@@ -359,11 +359,11 @@ export default function SeparacaoList() {
       if (newQR) setQrCodes(prev => [...prev, newQR]);
 
       setTipoMaterial(""); setCor(""); setPeso(""); setDestino("");
-      toast.success(`Trouxa adicionada${newQR ? " + QR gerado" : ""}!`);
+      toast.success(`Lote adicionada${newQR ? " + QR gerado" : ""}!`);
     } catch {
-      toast.error("Erro ao criar trouxa");
+      toast.error("Erro ao criar lote");
     } finally {
-      setSavingTrouxa(false);
+      setSavingLote(false);
     }
   };
 
@@ -549,7 +549,7 @@ export default function SeparacaoList() {
                   </span>
                 </h3>
                 <p className="text-white/50 text-[11px]">
-                  {me.nome} · {formatDateBR(currentColeta?.dataColeta)} · {separacoes.length} trouxas registradas
+                  {me.nome} · {formatDateBR(currentColeta?.dataColeta)} · {separacoes.length} lotes registrados
                 </p>
               </div>
             </div>
@@ -665,7 +665,7 @@ export default function SeparacaoList() {
                 </Button>
               </div>
 
-              {/* ─── Section B: Nova Trouxa ─── */}
+              {/* ─── Section B: Nova Lote ─── */}
               <div className="rounded-lg border-2 border-dashed border-[var(--fips-primary)] bg-[var(--fips-surface-soft)] p-5">
                 <div className="flex items-center gap-2 mb-4">
                   <Plus className="h-4 w-4" style={{ color: FIPS_COLORS.azulProfundo }} />
@@ -673,7 +673,7 @@ export default function SeparacaoList() {
                     className="text-[12px] font-bold uppercase tracking-[0.06em]"
                     style={{ color: FIPS_COLORS.azulProfundo, fontFamily: "'Saira Expanded', sans-serif" }}
                   >
-                    Separação por Material — Nova Trouxa
+                    Separação por Material — Nova Lote
                   </span>
                 </div>
 
@@ -732,25 +732,25 @@ export default function SeparacaoList() {
                 </div>
 
                 <Button
-                  onClick={handleAddTrouxa}
-                  disabled={savingTrouxa}
+                  onClick={handleAddLote}
+                  disabled={savingLote}
                   className="w-full gap-2"
                   style={{ background: FIPS_COLORS.gold, color: FIPS_COLORS.azulEscuro }}
                 >
                   <QrCode className="h-4 w-4" />
-                  {savingTrouxa ? "Criando..." : "Adicionar Trouxa + Gerar QR"}
+                  {savingLote ? "Criando..." : "Adicionar Lote + Gerar QR"}
                 </Button>
               </div>
 
-              {/* ─── Section C: Trouxas Registradas — DataListingTable ─── */}
+              {/* ─── Section C: Lotes Registradas — DataListingTable ─── */}
               <DataListingTable<Separacao>
                 icon={<ClipboardList className="h-[22px] w-[22px]" />}
-                title="Trouxas Registradas"
-                subtitle={`${separacoes.length} ${separacoes.length === 1 ? "trouxa" : "trouxas"} registradas`}
+                title="Lotes Registradas"
+                subtitle={`${separacoes.length} ${separacoes.length === 1 ? "lote" : "lotes"} registradas`}
                 filtered={false}
                 data={separacoes}
                 getRowId={(s) => s.id}
-                emptyState="Nenhuma trouxa registrada ainda"
+                emptyState="Nenhum lote registrado ainda"
                 columns={separacaoColumns(qrCodes)}
               />
 
