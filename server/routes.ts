@@ -669,7 +669,8 @@ export function registerRoutes(app: Express) {
   app.put("/api/coletas/:id/entrada", async (req: Request, res: Response) => {
     try {
       const updated = await dbUpdateColeta(req.params.id, {
-        pesoTotalAtual: Number(req.body.pesoTotalAtual) || undefined,
+        pesoTotalAtual: req.body.pesoTotalAtual != null ? Number(req.body.pesoTotalAtual) : undefined,
+        pesoTotalNF: req.body.pesoTotalNF != null ? Number(req.body.pesoTotalNF) : undefined,
         notaFiscal: req.body.notaFiscal || undefined,
         status: "recebido",
         statusServico: "Entrada de Coleta",

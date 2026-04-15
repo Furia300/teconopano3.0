@@ -143,6 +143,33 @@ export default function SeparacaoList() {
   const [destino, setDestino] = useState("");
   const [savingTrouxa, setSavingTrouxa] = useState(false);
 
+  /* Produtos para cascata material → cor/medida */
+  const [produtos, setProdutos] = useState<{ tipoMaterial: string; cor: string; medida: string; pesoMedio: number }[]>([]);
+  useEffect(() => {
+    fetch("/api/produtos").then(r => r.json())
+      .then((data: any[]) => setProdutos(data.map((p: any) => ({ tipoMaterial: (p.tipoMaterial || "").trim(), cor: (p.cor || "").trim(), medida: (p.medida || "").trim(), pesoMedio: p.pesoMedio || 0 }))))
+      .catch(() => {});
+  }, []);
+
+  /* Tipos de material únicos dos produtos (normalizados) */
+  const tiposFromProdutos = useMemo(() => {
+    const raw = [...new Set(produtos.map(p => p.tipoMaterial).filter(Boolean))];
+    // Normalizar: trim espaços duplos, capitalizar
+    return raw.map(t => t.replace(/\s+/g, " ").trim()).filter(Boolean).sort((a, b) => a.localeCompare(b, "pt-BR"));
+  }, [produtos]);
+  /* Cores filtradas pelo material selecionado */
+  const coresDoMaterial = useMemo(() => {
+    if (!tipoMaterial) return [];
+    // Match flexível: ignora espaços extras
+    const norm = tipoMaterial.replace(/\s+/g, " ").trim().toLowerCase();
+    return [...new Set(
+      produtos
+        .filter(p => p.tipoMaterial.replace(/\s+/g, " ").trim().toLowerCase() === norm)
+        .map(p => p.cor)
+        .filter(Boolean)
+    )].sort();
+  }, [produtos, tipoMaterial]);
+
   /* ─── Fetch coletas ─── */
   const fetchColetas = useCallback(async () => {
     try {
@@ -212,7 +239,7 @@ export default function SeparacaoList() {
       setPesoAtual(coleta.pesoTotalAtual ? String(coleta.pesoTotalAtual) : "");
       setNotaFiscal(coleta.notaFiscal || "");
     }
-    setTipoMaterial(""); setCor(""); setPeso(""); setDestino("");
+    setTipoMaterial(""); setCor(""); setPeso(""); setDestino(""); setPesagemSalva(false);
 
     try {
       const [seps, qrs] = await Promise.all([
@@ -257,8 +284,13 @@ export default function SeparacaoList() {
   }, [separacoes, pesoAtual, currentColeta]);
 
   /* ─── Registrar Pesagem ─── */
+  const [pesagemSalva, setPesagemSalva] = useState(false);
   const handlePesagem = async () => {
     if (!selectedColetaId) return;
+    if (!pesoAtual || parseFloat(pesoAtual) <= 0) {
+      toast.error("Informe o peso atual da balança");
+      return;
+    }
     setSavingPesagem(true);
     try {
       const res = await fetch(`/api/coletas/${selectedColetaId}/entrada`, {
@@ -271,7 +303,8 @@ export default function SeparacaoList() {
         }),
       });
       if (!res.ok) throw new Error();
-      toast.success("Pesagem registrada com sucesso!");
+      toast.success("Pesagem registrada! Dados salvos no sistema.");
+      setPesagemSalva(true);
       setColetas(prev => prev.map(c => c.id === selectedColetaId ? {
         ...c,
         pesoTotalAtual: parseFloat(pesoAtual) || 0,
@@ -280,7 +313,7 @@ export default function SeparacaoList() {
         status: "recebido",
       } : c));
     } catch {
-      toast.error("Erro ao registrar pesagem");
+      toast.error("Erro ao registrar pesagem — verifique a conexão");
     } finally {
       setSavingPesagem(false);
     }
@@ -623,12 +656,12 @@ export default function SeparacaoList() {
 
                 <Button
                   onClick={handlePesagem}
-                  disabled={savingPesagem}
+                  disabled={savingPesagem || pesagemSalva}
                   className="w-full gap-2"
-                  style={{ background: FIPS_COLORS.azulProfundo }}
+                  style={{ background: pesagemSalva ? FIPS_COLORS.verdeFloresta : FIPS_COLORS.azulProfundo }}
                 >
-                  <Scale className="h-4 w-4" />
-                  {savingPesagem ? "Registrando..." : "Registrar Pesagem"}
+                  {pesagemSalva ? <CheckCircle2 className="h-4 w-4" /> : <Scale className="h-4 w-4" />}
+                  {savingPesagem ? "Salvando..." : pesagemSalva ? "Pesagem Salva ✓" : "Registrar Pesagem"}
                 </Button>
               </div>
 
@@ -647,21 +680,30 @@ export default function SeparacaoList() {
                 <div className="grid grid-cols-2 gap-3 mb-3">
                   <Field density="compact">
                     <FieldLabel required>Tipo Material</FieldLabel>
-                    <Select value={tipoMaterial} onChange={(e) => setTipoMaterial(e.target.value)}>
+                    <Select value={tipoMaterial} onChange={(e) => { setTipoMaterial(e.target.value); setCor(""); }}>
                       <option value="">Selecione</option>
-                      {TIPOS_MATERIAL.map((t) => (
+                      {(tiposFromProdutos.length > 0 ? tiposFromProdutos : TIPOS_MATERIAL).map((t) => (
                         <option key={t} value={t}>{t}</option>
                       ))}
                     </Select>
                   </Field>
                   <Field density="compact">
                     <FieldLabel>Cor</FieldLabel>
-                    <Input
-                      density="compact"
-                      placeholder="Ex: Branco, Azul"
-                      value={cor}
-                      onChange={(e) => setCor(e.target.value)}
-                    />
+                    {coresDoMaterial.length > 0 ? (
+                      <Select value={cor} onChange={(e) => setCor(e.target.value)}>
+                        <option value="">Selecione a cor</option>
+                        {coresDoMaterial.map((c) => (
+                          <option key={c} value={c}>{c}</option>
+                        ))}
+                      </Select>
+                    ) : (
+                      <Select value={cor} onChange={(e) => setCor(e.target.value)} disabled={!tipoMaterial}>
+                        <option value="">{tipoMaterial ? "Sem cores cadastradas" : "Selecione o material primeiro"}</option>
+                      </Select>
+                    )}
+                    {tipoMaterial && coresDoMaterial.length > 0 && (
+                      <FieldHint>{coresDoMaterial.length} cor(es) disponível(is) para {tipoMaterial}</FieldHint>
+                    )}
                   </Field>
                 </div>
 
