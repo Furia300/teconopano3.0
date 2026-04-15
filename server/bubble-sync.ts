@@ -8,7 +8,7 @@
 
 import { supabase } from "./supabase";
 
-const BUBBLE_API = process.env.BUBBLE_API_URL || "https://operation.app.br/version-test/api/1.1/obj";
+const BUBBLE_API = process.env.BUBBLE_API_URL || "https://operation.app.br/api/1.1/obj";
 const PAGE_SIZE = 100; // Bubble max per request
 const POLL_INTERVAL_MS = 5 * 60 * 1000; // 5 minutos
 
@@ -81,6 +81,7 @@ const SYNC_TABLES: {
     supabase: "clientes",
     fields: {
       "_id": "bubble_id",
+      "ID": "codigo_legado",
       "NOME FANTASIA": "nome_fantasia",
       "RAZAO SOCIAL": "razao_social",
       "CNPJ": "cnpj",
@@ -285,11 +286,33 @@ function normalizeEnum(column: string, value: string): string {
   return value.toLowerCase().replace(/\s+/g, "_");
 }
 
+/**
+ * Extrai cidade e estado de um endereço no formato brasileiro.
+ * Ex: "R. Sitha, 628 - Inamar, Diadema - SP, 09981, Brasil"
+ *   → { cidade: "Diadema", estado: "SP" }
+ */
+function parseCidadeEstado(address: string): { cidade?: string; estado?: string } {
+  // Padrão: "..., Cidade - UF, CEP, Brasil" ou "Cidade - UF, ..."
+  const match = address.match(/([^,]+?)\s*-\s*([A-Z]{2})\s*,/);
+  if (match) {
+    return { cidade: match[1].trim(), estado: match[2].trim() };
+  }
+  return {};
+}
+
 function mapBubbleRecord(record: Record<string, any>, fields: FieldMap): Record<string, any> {
   const mapped: Record<string, any> = {};
   for (const [bubbleKey, supabaseCol] of Object.entries(fields)) {
     let val = record[bubbleKey];
     if (val !== undefined && val !== null && val !== "") {
+      // Endereço do Bubble vem como objeto { address, lat, lng }
+      if (supabaseCol === "endereco" && typeof val === "object" && val.address) {
+        const { cidade, estado } = parseCidadeEstado(val.address);
+        mapped.endereco = val.address;
+        if (cidade) mapped.cidade = cidade;
+        if (estado) mapped.estado = estado;
+        continue;
+      }
       // Normalizar enums
       if (supabaseCol === "status_entrega" && typeof val === "string") {
         val = normalizeEnum("status_entrega", val);

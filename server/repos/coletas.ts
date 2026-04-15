@@ -21,6 +21,7 @@ const COLETA_SELECT = `
   status,
   statusServico:status_servico,
   observacao,
+  recorrencia,
   createdAt:created_at
 `.trim();
 
@@ -34,6 +35,7 @@ export interface ColetaInput {
   dataChegada?: string | null;
   galpao?: string;
   observacao?: string;
+  recorrencia?: string | null;
 }
 
 export async function listColetas() {
@@ -94,6 +96,7 @@ export async function createColeta(input: ColetaInput) {
     status,
     status_servico: statusServico,
     observacao: input.observacao ?? "",
+    recorrencia: input.recorrencia ?? null,
   };
 
   const { data, error } = await supabase
@@ -117,6 +120,7 @@ export async function updateColeta(id: string, patch: Partial<ColetaInput> & Rec
     pesoTotalAtual: "peso_total_atual",
     dataChegada: "data_chegada",
     statusServico: "status_servico",
+    recorrencia: "recorrencia",
   };
   const row: Record<string, unknown> = {};
   for (const [k, v] of Object.entries(patch)) {

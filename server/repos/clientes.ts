@@ -2,6 +2,7 @@ import { supabase } from "../supabase";
 
 const CLIENTE_SELECT = `
   id,
+  codigoLegado:codigo_legado,
   nomeFantasia:nome_fantasia,
   razaoSocial:razao_social,
   cnpj,

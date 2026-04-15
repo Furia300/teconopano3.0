@@ -20,6 +20,7 @@ import ProdutosList from "./pages/produtos/ProdutosList";
 import FuncionariosList from "./pages/funcionarios/FuncionariosList";
 import PontoDiario from "./pages/rh/PontoDiario";
 import DashboardRHPage from "./pages/rh/DashboardRHPage";
+import DashboardColetaPage from "./pages/coleta/DashboardColetaPage";
 import ProducaoDiariaPage from "./pages/producao-diaria/ProducaoDiariaPage";
 import AutomaticoPage from "./pages/automatico/AutomaticoPage";
 import MotoristaList from "./pages/motorista/MotoristaList";
@@ -34,6 +35,7 @@ function AppContent() {
       <Switch>
         <Route path="/" component={Dashboard} />
         <Route path="/coleta" component={ColetaList} />
+        <Route path="/dashboard-coleta" component={DashboardColetaPage} />
         <Route path="/separacao" component={SeparacaoList} />
         <Route path="/producao" component={ProducaoList} />
         <Route path="/repanol" component={RepanolList} />

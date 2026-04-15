@@ -378,6 +378,23 @@ body {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
+/* Esconder ícone nativo de date/time picker — abre via showPicker() no click */
+.hide-native-picker::-webkit-calendar-picker-indicator {
+  display: none !important;
+  -webkit-appearance: none;
+}
+.hide-native-picker::-webkit-inner-spin-button {
+  display: none !important;
+}
+
+/* DataListing: células herdam fontSize da densidade (--cell-fs) */
+td[style*="--cell-fs"] * {
+  font-size: inherit !important;
+}
+td[style*="--cell-fs"] [data-sub] {
+  font-size: var(--cell-fs-sub) !important;
+}
+
 /* Painéis de listagem (tabela, toolbar) — vidro fosco como shellDarkGlassPanel */
 :is(.dark) .fips-surface-panel {
   background: rgba(255, 255, 255, 0.08);

@@ -162,6 +162,9 @@ function ChartTooltip({ title, color, rows, x, y, total }: { title: string; colo
             </div>
           ))}
         </div>
+        <div style={{ borderTop: `1px solid ${C.cardBorder}`, padding: "6px 14px" }}>
+          <span style={{ fontSize: 9, color: C.textMuted, fontFamily: Fn.body }}>Passe o mouse para detalhar</span>
+        </div>
       </div>
     </div>
   );
@@ -260,6 +263,7 @@ export default function DashboardAdmin({ data }: Props) {
   const [hovKpiCard, setHovKpiCard] = useState(-1);
   const [hovExpRow, setHovExpRow] = useState(-1);
   const [hovColetaStatus, setHovColetaStatus] = useState<number | null>(null);
+  const [hovFornAdmin, setHovFornAdmin] = useState(-1);
   const [tipPos, setTipPos] = useState({ x: 0, y: 0 });
   const trackMouse = (e: React.MouseEvent) => setTipPos({ x: e.clientX, y: e.clientY });
 
@@ -471,7 +475,7 @@ export default function DashboardAdmin({ data }: Props) {
             const max = Math.max(...pipelineCounts, 1);
             const bw = 48, gp = 20, chartW = ETAPAS.length * (bw + gp) - gp, chartH = 110;
             return (
-              <div style={{ background: C.cardBg, borderRadius: "12px 12px 12px 24px", border: `1px solid ${C.cardBorder}`, padding: mob ? 14 : 20, boxShadow: "0 1px 3px rgba(0,75,155,.04)" }}>
+              <div style={{ background: C.cardBg, borderRadius: "12px 12px 12px 24px", border: `1px solid ${C.cardBorder}`, padding: mob ? 14 : 20, boxShadow: "0 1px 3px rgba(0,75,155,.04)" }} onMouseMove={trackMouse}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
                   <div><span style={{ fontSize: 13, fontWeight: 700, color: C.azulEscuro, fontFamily: Fn.title, display: "block" }}>Pipeline de Produção</span><span style={{ fontSize: 10, color: C.cinzaChumbo }}>Contagem por etapa do fluxo{hasFilter ? " (filtrado)" : ""}</span></div>
                   <div style={{ width: 30, height: 30, borderRadius: 8, background: `${C.azulProfundo}0A`, display: "flex", alignItems: "center", justifyContent: "center" }}>{Ic.chart(14, C.azulProfundo)}</div>
@@ -491,6 +495,10 @@ export default function DashboardAdmin({ data }: Props) {
                     })}
                   </svg>
                 </div>
+                {hovPipeline >= 0 && <ChartTooltip title={ETAPAS[hovPipeline]} color={ETAPA_COLORS[hovPipeline]} x={tipPos.x} y={tipPos.y} total={pipelineCounts[hovPipeline]} rows={[
+                  { label: "Registros na etapa", value: pipelineCounts[hovPipeline], color: ETAPA_COLORS[hovPipeline] },
+                  { label: "% do total", value: totalRegistros > 0 ? Math.round(pipelineCounts[hovPipeline] / totalRegistros * 100) : 0, color: C.azulCeu },
+                ]} />}
               </div>
             );
           })()}
@@ -532,7 +540,7 @@ export default function DashboardAdmin({ data }: Props) {
         {/* ═══ GALPÃO + MATERIAIS ═══ */}
         <div style={{ display: "grid", gridTemplateColumns: mob ? "1fr" : "1fr 1fr", gap: mob ? 12 : 16, marginBottom: mob ? 16 : 24 }}>
           {/* Estoque por galpão */}
-          <div style={{ background: C.cardBg, borderRadius: "10px 10px 10px 18px", border: `1px solid ${filter.galpao ? C.azulProfundo : C.cardBorder}`, padding: mob ? 14 : 20, boxShadow: "0 1px 3px rgba(0,75,155,.04)", transition: "border-color .15s" }}>
+          <div style={{ background: C.cardBg, borderRadius: "10px 10px 10px 18px", border: `1px solid ${filter.galpao ? C.azulProfundo : C.cardBorder}`, padding: mob ? 14 : 20, boxShadow: "0 1px 3px rgba(0,75,155,.04)", transition: "border-color .15s" }} onMouseMove={trackMouse}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
               <div><span style={{ fontSize: 13, fontWeight: 700, color: C.azulEscuro, fontFamily: Fn.title, display: "block" }}>Estoque por Galpão</span><span style={{ fontSize: 10, color: C.cinzaChumbo }}>Clique para filtrar por galpão</span></div>
               <div style={{ width: 30, height: 30, borderRadius: 8, background: `${C.verdeFloresta}0A`, display: "flex", alignItems: "center", justifyContent: "center" }}>{Ic.map(14, C.verdeFloresta)}</div>
@@ -555,10 +563,15 @@ export default function DashboardAdmin({ data }: Props) {
               <span style={{ fontSize: 10, fontWeight: 600, color: C.cinzaChumbo }}>Total em estoque</span>
               <span style={{ fontSize: 14, fontWeight: 800, color: C.azulEscuro, fontFamily: Fn.title }}>{formatKg(pesoEstoque)}</span>
             </div>
+            {hovGalpao >= 0 && <ChartTooltip title={GALPOES[hovGalpao]} color={GALPAO_COLORS[hovGalpao]} x={tipPos.x} y={tipPos.y} total={fEstoque.filter(e => e.galpao === GALPOES[hovGalpao]).length} rows={[
+              { label: "Peso estoque", value: Math.round(galpaoEstoque[hovGalpao]), color: GALPAO_COLORS[hovGalpao] },
+              { label: "% do total", value: pesoEstoque > 0 ? Math.round(galpaoEstoque[hovGalpao] / pesoEstoque * 100) : 0, color: C.azulCeu },
+              { label: "Coletas no galpão", value: fColetas.filter(c => c.galpao === GALPOES[hovGalpao]).length, color: C.azulProfundo },
+            ]} />}
           </div>
 
           {/* Estoque por material */}
-          <div style={{ background: C.cardBg, borderRadius: "10px 10px 10px 18px", border: `1px solid ${filter.material ? C.verdeFloresta : C.cardBorder}`, padding: mob ? 14 : 20, boxShadow: "0 1px 3px rgba(0,75,155,.04)", transition: "border-color .15s" }}>
+          <div style={{ background: C.cardBg, borderRadius: "10px 10px 10px 18px", border: `1px solid ${filter.material ? C.verdeFloresta : C.cardBorder}`, padding: mob ? 14 : 20, boxShadow: "0 1px 3px rgba(0,75,155,.04)", transition: "border-color .15s" }} onMouseMove={trackMouse}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
               <div><span style={{ fontSize: 13, fontWeight: 700, color: C.azulEscuro, fontFamily: Fn.title, display: "block" }}>Estoque por Material</span><span style={{ fontSize: 10, color: C.cinzaChumbo }}>Clique para filtrar · Top {topMateriais.length}</span></div>
               <div style={{ width: 30, height: 30, borderRadius: 8, background: `${C.azulProfundo}0A`, display: "flex", alignItems: "center", justifyContent: "center" }}>{Ic.grid(14, C.azulProfundo)}</div>
@@ -578,6 +591,11 @@ export default function DashboardAdmin({ data }: Props) {
                 );
               })}
             </div>
+            {hovMaterial >= 0 && topMateriais[hovMaterial] && <ChartTooltip title={topMateriais[hovMaterial][0]} color={materialColors[hovMaterial]} x={tipPos.x} y={tipPos.y} total={fEstoque.filter(e => e.material === topMateriais[hovMaterial][0]).length} rows={[
+              { label: "Peso em estoque", value: Math.round(topMateriais[hovMaterial][1]), color: materialColors[hovMaterial] },
+              { label: "% do estoque", value: pesoEstoque > 0 ? Math.round(topMateriais[hovMaterial][1] / pesoEstoque * 100) : 0, color: C.azulCeu },
+              { label: "Itens", value: fEstoque.filter(e => e.material === topMateriais[hovMaterial][0]).length, color: C.verdeFloresta },
+            ]} />}
           </div>
         </div>
 
@@ -587,7 +605,7 @@ export default function DashboardAdmin({ data }: Props) {
           {(() => {
             const size = 120, cx = size / 2, cy = size / 2, r = 44, sw = 14; const circ = 2 * Math.PI * r; let acc = 0;
             return (
-              <div style={{ background: C.cardBg, borderRadius: "10px 10px 10px 18px", border: `1px solid ${filter.statusEntrega ? STATUS_EXP_COLORS[filter.statusEntrega] : C.cardBorder}`, padding: mob ? 14 : 20, boxShadow: "0 1px 3px rgba(0,75,155,.04)", transition: "border-color .15s" }}>
+              <div style={{ background: C.cardBg, borderRadius: "10px 10px 10px 18px", border: `1px solid ${filter.statusEntrega ? STATUS_EXP_COLORS[filter.statusEntrega] : C.cardBorder}`, padding: mob ? 14 : 20, boxShadow: "0 1px 3px rgba(0,75,155,.04)", transition: "border-color .15s" }} onMouseMove={trackMouse}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
                   <div><span style={{ fontSize: 13, fontWeight: 700, color: C.azulEscuro, fontFamily: Fn.title, display: "block" }}>Expedição por Status</span><span style={{ fontSize: 10, color: C.cinzaChumbo }}>Clique para filtrar · {totalExp} pedidos</span></div>
                   <div style={{ width: 30, height: 30, borderRadius: 8, background: `${C.amareloEscuro}0A`, display: "flex", alignItems: "center", justifyContent: "center" }}>{Ic.package(14, C.amareloEscuro)}</div>
@@ -612,6 +630,10 @@ export default function DashboardAdmin({ data }: Props) {
                     ) })}
                   </div>
                 </div>
+                {hovExpStatus !== null && expByStatus[hovExpStatus] && <ChartTooltip title={expByStatus[hovExpStatus].label} color={expByStatus[hovExpStatus].color} x={tipPos.x} y={tipPos.y} total={expByStatus[hovExpStatus].value} rows={[
+                  { label: "Pedidos", value: expByStatus[hovExpStatus].value, color: expByStatus[hovExpStatus].color },
+                  { label: "% do total", value: totalExp > 0 ? Math.round(expByStatus[hovExpStatus].value / totalExp * 100) : 0, color: C.azulCeu },
+                ]} />}
               </div>
             );
           })()}
@@ -653,6 +675,95 @@ export default function DashboardAdmin({ data }: Props) {
             </div>
           </div>
         </div>
+
+        {/* ═══ TOP FORNECEDORES · PERIODICIDADE ═══ */}
+        {(() => {
+          const fornMap: Record<string, { nome: string; count: number; peso: number; datas: number[] }> = {};
+          for (const c of fColetas) {
+            const k = c.fornecedorId || c.nomeFantasia || "?";
+            if (!fornMap[k]) fornMap[k] = { nome: c.nomeFantasia || "?", count: 0, peso: 0, datas: [] };
+            fornMap[k].count++;
+            fornMap[k].peso += c.pesoTotalNF || 0;
+            if (c.dataPedido) fornMap[k].datas.push(new Date(c.dataPedido).getTime());
+          }
+          const topForn = Object.values(fornMap).map(f => {
+            const sorted = f.datas.sort((a, b) => a - b);
+            let mediaDias = 0;
+            if (sorted.length >= 2) {
+              const diffs: number[] = [];
+              for (let i = 1; i < sorted.length; i++) diffs.push((sorted[i] - sorted[i - 1]) / 86400000);
+              mediaDias = Math.round(diffs.reduce((a, b) => a + b, 0) / diffs.length);
+            }
+            const ultima = sorted.length > 0 ? sorted[sorted.length - 1] : 0;
+            const proxEst = ultima && mediaDias > 0 ? ultima + mediaDias * 86400000 : 0;
+            let perioLabel = "—";
+            if (mediaDias > 0) {
+              if (mediaDias <= 3) perioLabel = `a cada ${mediaDias}d`;
+              else if (mediaDias <= 9) perioLabel = "semanal";
+              else if (mediaDias <= 18) perioLabel = "quinzenal";
+              else if (mediaDias <= 45) perioLabel = "mensal";
+              else if (mediaDias <= 100) perioLabel = "trimestral";
+              else perioLabel = `~${mediaDias}d`;
+            }
+            return { ...f, mediaDias, ultima, proxEst, perioLabel };
+          }).sort((a, b) => b.count - a.count).slice(0, 10);
+          const maxFornCount = Math.max(...topForn.map(f => f.count), 1);
+          const now = Date.now();
+          return (
+            <div style={{ background: C.cardBg, borderRadius: "12px 12px 12px 24px", border: `1px solid ${C.cardBorder}`, padding: mob ? 14 : 20, boxShadow: "0 1px 3px rgba(0,75,155,.04)", marginBottom: mob ? 16 : 24 }} onMouseMove={trackMouse}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+                <div>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: C.azulEscuro, fontFamily: Fn.title, display: "block" }}>Top Fornecedores · Periodicidade</span>
+                  <span style={{ fontSize: 10, color: C.cinzaChumbo }}>Frequência real calculada pelas datas{hasFilter ? " (filtrado)" : ""} · Top 10</span>
+                </div>
+                <div style={{ width: 30, height: 30, borderRadius: 8, background: `${C.azulProfundo}0A`, display: "flex", alignItems: "center", justifyContent: "center" }}>{Ic.edificio(14, C.azulProfundo)}</div>
+              </div>
+              {/* Header */}
+              <div style={{ display: "grid", gridTemplateColumns: mob ? "28px 1fr 50px 70px" : "28px 1fr 70px 60px 80px 90px", gap: 8, padding: "0 12px 8px", borderBottom: `1px solid ${C.cardBorder}` }}>
+                {(mob ? ["#", "Fornecedor", "Qtd", "Freq."] : ["#", "Fornecedor", "Coletas", "Peso", "Frequência", "Próxima est."]).map(h => (
+                  <span key={h} style={{ fontSize: 9, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: C.cinzaChumbo, fontFamily: Fn.title }}>{h}</span>
+                ))}
+              </div>
+              {topForn.map((f, i) => {
+                const pct = (f.count / maxFornCount) * 100;
+                const proxFmt = f.proxEst ? new Date(f.proxEst).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" }) : "—";
+                const isAtrasada = f.proxEst > 0 && f.proxEst < now;
+                const isH = hovFornAdmin === i;
+                return (
+                  <div key={i} onMouseEnter={() => setHovFornAdmin(i)} onMouseLeave={() => setHovFornAdmin(-1)} style={{ display: "grid", gridTemplateColumns: mob ? "28px 1fr 50px 70px" : "28px 1fr 70px 60px 80px 90px", gap: 8, alignItems: "center", padding: "8px 12px", borderBottom: `1px solid ${C.cardBorder}`, background: isH ? `${C.azulProfundo}06` : "transparent", transition: "background .12s", cursor: "default" }}>
+                    <div style={{ width: 22, height: 22, borderRadius: 5, background: i < 3 ? C.azulProfundo : C.cardBorder, color: i < 3 ? C.branco : C.cinzaChumbo, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 700, fontFamily: Fn.mono }}>{i + 1}</div>
+                    <div style={{ minWidth: 0 }}>
+                      <div style={{ fontSize: 12, fontWeight: 600, color: C.cinzaEscuro, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{f.nome}</div>
+                      <div style={{ marginTop: 3, height: 3, borderRadius: 2, background: `${C.azulProfundo}10` }}><div style={{ height: 3, borderRadius: 2, background: C.azulProfundo, width: `${pct}%` }} /></div>
+                    </div>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: C.azulProfundo, fontFamily: Fn.mono }}>{f.count}</span>
+                    {!mob && <span style={{ fontSize: 11, color: C.textMuted, fontFamily: Fn.mono }}>{formatKg(f.peso)}</span>}
+                    <div>
+                      <span style={{ fontSize: 11, fontWeight: 600, color: f.mediaDias > 0 ? C.verdeFloresta : C.textLight }}>{f.perioLabel}</span>
+                      {f.mediaDias > 0 && <div style={{ fontSize: 9, color: C.textMuted }}>~{f.mediaDias}d</div>}
+                    </div>
+                    {!mob && <div>
+                      <span style={{ fontSize: 11, fontWeight: 600, color: isAtrasada ? C.danger : f.proxEst ? C.azulProfundo : C.textLight, fontFamily: Fn.mono }}>{proxFmt}</span>
+                      {isAtrasada && <div style={{ fontSize: 9, fontWeight: 700, color: C.danger }}>atrasada</div>}
+                      {!isAtrasada && f.proxEst > 0 && <div style={{ fontSize: 9, color: C.textMuted }}>{Math.ceil((f.proxEst - now) / 86400000)}d</div>}
+                    </div>}
+                  </div>
+                );
+              })}
+              {hovFornAdmin >= 0 && topForn[hovFornAdmin] && (() => {
+                const f = topForn[hovFornAdmin];
+                const ultimaFmt = f.ultima ? new Date(f.ultima).toLocaleDateString("pt-BR") : "—";
+                const proxFmt2 = f.proxEst ? new Date(f.proxEst).toLocaleDateString("pt-BR") : "—";
+                return <ChartTooltip title={f.nome} color={C.azulProfundo} x={tipPos.x} y={tipPos.y} total={f.count} rows={[
+                  { label: "Peso total", value: Math.round(f.peso), color: C.verdeFloresta },
+                  { label: `Freq. média (${f.mediaDias || "—"}d)`, value: f.count, color: C.amareloEscuro },
+                  { label: `Última: ${ultimaFmt}`, value: f.datas.length, color: C.azulCeu },
+                  { label: `Próxima: ${proxFmt2}`, value: f.proxEst && f.proxEst < now ? 0 : 1, color: f.proxEst && f.proxEst < now ? C.danger : C.verdeEscuro },
+                ]} />;
+              })()}
+            </div>
+          );
+        })()}
 
         {/* ═══ TABELA EXPEDIÇÕES + SIDEBAR ═══ */}
         <div style={{ display: "grid", gridTemplateColumns: mob ? "1fr" : "2fr 1fr", gap: mob ? 16 : 20 }}>

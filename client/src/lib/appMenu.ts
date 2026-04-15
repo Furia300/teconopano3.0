@@ -68,6 +68,7 @@ export const APP_MENU: AppMenuItem[] = [
     children: [
       { icon: Truck, label: "Coleta", href: "/coleta", perfis: ["michele", "galpao", "administrador", "expedicao", "motorista"] },
       { icon: Building2, label: "Fornecedores", href: "/fornecedores", perfis: ["administrador", "expedicao", "galpao", "michele"] },
+      { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard-coleta", perfis: ["administrador", "expedicao", "galpao", "michele"] },
     ],
   },
 

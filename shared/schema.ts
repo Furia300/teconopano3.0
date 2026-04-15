@@ -117,6 +117,7 @@ export type Fornecedor = typeof fornecedores.$inferSelect;
 export const clientes = pgTable("clientes", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   bubbleId: text("bubble_id").unique(),
+  codigoLegado: text("codigo_legado"),
   nomeFantasia: text("nome_fantasia").notNull(),
   razaoSocial: text("razao_social"),
   cnpj: text("cnpj"),
@@ -224,6 +225,7 @@ export const coletas = pgTable("coletas", {
   statusServico: text("status_servico"),
   valor: decimal("valor", { precision: 10, scale: 2 }),
   observacao: text("observacao"),
+  recorrencia: text("recorrencia"),
   // Pesos separação
   pesoManchadoSeparacao: decimal("peso_manchado_separacao", { precision: 10, scale: 2 }),
   pesoRenovaSeparacao: decimal("peso_renova_separacao", { precision: 10, scale: 2 }),

@@ -498,6 +498,7 @@ export function registerRoutes(app: Express) {
         dataChegada: req.body.dataChegada,
         galpao: req.body.galpao,
         observacao: req.body.observacao,
+        recorrencia: req.body.recorrencia || null,
       });
       res.status(201).json(nova);
     } catch (err) {

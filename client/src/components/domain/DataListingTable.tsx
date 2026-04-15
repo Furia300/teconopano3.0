@@ -71,9 +71,9 @@ export interface DataListingTableProps<T> {
 /* ──────────────────────────── DENSITY MAP ──────────────────────────── */
 
 const DENSITY_SPEC: Record<Density, { rowH: number; fs: number; padX: number }> = {
-  compact: { rowH: 28, fs: 11, padX: 8 },
-  normal: { rowH: 34, fs: 12, padX: 12 },
-  comfortable: { rowH: 44, fs: 13, padX: 16 },
+  compact: { rowH: 30, fs: 11, padX: 8 },
+  normal: { rowH: 42, fs: 13, padX: 12 },
+  comfortable: { rowH: 56, fs: 15, padX: 16 },
 };
 
 /* ──────────────────────────── CHECKBOX ──────────────────────────── */
@@ -524,13 +524,14 @@ export function DataListingTable<T>({
                     onClick={() => col.sortable && handleSort(col.id)}
                     style={{
                       padding: `4px ${D.padX}px`,
+                      fontSize: Math.max(9, D.fs - 4),
                       width: col.width,
                       borderRight: appearance.verticalBorders
                         ? "1px solid var(--fips-border)"
                         : "none",
                     }}
                     className={cn(
-                      "font-heading whitespace-nowrap border-b-2 border-[var(--fips-border)] text-[9px] font-bold tracking-[1px] text-[var(--fips-fg-muted)] uppercase",
+                      `font-heading whitespace-nowrap border-b-2 border-[var(--fips-border)] font-bold tracking-[1px] text-[var(--fips-fg-muted)] uppercase`,
                       col.align === "right" && "text-right",
                       col.align === "center" && "text-center",
                       col.align !== "right" && col.align !== "center" && "text-left",
@@ -598,6 +599,9 @@ export function DataListingTable<T>({
                         style={{
                           padding: `2px ${D.padX}px`,
                           fontSize: D.fs,
+                          // @ts-expect-error CSS custom property
+                          "--cell-fs": `${D.fs}px`,
+                          "--cell-fs-sub": `${Math.round(D.fs * 0.75)}px`,
                           borderRight: appearance.verticalBorders
                             ? "1px solid var(--fips-border)"
                             : "none",
@@ -726,7 +730,7 @@ export function DataListingTable<T>({
 /** Código (ID) em azul mono — usar como render do col `id` */
 export function CellCodigo({ children }: { children: ReactNode }) {
   return (
-    <span className="font-mono font-semibold text-[var(--fips-primary)]">{children}</span>
+    <span className="font-mono font-semibold text-[var(--fips-primary)]" style={{ fontSize: "var(--cell-fs, inherit)" }}>{children}</span>
   );
 }
 
@@ -738,6 +742,7 @@ export function CellMonoStrong({ children, align = "left" }: { children: ReactNo
         "font-mono font-bold text-[var(--color-fips-blue-950)] dark:text-[var(--fips-fg)]",
         align === "right" && "block text-right",
       )}
+      style={{ fontSize: "var(--cell-fs, inherit)" }}
     >
       {children}
     </span>
@@ -746,12 +751,12 @@ export function CellMonoStrong({ children, align = "left" }: { children: ReactNo
 
 /** Texto monoespaçado normal, cor muted — bom para datas */
 export function CellMonoMuted({ children }: { children: ReactNode }) {
-  return <span className="font-mono text-[var(--fips-fg-muted)]">{children}</span>;
+  return <span className="font-mono text-[var(--fips-fg-muted)]" style={{ fontSize: "var(--cell-fs, inherit)" }}>{children}</span>;
 }
 
 /** Texto secundário (descrição/departamento) em cinza muted */
 export function CellMuted({ children }: { children: ReactNode }) {
-  return <span className="text-[var(--fips-fg-muted)]">{children}</span>;
+  return <span className="text-[var(--fips-fg-muted)]" style={{ fontSize: "var(--cell-fs, inherit)" }}>{children}</span>;
 }
 
 /** Wrapper para ações inline (edit/more etc.) — botões transparentes 24x24 */
@@ -776,7 +781,8 @@ export function CellActionButton({
         e.stopPropagation();
         onClick?.();
       }}
-      className="flex h-6 w-6 cursor-pointer items-center justify-center rounded border-0 bg-transparent text-[var(--fips-fg-muted)] transition-colors hover:bg-[var(--fips-surface-soft)] hover:text-[var(--fips-fg)]"
+      className="flex cursor-pointer items-center justify-center rounded border-0 bg-transparent text-[var(--fips-fg-muted)] transition-colors hover:bg-[var(--fips-surface-soft)] hover:text-[var(--fips-fg)]"
+      style={{ width: "calc(var(--cell-fs, 13) * 1.85)", height: "calc(var(--cell-fs, 13) * 1.85)" }}
     >
       {icon}
     </button>

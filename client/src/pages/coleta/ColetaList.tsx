@@ -273,11 +273,11 @@ function coletaColumns({ onView, onDelete }: ColetaColumnActions): DataListingCo
         <div className="flex items-center gap-1.5 py-0.5">
           <Avatar
             name={c.nomeFantasia}
-            size={density === "compact" ? 20 : density === "normal" ? 24 : 30}
+            size={density === "compact" ? 20 : density === "normal" ? 26 : 34}
           />
           <div className="min-w-0 leading-tight">
-            <div className="font-semibold text-[var(--fips-fg)] text-[12px]">{c.nomeFantasia}</div>
-            <div className="text-[9px] leading-none text-[var(--fips-fg-muted)]">{c.cnpjFornecedor}</div>
+            <div className="font-semibold text-[var(--fips-fg)]">{c.nomeFantasia}</div>
+            <div data-sub="" className="leading-none text-[var(--fips-fg-muted)]">{c.cnpjFornecedor}</div>
           </div>
         </div>
       ),
