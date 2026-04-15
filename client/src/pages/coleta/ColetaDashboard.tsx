@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 
 /* ─── Types ─── */
 interface Coleta {
@@ -29,10 +29,30 @@ const Ic = {
   scale: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><path d="M10 2v16M3 6l7-2 7 2M3 6l2 6h-4L3 6zM17 6l2 6h-4L17 6z" stroke={c} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>,
   factory: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><path d="M2 18V8l4-3v5l4-3v5l4-3v8H2z" stroke={c} strokeWidth="1.4" strokeLinejoin="round"/><rect x="14" y="2" width="4" height="16" rx="1" stroke={c} strokeWidth="1.4"/></svg>,
   calendario: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><rect x="2" y="4" width="16" height="14" rx="2" stroke={c} strokeWidth="1.5"/><path d="M2 8h16M6 2v4M14 2v4" stroke={c} strokeWidth="1.5" strokeLinecap="round"/></svg>,
+  grid: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="1.5" stroke={c} strokeWidth="1.3"/><rect x="11" y="2" width="7" height="7" rx="1.5" stroke={c} strokeWidth="1.3"/><rect x="2" y="11" width="7" height="7" rx="1.5" stroke={c} strokeWidth="1.3"/><rect x="11" y="11" width="7" height="7" rx="1.5" stroke={c} strokeWidth="1.3"/></svg>,
+  x: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke={c} strokeWidth="1.5" strokeLinecap="round"/></svg>,
+  flag: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><path d="M4 2v16M4 2l10 5-10 5" stroke={c} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>,
 };
 
 /* ─── Helpers ─── */
 function formatKg(n: number) { return n >= 1000 ? `${(n / 1000).toFixed(1)}t` : `${Math.round(n)} kg`; }
+function formatIsoToBr(iso: string | null) {
+  if (!iso) return "";
+  const m = iso.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!m) return "";
+  return `${m[3]}/${m[2]}/${m[1]}`;
+}
+function parseBrToIso(br: string) {
+  const raw = br.replace(/[^\d]/g, "");
+  if (raw.length !== 8) return null;
+  const d = raw.slice(0, 2);
+  const m = raw.slice(2, 4);
+  const y = raw.slice(4, 8);
+  const iso = `${y}-${m}-${d}`;
+  const date = new Date(`${iso}T00:00:00`);
+  if (Number.isNaN(date.getTime())) return null;
+  return iso;
+}
 function spark(seed: number, trend: "up" | "down") {
   const pts: number[] = []; let v = 40 + (seed % 30);
   for (let i = 0; i < 12; i++) { const d = trend === "up" ? 1.4 : -1.2; const n = Math.sin(seed * 0.31 + i * 0.7) * 8; v = Math.min(92, Math.max(8, v + d + n * 0.15)); pts.push(Math.round(v)); }
@@ -117,6 +137,84 @@ function ChartTooltip({ title, color, rows, x, y, total }: {
   );
 }
 
+/* ─── DSSelect (padrão DashboardAdmin) ─── */
+function DSSelect({ label, value, onChange, options, placeholder = "Todos", icon }: { label?: string; value: string | null; onChange: (v: string | null) => void; options: string[]; placeholder?: string; icon?: React.ReactNode }) {
+  const [open, setOpen] = useState(false);
+  const [hi, setHi] = useState(-1);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => { const h = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false) }; document.addEventListener("mousedown", h); return () => document.removeEventListener("mousedown", h) }, []);
+  const bc = open ? C.azulProfundo : "#CBD5E1";
+  return (
+    <div ref={ref} style={{ display: "flex", flexDirection: "column", minWidth: 0, position: "relative", zIndex: open ? 400 : 1 }}>
+      {label && <label style={{ fontSize: 11, fontWeight: 600, color: C.cinzaEscuro, fontFamily: Fn.body, marginBottom: 1, marginLeft: 7 }}>{label}</label>}
+      <div onClick={() => setOpen(!open)} style={{ display: "flex", alignItems: "center", gap: 8, height: 30, padding: "0 12px", background: C.cardBg, border: `1.5px solid ${bc}`, borderRadius: open ? "8px 8px 0 0" : 8, transition: "all .18s", boxShadow: open ? "0 0 0 3px rgba(147,189,228,0.35)" : "none", cursor: "pointer", fontFamily: Fn.body, fontSize: 12, userSelect: "none" }}>
+        {icon && <span style={{ display: "flex", flexShrink: 0, opacity: .55 }}>{icon}</span>}
+        <span style={{ flex: 1, color: value ? C.cinzaEscuro : C.textLight, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontWeight: 600 }}>{value || placeholder}</span>
+        <svg width={14} height={14} viewBox="0 0 20 20" fill="none" style={{ flexShrink: 0, opacity: .45, transition: "transform .2s", transform: open ? "rotate(180deg)" : "rotate(0)" }}><path d="M6 8l4 4 4-4" stroke={C.cinzaChumbo} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+      </div>
+      {open && <div style={{ position: "absolute", top: "100%", left: 0, right: 0, zIndex: 20, background: C.cardBg, border: `1.5px solid ${C.azulProfundo}`, borderTop: "none", borderRadius: "0 0 8px 8px", boxShadow: "0 6px 20px rgba(0,75,155,.12)", maxHeight: 200, overflowY: "auto" }}>
+        <div onClick={() => { onChange(null); setOpen(false) }} style={{ padding: "6px 14px", fontSize: 12, fontFamily: Fn.body, color: !value ? C.azulProfundo : C.cinzaEscuro, fontWeight: !value ? 600 : 400, background: !value ? C.azulCeuClaro : "transparent", cursor: "pointer" }}>{placeholder}</div>
+        {options.map((o, i) => { const sel = o === value; return <div key={o} onClick={() => { onChange(o); setOpen(false) }} onMouseEnter={() => setHi(i)} onMouseLeave={() => setHi(-1)} style={{ padding: "6px 14px", fontSize: 12, fontFamily: Fn.body, color: sel ? C.azulProfundo : C.cinzaEscuro, fontWeight: sel ? 600 : 400, background: sel ? C.azulCeuClaro : i === hi ? C.bg : "transparent", cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}>
+          {sel && <svg width={12} height={12} viewBox="0 0 16 16" fill="none" style={{ marginLeft: -14, flexShrink: 0 }}><path d="M3.5 8.5L6.5 11.5L12.5 4.5" stroke={C.azulProfundo} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>}
+          {o}
+        </div> })}
+      </div>}
+    </div>
+  );
+}
+
+function DSDateField({
+  label,
+  value,
+  onChange,
+  placeholder = "dd/mm/aaaa",
+  icon,
+}: {
+  label: string;
+  value: string | null;
+  onChange: (v: string | null) => void;
+  placeholder?: string;
+  icon?: React.ReactNode;
+}) {
+  const [text, setText] = useState(formatIsoToBr(value));
+  useEffect(() => setText(formatIsoToBr(value)), [value]);
+  return (
+    <div style={{ display: "flex", flexDirection: "column", minWidth: 0, position: "relative", zIndex: 1 }}>
+      <label style={{ fontSize: 11, fontWeight: 600, color: C.cinzaEscuro, fontFamily: Fn.body, marginBottom: 1, marginLeft: 7 }}>{label}</label>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, height: 30, padding: "0 12px", background: C.cardBg, border: "1.5px solid #CBD5E1", borderRadius: 8, transition: "all .18s" }}>
+        {icon && <span style={{ display: "flex", flexShrink: 0, opacity: .55 }}>{icon}</span>}
+        <input
+          type="text"
+          inputMode="numeric"
+          placeholder={placeholder}
+          value={text}
+          onChange={(e) => {
+            const digits = e.target.value.replace(/[^\d]/g, "").slice(0, 8);
+            const p1 = digits.slice(0, 2);
+            const p2 = digits.slice(2, 4);
+            const p3 = digits.slice(4, 8);
+            const masked = [p1, p2, p3].filter(Boolean).join("/");
+            setText(masked);
+            if (digits.length === 8) onChange(parseBrToIso(masked));
+            if (digits.length === 0) onChange(null);
+          }}
+          onBlur={() => {
+            const iso = parseBrToIso(text);
+            if (!iso) {
+              setText("");
+              onChange(null);
+              return;
+            }
+            setText(formatIsoToBr(iso));
+            onChange(iso);
+          }}
+          style={{ flex: 1, minWidth: 0, height: 26, border: "none", outline: "none", background: "transparent", color: text ? C.cinzaEscuro : C.textLight, fontFamily: Fn.body, fontSize: 12 }}
+        />
+      </div>
+    </div>
+  );
+}
+
 /* ═════════════════════════ MAIN ═════════════════════════ */
 export function ColetaDashboard({ coletas }: Props) {
   const dark = useDark();
@@ -129,12 +227,29 @@ export function ColetaDashboard({ coletas }: Props) {
   const [hovBar, setHovBar] = useState(-1);
   const [tipPos, setTipPos] = useState({ x: 0, y: 0 });
   const trackMouse = (e: React.MouseEvent) => setTipPos({ x: e.clientX, y: e.clientY });
-  const [filterStatus, setFilterStatus] = useState<string | null>(null);
+  const [filter, setFilter] = useState<Record<string, string | null>>({ galpao: null, status: null, fornecedor: null, recorrencia: null, dataInicio: null, dataFim: null });
+  const hasFilter = Object.values(filter).some(v => v);
+  const setF = (key: string, val: string | null) => setFilter(f => ({ ...f, [key]: val || null }));
+  const clearAll = () => setFilter({ galpao: null, status: null, fornecedor: null, recorrencia: null, dataInicio: null, dataFim: null });
+
+  const allFornecedores = useMemo(() => [...new Set(coletas.map(c => c.nomeFantasia).filter(Boolean))].sort() as string[], [coletas]);
+  const allGalpoes = useMemo(() => [...new Set(coletas.map(c => c.galpao).filter(Boolean))].sort() as string[], [coletas]);
+  const STATUS_LABELS_MAP: Record<string, string> = { pendente: "Pendente", agendado: "Agendado", em_rota: "Em rota", recebido: "Recebido", em_separacao: "Em separação", separado: "Separado", em_producao: "Em produção", finalizado: "Concluído", cancelado: "Cancelado" };
 
   const filtered = useMemo(() => {
-    if (!filterStatus) return coletas;
-    return coletas.filter(c => c.status === filterStatus);
-  }, [coletas, filterStatus]);
+    return coletas.filter(c => {
+      if (filter.galpao && (c.galpao || "") !== filter.galpao) return false;
+      if (filter.status && c.status !== filter.status) return false;
+      if (filter.fornecedor && c.nomeFantasia !== filter.fornecedor) return false;
+      if (filter.recorrencia) {
+        if (filter.recorrencia === "Sim" && !c.recorrencia) return false;
+        if (filter.recorrencia === "Não" && c.recorrencia) return false;
+      }
+      if (filter.dataInicio && new Date(c.dataPedido) < new Date(filter.dataInicio)) return false;
+      if (filter.dataFim && new Date(c.dataPedido) > new Date(`${filter.dataFim}T23:59:59`)) return false;
+      return true;
+    });
+  }, [coletas, filter]);
 
   /* ─── Stats ─── */
   const total = filtered.length;
@@ -233,12 +348,36 @@ export function ColetaDashboard({ coletas }: Props) {
     <div style={{ fontFamily: Fn.body, color: C.cinzaEscuro }}>
       <style>{`@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}`}</style>
 
-      {/* ═══ FILTER BADGES ═══ */}
-      {filterStatus && (
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
-          <span style={{ fontSize: 11, color: C.textMuted }}>Filtrado por:</span>
-          <span style={{ padding: "3px 10px", fontSize: 11, fontWeight: 600, color: C.azulProfundo, background: `${C.azulProfundo}10`, borderRadius: 6 }}>{STATUS_LABELS[filterStatus]}</span>
-          <button onClick={() => setFilterStatus(null)} style={{ fontSize: 10, color: C.cinzaChumbo, background: C.bg, border: `1px solid ${C.cardBorder}`, borderRadius: 6, padding: "3px 8px", cursor: "pointer" }}>Limpar</button>
+      {/* ═══ FILTROS ═══ */}
+      <div style={{ ...cardStyle(), padding: "14px 20px", marginBottom: 16, position: "relative", zIndex: 300, overflow: "visible" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            {Ic.grid(16, C.azulProfundo)}
+            <span style={{ fontSize: 13, fontWeight: 700, color: C.azulEscuro, fontFamily: Fn.title }}>Filtros</span>
+            {hasFilter && <span style={{ fontSize: 10, color: C.textMuted }}>· dados filtrados</span>}
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <span style={{ fontSize: 10, color: C.textMuted, fontFamily: Fn.body }}>{filtered.length} coletas</span>
+            {hasFilter && <button onClick={clearAll} style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "4px 10px", fontSize: 10, fontWeight: 600, color: C.cinzaChumbo, background: C.bg, border: `1px solid ${C.cardBorder}`, borderRadius: 6, cursor: "pointer", fontFamily: Fn.body }}>{Ic.x(10, C.cinzaChumbo)} Limpar</button>}
+          </div>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "130px 130px repeat(4,minmax(0,1fr))", gap: 12 }}>
+          <DSDateField label="Data inicial" value={filter.dataInicio} onChange={(v) => setF("dataInicio", v)} icon={Ic.calendario(14, C.cinzaChumbo)} />
+          <DSDateField label="Data final" value={filter.dataFim} onChange={(v) => setF("dataFim", v)} icon={Ic.calendario(14, C.cinzaChumbo)} />
+          <DSSelect label="Galpão" value={filter.galpao} onChange={v => setF("galpao", v)} options={allGalpoes} icon={Ic.factory(14, C.cinzaChumbo)} />
+          <DSSelect label="Status" value={filter.status} onChange={v => setF("status", v)} options={Object.keys(STATUS_LABELS)} icon={Ic.flag(14, C.cinzaChumbo)} />
+          <DSSelect label="Fornecedor" value={filter.fornecedor} onChange={v => setF("fornecedor", v)} options={allFornecedores} icon={Ic.truck(14, C.cinzaChumbo)} />
+          <DSSelect label="Recorrência" value={filter.recorrencia} onChange={v => setF("recorrencia", v)} options={["Sim", "Não"]} icon={Ic.calendario(14, C.cinzaChumbo)} />
+        </div>
+      </div>
+
+      {hasFilter && (
+        <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 14, flexWrap: "wrap" }}>
+          {filter.galpao && <span style={{ padding: "3px 8px", fontSize: 10, fontWeight: 600, color: C.azulProfundo, background: `${C.azulProfundo}10`, borderRadius: 4, fontFamily: Fn.body }}>Galpão: {filter.galpao}</span>}
+          {filter.status && <span style={{ padding: "3px 8px", fontSize: 10, fontWeight: 600, color: C.verdeFloresta, background: `${C.verdeFloresta}10`, borderRadius: 4, fontFamily: Fn.body }}>Status: {STATUS_LABELS[filter.status] || filter.status}</span>}
+          {filter.fornecedor && <span style={{ padding: "3px 8px", fontSize: 10, fontWeight: 600, color: C.amareloEscuro, background: `${C.amareloEscuro}10`, borderRadius: 4, fontFamily: Fn.body }}>Fornecedor: {filter.fornecedor}</span>}
+          {filter.recorrencia && <span style={{ padding: "3px 8px", fontSize: 10, fontWeight: 600, color: C.azulCeu, background: `${C.azulCeu}10`, borderRadius: 4, fontFamily: Fn.body }}>Recorrência: {filter.recorrencia}</span>}
+          {(filter.dataInicio || filter.dataFim) && <span style={{ padding: "3px 8px", fontSize: 10, fontWeight: 600, color: C.cinzaChumbo, background: `${C.cinzaChumbo}12`, borderRadius: 4, fontFamily: Fn.body }}>Período: {filter.dataInicio || "…"} até {filter.dataFim || "…"}</span>}
         </div>
       )}
 
@@ -311,7 +450,7 @@ export function ColetaDashboard({ coletas }: Props) {
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
             <div>
               <span style={{ fontSize: 13, fontWeight: 700, color: C.azulEscuro, fontFamily: Fn.title, display: "block" }}>Coletas por Mês</span>
-              <span style={{ fontSize: 10, color: C.cinzaChumbo }}>Passe o mouse para detalhes{filterStatus ? " · filtrado" : ""}</span>
+              <span style={{ fontSize: 10, color: C.cinzaChumbo }}>Passe o mouse para detalhes{filter.status ? " · filtrado" : ""}</span>
             </div>
           </div>
           <div style={{ display: "flex", justifyContent: "center" }}>
@@ -364,7 +503,7 @@ export function ColetaDashboard({ coletas }: Props) {
               segments={statusData}
               hov={hovStatus}
               setHov={setHovStatus}
-              onClick={(key) => setFilterStatus(f => f === key ? null : key)}
+              onClick={(key) => setF("status", filter.status === key ? null : key)}
               center={
                 hovStatus !== null
                   ? <><span style={{ fontSize: 16, fontWeight: 800, fontFamily: Fn.title, color: statusData[hovStatus]?.color, lineHeight: 1 }}>{statusData[hovStatus]?.value}</span><span style={{ fontSize: 8, color: C.cinzaChumbo }}>{Math.round((statusData[hovStatus]?.value || 0) / total * 100)}%</span></>
@@ -373,8 +512,8 @@ export function ColetaDashboard({ coletas }: Props) {
             />
             <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
               {statusData.map((s, i) => (
-                <div key={s.key} onClick={() => setFilterStatus(f => f === s.key ? null : s.key)}
-                  style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", opacity: filterStatus && filterStatus !== s.key ? 0.3 : 1, transition: "opacity .15s" }}
+                <div key={s.key} onClick={() => setF("status", filter.status === s.key ? null : s.key)}
+                  style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", opacity: filter.status && filter.status !== s.key ? 0.3 : 1, transition: "opacity .15s" }}
                   onMouseEnter={() => setHovStatus(i)} onMouseLeave={() => setHovStatus(null)}>
                   <div style={{ width: 8, height: 8, borderRadius: "50%", background: s.color, flexShrink: 0 }} />
                   <span style={{ fontSize: 11, color: C.cinzaEscuro, fontFamily: Fn.body }}>{s.label}</span>

@@ -1,8 +1,8 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import type { DashboardData } from "@/types/dashboard";
 import { FipsJunctionLines, PageHero } from "@/composites/PageHero";
+import { DashboardPrintButton } from "@/components/domain/DashboardPrintButton";
 import { shellDarkGlassPanel } from "@/lib/docHeaderChrome";
-import { GALPOES } from "@/lib/galpoes";
 
 type Props = { data: DashboardData };
 
@@ -171,7 +171,6 @@ function ChartTooltip({ title, color, rows, x, y, total }: { title: string; colo
 }
 
 /* ═══ CONSTANTS ═══ */
-const GALPAO_COLORS = [C.azulProfundo, C.azulCeu, C.verdeFloresta, C.amareloEscuro];
 const ETAPAS = ["Coleta", "Separação", "Produção", "Estoque", "Expedição"];
 /** Cores por etapa — fluxo azul→verde; estoque em verde escuro; expedição em ouro FIPS (não laranja de alerta no meio do fluxo). */
 const ETAPA_COLORS = [C.azulProfundo, C.azulCeu, C.verdeFloresta, C.verdeEscuro, C.amareloOuro];
@@ -182,6 +181,58 @@ const STATUS_EXP_LABELS: Record<string, string> = { pendente: "Pendente", em_rot
 const STATUS_EXP_COLORS: Record<string, string> = { pendente: C.amareloEscuro, em_rota: C.azulProfundo, entregue: C.verdeEscuro };
 const STATUS_FIN_LABELS: Record<string, string> = { pendente_aprovacao: "Pend. Aprovação", aprovado: "Aprovado" };
 const STATUS_FIN_COLORS: Record<string, string> = { pendente_aprovacao: C.amareloEscuro, aprovado: C.verdeEscuro };
+const DEPARTAMENTO_OPTIONS = [
+  "Coleta",
+  "Fornecedores",
+  "Galpão",
+  "Produção",
+  "Separação",
+  "Produção Diária",
+  "Repanol",
+  "Costureira",
+  "Expedição",
+  "Pedidos",
+  "Clientes",
+  "Produtos",
+  "Estoque",
+  "Logística",
+  "Motorista",
+  "Financeiro",
+  "Emissão NF",
+  "RH",
+  "Ponto diário",
+  "Funcionários",
+  "Administração",
+  "Painel Admin",
+  "Configurações",
+  "Dashboard",
+];
+const DEPARTAMENTO_AREA_MAP: Record<string, string[]> = {
+  "Coleta": ["Coleta"],
+  "Fornecedores": ["Coleta"],
+  "Galpão": ["Produção", "Separação", "Estoque", "Repanol", "Costureira"],
+  "Produção": ["Produção"],
+  "Separação": ["Separação"],
+  "Produção Diária": ["Produção"],
+  "Repanol": ["Repanol"],
+  "Costureira": ["Costureira"],
+  "Expedição": ["Expedição"],
+  "Pedidos": ["Expedição"],
+  "Clientes": ["Expedição"],
+  "Produtos": ["Expedição"],
+  "Estoque": ["Estoque"],
+  "Logística": ["Expedição"],
+  "Motorista": ["Expedição"],
+  "Financeiro": ["Expedição"],
+  "Emissão NF": ["Expedição"],
+  "RH": ["Coleta", "Separação", "Produção", "Estoque", "Expedição", "Repanol", "Costureira"],
+  "Ponto diário": ["Coleta", "Separação", "Produção", "Estoque", "Expedição", "Repanol", "Costureira"],
+  "Funcionários": ["Coleta", "Separação", "Produção", "Estoque", "Expedição", "Repanol", "Costureira"],
+  "Administração": ["Coleta", "Separação", "Produção", "Estoque", "Expedição", "Repanol", "Costureira"],
+  "Painel Admin": ["Coleta", "Separação", "Produção", "Estoque", "Expedição", "Repanol", "Costureira"],
+  "Configurações": ["Coleta", "Separação", "Produção", "Estoque", "Expedição", "Repanol", "Costureira"],
+  "Dashboard": ["Coleta", "Separação", "Produção", "Estoque", "Expedição", "Repanol", "Costureira"],
+};
 
 function formatKg(n: number) { return n >= 1000 ? `${(n / 1000).toFixed(1)}t` : `${n} kg`; }
 function spark(seed: number, trend: "up" | "down") {
@@ -201,62 +252,90 @@ export default function DashboardAdmin({ data }: Props) {
   const mob = w < 640;
 
   /* ═══ FILTROS ═══ */
-  const [filter, setFilter] = useState<Record<string, string | null>>({ galpao: null, statusColeta: null, statusEntrega: null, statusFinanceiro: null, material: null });
+  const [filter, setFilter] = useState<Record<string, string | null>>({ departamento: null, statusEntrega: null, statusFinanceiro: null, alerta: null, mes: null });
   const hasFilter = Object.values(filter).some(v => v);
   const setF = (key: string, val: string | null) => setFilter(f => ({ ...f, [key]: val || null }));
   const toggle = (key: string, val: string) => setFilter(f => ({ ...f, [key]: f[key] === val ? null : val }));
-  const clearAll = () => setFilter({ galpao: null, statusColeta: null, statusEntrega: null, statusFinanceiro: null, material: null });
+  const clearAll = () => setFilter({ departamento: null, statusEntrega: null, statusFinanceiro: null, alerta: null, mes: null });
+
+  const inDepartamento = (area: string) => {
+    if (!filter.departamento) return true;
+    return (DEPARTAMENTO_AREA_MAP[filter.departamento] || []).includes(area);
+  };
+  const inMes = (dateValue?: string | null) => {
+    if (!filter.mes) return true;
+    if (!dateValue) return false;
+    const d = new Date(dateValue);
+    if (Number.isNaN(d.getTime())) return false;
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+    return key === filter.mes;
+  };
 
   /* ═══ FILTERED DATA ═══ */
   const fColetas = useMemo(() => data.coletas.filter(c => {
-    if (filter.galpao && c.galpao !== filter.galpao) return false;
-    if (filter.statusColeta && c.status !== filter.statusColeta) return false;
+    if (!inDepartamento("Coleta")) return false;
+    if (!inMes(c.dataPedido)) return false;
     return true;
   }), [data.coletas, filter]);
 
   const fSeparacoes = useMemo(() => data.separacoes.filter(s => {
-    if (filter.galpao && s.galpao !== filter.galpao) return false;
-    if (filter.material && s.tipoMaterial !== filter.material) return false;
+    if (!inDepartamento("Separação")) return false;
     return true;
   }), [data.separacoes, filter]);
 
   const fProducoes = useMemo(() => data.producoes.filter(p => {
-    if (filter.galpao && p.galpao !== filter.galpao) return false;
-    if (filter.material && p.tipoMaterial !== filter.material) return false;
+    if (!inDepartamento("Produção")) return false;
     return true;
   }), [data.producoes, filter]);
 
   const fEstoque = useMemo(() => data.estoque.filter(e => {
-    if (filter.galpao && e.galpao !== filter.galpao) return false;
-    if (filter.material && e.material !== filter.material) return false;
+    if (!inDepartamento("Estoque")) return false;
     return true;
   }), [data.estoque, filter]);
 
   const fExpedicoes = useMemo(() => data.expedicoes.filter(e => {
-    if (filter.galpao && e.galpao !== filter.galpao) return false;
+    if (!inDepartamento("Expedição")) return false;
+    if (!inMes(e.createdAt)) return false;
     if (filter.statusEntrega && e.statusEntrega !== filter.statusEntrega) return false;
     if (filter.statusFinanceiro && e.statusFinanceiro !== filter.statusFinanceiro) return false;
+    const hasAlerta = e.statusFinanceiro === "pendente_aprovacao" || (e.statusFinanceiro === "aprovado" && e.statusNota === "pendente_emissao");
+    if (filter.alerta === "com_pendencias" && !hasAlerta) return false;
+    if (filter.alerta === "sem_pendencias" && hasAlerta) return false;
     return true;
   }), [data.expedicoes, filter]);
 
   const fRepanol = useMemo(() => data.repanol.filter(r => {
-    if (filter.galpao && r.galpao !== filter.galpao) return false;
+    if (!inDepartamento("Repanol")) return false;
     return true;
   }), [data.repanol, filter]);
 
   const fCostureira = useMemo(() => data.costureira.filter(c => {
-    if (filter.galpao && c.galpao !== filter.galpao) return false;
+    if (!inDepartamento("Costureira")) return false;
     return true;
   }), [data.costureira, filter]);
 
   /* Filter options */
-  const allMaterials = useMemo(() => [...new Set([...data.separacoes.map(s => s.tipoMaterial), ...data.estoque.map(e => e.material)].filter(Boolean))].sort(), [data]);
+  const allDepartamentos = DEPARTAMENTO_OPTIONS;
   const allStatusEntrega = ["pendente", "em_rota", "entregue"];
   const allStatusFin = ["pendente_aprovacao", "aprovado"];
+  const allAlertas = ["com_pendencias", "sem_pendencias"];
+  const allMeses = useMemo(() => {
+    const set = new Set<string>();
+    [...data.coletas.map(c => c.dataPedido), ...data.expedicoes.map(e => e.createdAt)]
+      .filter(Boolean)
+      .forEach((dateValue) => {
+        const d = new Date(dateValue as string);
+        if (!Number.isNaN(d.getTime())) set.add(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`);
+      });
+    return [...set].sort().reverse().map((m) => {
+      const d = new Date(`${m}-01T00:00:00`);
+      return { key: m, label: d.toLocaleDateString("pt-BR", { month: "long", year: "numeric" }) };
+    });
+  }, [data.coletas, data.expedicoes]);
 
   /* ═══ HOVER STATES ═══ */
   const [hovPipeline, setHovPipeline] = useState(-1);
-  const [hovGalpao, setHovGalpao] = useState(-1);
+  const [hovMacro, setHovMacro] = useState(-1);
   const [hovMaterial, setHovMaterial] = useState(-1);
   const [hovExpStatus, setHovExpStatus] = useState<number | null>(null);
   const [hovKpiPt, setHovKpiPt] = useState<{ c: number; p: number } | null>(null);
@@ -293,9 +372,14 @@ export default function DashboardAdmin({ data }: Props) {
     { label: "Estoque", value: formatKg(pesoEstoque), delta: `${fEstoque.length} itens`, up: true, icon: Ic.warehouse, color: C.verdeEscuro, sparkPts: spark(pesoEstoque + 88, "up") },
   ];
 
-  /* Galpão estoque */
-  const galpaoEstoque = GALPOES.map(g => fEstoque.filter(e => e.galpao === g).reduce((a, e) => a + (e.kilo || 0), 0));
-  const maxGalpao = Math.max(...galpaoEstoque, 1);
+  /* Carga por unidade (macro + micro) */
+  const macroPainel = [
+    { label: "Abertas na coleta", value: coletasPendentes, color: C.azulProfundo, hint: "Pendentes e agendadas" },
+    { label: "Em andamento", value: emProducaoCount + fSeparacoes.length + fProducoes.length, color: C.verdeFloresta, hint: "Separacao + producao ativa" },
+    { label: "Pendencias financeiras", value: pendFinanceiro + pendNF, color: C.amareloEscuro, hint: "Financeiro e emissao NF" },
+    { label: "Entregas concluidas", value: entregues, color: C.verdeEscuro, hint: `${totalExp > 0 ? Math.round(entregues / totalExp * 100) : 0}% da expedicao` },
+  ];
+  const maxMacro = Math.max(...macroPainel.map(m => m.value), 1);
 
   /* Material breakdown */
   const materialMap = new Map<string, number>();
@@ -323,11 +407,11 @@ export default function DashboardAdmin({ data }: Props) {
   /* Tooltip KPI */
   const tipKpiCard = useMemo(() => {
     if (hovKpiCard < 0) return null;
-    if (hovKpiCard === 0) return { title: "Coletas", color: C.azulProfundo, total: fColetas.length, rows: GALPOES.map((g, i) => ({ label: g, value: fColetas.filter(c => c.galpao === g).length, color: GALPAO_COLORS[i] })).filter(r => r.value > 0) };
+    if (hovKpiCard === 0) return { title: "Coletas", color: C.azulProfundo, total: fColetas.length, rows: [{ label: "Pendentes", value: coletasPendentes, color: C.amareloEscuro }, { label: "Concluidas", value: concluidas, color: C.verdeEscuro }, { label: "Em fluxo", value: emProducaoCount, color: C.azulCeu }].filter(r => r.value > 0) };
     if (hovKpiCard === 1) return { title: "Em produção", color: C.verdeFloresta, total: emProducaoCount, rows: [{ label: "Recebido", value: fColetas.filter(c => c.status === "recebido").length, color: C.azulProfundo }, { label: "Separação", value: fColetas.filter(c => c.status === "em_separacao").length, color: C.azulCeu }, { label: "Produção", value: fColetas.filter(c => c.status === "em_producao").length, color: C.verdeFloresta }] };
     if (hovKpiCard === 2) return { title: "Pendências", color: C.amareloEscuro, total: totalAlertas, rows: [{ label: "Financeiro", value: pendFinanceiro, color: C.amareloEscuro }, { label: "NF", value: pendNF, color: C.azulProfundo }, { label: "Repanol", value: repanolEnviados, color: C.azulCeu }, { label: "Costureira", value: costureiraEnviados, color: C.verdeFloresta }].filter(r => r.value > 0) };
-    return { title: "Estoque", color: C.verdeEscuro, total: fEstoque.length, rows: GALPOES.map((g, i) => ({ label: g, value: fEstoque.filter(e => e.galpao === g).length, color: GALPAO_COLORS[i] })).filter(r => r.value > 0) };
-  }, [hovKpiCard, fColetas, fEstoque, emProducaoCount, totalAlertas, pendFinanceiro, pendNF, repanolEnviados, costureiraEnviados]);
+    return { title: "Estoque", color: C.verdeEscuro, total: fEstoque.length, rows: [{ label: "Itens em estoque", value: fEstoque.length, color: C.verdeEscuro }, { label: "Peso total (kg)", value: Math.round(pesoEstoque), color: C.azulCeu }].filter(r => r.value > 0) };
+  }, [hovKpiCard, fColetas, fEstoque, emProducaoCount, totalAlertas, pendFinanceiro, pendNF, repanolEnviados, costureiraEnviados, coletasPendentes, concluidas, pesoEstoque]);
 
   return (
     <div style={{ minHeight: "100vh", fontFamily: Fn.body, color: C.cinzaEscuro, background: C.bg, transition: "background .3s, color .3s" }}>
@@ -349,15 +433,18 @@ export default function DashboardAdmin({ data }: Props) {
                 <p className="mt-1 text-[10px] text-white/45 tracking-wide">30 anos de atuação · 2.000+ clientes · atendimento nacional · coleta e destinação ambiental</p>
               </div>
             </div>
-            {totalAlertas > 0 && (
-              <div className="flex flex-shrink-0 items-center gap-2 rounded-lg px-4 py-2.5" style={{ background: "rgba(246,146,30,0.14)", border: "1px solid rgba(246,146,30,0.38)" }}>
-                {Ic.alert(18, C.amareloEscuro)}
-                <div>
-                  <span className="block text-[13px] font-bold text-white">{totalAlertas} pendências</span>
-                  <span className="text-[10px] text-white/70">Financeiro, NF e logística ambiental</span>
+            <div className="flex flex-shrink-0 flex-col items-end gap-2">
+              <DashboardPrintButton title="Painel Operacional" />
+              {totalAlertas > 0 && (
+                <div className="flex items-center gap-2 rounded-lg px-4 py-2.5" style={{ background: "rgba(246,146,30,0.14)", border: "1px solid rgba(246,146,30,0.38)" }}>
+                  {Ic.alert(18, C.amareloEscuro)}
+                  <div>
+                    <span className="block text-[13px] font-bold text-white">{totalAlertas} pendências</span>
+                    <span className="text-[10px] text-white/70">Financeiro, NF e logística ambiental</span>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </PageHero>
       </div>
@@ -393,12 +480,12 @@ export default function DashboardAdmin({ data }: Props) {
               {hasFilter && <button onClick={clearAll} style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "4px 10px", fontSize: 10, fontWeight: 600, color: C.cinzaChumbo, background: C.bg, border: `1px solid ${C.cardBorder}`, borderRadius: 6, cursor: "pointer", fontFamily: Fn.body }}>{Ic.x(10, C.cinzaChumbo)} Limpar</button>}
             </div>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: mob ? "1fr 1fr" : "repeat(5,1fr)", gap: mob ? 8 : 12 }}>
-            <DSSelect label="Galpão" value={filter.galpao} onChange={v => setF("galpao", v)} options={GALPOES} icon={Ic.edificio(14, C.cinzaChumbo)} />
-            <DSSelect label="Status Coleta" value={filter.statusColeta} onChange={v => setF("statusColeta", v)} options={STATUS_COLETA} placeholder="Todos" icon={Ic.flag(14, C.cinzaChumbo)} />
+          <div style={{ display: "grid", gridTemplateColumns: mob ? "1fr 1fr" : "repeat(5,minmax(0,1fr))", gap: mob ? 8 : 12 }}>
+            <DSSelect label="Departamento" value={filter.departamento} onChange={v => setF("departamento", v)} options={allDepartamentos} icon={Ic.grid(14, C.cinzaChumbo)} />
+            <DSSelect label="Mês" value={filter.mes ? allMeses.find(m => m.key === filter.mes)?.label || filter.mes : null} onChange={v => { const found = allMeses.find(m => m.label === v); setF("mes", found ? found.key : null); }} options={allMeses.map(m => m.label)} placeholder="Todos" icon={Ic.clock(14, C.cinzaChumbo)} />
             <DSSelect label="Entrega" value={filter.statusEntrega} onChange={v => setF("statusEntrega", v)} options={allStatusEntrega} placeholder="Todas" icon={Ic.truck(14, C.cinzaChumbo)} />
             <DSSelect label="Financeiro" value={filter.statusFinanceiro} onChange={v => setF("statusFinanceiro", v)} options={allStatusFin} placeholder="Todos" icon={Ic.dollar(14, C.cinzaChumbo)} />
-            <DSSelect label="Material" value={filter.material} onChange={v => setF("material", v)} options={allMaterials} placeholder="Todos" icon={Ic.scale(14, C.cinzaChumbo)} />
+            <DSSelect label="Alertas" value={filter.alerta} onChange={v => setF("alerta", v)} options={allAlertas} placeholder="Todos" icon={Ic.alert(14, C.cinzaChumbo)} />
           </div>
         </div>
 
@@ -406,11 +493,11 @@ export default function DashboardAdmin({ data }: Props) {
         {/* ═══ ACTIVE FILTER BADGES ═══ */}
         {hasFilter && (
           <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 14, flexWrap: "wrap" }}>
-            {filter.galpao && <span style={{ padding: "3px 8px", fontSize: 10, fontWeight: 600, color: C.azulProfundo, background: `${C.azulProfundo}10`, borderRadius: 4, fontFamily: Fn.body }}>Galpão: {filter.galpao}</span>}
-            {filter.statusColeta && <span style={{ padding: "3px 8px", fontSize: 10, fontWeight: 600, color: STATUS_COLETA_COLORS[filter.statusColeta] || C.azulProfundo, background: `${STATUS_COLETA_COLORS[filter.statusColeta] || C.azulProfundo}10`, borderRadius: 4, fontFamily: Fn.body }}>Coleta: {STATUS_COLETA_LABELS[filter.statusColeta]}</span>}
+            {filter.departamento && <span style={{ padding: "3px 8px", fontSize: 10, fontWeight: 600, color: C.azulProfundo, background: `${C.azulProfundo}10`, borderRadius: 4, fontFamily: Fn.body }}>Departamento: {filter.departamento}</span>}
             {filter.statusEntrega && <span style={{ padding: "3px 8px", fontSize: 10, fontWeight: 600, color: STATUS_EXP_COLORS[filter.statusEntrega] || C.azulProfundo, background: `${STATUS_EXP_COLORS[filter.statusEntrega] || C.azulProfundo}10`, borderRadius: 4, fontFamily: Fn.body }}>Entrega: {STATUS_EXP_LABELS[filter.statusEntrega]}</span>}
-            {filter.statusFinanceiro && <span style={{ padding: "3px 8px", fontSize: 10, fontWeight: 600, color: C.amareloEscuro, background: `${C.amareloEscuro}10`, borderRadius: 4, fontFamily: Fn.body }}>Financeiro: {STATUS_FIN_LABELS[filter.statusFinanceiro]}</span>}
-            {filter.material && <span style={{ padding: "3px 8px", fontSize: 10, fontWeight: 600, color: C.verdeFloresta, background: `${C.verdeFloresta}10`, borderRadius: 4, fontFamily: Fn.body }}>Material: {filter.material}</span>}
+            {filter.statusFinanceiro && <span style={{ padding: "3px 8px", fontSize: 10, fontWeight: 600, color: C.amareloEscuro, background: `${C.amareloEscuro}10`, borderRadius: 4, fontFamily: Fn.body }}>Financeiro: {STATUS_FIN_LABELS[filter.statusFinanceiro] || filter.statusFinanceiro}</span>}
+            {filter.alerta && <span style={{ padding: "3px 8px", fontSize: 10, fontWeight: 600, color: C.danger, background: `${C.danger}10`, borderRadius: 4, fontFamily: Fn.body }}>Alertas: {filter.alerta === "com_pendencias" ? "Com pendencias" : "Sem pendencias"}</span>}
+            {filter.mes && <span style={{ padding: "3px 8px", fontSize: 10, fontWeight: 600, color: C.cinzaChumbo, background: `${C.cinzaChumbo}12`, borderRadius: 4, fontFamily: Fn.body }}>Mês: {allMeses.find(m => m.key === filter.mes)?.label || filter.mes}</span>}
           </div>
         )}
 
@@ -537,54 +624,54 @@ export default function DashboardAdmin({ data }: Props) {
           })()}
         </div>
 
-        {/* ═══ GALPÃO + MATERIAIS ═══ */}
+        {/* ═══ EXECUTIVO + MATERIAIS ═══ */}
         <div style={{ display: "grid", gridTemplateColumns: mob ? "1fr" : "1fr 1fr", gap: mob ? 12 : 16, marginBottom: mob ? 16 : 24 }}>
-          {/* Estoque por galpão */}
-          <div style={{ background: C.cardBg, borderRadius: "10px 10px 10px 18px", border: `1px solid ${filter.galpao ? C.azulProfundo : C.cardBorder}`, padding: mob ? 14 : 20, boxShadow: "0 1px 3px rgba(0,75,155,.04)", transition: "border-color .15s" }} onMouseMove={trackMouse}>
+          {/* Painel executivo */}
+          <div style={{ background: C.cardBg, borderRadius: "10px 10px 10px 18px", border: `1px solid ${C.cardBorder}`, padding: mob ? 14 : 20, boxShadow: "0 1px 3px rgba(0,75,155,.04)" }} onMouseMove={trackMouse}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
-              <div><span style={{ fontSize: 13, fontWeight: 700, color: C.azulEscuro, fontFamily: Fn.title, display: "block" }}>Estoque por Galpão</span><span style={{ fontSize: 10, color: C.cinzaChumbo }}>Clique para filtrar por galpão</span></div>
+              <div><span style={{ fontSize: 13, fontWeight: 700, color: C.azulEscuro, fontFamily: Fn.title, display: "block" }}>Prioridades Executivas</span><span style={{ fontSize: 10, color: C.cinzaChumbo }}>Indicadores macro para decisao do dono</span></div>
               <div style={{ width: 30, height: 30, borderRadius: 8, background: `${C.verdeFloresta}0A`, display: "flex", alignItems: "center", justifyContent: "center" }}>{Ic.map(14, C.verdeFloresta)}</div>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              {GALPOES.map((g, i) => {
-                const isH = hovGalpao === i; const isActive = filter.galpao === g; const isDimmed = filter.galpao && !isActive;
+              {macroPainel.map((m, i) => {
+                const isH = hovMacro === i;
                 return (
-                  <div key={g} onClick={() => toggle("galpao", g)} onMouseEnter={() => setHovGalpao(i)} onMouseLeave={() => setHovGalpao(-1)} style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer", padding: "2px 0", opacity: isDimmed ? .3 : 1, transition: "opacity .15s" }}>
-                    <span style={{ fontSize: 11, fontWeight: isH || isActive ? 700 : 600, color: isActive ? GALPAO_COLORS[i] : C.cinzaEscuro, fontFamily: Fn.body, minWidth: 80, transition: "all .12s" }}>{g}</span>
-                    <div style={{ flex: 1, height: isH || isActive ? 10 : 8, borderRadius: 4, background: `${GALPAO_COLORS[i]}12`, transition: "height .12s" }}>
-                      <div style={{ height: "100%", borderRadius: 4, background: GALPAO_COLORS[i], width: `${(galpaoEstoque[i] / maxGalpao) * 100}%`, transition: "width .3s", opacity: isActive ? 1 : .8 }} />
+                  <div key={m.label} onMouseEnter={() => setHovMacro(i)} onMouseLeave={() => setHovMacro(-1)} style={{ display: "flex", alignItems: "center", gap: 10, padding: "2px 0" }}>
+                    <span style={{ fontSize: 11, fontWeight: isH ? 700 : 600, color: isH ? m.color : C.cinzaEscuro, fontFamily: Fn.body, minWidth: 130, transition: "all .12s" }}>{m.label}</span>
+                    <div style={{ flex: 1, height: isH ? 10 : 8, borderRadius: 4, background: `${m.color}12`, transition: "height .12s" }}>
+                      <div style={{ height: "100%", borderRadius: 4, background: m.color, width: `${(m.value / maxMacro) * 100}%`, transition: "width .3s" }} />
                     </div>
-                    <code style={{ fontSize: 10, fontWeight: 700, fontFamily: Fn.mono, color: GALPAO_COLORS[i], minWidth: 55, textAlign: "right" }}>{formatKg(galpaoEstoque[i])}{(isH || isActive) ? ` (${pesoEstoque ? Math.round(galpaoEstoque[i] / pesoEstoque * 100) : 0}%)` : ""}</code>
+                    <code style={{ fontSize: 10, fontWeight: 700, fontFamily: Fn.mono, color: m.color, minWidth: 60, textAlign: "right" }}>{m.value}</code>
                   </div>
                 );
               })}
             </div>
             <div style={{ marginTop: 14, padding: "10px 14px", background: C.bg, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <span style={{ fontSize: 10, fontWeight: 600, color: C.cinzaChumbo }}>Total em estoque</span>
-              <span style={{ fontSize: 14, fontWeight: 800, color: C.azulEscuro, fontFamily: Fn.title }}>{formatKg(pesoEstoque)}</span>
+              <span style={{ fontSize: 10, fontWeight: 600, color: C.cinzaChumbo }}>Resumo do dia</span>
+              <span style={{ fontSize: 14, fontWeight: 800, color: C.azulEscuro, fontFamily: Fn.title }}>{totalRegistros} registros monitorados</span>
             </div>
-            {hovGalpao >= 0 && <ChartTooltip title={GALPOES[hovGalpao]} color={GALPAO_COLORS[hovGalpao]} x={tipPos.x} y={tipPos.y} total={fEstoque.filter(e => e.galpao === GALPOES[hovGalpao]).length} rows={[
-              { label: "Peso estoque", value: Math.round(galpaoEstoque[hovGalpao]), color: GALPAO_COLORS[hovGalpao] },
-              { label: "% do total", value: pesoEstoque > 0 ? Math.round(galpaoEstoque[hovGalpao] / pesoEstoque * 100) : 0, color: C.azulCeu },
-              { label: "Coletas no galpão", value: fColetas.filter(c => c.galpao === GALPOES[hovGalpao]).length, color: C.azulProfundo },
+            {hovMacro >= 0 && macroPainel[hovMacro] && <ChartTooltip title={macroPainel[hovMacro].label} color={macroPainel[hovMacro].color} x={tipPos.x} y={tipPos.y} total={macroPainel[hovMacro].value} rows={[
+              { label: "Valor atual", value: macroPainel[hovMacro].value, color: macroPainel[hovMacro].color },
+              { label: "Contexto", value: totalRegistros > 0 ? Math.round(macroPainel[hovMacro].value / totalRegistros * 100) : 0, color: C.azulCeu },
+              { label: macroPainel[hovMacro].hint, value: 1, color: C.textMuted },
             ]} />}
           </div>
 
           {/* Estoque por material */}
-          <div style={{ background: C.cardBg, borderRadius: "10px 10px 10px 18px", border: `1px solid ${filter.material ? C.verdeFloresta : C.cardBorder}`, padding: mob ? 14 : 20, boxShadow: "0 1px 3px rgba(0,75,155,.04)", transition: "border-color .15s" }} onMouseMove={trackMouse}>
+          <div style={{ background: C.cardBg, borderRadius: "10px 10px 10px 18px", border: `1px solid ${C.cardBorder}`, padding: mob ? 14 : 20, boxShadow: "0 1px 3px rgba(0,75,155,.04)" }} onMouseMove={trackMouse}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
-              <div><span style={{ fontSize: 13, fontWeight: 700, color: C.azulEscuro, fontFamily: Fn.title, display: "block" }}>Estoque por Material</span><span style={{ fontSize: 10, color: C.cinzaChumbo }}>Clique para filtrar · Top {topMateriais.length}</span></div>
+              <div><span style={{ fontSize: 13, fontWeight: 700, color: C.azulEscuro, fontFamily: Fn.title, display: "block" }}>Estoque por Material</span><span style={{ fontSize: 10, color: C.cinzaChumbo }}>Composicao de estoque · Top {topMateriais.length}</span></div>
               <div style={{ width: 30, height: 30, borderRadius: 8, background: `${C.azulProfundo}0A`, display: "flex", alignItems: "center", justifyContent: "center" }}>{Ic.grid(14, C.azulProfundo)}</div>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {topMateriais.map(([mat, peso], i) => {
-                const isH = hovMaterial === i; const isActive = filter.material === mat; const isDimmed = filter.material && !isActive;
+                const isH = hovMaterial === i;
                 return (
-                  <div key={mat} onClick={() => toggle("material", mat)} onMouseEnter={() => setHovMaterial(i)} onMouseLeave={() => setHovMaterial(-1)} style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer", padding: "2px 0", opacity: isDimmed ? .3 : 1, transition: "opacity .15s" }}>
+                  <div key={mat} onMouseEnter={() => setHovMaterial(i)} onMouseLeave={() => setHovMaterial(-1)} style={{ display: "flex", alignItems: "center", gap: 10, padding: "2px 0" }}>
                     <div style={{ width: 8, height: 8, borderRadius: "50%", background: materialColors[i], flexShrink: 0 }} />
-                    <span style={{ fontSize: 11, fontWeight: isH || isActive ? 700 : 600, color: isActive ? materialColors[i] : C.cinzaEscuro, fontFamily: Fn.body, minWidth: 80, transition: "all .12s" }}>{mat}</span>
-                    <div style={{ flex: 1, height: isH || isActive ? 8 : 6, borderRadius: 3, background: `${materialColors[i]}12`, transition: "height .12s" }}>
-                      <div style={{ height: "100%", borderRadius: 3, background: materialColors[i], width: `${(peso / maxMaterial) * 100}%`, opacity: isH || isActive ? 1 : .8 }} />
+                    <span style={{ fontSize: 11, fontWeight: isH ? 700 : 600, color: isH ? materialColors[i] : C.cinzaEscuro, fontFamily: Fn.body, minWidth: 80, transition: "all .12s" }}>{mat}</span>
+                    <div style={{ flex: 1, height: isH ? 8 : 6, borderRadius: 3, background: `${materialColors[i]}12`, transition: "height .12s" }}>
+                      <div style={{ height: "100%", borderRadius: 3, background: materialColors[i], width: `${(peso / maxMaterial) * 100}%`, opacity: isH ? 1 : .8 }} />
                     </div>
                     <code style={{ fontSize: 10, fontWeight: 700, fontFamily: Fn.mono, color: materialColors[i], minWidth: 40, textAlign: "right" }}>{formatKg(peso)}</code>
                   </div>
@@ -842,17 +929,15 @@ export default function DashboardAdmin({ data }: Props) {
               ))}
             </div>
 
-            {/* Galpões */}
+            {/* Prioridades do dia */}
             <div style={{ background: C.cardBg, borderRadius: "10px 10px 10px 18px", border: `1px solid ${C.cardBorder}`, padding: mob ? 14 : 18, boxShadow: "0 1px 3px rgba(0,75,155,.04)" }}>
-              <span style={{ fontSize: 13, fontWeight: 700, color: C.azulEscuro, fontFamily: Fn.title, display: "block", marginBottom: 12 }}>Galpões</span>
+              <span style={{ fontSize: 13, fontWeight: 700, color: C.azulEscuro, fontFamily: Fn.title, display: "block", marginBottom: 12 }}>Prioridades do dia</span>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-                {GALPOES.map((g, i) => {
-                  const count = fColetas.filter(c => c.galpao === g).length;
-                  const isActive = filter.galpao === g;
+                {macroPainel.map((m, i) => {
                   return (
-                    <div key={g} onClick={() => toggle("galpao", g)} style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 10px", borderRadius: 8, border: `1px solid ${isActive ? GALPAO_COLORS[i] : C.cardBorder}`, cursor: "pointer", background: isActive ? `${GALPAO_COLORS[i]}08` : "transparent", transition: "all .15s" }}>
-                      <div style={{ width: 8, height: 8, borderRadius: "50%", background: GALPAO_COLORS[i] }} />
-                      <div><span style={{ fontSize: 11, fontWeight: 600, color: isActive ? GALPAO_COLORS[i] : C.cinzaEscuro, display: "block" }}>{g}</span><span style={{ fontSize: 9, color: C.cinzaChumbo }}>{count} coleta(s)</span></div>
+                    <div key={m.label} style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 10px", borderRadius: 8, border: `1px solid ${C.cardBorder}`, background: `${m.color}08` }}>
+                      <div style={{ width: 8, height: 8, borderRadius: "50%", background: m.color }} />
+                      <div><span style={{ fontSize: 11, fontWeight: 600, color: C.cinzaEscuro, display: "block" }}>{m.label}</span><span style={{ fontSize: 9, color: m.color }}>{m.value}</span></div>
                     </div>
                   );
                 })}

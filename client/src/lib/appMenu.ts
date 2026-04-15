@@ -23,6 +23,7 @@ import {
   Zap,
   Clock,
   Shield,
+  BarChart3,
 } from "lucide-react";
 
 /** Item do menu lateral / header — única fonte de verdade para rotas agrupadas. */
@@ -100,6 +101,7 @@ export const APP_MENU: AppMenuItem[] = [
       { icon: ShoppingCart, label: "Clientes", href: "/clientes", perfis: ["administrador", "expedicao", "michele"] },
       { icon: Box, label: "Produtos", href: "/produtos", perfis: ["administrador", "expedicao", "michele"] },
       { icon: Warehouse, label: "Estoque", href: "/estoque", perfis: ["administrador", "expedicao", "galpao", "michele"] },
+      { icon: BarChart3, label: "Dashboard", href: "/dashboard-expedicao", perfis: ["administrador", "expedicao", "michele"] },
     ],
   },
 
@@ -120,6 +122,7 @@ export const APP_MENU: AppMenuItem[] = [
     children: [
       { icon: DollarSign, label: "Financeiro", href: "/financeiro", badge: "financeiroPendente", perfis: ["administrador", "expedicao", "financeiro"] },
       { icon: FileText, label: "Emissão NF", href: "/emissao-nf", badge: "notaPendente", perfis: ["administrador", "expedicao", "emissao_nf"] },
+      { icon: BarChart3, label: "Dashboard", href: "/dashboard-financeiro", perfis: ["administrador", "financeiro", "expedicao"] },
     ],
   },
 

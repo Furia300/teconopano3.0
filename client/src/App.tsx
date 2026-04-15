@@ -21,6 +21,8 @@ import FuncionariosList from "./pages/funcionarios/FuncionariosList";
 import PontoDiario from "./pages/rh/PontoDiario";
 import DashboardRHPage from "./pages/rh/DashboardRHPage";
 import DashboardColetaPage from "./pages/coleta/DashboardColetaPage";
+import DashboardExpedicaoPage from "./pages/expedicao/DashboardExpedicaoPage";
+import DashboardFinanceiroPage from "./pages/financeiro/DashboardFinanceiroPage";
 import ProducaoDiariaPage from "./pages/producao-diaria/ProducaoDiariaPage";
 import AutomaticoPage from "./pages/automatico/AutomaticoPage";
 import MotoristaList from "./pages/motorista/MotoristaList";
@@ -42,7 +44,9 @@ function AppContent() {
         <Route path="/costureira" component={CostureiraList} />
         <Route path="/estoque" component={EstoqueList} />
         <Route path="/expedicao" component={ExpedicaoList} />
+        <Route path="/dashboard-expedicao" component={DashboardExpedicaoPage} />
         <Route path="/financeiro" component={FinanceiroPage} />
+        <Route path="/dashboard-financeiro" component={DashboardFinanceiroPage} />
         <Route path="/emissao-nf" component={EmissaoNFPage} />
         <Route path="/clientes" component={ClientesList} />
         <Route path="/fornecedores" component={FornecedoresList} />

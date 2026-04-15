@@ -403,3 +403,101 @@ td[style*="--cell-fs"] [data-sub] {
   border-color: rgba(255, 255, 255, 0.10);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 }
+
+/* ═══════════════════════════════════════════════════════════
+   PRINT / PDF — Dashboard Export
+   Ativado via .printing-dashboard no body
+   ═══════════════════════════════════════════════════════════ */
+@media print {
+  /* Esconder sidebar, header, navegação, botões */
+  body > div > div > aside,
+  body > div > div > div > header,
+  nav,
+  [data-print-hide],
+  button,
+  .sonner-toaster {
+    display: none !important;
+  }
+
+  /* Reset de layout — conteúdo ocupa tudo */
+  body {
+    background: #fff !important;
+    color: #1a1a2e !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  main, [role="main"] {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  body > div > div {
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  body > div > div > div {
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  /* Hero / PageHeader — manter compacto */
+  .page-hero {
+    break-after: avoid;
+    margin-bottom: 12px !important;
+    border-radius: 0 !important;
+  }
+
+  /* Cards e gráficos — preservar cores, evitar quebra */
+  div[style*="borderRadius"] {
+    break-inside: avoid;
+    box-shadow: none !important;
+  }
+
+  /* SVG e gráficos — preservar */
+  svg {
+    print-color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+  }
+
+  /* Animações — desativar */
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  /* Watermark e timestamp */
+  .printing-dashboard main::after {
+    content: "Tecnopano 3.0 · Gerado em " attr(data-print-date);
+    display: block;
+    text-align: center;
+    font-size: 9px;
+    color: #94A3B8;
+    padding: 16px 0 8px;
+    font-family: 'Open Sans', sans-serif;
+    border-top: 1px solid #E2E8F0;
+    margin-top: 24px;
+  }
+
+  /* Forçar fundo branco nos cards */
+  div[style*="cardBg"], div[style*="background: rgb"] {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Esconder dropdowns dos filtros (manter labels/badges) */
+  div[style*="zIndex: 400"],
+  div[style*="z-index: 400"] {
+    display: none !important;
+  }
+
+  @page {
+    size: A4 landscape;
+    margin: 12mm 10mm;
+  }
+}

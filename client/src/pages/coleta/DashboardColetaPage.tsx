@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Truck } from "lucide-react";
 import { PageHeader } from "@/components/domain/PageHeader";
+import { DashboardPrintButton } from "@/components/domain/DashboardPrintButton";
 import { ColetaDashboard } from "./ColetaDashboard";
 
 interface Coleta {
@@ -42,6 +43,7 @@ export default function DashboardColetaPage() {
         title="Dashboard Coleta"
         description="Visão analítica de coletas, fornecedores e movimentação de matéria-prima"
         icon={Truck}
+        actions={<DashboardPrintButton title="Dashboard Coleta" />}
         stats={[
           { label: "Total", value: stats.total, color: "#93BDE4" },
           { label: "Pendentes", value: stats.pendentes, color: "#FDC24E" },

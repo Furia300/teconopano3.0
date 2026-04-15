@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect, useRef } from "react";
 import type { DashboardData } from "@/types/dashboard";
 import { FipsJunctionLines, PageHero } from "@/composites/PageHero";
 import { shellDarkGlassPanel } from "@/lib/docHeaderChrome";
+import { DashboardPrintButton } from "@/components/domain/DashboardPrintButton";
 
 type Props = { data: DashboardData };
 
@@ -122,7 +123,7 @@ function DSSelect({ label, value, onChange, options, placeholder = "Todos", icon
       {label && <label style={{ fontSize: 11, fontWeight: 600, color: C.cinzaEscuro, fontFamily: Fn.body, marginBottom: 1, marginLeft: 7 }}>{label}</label>}
       <div onClick={() => setOpen(!open)} style={{ display: "flex", alignItems: "center", gap: 8, height: 30, padding: "0 12px", background: C.cardBg, border: `1.5px solid ${bc}`, borderRadius: open ? "8px 8px 0 0" : 8, transition: "all .18s", boxShadow: open ? "0 0 0 3px rgba(147,189,228,0.35)" : "none", cursor: "pointer", fontFamily: Fn.body, fontSize: 12, userSelect: "none" }}>
         {icon && <span style={{ display: "flex", flexShrink: 0, opacity: .55 }}>{icon}</span>}
-        <span style={{ flex: 1, color: value ? C.cinzaEscuro : C.textLight, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{value || placeholder}</span>
+        <span style={{ flex: 1, color: value ? C.cinzaEscuro : C.textLight, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontWeight: 600 }}>{value || placeholder}</span>
         <svg width={14} height={14} viewBox="0 0 20 20" fill="none" style={{ flexShrink: 0, opacity: .45, transition: "transform .2s", transform: open ? "rotate(180deg)" : "rotate(0)" }}><path d="M6 8l4 4 4-4" stroke={C.cinzaChumbo} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
       </div>
       {open && <div style={{ position: "absolute", top: "100%", left: 0, right: 0, zIndex: 20, background: C.cardBg, border: `1.5px solid ${C.azulProfundo}`, borderTop: "none", borderRadius: "0 0 8px 8px", boxShadow: "0 6px 20px rgba(0,75,155,.12)", maxHeight: 200, overflowY: "auto" }}>
@@ -132,6 +133,58 @@ function DSSelect({ label, value, onChange, options, placeholder = "Todos", icon
           {o}
         </div> })}
       </div>}
+    </div>
+  );
+}
+
+function DSDateField({
+  label,
+  value,
+  onChange,
+  placeholder = "dd/mm/aaaa",
+  icon,
+}: {
+  label: string;
+  value: string | null;
+  onChange: (v: string | null) => void;
+  placeholder?: string;
+  icon?: React.ReactNode;
+}) {
+  const [text, setText] = useState(formatIsoToBr(value));
+  useEffect(() => setText(formatIsoToBr(value)), [value]);
+  return (
+    <div style={{ display: "flex", flexDirection: "column", minWidth: 0, position: "relative", zIndex: 1 }}>
+      <label style={{ fontSize: 11, fontWeight: 600, color: C.cinzaEscuro, fontFamily: Fn.body, marginBottom: 1, marginLeft: 7 }}>{label}</label>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, height: 30, padding: "0 12px", background: C.cardBg, border: "1.5px solid #CBD5E1", borderRadius: 8, transition: "all .18s" }}>
+        {icon && <span style={{ display: "flex", flexShrink: 0, opacity: .55 }}>{icon}</span>}
+        <input
+          type="text"
+          inputMode="numeric"
+          placeholder={placeholder}
+          value={text}
+          onChange={(e) => {
+            const digits = e.target.value.replace(/[^\d]/g, "").slice(0, 8);
+            const p1 = digits.slice(0, 2);
+            const p2 = digits.slice(2, 4);
+            const p3 = digits.slice(4, 8);
+            const masked = [p1, p2, p3].filter(Boolean).join("/");
+            setText(masked);
+            if (digits.length === 8) onChange(parseBrToIso(masked));
+            if (digits.length === 0) onChange(null);
+          }}
+          onBlur={() => {
+            const iso = parseBrToIso(text);
+            if (!iso) {
+              setText("");
+              onChange(null);
+              return;
+            }
+            setText(formatIsoToBr(iso));
+            onChange(iso);
+          }}
+          style={{ flex: 1, minWidth: 0, height: 26, border: "none", outline: "none", background: "transparent", color: text ? C.cinzaEscuro : C.textLight, fontFamily: Fn.body, fontSize: 12 }}
+        />
+      </div>
     </div>
   );
 }
@@ -173,6 +226,24 @@ const STATUS_COLAB_COLORS: Record<string, string> = { "Ativo": C.verdeFloresta, 
 const DEPT_TIPOS = ["PRODUÇÃO", "ADMINISTRATIVO", "LOGÍSTICA", "MANUTENÇÃO", "QUALIDADE", "COMERCIAL"];
 const DEPT_TIPO_COLORS = [C.azulProfundo, C.azulCeu, C.verdeFloresta, C.amareloEscuro, C.amareloOuro, C.azulClaro];
 
+function formatIsoToBr(iso: string | null) {
+  if (!iso) return "";
+  const m = iso.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!m) return "";
+  return `${m[3]}/${m[2]}/${m[1]}`;
+}
+function parseBrToIso(br: string) {
+  const raw = br.replace(/[^\d]/g, "");
+  if (raw.length !== 8) return null;
+  const d = raw.slice(0, 2);
+  const m = raw.slice(2, 4);
+  const y = raw.slice(4, 8);
+  const iso = `${y}-${m}-${d}`;
+  const date = new Date(`${iso}T00:00:00`);
+  if (Number.isNaN(date.getTime())) return null;
+  return iso;
+}
+
 function spark(seed: number, trend: "up" | "down") {
   const pts: number[] = []; let v = 40 + (seed % 30);
   for (let i = 0; i < 12; i++) { const d = trend === "up" ? 1.4 : -1.2; const n = Math.sin(seed * 0.31 + i * 0.7) * 8; v = Math.min(92, Math.max(8, v + d + n * 0.15)); pts.push(Math.round(v)); }
@@ -197,11 +268,11 @@ export default function DashboardRHDedicado({ data }: Props) {
   const allCargos = useMemo(() => [...new Set(colaboradores.map((c: any) => c.cargo || c.registration || "").filter(Boolean))].sort() as string[], [colaboradores]);
 
   /* ═══ FILTROS ═══ */
-  const [filter, setFilter] = useState<Record<string, string | null>>({ departamento: null, status: null, cargo: null });
+  const [filter, setFilter] = useState<Record<string, string | null>>({ departamento: null, status: null, cargo: null, dataInicio: null, dataFim: null });
   const hasFilter = Object.values(filter).some(v => v);
   const setF = (key: string, val: string | null) => setFilter(f => ({ ...f, [key]: val || null }));
   const toggle = (key: string, val: string) => setFilter(f => ({ ...f, [key]: f[key] === val ? null : val }));
-  const clearAll = () => setFilter({ departamento: null, status: null, cargo: null });
+  const clearAll = () => setFilter({ departamento: null, status: null, cargo: null, dataInicio: null, dataFim: null });
 
   /* ═══ FILTERED DATA ═══ */
   const fColabs = useMemo(() => colaboradores.filter((c: any) => {
@@ -214,6 +285,13 @@ export default function DashboardRHDedicado({ data }: Props) {
     if (filter.cargo) {
       const cargo = c.cargo || c.registration || "";
       if (cargo !== filter.cargo) return false;
+    }
+    const dataBase = c.createdAt || c.admissao || c.dataAdmissao || c.updatedAt;
+    if (filter.dataInicio) {
+      if (!dataBase || new Date(dataBase) < new Date(filter.dataInicio)) return false;
+    }
+    if (filter.dataFim) {
+      if (!dataBase || new Date(dataBase) > new Date(`${filter.dataFim}T23:59:59`)) return false;
     }
     return true;
   }), [colaboradores, filter]);
@@ -331,6 +409,8 @@ export default function DashboardRHDedicado({ data }: Props) {
                 <p className="mt-1 text-[10px] text-white/45 tracking-wide">30 anos de atuação · 2.000+ clientes · atendimento nacional · coleta e destinação ambiental</p>
               </div>
             </div>
+            <div className="flex flex-shrink-0 flex-col items-end gap-2">
+            <DashboardPrintButton title="Dashboard RH" />
             {alertasRH > 0 && (
               <div className="flex flex-shrink-0 flex-col gap-1.5 rounded-lg px-4 py-2.5" style={{ background: "rgba(246,146,30,0.14)", border: "1px solid rgba(246,146,30,0.38)", maxWidth: 260 }}>
                 {deptsComUmaPessoa > 0 && (
@@ -353,6 +433,7 @@ export default function DashboardRHDedicado({ data }: Props) {
                 )}
               </div>
             )}
+            </div>
           </div>
         </PageHero>
       </div>
@@ -388,7 +469,9 @@ export default function DashboardRHDedicado({ data }: Props) {
               {hasFilter && <button onClick={clearAll} style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "4px 10px", fontSize: 10, fontWeight: 600, color: C.cinzaChumbo, background: C.bg, border: `1px solid ${C.cardBorder}`, borderRadius: 6, cursor: "pointer", fontFamily: Fn.body }}>{Ic.x(10, C.cinzaChumbo)} Limpar</button>}
             </div>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: mob ? "1fr 1fr" : "repeat(3,1fr)", gap: mob ? 8 : 12 }}>
+          <div style={{ display: "grid", gridTemplateColumns: mob ? "1fr 1fr" : "130px 130px repeat(3,minmax(0,1fr))", gap: mob ? 8 : 12 }}>
+            <DSDateField label="Data inicial" value={filter.dataInicio} onChange={(v) => setF("dataInicio", v)} icon={Ic.clock(14, C.cinzaChumbo)} />
+            <DSDateField label="Data final" value={filter.dataFim} onChange={(v) => setF("dataFim", v)} icon={Ic.clock(14, C.cinzaChumbo)} />
             <DSSelect label="Departamento" value={filter.departamento} onChange={v => setF("departamento", v)} options={allDepartamentos} icon={Ic.edificio(14, C.cinzaChumbo)} />
             <DSSelect label="Status" value={filter.status} onChange={v => setF("status", v)} options={STATUS_COLAB} placeholder="Todos" icon={Ic.flag(14, C.cinzaChumbo)} />
             <DSSelect label="Cargo" value={filter.cargo} onChange={v => setF("cargo", v)} options={allCargos} placeholder="Todos" icon={Ic.users(14, C.cinzaChumbo)} />
@@ -402,6 +485,7 @@ export default function DashboardRHDedicado({ data }: Props) {
             {filter.departamento && <span style={{ padding: "3px 8px", fontSize: 10, fontWeight: 600, color: C.azulProfundo, background: `${C.azulProfundo}10`, borderRadius: 4, fontFamily: Fn.body }}>Departamento: {filter.departamento}</span>}
             {filter.status && <span style={{ padding: "3px 8px", fontSize: 10, fontWeight: 600, color: STATUS_COLAB_COLORS[filter.status] || C.azulProfundo, background: `${STATUS_COLAB_COLORS[filter.status] || C.azulProfundo}10`, borderRadius: 4, fontFamily: Fn.body }}>Status: {filter.status}</span>}
             {filter.cargo && <span style={{ padding: "3px 8px", fontSize: 10, fontWeight: 600, color: C.verdeFloresta, background: `${C.verdeFloresta}10`, borderRadius: 4, fontFamily: Fn.body }}>Cargo: {filter.cargo}</span>}
+            {(filter.dataInicio || filter.dataFim) && <span style={{ padding: "3px 8px", fontSize: 10, fontWeight: 600, color: C.cinzaChumbo, background: `${C.cinzaChumbo}12`, borderRadius: 4, fontFamily: Fn.body }}>Período: {filter.dataInicio || "…"} até {filter.dataFim || "…"}</span>}
           </div>
         )}
 
@@ -453,11 +537,11 @@ export default function DashboardRHDedicado({ data }: Props) {
                     {pts.map((p, j) => j % 2 === 0 && hovPt === -1 ? <text key={`m${j}`} x={p.x} y={sh + 10} textAnchor="middle" fontSize="7" fill={C.textLight} fontFamily={Fn.body}>{MONTHS[j]}</text> : null)}
                   </svg>
                 </div>
-                {hovKpiCard === i && tipKpiCard && <ChartTooltip {...tipKpiCard} x={tipPos.x} y={tipPos.y} />}
               </div>
             );
           })}
         </div>
+        {hovKpiCard >= 0 && tipKpiCard && <ChartTooltip {...tipKpiCard} x={tipPos.x} y={tipPos.y} />}
 
         {/* ═══ DISTRIBUIÇÃO POR DEPARTAMENTO (Pipeline) + COLABORADORES POR STATUS DONUT ═══ */}
         <div style={{ display: "grid", gridTemplateColumns: mob ? "1fr" : "1fr 1fr", gap: mob ? 12 : 16, marginBottom: mob ? 16 : 24 }}>
@@ -466,7 +550,7 @@ export default function DashboardRHDedicado({ data }: Props) {
             const max = Math.max(...topDeptCounts, 1);
             const bw = 48, gp = 20, chartW = topDeptLabels.length * (bw + gp) - gp, chartH = 110;
             return (
-              <div style={{ background: C.cardBg, borderRadius: "12px 12px 12px 24px", border: `1px solid ${C.cardBorder}`, padding: mob ? 14 : 20, boxShadow: "0 1px 3px rgba(0,75,155,.04)" }}>
+              <div style={{ background: C.cardBg, borderRadius: "12px 12px 12px 24px", border: `1px solid ${C.cardBorder}`, padding: mob ? 14 : 20, boxShadow: "0 1px 3px rgba(0,75,155,.04)" }} onMouseMove={trackMouse}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
                   <div><span style={{ fontSize: 13, fontWeight: 700, color: C.azulEscuro, fontFamily: Fn.title, display: "block" }}>Distribuição por Departamento</span><span style={{ fontSize: 10, color: C.cinzaChumbo }}>Top {topDeptLabels.length} departamentos{hasFilter ? " (filtrado)" : ""}</span></div>
                   <div style={{ width: 30, height: 30, borderRadius: 8, background: `${C.azulProfundo}0A`, display: "flex", alignItems: "center", justifyContent: "center" }}>{Ic.chart(14, C.azulProfundo)}</div>
@@ -486,6 +570,7 @@ export default function DashboardRHDedicado({ data }: Props) {
                     })}
                   </svg>
                 </div>
+                {hovPipeline >= 0 && <ChartTooltip title={topDeptLabels[hovPipeline]} color={pipelineColors[hovPipeline % pipelineColors.length]} total={topDeptCounts[hovPipeline]} rows={(() => { const dept = topDeptLabels[hovPipeline]; const deptColabs = fColabs.filter((c: any) => c.departamento === dept); const ativosD = deptColabs.filter((c: any) => c.status === 1).length; const inativosD = deptColabs.length - ativosD; return [{ label: "Ativos", value: ativosD, color: C.verdeFloresta }, { label: "Inativos", value: inativosD, color: C.danger }].filter(r => r.value > 0); })()} x={tipPos.x} y={tipPos.y} />}
               </div>
             );
           })()}
