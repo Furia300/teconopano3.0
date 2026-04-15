@@ -85,9 +85,9 @@ export const APP_MENU: AppMenuItem[] = [
     children: [
       { icon: ClipboardList, label: "Triagem", href: "/separacao", perfis: ["administrador", "galpao", "separacao"] },
       { icon: Factory, label: "Produção", href: "/producao", badge: "producaoEmAndamento", perfis: ["administrador", "galpao", "producao"] },
+      { icon: CalendarDays, label: "Produção Diária", href: "/producao-diaria", perfis: ["administrador", "galpao", "producao"] },
       { icon: Ruler, label: "Costura", href: "/costura-interna", perfis: ["administrador", "galpao"] },
       { icon: PackageCheck, label: "Embalagem", href: "/embalagem", perfis: ["administrador", "galpao"] },
-      { icon: CalendarDays, label: "Produção Diária", href: "/producao-diaria", perfis: ["administrador", "galpao", "producao"] },
       { icon: Droplets, label: "Repanol", href: "/repanol", perfis: ["administrador", "galpao"] },
       { icon: Scissors, label: "Costureira", href: "/costureira", perfis: ["administrador", "galpao"] },
       { icon: Trophy, label: "Gamificação", href: "/gamificacao", perfis: ["administrador", "galpao"] },
