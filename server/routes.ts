@@ -659,6 +659,60 @@ export function registerRoutes(app: Express) {
     }
   });
 
+  // ==================== ENTRADA COLETA (Pesagem no Galpão) ====================
+  app.put("/api/coletas/:id/entrada", (req: Request, res: Response) => {
+    const coleta = coletas.find((c) => c.id === req.params.id);
+    if (!coleta) return res.status(404).json({ message: "Coleta não encontrada" });
+    coleta.pesoTotalAtual = Number(req.body.pesoTotalAtual) || coleta.pesoTotalAtual;
+    coleta.notaFiscal = req.body.notaFiscal || coleta.notaFiscal;
+    coleta.status = "recebido";
+    coleta.statusServico = "Entrada de Coleta";
+    res.json(coleta);
+  });
+
+  // ==================== QR CODES (Triagem) ====================
+  let nextQrId = 1;
+  const qrCodes: any[] = [];
+
+  app.get("/api/qr-codes", (_req: Request, res: Response) => {
+    res.json(qrCodes);
+  });
+
+  app.get("/api/qr-codes/separacao/:separacaoId", (req: Request, res: Response) => {
+    res.json(qrCodes.filter((q) => q.separacaoId === req.params.separacaoId));
+  });
+
+  app.get("/api/qr-codes/coleta/:coletaId", (req: Request, res: Response) => {
+    res.json(qrCodes.filter((q) => q.coletaId === req.params.coletaId));
+  });
+
+  app.post("/api/qr-codes", (req: Request, res: Response) => {
+    const qr = {
+      id: `qr${nextQrId++}`,
+      codigo: `TN-${Date.now()}-${nextQrId}`,
+      coletaId: req.body.coletaId || "",
+      coletaNumero: req.body.coletaNumero || 0,
+      separacaoId: req.body.separacaoId || "",
+      fornecedor: req.body.fornecedor || "",
+      tipoMaterial: req.body.tipoMaterial || "",
+      cor: req.body.cor || "",
+      peso: Number(req.body.peso) || 0,
+      destino: req.body.destino || "producao",
+      status: "ativo",
+      createdAt: new Date().toISOString(),
+    };
+    qrCodes.push(qr);
+    res.status(201).json(qr);
+  });
+
+  app.get("/api/qr-codes/scan/:codigo", (req: Request, res: Response) => {
+    const qr = qrCodes.find((q) => q.codigo === req.params.codigo);
+    if (!qr) return res.status(404).json({ message: "QR Code não encontrado" });
+    // Enrich with coleta data
+    const coleta = coletas.find((c) => c.id === qr.coletaId);
+    res.json({ ...qr, coleta: coleta ? { numero: coleta.numero, nomeFantasia: coleta.nomeFantasia, cnpj: coleta.cnpjFornecedor } : null });
+  });
+
   // ==================== SEPARACOES ====================
   app.get("/api/separacoes", (_req: Request, res: Response) => {
     res.json(separacoes);
