@@ -24,6 +24,8 @@ import {
   Clock,
   Shield,
   BarChart3,
+  Trophy,
+  TrendingUp,
 } from "lucide-react";
 
 /** Item do menu lateral / header — única fonte de verdade para rotas agrupadas. */
@@ -84,6 +86,7 @@ export const APP_MENU: AppMenuItem[] = [
       { icon: CalendarDays, label: "Produção Diária", href: "/producao-diaria", perfis: ["administrador", "galpao", "producao"] },
       { icon: Droplets, label: "Repanol", href: "/repanol", perfis: ["administrador", "galpao"] },
       { icon: Scissors, label: "Costureira", href: "/costureira", perfis: ["administrador", "galpao"] },
+      { icon: Trophy, label: "Gamificação", href: "/gamificacao", perfis: ["administrador", "galpao"] },
     ],
   },
 
@@ -144,6 +147,7 @@ export const APP_MENU: AppMenuItem[] = [
     perfis: ["administrador"],
     children: [
       { icon: Shield, label: "Painel Admin", href: "/administracao", perfis: ["administrador"] },
+      { icon: TrendingUp, label: "Rendimento", href: "/rendimento", perfis: ["administrador"] },
       { icon: Settings, label: "Configurações", href: "/configuracoes", perfis: ["administrador"] },
     ],
   },

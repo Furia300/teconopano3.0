@@ -27,6 +27,8 @@ import ProducaoDiariaPage from "./pages/producao-diaria/ProducaoDiariaPage";
 import AutomaticoPage from "./pages/automatico/AutomaticoPage";
 import MotoristaList from "./pages/motorista/MotoristaList";
 import PainelLogisticaPage from "./pages/motorista/PainelLogisticaPage";
+import DashboardGamificacaoPage from "./pages/dashboard/DashboardGamificacaoPage";
+import DashboardRendimentoPage from "./pages/dashboard/DashboardRendimentoPage";
 import AdministracaoPage from "./pages/admin/AdministracaoPage";
 import Login from "./pages/auth/Login";
 import Cadastro from "./pages/auth/Cadastro";
@@ -59,6 +61,8 @@ function AppContent() {
         <Route path="/motorista" component={PainelLogisticaPage} />
         <Route path="/motorista-cadastro" component={MotoristaList} />
         <Route path="/automatico" component={AutomaticoPage} />
+        <Route path="/gamificacao" component={DashboardGamificacaoPage} />
+        <Route path="/rendimento" component={DashboardRendimentoPage} />
         <Route path="/administracao" component={AdministracaoPage} />
         <Route>
           <div className="text-center py-20">
