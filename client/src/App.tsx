@@ -27,6 +27,8 @@ import ProducaoDiariaPage from "./pages/producao-diaria/ProducaoDiariaPage";
 import AutomaticoPage from "./pages/automatico/AutomaticoPage";
 import MotoristaList from "./pages/motorista/MotoristaList";
 import PainelLogisticaPage from "./pages/motorista/PainelLogisticaPage";
+import CosturaInternaPage from "./pages/producao/CosturaInternaPage";
+import EmbalagemPage from "./pages/producao/EmbalagemPage";
 import DashboardGamificacaoPage from "./pages/dashboard/DashboardGamificacaoPage";
 import DashboardRendimentoPage from "./pages/dashboard/DashboardRendimentoPage";
 import AdministracaoPage from "./pages/admin/AdministracaoPage";
@@ -43,6 +45,8 @@ function AppContent() {
         <Route path="/dashboard-coleta" component={DashboardColetaPage} />
         <Route path="/separacao" component={SeparacaoList} />
         <Route path="/producao" component={ProducaoList} />
+        <Route path="/costura-interna" component={CosturaInternaPage} />
+        <Route path="/embalagem" component={EmbalagemPage} />
         <Route path="/repanol" component={RepanolList} />
         <Route path="/costureira" component={CostureiraList} />
         <Route path="/estoque" component={EstoqueList} />
