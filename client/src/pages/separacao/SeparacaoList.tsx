@@ -21,7 +21,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
-import { Field, FieldLabel } from "@/components/ui/field";
+import { Field, FieldLabel, FieldHint } from "@/components/ui/field";
 import { useAppAuthMe } from "@/hooks/useAppUserPerfil";
 
 /* ─── Cores FIPS DS canônicas ─── */
