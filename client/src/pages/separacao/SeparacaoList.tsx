@@ -122,7 +122,7 @@ export default function SeparacaoList() {
     <div className="space-y-6">
       {/* ─── PageHeader com stats pills ─── */}
       <PageHeader
-        title="Separação"
+        title="Triagem"
         description="Triagem e classificação do material recebido"
         icon={ClipboardList}
         stats={[
@@ -139,7 +139,7 @@ export default function SeparacaoList() {
             </Button>
             <Button onClick={() => setDialogOpen(true)}>
               <Plus className="h-4 w-4" />
-              Nova Separação
+              Nova Triagem
             </Button>
           </div>
         }
@@ -256,7 +256,7 @@ export default function SeparacaoList() {
       {/* ─── Tabela canônica DS-FIPS — Data Listing ─── */}
       <DataListingTable<Separacao>
         icon={<ClipboardList className="h-[22px] w-[22px]" />}
-        title="Separação"
+        title="Triagem"
         subtitle={`${filtered.length} ${filtered.length === 1 ? "registro" : "registros"} ${
           activeFilters || search ? "filtrados" : "no total"
         } · Atualizado agora`}

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import { useAppAuthMe } from "@/hooks/useAppUserPerfil";
 import {
   QrCode, Box, Info, Hash, Weight, User, Scissors, Ruler,
   Palette, Check, Maximize2, Minimize2, Factory,
@@ -64,6 +65,7 @@ const EMPTY_FORM = {
 
 /* --- Component --- */
 export function NovaProducaoDialog({ open, onOpenChange, onSuccess, salas, salaSaidaMap }: NovaProducaoDialogProps) {
+  const me = useAppAuthMe();
   const [coletas, setColetas] = useState<Coleta[]>([]);
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
@@ -74,7 +76,7 @@ export function NovaProducaoDialog({ open, onOpenChange, onSuccess, salas, salaS
 
   useEffect(() => {
     if (open) {
-      setForm(EMPTY_FORM);
+      setForm({ ...EMPTY_FORM, operador: me.nome });
       fetch("/api/coletas")
         .then((r) => r.json())
         .then((data: Coleta[]) => {
@@ -295,11 +297,12 @@ export function NovaProducaoDialog({ open, onOpenChange, onSuccess, salas, salaS
                 </div>
               )}
 
-              {/* Operador */}
+              {/* Operador (auto do login) */}
               <Field density="compact" inset="icon">
                 <FieldLabel>Operador</FieldLabel>
-                <Input density="compact" placeholder="Nome do operador na sala"
-                  leftIcon={<User className="h-3.5 w-3.5" />}
+                <Input density="compact" readOnly
+                  leftIcon={<Check className="h-3.5 w-3.5" style={{ color: "var(--fips-success)" }} />}
+                  style={{ borderColor: "var(--fips-success)", background: "rgba(0,198,76,0.05)" }}
                   value={form.operador} onChange={(e) => update("operador", e.target.value)} />
               </Field>
             </div>

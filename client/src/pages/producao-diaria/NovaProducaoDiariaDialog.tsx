@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAppAuthMe } from "@/hooks/useAppUserPerfil";
 import {
   Factory, CalendarDays, Clock, Users, Layers, Pen, UserCheck,
   Maximize2, Minimize2, Check, MessageSquare, CheckCircle2,
@@ -45,6 +46,7 @@ interface Props {
 
 /* --- Component --- */
 export default function NovaProducaoDiariaDialog({ open, onClose, onSave, defaultData }: Props) {
+  const me = useAppAuthMe();
   const [form, setForm] = useState({
     data: defaultData,
     nomeDupla: "",
@@ -61,6 +63,10 @@ export default function NovaProducaoDiariaDialog({ open, onClose, onSave, defaul
 
   const sz = SIZES[dialogSize];
   const isWide = dialogSize !== "normal";
+
+  useEffect(() => {
+    if (open) setForm(f => ({ ...f, nomeDupla: me.nome.toUpperCase(), assinatura: me.nome, data: defaultData }));
+  }, [open, me.nome, defaultData]);
 
   const cycleSize = () => {
     const i = SIZE_ORDER.indexOf(dialogSize);
@@ -135,9 +141,9 @@ export default function NovaProducaoDiariaDialog({ open, onClose, onSave, defaul
                 </Field>
                 <Field density="compact" inset="icon">
                   <FieldLabel required>Nome / Dupla</FieldLabel>
-                  <Input density="compact"
-                    leftIcon={<Users className="h-3.5 w-3.5" />}
-                    placeholder="Ex: GLINS/KAYAN"
+                  <Input density="compact" readOnly
+                    leftIcon={<UserCheck className="h-3.5 w-3.5" style={{ color: "var(--fips-success)" }} />}
+                    style={{ borderColor: "var(--fips-success)", background: "rgba(0,198,76,0.05)" }}
                     value={form.nomeDupla}
                     onChange={(e) => update("nomeDupla", e.target.value.toUpperCase())}
                   />

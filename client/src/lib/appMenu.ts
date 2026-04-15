@@ -79,8 +79,8 @@ export const APP_MENU: AppMenuItem[] = [
     badge: "producaoEmAndamento",
     perfis: ["administrador", "galpao", "producao", "separacao"],
     children: [
+      { icon: ClipboardList, label: "Triagem", href: "/separacao", perfis: ["administrador", "galpao", "separacao"] },
       { icon: Factory, label: "Produção", href: "/producao", badge: "producaoEmAndamento", perfis: ["administrador", "galpao", "producao"] },
-      { icon: ClipboardList, label: "Separação", href: "/separacao", perfis: ["administrador", "galpao", "separacao"] },
       { icon: CalendarDays, label: "Produção Diária", href: "/producao-diaria", perfis: ["administrador", "galpao", "producao"] },
       { icon: Droplets, label: "Repanol", href: "/repanol", perfis: ["administrador", "galpao"] },
       { icon: Scissors, label: "Costureira", href: "/costureira", perfis: ["administrador", "galpao"] },

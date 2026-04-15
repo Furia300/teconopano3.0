@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { useAppAuthMe } from "@/hooks/useAppUserPerfil";
 import { toast } from "sonner";
 import {
   QrCode, Box, AlertTriangle, Weight, User, Palette,
@@ -52,6 +53,7 @@ const EMPTY_FORM = {
 
 /* --- Component --- */
 export function NovaSeparacaoDialog({ open, onOpenChange, onSuccess, tiposMaterial }: NovaSeparacaoDialogProps) {
+  const me = useAppAuthMe();
   const [coletas, setColetas] = useState<Coleta[]>([]);
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
@@ -62,7 +64,7 @@ export function NovaSeparacaoDialog({ open, onOpenChange, onSuccess, tiposMateri
 
   useEffect(() => {
     if (open) {
-      setForm(EMPTY_FORM);
+      setForm({ ...EMPTY_FORM, colaborador: me.nome });
       fetch("/api/coletas")
         .then((r) => r.json())
         .then((data: Coleta[]) => {
@@ -111,14 +113,14 @@ export function NovaSeparacaoDialog({ open, onOpenChange, onSuccess, tiposMateri
         body: JSON.stringify(form),
       });
 
-      if (!res.ok) throw new Error("Erro ao registrar separação");
+      if (!res.ok) throw new Error("Erro ao registrar triagem");
 
-      toast.success("Separação registrada com sucesso!");
+      toast.success("Triagem registrada com sucesso!");
       setForm(EMPTY_FORM);
       onOpenChange(false);
       onSuccess();
     } catch {
-      toast.error("Erro ao registrar separação");
+      toast.error("Erro ao registrar triagem");
     } finally {
       setLoading(false);
     }
@@ -134,7 +136,7 @@ export function NovaSeparacaoDialog({ open, onOpenChange, onSuccess, tiposMateri
               <QrCode className="h-5 w-5 text-[var(--fips-secondary)]" />
             </div>
             <div className="min-w-0 flex-1">
-              <DialogTitle>Nova separação</DialogTitle>
+              <DialogTitle>Nova triagem</DialogTitle>
               <DialogDescription>
                 Classifique o material recebido por tipo, cor e destino. Destino ajustado automaticamente pela cor.
               </DialogDescription>
@@ -163,7 +165,7 @@ export function NovaSeparacaoDialog({ open, onOpenChange, onSuccess, tiposMateri
                     <option key={c.id} value={c.id}>#{c.numero} — {c.nomeFantasia}</option>
                   ))}
                 </Select>
-                <FieldHint>Coletas com status recebido ou em separação</FieldHint>
+                <FieldHint>Coletas com status recebido ou em triagem</FieldHint>
               </Field>
 
               {/* Info coleta selecionada */}
@@ -233,18 +235,19 @@ export function NovaSeparacaoDialog({ open, onOpenChange, onSuccess, tiposMateri
                 </div>
               )}
 
-              {/* Colaborador */}
+              {/* Colaborador (auto do login) */}
               <Field density="compact" inset="icon">
                 <FieldLabel>Colaborador</FieldLabel>
-                <Input density="compact" placeholder="Nome do colaborador"
-                  leftIcon={<User className="h-3.5 w-3.5" />}
+                <Input density="compact" readOnly
+                  leftIcon={<Check className="h-3.5 w-3.5" style={{ color: "var(--fips-success)" }} />}
+                  style={{ borderColor: "var(--fips-success)", background: "rgba(0,198,76,0.05)" }}
                   value={form.colaborador} onChange={(e) => update("colaborador", e.target.value)} />
               </Field>
 
               {/* Observação */}
               <Field density="compact" inset="none">
                 <FieldLabel>Observação</FieldLabel>
-                <Textarea density="compact" placeholder="Detalhes adicionais sobre a separação..."
+                <Textarea density="compact" placeholder="Detalhes adicionais sobre a triagem..."
                   value={form.observacao} onChange={(e) => update("observacao", e.target.value)}
                   className={isWide ? "min-h-[100px]" : ""} />
               </Field>
@@ -259,7 +262,7 @@ export function NovaSeparacaoDialog({ open, onOpenChange, onSuccess, tiposMateri
             <div className="flex flex-1 justify-end gap-2 sm:flex-none">
               <Button type="button" variant="secondary" onClick={() => onOpenChange(false)}>Cancelar</Button>
               <Button type="submit" form="form-separacao" variant="success" loading={loading} className="gap-2">
-                <Check className="h-4 w-4" /> Registrar separação
+                <Check className="h-4 w-4" /> Registrar triagem
               </Button>
             </div>
           </div>

@@ -184,32 +184,6 @@ export default function ProducaoList() {
         }
       />
 
-      {/* ─── Salas - visual cards ─── */}
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
-        {SALAS.map((sala) => {
-          const count = countBySala[sala] ?? 0;
-          const isKilo = salaSaidaMap[sala] === "kilo";
-          const isActive = filterSala === sala;
-          return (
-            <button
-              key={sala}
-              onClick={() => setFilterSala(isActive ? "" : sala)}
-              className={`p-3 rounded-xl border text-center transition-all cursor-pointer ${
-                isActive
-                  ? "bg-primary text-primary-foreground border-primary shadow-md"
-                  : "bg-card hover:border-primary/50"
-              }`}
-            >
-              <p className="text-xs font-medium opacity-70">{sala}</p>
-              <p className="text-2xl font-bold mt-1">{count}</p>
-              <Badge variant={isKilo ? "info" : "success"} className="mt-1 text-[10px]">
-                {isKilo ? "Kilo" : "Unidade"}
-              </Badge>
-            </button>
-          );
-        })}
-      </div>
-
       {/* ─── Cards Relatório — padrão FIPS DS ─── */}
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
         <StatsCard
