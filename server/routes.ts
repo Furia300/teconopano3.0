@@ -1,5 +1,11 @@
 import type { Express, Request, Response } from "express";
 import {
+  listSeparacoes, listSeparacoesByColeta, createSeparacao,
+} from "./repos/separacoes";
+import {
+  listQrCodes, listQrCodesByColeta, createQrCode, scanQrCode,
+} from "./repos/qr-codes";
+import {
   syncAll, syncOne, getSyncStatus, startPolling, stopPolling,
 } from "./bubble-sync";
 import {
@@ -670,82 +676,86 @@ export function registerRoutes(app: Express) {
     res.json(coleta);
   });
 
-  // ==================== QR CODES (Triagem) ====================
-  let nextQrId = 1;
-  const qrCodes: any[] = [];
-
-  app.get("/api/qr-codes", (_req: Request, res: Response) => {
-    res.json(qrCodes);
+  // ==================== QR CODES (Supabase) ====================
+  app.get("/api/qr-codes", async (_req: Request, res: Response) => {
+    try { res.json(await listQrCodes()); }
+    catch (err) { console.error("[GET /api/qr-codes]", err); res.status(500).json({ message: "Erro" }); }
   });
 
-  app.get("/api/qr-codes/separacao/:separacaoId", (req: Request, res: Response) => {
-    res.json(qrCodes.filter((q) => q.separacaoId === req.params.separacaoId));
+  app.get("/api/qr-codes/coleta/:coletaId", async (req: Request, res: Response) => {
+    try { res.json(await listQrCodesByColeta(req.params.coletaId)); }
+    catch (err) { console.error("[GET /api/qr-codes/coleta]", err); res.status(500).json({ message: "Erro" }); }
   });
 
-  app.get("/api/qr-codes/coleta/:coletaId", (req: Request, res: Response) => {
-    res.json(qrCodes.filter((q) => q.coletaId === req.params.coletaId));
+  app.post("/api/qr-codes", async (req: Request, res: Response) => {
+    try {
+      const qr = await createQrCode({
+        tipo: req.body.tipo || "trouxa",
+        coletaId: req.body.coletaId,
+        fornecedorId: req.body.fornecedorId,
+        tipoMaterial: req.body.tipoMaterial,
+        cor: req.body.cor,
+        pesoInicial: Number(req.body.peso) || Number(req.body.pesoInicial) || 0,
+      });
+      res.status(201).json(qr);
+    } catch (err) { console.error("[POST /api/qr-codes]", err); res.status(500).json({ message: "Erro ao criar QR" }); }
   });
 
-  app.post("/api/qr-codes", (req: Request, res: Response) => {
-    const qr = {
-      id: `qr${nextQrId++}`,
-      codigo: `TN-${Date.now()}-${nextQrId}`,
-      coletaId: req.body.coletaId || "",
-      coletaNumero: req.body.coletaNumero || 0,
-      separacaoId: req.body.separacaoId || "",
-      fornecedor: req.body.fornecedor || "",
-      tipoMaterial: req.body.tipoMaterial || "",
-      cor: req.body.cor || "",
-      peso: Number(req.body.peso) || 0,
-      destino: req.body.destino || "producao",
-      status: "ativo",
-      createdAt: new Date().toISOString(),
-    };
-    qrCodes.push(qr);
-    res.status(201).json(qr);
+  app.get("/api/qr-codes/scan/:codigo", async (req: Request, res: Response) => {
+    try {
+      const qr = await scanQrCode(req.params.codigo);
+      res.json(qr);
+    } catch (err) { res.status(404).json({ message: "QR Code não encontrado" }); }
   });
 
-  app.get("/api/qr-codes/scan/:codigo", (req: Request, res: Response) => {
-    const qr = qrCodes.find((q) => q.codigo === req.params.codigo);
-    if (!qr) return res.status(404).json({ message: "QR Code não encontrado" });
-    // Enrich with coleta data
-    const coleta = coletas.find((c) => c.id === qr.coletaId);
-    res.json({ ...qr, coleta: coleta ? { numero: coleta.numero, nomeFantasia: coleta.nomeFantasia, cnpj: coleta.cnpjFornecedor } : null });
+  // ==================== SEPARACOES (Supabase) ====================
+  app.get("/api/separacoes", async (_req: Request, res: Response) => {
+    try { res.json(await listSeparacoes()); }
+    catch (err) { console.error("[GET /api/separacoes]", err); res.status(500).json({ message: "Erro" }); }
   });
 
-  // ==================== SEPARACOES ====================
-  app.get("/api/separacoes", (_req: Request, res: Response) => {
-    res.json(separacoes);
+  app.get("/api/separacoes/coleta/:coletaId", async (req: Request, res: Response) => {
+    try { res.json(await listSeparacoesByColeta(req.params.coletaId)); }
+    catch (err) { console.error("[GET /api/separacoes/coleta]", err); res.status(500).json({ message: "Erro" }); }
   });
 
-  app.get("/api/separacoes/coleta/:coletaId", (req: Request, res: Response) => {
-    const filtered = separacoes.filter((s) => s.coletaId === req.params.coletaId);
-    res.json(filtered);
-  });
+  app.post("/api/separacoes", async (req: Request, res: Response) => {
+    try {
+      // First create QR code for the bundle
+      let qrCodeId: string | undefined;
+      try {
+        const qr = await createQrCode({
+          tipo: "trouxa",
+          coletaId: req.body.coletaId,
+          fornecedorId: req.body.fornecedorId,
+          tipoMaterial: req.body.tipoMaterial,
+          cor: req.body.cor,
+          pesoInicial: Number(req.body.peso) || 0,
+        });
+        qrCodeId = qr.id;
+      } catch (qrErr) { console.warn("[POST /api/separacoes] QR creation failed:", qrErr); }
 
-  app.post("/api/separacoes", (req: Request, res: Response) => {
-    const coleta = coletas.find((c) => c.id === req.body.coletaId);
-    if (!coleta) return res.status(404).json({ message: "Coleta não encontrada" });
+      const nova = await createSeparacao({
+        coletaId: req.body.coletaId,
+        qrCodeId,
+        tipoMaterial: req.body.tipoMaterial,
+        cor: req.body.cor,
+        peso: Number(req.body.peso) || 0,
+        destino: req.body.destino || "producao",
+        colaborador: req.body.colaborador || "",
+        galpao: req.body.galpao || "Vicente",
+      });
 
-    // Update coleta status
-    if (coleta.status === "recebido") {
-      coleta.status = "em_separacao";
+      // Update coleta status to em_separacao
+      try {
+        await dbUpdateColeta(req.body.coletaId, { status: "em_separacao" });
+      } catch {}
+
+      res.status(201).json(nova);
+    } catch (err) {
+      console.error("[POST /api/separacoes]", err);
+      res.status(500).json({ message: "Erro ao criar separação" });
     }
-
-    const nova = {
-      id: `s${nextSeparacaoId++}`,
-      coletaId: req.body.coletaId,
-      coletaNumero: coleta.numero,
-      fornecedor: coleta.nomeFantasia,
-      tipoMaterial: req.body.tipoMaterial,
-      cor: req.body.cor || "",
-      peso: Number(req.body.peso) || 0,
-      destino: req.body.destino || "producao",
-      colaborador: req.body.colaborador || "",
-      data: new Date().toISOString(),
-    };
-    separacoes.push(nova);
-    res.status(201).json(nova);
   });
 
   // ==================== COSTUREIRAS EXTERNAS (cadastro) ====================
