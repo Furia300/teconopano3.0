@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import {
   ClipboardList, QrCode, Package, Scale, AlertTriangle, ArrowDownUp,
   CheckCircle2, ChevronLeft, Weight, Plus, Eye, User,
-  Factory, Scissors, Droplets, Trash2, Gift,
+  Factory, Scissors, Droplets, Trash2, Gift, Palette, MapPin, Layers,
 } from "lucide-react";
 import { PageHeader } from "@/components/domain/PageHeader";
 import { StatsCard } from "@/components/domain/StatsCard";
@@ -678,26 +678,26 @@ export default function SeparacaoList() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 mb-3">
-                  <Field density="compact">
+                  <Field density="compact" inset="icon">
                     <FieldLabel required>Tipo Material</FieldLabel>
-                    <Select value={tipoMaterial} onChange={(e) => { setTipoMaterial(e.target.value); setCor(""); }}>
-                      <option value="">Selecione</option>
+                    <Select density="compact" leftIcon={<Layers className="h-3.5 w-3.5" />} value={tipoMaterial} onChange={(e) => { setTipoMaterial(e.target.value); setCor(""); }}>
+                      <option value="">Selecione o material</option>
                       {(tiposFromProdutos.length > 0 ? tiposFromProdutos : TIPOS_MATERIAL).map((t) => (
                         <option key={t} value={t}>{t}</option>
                       ))}
                     </Select>
                   </Field>
-                  <Field density="compact">
+                  <Field density="compact" inset="icon">
                     <FieldLabel>Cor</FieldLabel>
                     {coresDoMaterial.length > 0 ? (
-                      <Select value={cor} onChange={(e) => setCor(e.target.value)}>
+                      <Select density="compact" leftIcon={<Palette className="h-3.5 w-3.5" />} value={cor} onChange={(e) => setCor(e.target.value)}>
                         <option value="">Selecione a cor</option>
                         {coresDoMaterial.map((c) => (
                           <option key={c} value={c}>{c}</option>
                         ))}
                       </Select>
                     ) : (
-                      <Select value={cor} onChange={(e) => setCor(e.target.value)} disabled={!tipoMaterial}>
+                      <Select density="compact" leftIcon={<Palette className="h-3.5 w-3.5" />} value={cor} onChange={(e) => setCor(e.target.value)} disabled={!tipoMaterial}>
                         <option value="">{tipoMaterial ? "Sem cores cadastradas" : "Selecione o material primeiro"}</option>
                       </Select>
                     )}
@@ -708,21 +708,22 @@ export default function SeparacaoList() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 mb-4">
-                  <Field density="compact">
+                  <Field density="compact" inset="icon">
                     <FieldLabel required>Peso (kg)</FieldLabel>
                     <Input
                       density="compact"
                       type="number"
                       step="0.1"
                       placeholder="0.0"
+                      leftIcon={<Weight className="h-3.5 w-3.5" />}
                       value={peso}
                       onChange={(e) => setPeso(e.target.value)}
                     />
                   </Field>
-                  <Field density="compact">
+                  <Field density="compact" inset="icon">
                     <FieldLabel required>Destino</FieldLabel>
-                    <Select value={destino} onChange={(e) => setDestino(e.target.value)}>
-                      <option value="">Selecione</option>
+                    <Select density="compact" leftIcon={<MapPin className="h-3.5 w-3.5" />} value={destino} onChange={(e) => setDestino(e.target.value)}>
+                      <option value="">Selecione o destino</option>
                       {DESTINOS.map((d) => (
                         <option key={d.value} value={d.value}>{d.label}</option>
                       ))}
