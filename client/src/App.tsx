@@ -26,6 +26,7 @@ import DashboardFinanceiroPage from "./pages/financeiro/DashboardFinanceiroPage"
 import ProducaoDiariaPage from "./pages/producao-diaria/ProducaoDiariaPage";
 import AutomaticoPage from "./pages/automatico/AutomaticoPage";
 import MotoristaList from "./pages/motorista/MotoristaList";
+import PainelLogisticaPage from "./pages/motorista/PainelLogisticaPage";
 import AdministracaoPage from "./pages/admin/AdministracaoPage";
 import Login from "./pages/auth/Login";
 import Cadastro from "./pages/auth/Cadastro";
@@ -55,7 +56,8 @@ function AppContent() {
         <Route path="/funcionarios" component={FuncionariosList} />
         <Route path="/ponto-diario" component={PontoDiario} />
         <Route path="/producao-diaria" component={ProducaoDiariaPage} />
-        <Route path="/motorista" component={MotoristaList} />
+        <Route path="/motorista" component={PainelLogisticaPage} />
+        <Route path="/motorista-cadastro" component={MotoristaList} />
         <Route path="/automatico" component={AutomaticoPage} />
         <Route path="/administracao" component={AdministracaoPage} />
         <Route>

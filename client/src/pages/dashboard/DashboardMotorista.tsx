@@ -25,7 +25,7 @@ export default function DashboardMotorista({ data, userName }: Props) {
             <Truck className="h-6 w-6" style={{ color: "#ed1b24" }} strokeWidth={1.8} />
           </div>
           <div className="min-w-0">
-            <h2 className="font-heading text-xl font-bold tracking-tight text-white sm:text-[22px]" style={{ lineHeight: 1.2 }}>Painel do Motorista</h2>
+            <h2 className="font-heading text-xl font-bold tracking-tight text-white sm:text-[22px]" style={{ lineHeight: 1.2 }}>Dashboard do Motorista</h2>
             <p className="mt-0.5 text-xs text-white/45 sm:text-[13px]">Olá, {userName}. Você recebe ordens da Expedição e do Galpão.</p>
           </div>
         </div>

@@ -4,28 +4,96 @@ import {
   CheckCircle2, AlertTriangle, Trash2,
 } from "lucide-react";
 import { PageHeader } from "@/components/domain/PageHeader";
-import { Button } from "@/components/ui/button";
+import { StatsCard } from "@/components/domain/StatsCard";
+import { DataListingToolbar } from "@/components/domain/DataListingToolbar";
+import {
+  DataListingTable,
+  type DataListingColumn,
+  CellMonoStrong,
+  CellMonoMuted,
+  CellMuted,
+  CellActions,
+  CellActionButton,
+} from "@/components/domain/DataListingTable";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import NovaProducaoDiariaDialog from "./NovaProducaoDiariaDialog";
 
+const FIPS_COLORS = { azulProfundo: "#004B9B", verdeFloresta: "#00C64C", amareloEscuro: "#F6921E", azulEscuro: "#002A68" };
+
 interface ProducaoDiariaItem {
-  id: string;
-  data: string;
-  nomeDupla: string;
-  sala: string;
-  material: string;
-  horarioInicio: string;
-  horarioFim: string | null;
-  status: "completa" | "incompleta";
-  assinatura: string;
-  encarregado: string;
-  observacao: string;
+  id: string; data: string; nomeDupla: string; sala: string; material: string;
+  horarioInicio: string; horarioFim: string | null; status: "completa" | "incompleta";
+  assinatura: string; encarregado: string; observacao: string;
+}
+
+function producaoDiariaColumns({ onDelete }: { onDelete: (id: string) => void }): DataListingColumn<ProducaoDiariaItem>[] {
+  return [
+    {
+      id: "dupla", label: "Dupla/Operador", fixed: true, sortable: true, width: "140px",
+      render: (r) => (
+        <div className="flex items-center gap-1.5">
+          <User className="h-3.5 w-3.5 text-[var(--fips-fg-muted)]" />
+          <span className="font-semibold text-[11px] text-[var(--fips-fg)]">{r.nomeDupla}</span>
+        </div>
+      ),
+    },
+    {
+      id: "sala", label: "Sala", sortable: true, width: "100px",
+      render: (r) => (
+        <div className="flex items-center gap-1.5">
+          <Factory className="h-3.5 w-3.5 text-[var(--fips-fg-muted)]" />
+          <CellMonoStrong>{r.sala}</CellMonoStrong>
+        </div>
+      ),
+    },
+    {
+      id: "material", label: "Material", sortable: true, width: "120px",
+      render: (r) => <Badge variant="outline">{r.material}</Badge>,
+    },
+    {
+      id: "horario", label: "Horário", sortable: true, width: "120px",
+      render: (r) => (
+        <div className="flex items-center gap-1 text-[11px]">
+          <Clock className="h-3 w-3 text-[var(--fips-fg-muted)]" />
+          <span className="font-mono">{r.horarioInicio}</span>
+          <span className="text-[var(--fips-fg-muted)]">—</span>
+          <span className="font-mono">{r.horarioFim || "..."}</span>
+        </div>
+      ),
+    },
+    {
+      id: "status", label: "Status", sortable: true, width: "100px",
+      render: (r) => r.status === "completa"
+        ? <Badge variant="success"><CheckCircle2 className="h-3 w-3 mr-1" />Completa</Badge>
+        : <Badge variant="warning"><AlertTriangle className="h-3 w-3 mr-1" />Incompleta</Badge>,
+    },
+    {
+      id: "assinatura", label: "Assinatura", width: "90px",
+      render: (r) => <CellMuted>{r.assinatura || "—"}</CellMuted>,
+    },
+    {
+      id: "encarregado", label: "Encarregado", width: "100px",
+      render: (r) => <CellMuted>{r.encarregado || "—"}</CellMuted>,
+    },
+    {
+      id: "actions", label: "", fixed: true, align: "center", width: "50px",
+      render: (r) => (
+        <CellActions>
+          <CellActionButton title="Excluir" icon={<Trash2 className="h-3.5 w-3.5 text-[var(--fips-danger)]" />} onClick={() => onDelete(r.id)} />
+        </CellActions>
+      ),
+    },
+  ];
 }
 
 export default function ProducaoDiariaPage() {
   const [registros, setRegistros] = useState<ProducaoDiariaItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const [periodo, setPeriodo] = useState("Últimos 30 dias");
+  const [filterStatus, setFilterStatus] = useState("");
   const [filtroData, setFiltroData] = useState(() => new Date().toISOString().split("T")[0]);
 
   useEffect(() => {
@@ -36,16 +104,8 @@ export default function ProducaoDiariaPage() {
   }, []);
 
   const handleSave = async (item: Omit<ProducaoDiariaItem, "id">) => {
-    const res = await fetch("/api/producao-diaria", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(item),
-    });
-    if (res.ok) {
-      const novo = await res.json();
-      setRegistros(prev => [novo, ...prev]);
-      setDialogOpen(false);
-    }
+    const res = await fetch("/api/producao-diaria", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(item) });
+    if (res.ok) { const novo = await res.json(); setRegistros(prev => [novo, ...prev]); setDialogOpen(false); }
   };
 
   const handleDelete = async (id: string) => {
@@ -53,39 +113,23 @@ export default function ProducaoDiariaPage() {
     if (res.ok) setRegistros(prev => prev.filter(r => r.id !== id));
   };
 
-  const { registrosDia, porDupla, resumoDia } = useMemo(() => {
-    const dia = registros.filter((r) => r.data === filtroData);
-    const porDupla: Record<string, ProducaoDiariaItem[]> = {};
-    let completas = 0;
-    for (let i = 0; i < dia.length; i++) {
-      const r = dia[i];
-      if (r.status === "completa") completas++;
-      const k = r.nomeDupla;
-      if (!porDupla[k]) porDupla[k] = [];
-      porDupla[k].push(r);
-    }
-    return {
-      registrosDia: dia,
-      porDupla,
-      resumoDia: {
-        total: dia.length,
-        duplas: Object.keys(porDupla).length,
-        completas,
-        incompletas: dia.length - completas,
-      },
-    };
-  }, [registros, filtroData]);
+  const registrosDia = useMemo(() => registros.filter(r => r.data === filtroData), [registros, filtroData]);
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-center space-y-3">
-          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-muted-foreground">Carregando produção diária...</p>
-        </div>
-      </div>
-    );
-  }
+  const filtered = useMemo(() => registrosDia.filter(r => {
+    const q = search.trim().toLowerCase();
+    const matchSearch = !q || r.nomeDupla.toLowerCase().includes(q) || r.sala.toLowerCase().includes(q) || r.material.toLowerCase().includes(q);
+    const matchStatus = !filterStatus || r.status === filterStatus;
+    return matchSearch && matchStatus;
+  }), [registrosDia, search, filterStatus]);
+
+  const resumo = useMemo(() => ({
+    total: registrosDia.length,
+    duplas: new Set(registrosDia.map(r => r.nomeDupla)).size,
+    completas: registrosDia.filter(r => r.status === "completa").length,
+    incompletas: registrosDia.filter(r => r.status !== "completa").length,
+  }), [registrosDia]);
+
+  const activeFilters = filterStatus ? 1 : 0;
 
   return (
     <div className="space-y-6">
@@ -93,146 +137,67 @@ export default function ProducaoDiariaPage() {
         title="Produção Diária"
         description="Registro digital de produção por mesa — substitui a folha de papel"
         icon={ClipboardList}
+        actions={
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 rounded-lg border border-[var(--fips-border)] px-3 py-1.5 bg-[var(--fips-surface)]">
+              <Calendar className="h-4 w-4 text-[var(--fips-fg-muted)]" />
+              <input type="date" value={filtroData} onChange={e => setFiltroData(e.target.value)}
+                className="text-[12px] font-mono bg-transparent border-0 outline-none text-[var(--fips-fg)]" />
+            </div>
+            <Button onClick={() => setDialogOpen(true)}><Plus className="h-4 w-4 mr-1" />Novo Registro</Button>
+          </div>
+        }
         stats={[
-          { label: "Total", value: resumoDia.total, color: "#93BDE4" },
-          { label: "Duplas", value: resumoDia.duplas, color: "#00C64C" },
-          { label: "Completas", value: resumoDia.completas, color: "#FDC24E" },
-          { label: "Incompletas", value: resumoDia.incompletas, color: "#ed1b24" },
+          { label: "Total", value: resumo.total, color: "#93BDE4" },
+          { label: "Duplas", value: resumo.duplas, color: "#00C64C" },
+          { label: "Completas", value: resumo.completas, color: "#FDC24E" },
+          { label: "Incompletas", value: resumo.incompletas, color: "#ed1b24" },
         ]}
       />
 
-      {/* Filtro por data + botão novo */}
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-2">
-          <Calendar className="h-4 w-4 text-muted-foreground" />
-          <input
-            type="date"
-            value={filtroData}
-            onChange={e => setFiltroData(e.target.value)}
-            className="border rounded-lg px-3 py-2 text-sm bg-card"
-          />
-          <span className="text-sm text-muted-foreground">
-            {registrosDia.length} registro(s)
-          </span>
-        </div>
-        <Button onClick={() => setDialogOpen(true)} className="gap-2">
-          <Plus className="h-4 w-4" />
-          Novo Registro
-        </Button>
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
+        <StatsCard label="Total Registros" value={resumo.total} subtitle={`Dia ${new Date(filtroData + "T12:00:00").toLocaleDateString("pt-BR")}`} icon={ClipboardList} color={FIPS_COLORS.azulProfundo} />
+        <StatsCard label="Duplas/Operadores" value={resumo.duplas} subtitle="Ativas no dia" icon={User} color={FIPS_COLORS.verdeFloresta} />
+        <StatsCard label="Completas" value={resumo.completas} subtitle="Finalizadas" icon={CheckCircle2} color={FIPS_COLORS.amareloEscuro} />
+        <StatsCard label="Incompletas" value={resumo.incompletas} subtitle={resumo.incompletas > 0 ? "Em andamento" : "Tudo completo"} icon={AlertTriangle} color={FIPS_COLORS.azulEscuro} />
       </div>
 
-      {/* Resumo do dia */}
-      {registrosDia.length > 0 && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <div className="fips-surface-card p-4 text-center">
-            <p className="text-2xl font-bold">{resumoDia.total}</p>
-            <p className="text-xs text-muted-foreground">Total Registros</p>
-          </div>
-          <div className="fips-surface-card p-4 text-center">
-            <p className="text-2xl font-bold">{resumoDia.duplas}</p>
-            <p className="text-xs text-muted-foreground">Duplas/Operadores</p>
-          </div>
-          <div className="fips-surface-card p-4 text-center">
-            <p className="text-2xl font-bold text-emerald-500">
-              {resumoDia.completas}
-            </p>
-            <p className="text-xs text-muted-foreground">Completas</p>
-          </div>
-          <div className="fips-surface-card p-4 text-center">
-            <p className="text-2xl font-bold text-amber-500">
-              {resumoDia.incompletas}
-            </p>
-            <p className="text-xs text-muted-foreground">Incompletas</p>
-          </div>
-        </div>
-      )}
-
-      {/* Tabela por dupla */}
-      {Object.keys(porDupla).length === 0 ? (
-        <div className="fips-surface-panel p-10 text-center">
-          <ClipboardList className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
-          <p className="font-medium">Nenhum registro para {new Date(filtroData + "T12:00:00").toLocaleDateString("pt-BR")}</p>
-          <p className="text-sm text-muted-foreground mt-1">Clique em "Novo Registro" para começar</p>
-        </div>
-      ) : (
-        Object.entries(porDupla).map(([dupla, items]) => (
-          <div key={dupla} className="fips-surface-panel overflow-hidden">
-            <div className="bg-gradient-to-r from-[#001443] to-[#1a3a6b] px-6 py-3 flex items-center gap-3">
-              <User className="h-5 w-5 text-white" />
-              <h3 className="text-white font-semibold">{dupla}</h3>
-              <Badge variant="secondary" className="ml-auto">{items.length} registro(s)</Badge>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b bg-muted/30">
-                    <th className="text-left px-4 py-3 font-medium text-muted-foreground">Sala</th>
-                    <th className="text-left px-4 py-3 font-medium text-muted-foreground">Material</th>
-                    <th className="text-left px-4 py-3 font-medium text-muted-foreground">Horário</th>
-                    <th className="text-left px-4 py-3 font-medium text-muted-foreground">Status</th>
-                    <th className="text-left px-4 py-3 font-medium text-muted-foreground">Assinatura</th>
-                    <th className="text-left px-4 py-3 font-medium text-muted-foreground">Encarregado</th>
-                    <th className="text-right px-4 py-3 font-medium text-muted-foreground"></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {items.map(item => (
-                    <tr key={item.id} className="border-b last:border-b-0 hover:bg-muted/20 transition-colors">
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-2">
-                          <Factory className="h-4 w-4 text-muted-foreground" />
-                          <span className="font-medium">{item.sala}</span>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 font-medium">{item.material}</td>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-1">
-                          <Clock className="h-3.5 w-3.5 text-muted-foreground" />
-                          <span>{item.horarioInicio}</span>
-                          <span className="text-muted-foreground">—</span>
-                          <span>{item.horarioFim || "..."}</span>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3">
-                        {item.status === "completa" ? (
-                          <Badge variant="default" className="gap-1">
-                            <CheckCircle2 className="h-3 w-3" />
-                            Completa
-                          </Badge>
-                        ) : (
-                          <Badge variant="warning" className="gap-1">
-                            <AlertTriangle className="h-3 w-3" />
-                            Incompleta
-                          </Badge>
-                        )}
-                      </td>
-                      <td className="px-4 py-3 text-muted-foreground">{item.assinatura || "—"}</td>
-                      <td className="px-4 py-3 text-muted-foreground">{item.encarregado || "—"}</td>
-                      <td className="px-4 py-3 text-right">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDelete(item.id)}
-                          className="text-destructive hover:text-destructive"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+      <DataListingToolbar
+        search={search}
+        onSearchChange={setSearch}
+        searchPlaceholder="Buscar por dupla, sala ou material..."
+        activeFilters={activeFilters}
+        filtersContent={
+          <div className="px-4 py-3 space-y-4">
+            <div>
+              <p className="mb-2 text-[9px] font-bold uppercase tracking-[1px] text-[var(--fips-fg-muted)]">Status</p>
+              <div className="flex flex-col gap-1">
+                {[{ v: "", l: "Todos" }, { v: "completa", l: "Completa" }, { v: "incompleta", l: "Incompleta" }].map(opt => (
+                  <button key={opt.v || "all"} onClick={() => setFilterStatus(opt.v)}
+                    className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${filterStatus === opt.v ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]" : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"}`}>
+                    {opt.l}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
-        ))
-      )}
-
-      <NovaProducaoDiariaDialog
-        open={dialogOpen}
-        onClose={() => setDialogOpen(false)}
-        onSave={handleSave}
-        defaultData={filtroData}
+        }
+        periodo={periodo}
+        onPeriodoChange={setPeriodo}
       />
+
+      <DataListingTable<ProducaoDiariaItem>
+        icon={<ClipboardList className="h-[22px] w-[22px]" />}
+        title="Produção Diária"
+        subtitle={`${filtered.length} ${filtered.length === 1 ? "registro" : "registros"} ${activeFilters || search ? "filtrados" : "no dia"} · ${new Date(filtroData + "T12:00:00").toLocaleDateString("pt-BR")}`}
+        filtered={!!(search || activeFilters)}
+        data={filtered}
+        getRowId={(r) => r.id}
+        emptyState={loading ? "Carregando..." : `Nenhum registro para ${new Date(filtroData + "T12:00:00").toLocaleDateString("pt-BR")}`}
+        columns={producaoDiariaColumns({ onDelete: handleDelete })}
+      />
+
+      <NovaProducaoDiariaDialog open={dialogOpen} onClose={() => setDialogOpen(false)} onSave={handleSave} defaultData={filtroData} />
     </div>
   );
 }

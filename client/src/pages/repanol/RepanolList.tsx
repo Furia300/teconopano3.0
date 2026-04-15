@@ -1,23 +1,41 @@
-import { useEffect, useState } from "react";
-import { Droplets, Plus, Search, ArrowRight, ArrowLeft, Weight, AlertTriangle } from "lucide-react";
+import { useEffect, useState, useMemo } from "react";
+import { toast } from "sonner";
+import {
+  Droplets,
+  Plus,
+  ArrowRight,
+  ArrowLeft,
+  Weight,
+  AlertTriangle,
+  Clock,
+  CheckCircle2,
+  Scale,
+} from "lucide-react";
 import { PageHeader } from "@/components/domain/PageHeader";
 import { StatsCard } from "@/components/domain/StatsCard";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
+import { DataListingToolbar } from "@/components/domain/DataListingToolbar";
 import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableEmpty,
-} from "@/components/ui/table";
+  DataListingTable,
+  type DataListingColumn,
+  CellMonoStrong,
+  CellMonoMuted,
+  CellMuted,
+  CellActions,
+  CellActionButton,
+} from "@/components/domain/DataListingTable";
+import { Badge } from "@/components/ui/badge";
 import { NovoRepanolDialog } from "./NovoRepanolDialog";
 import { RepanolRetornoDialog } from "./RepanolRetornoDialog";
 
+/* ─── Cores FIPS DS canônicas para os Cards Relatório ─── */
+const FIPS_COLORS = {
+  azulProfundo: "#004B9B",
+  verdeFloresta: "#00C64C",
+  amareloEscuro: "#F6921E",
+  azulEscuro: "#002A68",
+};
+
+/* ─── Tipos ─── */
 interface Repanol {
   id: string;
   coletaId: string;
@@ -37,17 +55,33 @@ interface Repanol {
   status: string;
 }
 
-const statusConfig: Record<string, { label: string; variant: "warning" | "info" | "success" | "secondary" }> = {
+const statusConfig: Record<
+  string,
+  { label: string; variant: "warning" | "info" | "success" | "secondary" }
+> = {
   pendente: { label: "Pendente Envio", variant: "warning" },
   enviado: { label: "Enviado", variant: "info" },
   retornado: { label: "Retornado", variant: "success" },
 };
 
+/* ─── Helpers ─── */
+const totalEnvio = (r: Repanol) =>
+  r.pesoManchadoEnvio + r.pesoMolhadoEnvio + r.pesoTingidoEnvio;
+
+const totalRetorno = (r: Repanol) =>
+  r.pesoManchadoRetorno + r.pesoMolhadoRetorno + r.pesoTingidoRetorno;
+
+const formatDateBR = (s: string | null) =>
+  s ? new Date(s).toLocaleDateString("pt-BR") : "—";
+
+/* ─── Componente principal ─── */
 export default function RepanolList() {
   const [repanois, setRepanois] = useState<Repanol[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [filterStatus, setFilterStatus] = useState("");
+  const [periodo, setPeriodo] = useState("Últimos 30 dias");
+  const [filterStatus, setFilterStatus] = useState<string>("");
+  const [filterMaterial, setFilterMaterial] = useState<string>("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [retornoItem, setRetornoItem] = useState<Repanol | null>(null);
 
@@ -58,6 +92,7 @@ export default function RepanolList() {
       setRepanois(data);
     } catch (err) {
       console.error("Erro ao buscar repanol:", err);
+      toast.error("Erro ao carregar dados de repanol");
     } finally {
       setLoading(false);
     }
@@ -67,34 +102,50 @@ export default function RepanolList() {
     fetchRepanois();
   }, []);
 
-  const filtered = repanois.filter((r) => {
-    const matchSearch =
-      !search ||
-      r.fornecedor.toLowerCase().includes(search.toLowerCase()) ||
-      r.tipoMaterial.toLowerCase().includes(search.toLowerCase()) ||
-      r.empresaFornecedor.toLowerCase().includes(search.toLowerCase()) ||
-      String(r.coletaNumero).includes(search);
-    const matchStatus = !filterStatus || r.status === filterStatus;
-    return matchSearch && matchStatus;
-  });
+  /* ─── Stats memoizados ─── */
+  const stats = useMemo(() => {
+    const total = repanois.length;
+    const enviados = repanois.filter((r) => r.status === "enviado").length;
+    const pesoEnviado = repanois
+      .filter((r) => r.status === "enviado")
+      .reduce((acc, r) => acc + totalEnvio(r), 0);
+    const residuoTotal = repanois.reduce(
+      (acc, r) => acc + r.repanolResiduo,
+      0,
+    );
+    return { total, enviados, pesoEnviado, residuoTotal };
+  }, [repanois]);
 
-  const totalEnvio = (r: Repanol) => r.pesoManchadoEnvio + r.pesoMolhadoEnvio + r.pesoTingidoEnvio;
-  const totalRetorno = (r: Repanol) => r.pesoManchadoRetorno + r.pesoMolhadoRetorno + r.pesoTingidoRetorno;
+  /* ─── Materiais únicos para o filtro ─── */
+  const materiaisUnicos = useMemo(() => {
+    const materiais = new Set<string>();
+    repanois.forEach((r) => {
+      if (r.tipoMaterial) materiais.add(r.tipoMaterial);
+    });
+    return Array.from(materiais).sort();
+  }, [repanois]);
 
-  const stats = {
-    total: repanois.length,
-    enviados: repanois.filter((r) => r.status === "enviado").length,
-    pesoEnviado: repanois.filter((r) => r.status === "enviado").reduce((acc, r) => acc + totalEnvio(r), 0),
-    residuoTotal: repanois.reduce((acc, r) => acc + r.repanolResiduo, 0),
-  };
+  /* ─── Dados filtrados ─── */
+  const filtered = useMemo(() => {
+    return repanois.filter((r) => {
+      const q = search.trim().toLowerCase();
+      const matchSearch =
+        !q ||
+        r.fornecedor.toLowerCase().includes(q) ||
+        r.tipoMaterial.toLowerCase().includes(q) ||
+        r.empresaFornecedor.toLowerCase().includes(q) ||
+        String(r.coletaNumero).includes(q);
+      const matchStatus = !filterStatus || r.status === filterStatus;
+      const matchMaterial = !filterMaterial || r.tipoMaterial === filterMaterial;
+      return matchSearch && matchStatus && matchMaterial;
+    });
+  }, [repanois, search, filterStatus, filterMaterial]);
 
-  const formatDate = (dateStr: string | null) => {
-    if (!dateStr) return "—";
-    return new Date(dateStr).toLocaleDateString("pt-BR");
-  };
+  const activeFilters = [filterStatus, filterMaterial].filter(Boolean).length;
 
   return (
     <div className="space-y-6">
+      {/* ─── PageHeader com stats pills ─── */}
       <PageHeader
         title="Repanol"
         description="Envio e retorno de material para tratamento externo (tingimento/lavagem)"
@@ -102,129 +153,151 @@ export default function RepanolList() {
         stats={[
           { label: "Total", value: stats.total, color: "#93BDE4" },
           { label: "Enviados", value: stats.enviados, color: "#FDC24E" },
-          { label: "Peso Enviado", value: `${stats.pesoEnviado.toLocaleString("pt-BR")}kg`, color: "#00C64C" },
-          { label: "Resíduo", value: `${stats.residuoTotal.toLocaleString("pt-BR")}kg`, color: "#ed1b24" },
+          {
+            label: "Peso Enviado",
+            value: `${stats.pesoEnviado.toLocaleString("pt-BR")}kg`,
+            color: "#00C64C",
+          },
+          {
+            label: "Resíduo",
+            value: `${stats.residuoTotal.toLocaleString("pt-BR")}kg`,
+            color: "#ed1b24",
+          },
         ]}
         actions={
-          <Button onClick={() => setDialogOpen(true)}>
-            <Plus className="h-4 w-4" />
+          <button
+            onClick={() => setDialogOpen(true)}
+            className="inline-flex items-center gap-1.5 rounded-md bg-[var(--fips-primary)] px-3 py-1.5 text-[11px] font-bold text-white shadow transition-colors hover:bg-[var(--fips-primary-hover)]"
+          >
+            <Plus className="h-3.5 w-3.5" />
             Novo Envio
-          </Button>
+          </button>
         }
       />
 
-      {/* KPIs */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatsCard label="Total Registros" value={stats.total} icon={Droplets} color="text-blue-500" bg="bg-blue-500/10" />
-        <StatsCard label="Aguardando Retorno" value={stats.enviados} icon={ArrowRight} color="text-amber-500" bg="bg-amber-500/10" />
-        <StatsCard label="Peso em Trânsito" value={`${stats.pesoEnviado.toLocaleString("pt-BR")} kg`} icon={Weight} color="text-purple-500" bg="bg-purple-500/10" />
-        <StatsCard label="Resíduo Total" value={`${stats.residuoTotal.toLocaleString("pt-BR")} kg`} icon={AlertTriangle} color="text-red-500" bg="bg-red-500/10" />
+      {/* ─── Cards Relatório — padrão FIPS DS ─── */}
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
+        <StatsCard
+          label="Total Registros"
+          value={stats.total}
+          subtitle="Cadastrados no sistema"
+          icon={Droplets}
+          color={FIPS_COLORS.azulProfundo}
+        />
+        <StatsCard
+          label="Aguardando Retorno"
+          value={stats.enviados}
+          subtitle="Enviados para tratamento"
+          icon={Clock}
+          color={FIPS_COLORS.amareloEscuro}
+        />
+        <StatsCard
+          label="Peso em Trânsito"
+          value={`${stats.pesoEnviado.toLocaleString("pt-BR")} kg`}
+          subtitle="Volume aguardando retorno"
+          icon={Scale}
+          color={FIPS_COLORS.azulEscuro}
+        />
+        <StatsCard
+          label="Resíduo Total"
+          value={`${stats.residuoTotal.toLocaleString("pt-BR")} kg`}
+          subtitle="Perda acumulada no processo"
+          icon={AlertTriangle}
+          color={FIPS_COLORS.verdeFloresta}
+        />
       </div>
 
-      {/* Filtros */}
-      <div className="fips-surface-panel p-4">
-        <div className="flex flex-col sm:flex-row gap-3">
-          <div className="flex-1">
-            <Input
-              placeholder="Buscar por fornecedor, material, empresa..."
-              icon={<Search />}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </div>
-          <div className="w-full sm:w-48">
-            <Select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
-              <option value="">Todos os status</option>
-              <option value="pendente">Pendente Envio</option>
-              <option value="enviado">Enviado</option>
-              <option value="retornado">Retornado</option>
-            </Select>
-          </div>
-        </div>
-      </div>
+      {/* ─── Toolbar — padrão FIPS DS Data Listing ─── */}
+      <DataListingToolbar
+        search={search}
+        onSearchChange={setSearch}
+        searchPlaceholder="Buscar por fornecedor, material, empresa..."
+        activeFilters={activeFilters}
+        filtersContent={
+          <div className="px-4 py-3 space-y-4">
+            {/* Status */}
+            <div>
+              <p className="mb-2 text-[9px] font-bold uppercase tracking-[1px] text-[var(--fips-fg-muted)]">
+                Status
+              </p>
+              <div className="flex flex-col gap-1">
+                {[
+                  { v: "", l: "Todos os status" },
+                  { v: "pendente", l: "Pendente Envio" },
+                  { v: "enviado", l: "Enviado" },
+                  { v: "retornado", l: "Retornado" },
+                ].map((opt) => (
+                  <button
+                    key={opt.v || "todos-status"}
+                    onClick={() => setFilterStatus(opt.v)}
+                    className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
+                      filterStatus === opt.v
+                        ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                        : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
+                    }`}
+                  >
+                    {opt.l}
+                  </button>
+                ))}
+              </div>
+            </div>
 
-      {/* Tabela */}
-      <div className="fips-surface-panel">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Coleta</TableHead>
-              <TableHead>Fornecedor Origem</TableHead>
-              <TableHead>Empresa Repanol</TableHead>
-              <TableHead>Material</TableHead>
-              <TableHead>Envio</TableHead>
-              <TableHead>Retorno</TableHead>
-              <TableHead>Resíduo</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Ações</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {loading ? (
-              <TableEmpty colSpan={9} message="Carregando..." />
-            ) : filtered.length === 0 ? (
-              <TableEmpty colSpan={9} />
-            ) : (
-              filtered.map((rep) => {
-                const sc = statusConfig[rep.status] || { label: rep.status, variant: "secondary" as const };
-                const envio = totalEnvio(rep);
-                const retorno = totalRetorno(rep);
-                const diff = envio - retorno;
-                return (
-                  <TableRow key={rep.id}>
-                    <TableCell className="font-bold">#{rep.coletaNumero}</TableCell>
-                    <TableCell>{rep.fornecedor}</TableCell>
-                    <TableCell>{rep.empresaFornecedor || "—"}</TableCell>
-                    <TableCell>
-                      <Badge variant="outline">{rep.tipoMaterial}</Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div className="text-xs space-y-0.5">
-                        <div>Manchado: <span className="font-medium">{rep.pesoManchadoEnvio} kg</span></div>
-                        <div>Molhado: <span className="font-medium">{rep.pesoMolhadoEnvio} kg</span></div>
-                        <div>Tingido: <span className="font-medium">{rep.pesoTingidoEnvio} kg</span></div>
-                        <div className="font-semibold border-t pt-0.5 mt-0.5">Total: {envio} kg</div>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      {rep.status === "retornado" ? (
-                        <div className="text-xs space-y-0.5">
-                          <div>Manchado: <span className="font-medium">{rep.pesoManchadoRetorno} kg</span></div>
-                          <div>Molhado: <span className="font-medium">{rep.pesoMolhadoRetorno} kg</span></div>
-                          <div>Tingido: <span className="font-medium">{rep.pesoTingidoRetorno} kg</span></div>
-                          <div className="font-semibold border-t pt-0.5 mt-0.5">Total: {retorno} kg</div>
-                        </div>
-                      ) : (
-                        <span className="text-muted-foreground text-sm">—</span>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      {rep.repanolResiduo > 0 ? (
-                        <span className="text-destructive font-medium">{rep.repanolResiduo} kg</span>
-                      ) : rep.status === "retornado" && diff > 0 ? (
-                        <span className="text-destructive font-medium">{diff} kg</span>
-                      ) : (
-                        "—"
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={sc.variant} dot>{sc.label}</Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {rep.status === "enviado" && (
-                        <Button variant="outline" size="sm" onClick={() => setRetornoItem(rep)}>
-                          <ArrowLeft className="h-3 w-3" />
-                          Retorno
-                        </Button>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                );
-              })
-            )}
-          </TableBody>
-        </Table>
-      </div>
+            {/* Material */}
+            <div>
+              <p className="mb-2 text-[9px] font-bold uppercase tracking-[1px] text-[var(--fips-fg-muted)]">
+                Tipo de Material
+              </p>
+              <div className="flex flex-col gap-1">
+                <button
+                  onClick={() => setFilterMaterial("")}
+                  className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
+                    !filterMaterial
+                      ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                      : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
+                  }`}
+                >
+                  Todos os materiais
+                </button>
+                {materiaisUnicos.map((mat) => (
+                  <button
+                    key={mat}
+                    onClick={() => setFilterMaterial(mat)}
+                    className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
+                      filterMaterial === mat
+                        ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                        : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
+                    }`}
+                  >
+                    {mat}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        }
+        periodo={periodo}
+        onPeriodoChange={setPeriodo}
+        onExportExcel={() => alert("Export Excel — placeholder")}
+        onExportPdf={() => alert("Export PDF — placeholder")}
+      />
+
+      {/* ─── Tabela canônica DS-FIPS — Data Listing ─── */}
+      <DataListingTable<Repanol>
+        icon={<Droplets className="h-[22px] w-[22px]" />}
+        title="Repanol"
+        subtitle={`${filtered.length} ${filtered.length === 1 ? "registro" : "registros"} ${
+          activeFilters || search ? "filtrados" : "no total"
+        } · Atualizado agora`}
+        filtered={!!(search || activeFilters)}
+        data={filtered}
+        getRowId={(r) => r.id}
+        emptyState={
+          loading
+            ? "Carregando..."
+            : "Nenhum registro de repanol encontrado"
+        }
+        columns={repanolColumns({ onRetorno: (rep) => setRetornoItem(rep) })}
+      />
 
       <NovoRepanolDialog
         open={dialogOpen}
@@ -236,10 +309,182 @@ export default function RepanolList() {
         <RepanolRetornoDialog
           repanol={retornoItem}
           open={!!retornoItem}
-          onOpenChange={(open) => { if (!open) setRetornoItem(null); }}
+          onOpenChange={(open) => {
+            if (!open) setRetornoItem(null);
+          }}
           onSuccess={fetchRepanois}
         />
       )}
     </div>
   );
+}
+
+/* ──────────────────────────── COLUMNS DEFINITION ──────────────────────────── */
+
+interface RepanolColumnActions {
+  onRetorno: (rep: Repanol) => void;
+}
+
+function repanolColumns({
+  onRetorno,
+}: RepanolColumnActions): DataListingColumn<Repanol>[] {
+  return [
+    {
+      id: "coleta",
+      label: "Coleta",
+      fixed: true,
+      sortable: true,
+      width: "80px",
+      render: (r) => <CellMonoStrong>#{r.coletaNumero}</CellMonoStrong>,
+    },
+    {
+      id: "fornecedor",
+      label: "Fornecedor Origem",
+      sortable: true,
+      width: "150px",
+      render: (r) => (
+        <div
+          className="truncate max-w-[140px]"
+          title={r.fornecedor}
+        >
+          <span className="text-[11px] font-semibold text-[var(--fips-fg)]">
+            {r.fornecedor}
+          </span>
+        </div>
+      ),
+    },
+    {
+      id: "empresa",
+      label: "Empresa Repanol",
+      sortable: true,
+      width: "140px",
+      render: (r) => (
+        <CellMuted>{r.empresaFornecedor || "—"}</CellMuted>
+      ),
+    },
+    {
+      id: "material",
+      label: "Material",
+      sortable: true,
+      width: "100px",
+      render: (r) => (
+        <Badge variant="outline">{r.tipoMaterial}</Badge>
+      ),
+    },
+    {
+      id: "envio",
+      label: "Envio",
+      sortable: true,
+      align: "right",
+      width: "120px",
+      render: (r) => {
+        const envio = totalEnvio(r);
+        return (
+          <div className="text-right">
+            <div className="text-[9px] text-[var(--fips-fg-muted)]">
+              M: {r.pesoManchadoEnvio} · Mo: {r.pesoMolhadoEnvio} · T:{" "}
+              {r.pesoTingidoEnvio}
+            </div>
+            <CellMonoStrong align="right">{envio} kg</CellMonoStrong>
+          </div>
+        );
+      },
+    },
+    {
+      id: "retorno",
+      label: "Retorno",
+      sortable: true,
+      align: "right",
+      width: "120px",
+      render: (r) => {
+        if (r.status !== "retornado") {
+          return <CellMuted>—</CellMuted>;
+        }
+        const retorno = totalRetorno(r);
+        return (
+          <div className="text-right">
+            <div className="text-[9px] text-[var(--fips-fg-muted)]">
+              M: {r.pesoManchadoRetorno} · Mo: {r.pesoMolhadoRetorno} · T:{" "}
+              {r.pesoTingidoRetorno}
+            </div>
+            <CellMonoStrong align="right">{retorno} kg</CellMonoStrong>
+          </div>
+        );
+      },
+    },
+    {
+      id: "residuo",
+      label: "Resíduo",
+      sortable: true,
+      align: "right",
+      width: "80px",
+      render: (r) => {
+        const envio = totalEnvio(r);
+        const retorno = totalRetorno(r);
+        const diff = envio - retorno;
+        if (r.repanolResiduo > 0) {
+          return (
+            <CellMonoStrong align="right">
+              <span className="text-[var(--fips-danger)]">
+                {r.repanolResiduo} kg
+              </span>
+            </CellMonoStrong>
+          );
+        }
+        if (r.status === "retornado" && diff > 0) {
+          return (
+            <CellMonoStrong align="right">
+              <span className="text-[var(--fips-danger)]">{diff} kg</span>
+            </CellMonoStrong>
+          );
+        }
+        return <CellMuted>—</CellMuted>;
+      },
+    },
+    {
+      id: "status",
+      label: "Status",
+      sortable: true,
+      width: "110px",
+      render: (r) => {
+        const sc = statusConfig[r.status] || {
+          label: r.status,
+          variant: "secondary" as const,
+        };
+        return (
+          <Badge variant={sc.variant} dot>
+            {sc.label}
+          </Badge>
+        );
+      },
+    },
+    {
+      id: "actions",
+      label: "Ação",
+      fixed: true,
+      align: "center",
+      width: "70px",
+      render: (r) => {
+        if (r.status === "enviado") {
+          return (
+            <CellActions>
+              <CellActionButton
+                title="Registrar retorno"
+                icon={<ArrowLeft className="h-3.5 w-3.5 text-[var(--fips-primary)]" />}
+                onClick={() => onRetorno(r)}
+              />
+            </CellActions>
+          );
+        }
+        if (r.status === "retornado") {
+          return (
+            <CellActions>
+              <CheckCircle2 className="h-3.5 w-3.5 text-[var(--fips-success-strong)]" />
+            </CellActions>
+          );
+        }
+        return <CellActions />;
+      },
+    },
+  ];
 }

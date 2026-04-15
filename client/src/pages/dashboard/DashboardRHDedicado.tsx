@@ -6,6 +6,12 @@ import { DashboardPrintButton } from "@/components/domain/DashboardPrintButton";
 
 type Props = { data: DashboardData };
 
+function isValidFilterOption(value: string | undefined | null) {
+  if (!value) return false;
+  const normalized = String(value).trim().toLowerCase();
+  return normalized !== "*" && normalized !== "-" && normalized !== "null" && normalized !== "undefined" && normalized !== "n/a";
+}
+
 /* ═══ DARK MODE HOOK ═══ */
 function useDark() {
   const [dark, setDark] = useState(() => typeof document !== "undefined" && document.documentElement.classList.contains("dark"));
@@ -264,8 +270,8 @@ export default function DashboardRHDedicado({ data }: Props) {
   const colaboradores = data.colaboradores || [];
 
   /* ═══ DERIVED DATA ═══ */
-  const allDepartamentos = useMemo(() => [...new Set(colaboradores.map((c: any) => c.departamento).filter(Boolean))].sort() as string[], [colaboradores]);
-  const allCargos = useMemo(() => [...new Set(colaboradores.map((c: any) => c.cargo || c.registration || "").filter(Boolean))].sort() as string[], [colaboradores]);
+  const allDepartamentos = useMemo(() => [...new Set(colaboradores.map((c: any) => c.departamento).filter(isValidFilterOption))].sort() as string[], [colaboradores]);
+  const allCargos = useMemo(() => [...new Set(colaboradores.map((c: any) => c.cargo || c.registration || "").filter(isValidFilterOption))].sort() as string[], [colaboradores]);
 
   /* ═══ FILTROS ═══ */
   const [filter, setFilter] = useState<Record<string, string | null>>({ departamento: null, status: null, cargo: null, dataInicio: null, dataFim: null });

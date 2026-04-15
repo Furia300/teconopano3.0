@@ -1,20 +1,19 @@
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
+  QrCode, Box, AlertTriangle, Weight, User, Palette,
+  Factory, ArrowRight, Check, Maximize2, Minimize2,
+} from "lucide-react";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
-import { QrCode, AlertTriangle } from "lucide-react";
+import { Field, FieldLabel, FieldHint } from "@/components/ui/field";
 
+/* --- Types --- */
 interface Coleta {
   id: string;
   numero: number;
@@ -29,24 +28,41 @@ interface NovaSeparacaoDialogProps {
   tiposMaterial: string[];
 }
 
+/* --- Constants --- */
 const CORES = ["Branco", "Colorido", "Escuro", "Azul", "Verde", "Variado", "Preto"];
 
+/* --- Sizes --- */
+type DialogSize = "normal" | "grande" | "tela-cheia";
+const SIZES: Record<DialogSize, { maxW: string; maxH: string; label: string }> = {
+  normal:       { maxW: "max-w-xl",      maxH: "max-h-[85vh]", label: "Normal" },
+  grande:       { maxW: "max-w-3xl",     maxH: "max-h-[90vh]", label: "Grande" },
+  "tela-cheia": { maxW: "max-w-[92vw]",  maxH: "max-h-[95vh]", label: "Tela cheia" },
+};
+const SIZE_ORDER: DialogSize[] = ["normal", "grande", "tela-cheia"];
+
+const EMPTY_FORM = {
+  coletaId: "",
+  tipoMaterial: "",
+  cor: "",
+  peso: "",
+  destino: "producao",
+  colaborador: "",
+  observacao: "",
+};
+
+/* --- Component --- */
 export function NovaSeparacaoDialog({ open, onOpenChange, onSuccess, tiposMaterial }: NovaSeparacaoDialogProps) {
   const [coletas, setColetas] = useState<Coleta[]>([]);
   const [loading, setLoading] = useState(false);
+  const [form, setForm] = useState(EMPTY_FORM);
+  const [dialogSize, setDialogSize] = useState<DialogSize>("grande");
 
-  const [form, setForm] = useState({
-    coletaId: "",
-    tipoMaterial: "",
-    cor: "",
-    peso: "",
-    destino: "producao",
-    colaborador: "",
-    observacao: "",
-  });
+  const sz = SIZES[dialogSize];
+  const isWide = dialogSize !== "normal";
 
   useEffect(() => {
     if (open) {
+      setForm(EMPTY_FORM);
       fetch("/api/coletas")
         .then((r) => r.json())
         .then((data: Coleta[]) => {
@@ -58,9 +74,7 @@ export function NovaSeparacaoDialog({ open, onOpenChange, onSuccess, tiposMateri
 
   const selectedColeta = coletas.find((c) => c.id === form.coletaId);
 
-  // Auto-detect destino based on conditions
   const getAutoDestino = (material: string, cor: string) => {
-    // Materials that typically go to repanol
     if (cor === "Escuro" || cor === "Preto") return "repanol";
     return "producao";
   };
@@ -74,6 +88,13 @@ export function NovaSeparacaoDialog({ open, onOpenChange, onSuccess, tiposMateri
     const autoDestino = getAutoDestino(form.tipoMaterial, cor);
     setForm((f) => ({ ...f, cor, destino: autoDestino }));
   };
+
+  const cycleSize = () => {
+    const i = SIZE_ORDER.indexOf(dialogSize);
+    setDialogSize(SIZE_ORDER[(i + 1) % SIZE_ORDER.length]);
+  };
+
+  const update = (field: string, value: string) => setForm((f) => ({ ...f, [field]: value }));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -93,7 +114,7 @@ export function NovaSeparacaoDialog({ open, onOpenChange, onSuccess, tiposMateri
       if (!res.ok) throw new Error("Erro ao registrar separação");
 
       toast.success("Separação registrada com sucesso!");
-      setForm({ coletaId: "", tipoMaterial: "", cor: "", peso: "", destino: "producao", colaborador: "", observacao: "" });
+      setForm(EMPTY_FORM);
       onOpenChange(false);
       onSuccess();
     } catch {
@@ -103,114 +124,146 @@ export function NovaSeparacaoDialog({ open, onOpenChange, onSuccess, tiposMateri
     }
   };
 
-  const update = (field: string, value: string) => setForm((f) => ({ ...f, [field]: value }));
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <QrCode className="h-5 w-5 text-primary" />
-            Nova Separação
-          </DialogTitle>
-          <DialogDescription>
-            Classifique o material recebido por tipo, cor e destino
-          </DialogDescription>
+      <DialogContent className={`${sz.maxH} ${sz.maxW} overflow-y-auto p-0 transition-all duration-200`}>
+        {/* === HEADER === */}
+        <DialogHeader className="border-b border-[var(--fips-border)] px-6 pt-5 pb-4">
+          <div className="flex items-start gap-3">
+            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-[var(--color-fips-blue-200)]">
+              <QrCode className="h-5 w-5 text-[var(--fips-secondary)]" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <DialogTitle>Nova separação</DialogTitle>
+              <DialogDescription>
+                Classifique o material recebido por tipo, cor e destino. Destino ajustado automaticamente pela cor.
+              </DialogDescription>
+            </div>
+            <button type="button" onClick={cycleSize}
+              className="flex items-center gap-1.5 rounded-lg border border-[var(--fips-border)] px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--fips-fg-muted)] transition-colors hover:border-[var(--fips-border-strong)] hover:text-[var(--fips-fg)]"
+              title={`Tamanho: ${sz.label}`}>
+              {dialogSize === "tela-cheia" ? <Minimize2 size={13} /> : <Maximize2 size={13} />}
+              {sz.label}
+            </button>
+          </div>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Coleta de origem */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Coleta de Origem *</label>
-            <Select value={form.coletaId} onChange={(e) => update("coletaId", e.target.value)}>
-              <option value="">Selecione a coleta</option>
-              {coletas.map((c) => (
-                <option key={c.id} value={c.id}>#{c.numero} — {c.nomeFantasia}</option>
-              ))}
-            </Select>
-            {selectedColeta && (
-              <p className="text-xs text-muted-foreground">
-                Fornecedor: {selectedColeta.nomeFantasia}
-              </p>
-            )}
-          </div>
+        {/* === BODY === */}
+        <form id="form-separacao" onSubmit={handleSubmit} className="px-6 py-5">
+          <div className={isWide ? "grid grid-cols-2 gap-x-8 gap-y-5" : "flex flex-col gap-5"}>
 
-          {/* Material e Cor */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Tipo Material *</label>
-              <Select value={form.tipoMaterial} onChange={(e) => handleMaterialChange(e.target.value)}>
-                <option value="">Selecione</option>
-                {tiposMaterial.map((m) => (
-                  <option key={m} value={m}>{m}</option>
-                ))}
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Cor</label>
-              <Select value={form.cor} onChange={(e) => handleCorChange(e.target.value)}>
-                <option value="">Selecione</option>
-                {CORES.map((c) => (
-                  <option key={c} value={c}>{c}</option>
-                ))}
-              </Select>
-            </div>
-          </div>
+            {/* -- COL 1: Coleta + Material + Cor + Peso -- */}
+            <div className="flex flex-col gap-5">
+              {/* Coleta */}
+              <Field density="compact" inset="icon">
+                <FieldLabel required>Coleta de origem</FieldLabel>
+                <Select density="compact" leftIcon={<Box className="h-3.5 w-3.5" />} value={form.coletaId} onChange={(e) => update("coletaId", e.target.value)}>
+                  <option value="">Selecione a coleta</option>
+                  {coletas.map((c) => (
+                    <option key={c.id} value={c.id}>#{c.numero} — {c.nomeFantasia}</option>
+                  ))}
+                </Select>
+                <FieldHint>Coletas com status recebido ou em separação</FieldHint>
+              </Field>
 
-          {/* Peso e Destino */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Peso (kg) *</label>
-              <Input
-                type="number"
-                step="0.01"
-                placeholder="0.00"
-                value={form.peso}
-                onChange={(e) => update("peso", e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Destino *</label>
-              <Select value={form.destino} onChange={(e) => update("destino", e.target.value)}>
-                <option value="producao">Produção</option>
-                <option value="repanol">Repanol (manchado/tingir)</option>
-                <option value="costureira">Costureira</option>
-                <option value="doacao">Doação</option>
-                <option value="descarte">Descarte</option>
-              </Select>
-            </div>
-          </div>
+              {/* Info coleta selecionada */}
+              {selectedColeta && (
+                <div className="rounded-xl border border-[var(--fips-border)] bg-[var(--fips-surface-muted)] px-4 py-3 text-xs space-y-1.5">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-[var(--fips-fg-muted)]">Fornecedor</span>
+                    <span className="font-medium text-[var(--fips-fg)]">{selectedColeta.nomeFantasia}</span>
+                  </div>
+                </div>
+              )}
 
-          {/* Aviso Repanol */}
-          {form.destino === "repanol" && (
-            <div className="flex items-start gap-2 p-3 bg-warning/10 border border-warning/20 rounded-lg">
-              <AlertTriangle className="h-4 w-4 text-warning mt-0.5 shrink-0" />
-              <div className="text-sm">
-                <p className="font-medium text-warning">Material será enviado para Repanol</p>
-                <p className="text-muted-foreground text-xs">Manchado, molhado ou precisa tingir. Será registrado no módulo Repanol.</p>
+              {/* Material e Cor */}
+              <div className="grid grid-cols-2 gap-3">
+                <Field density="compact" inset="icon">
+                  <FieldLabel required>Tipo Material</FieldLabel>
+                  <Select density="compact" leftIcon={<Factory className="h-3.5 w-3.5" />} value={form.tipoMaterial} onChange={(e) => handleMaterialChange(e.target.value)}>
+                    <option value="">Selecione</option>
+                    {tiposMaterial.map((m) => (
+                      <option key={m} value={m}>{m}</option>
+                    ))}
+                  </Select>
+                </Field>
+                <Field density="compact" inset="icon">
+                  <FieldLabel>Cor</FieldLabel>
+                  <Select density="compact" leftIcon={<Palette className="h-3.5 w-3.5" />} value={form.cor} onChange={(e) => handleCorChange(e.target.value)}>
+                    <option value="">Selecione</option>
+                    {CORES.map((c) => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </Select>
+                </Field>
               </div>
+
+              {/* Peso */}
+              <Field density="compact" inset="icon">
+                <FieldLabel required>Peso (kg)</FieldLabel>
+                <Input density="compact" type="number" step="0.01" placeholder="0.00"
+                  leftIcon={<Weight className="h-3.5 w-3.5" />}
+                  value={form.peso} onChange={(e) => update("peso", e.target.value)} />
+              </Field>
             </div>
-          )}
 
-          {/* Colaborador */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Colaborador</label>
-            <Input
-              placeholder="Nome do colaborador"
-              value={form.colaborador}
-              onChange={(e) => update("colaborador", e.target.value)}
-            />
+            {/* -- COL 2: Destino + Aviso + Colaborador + Obs -- */}
+            <div className="flex flex-col gap-5">
+              {/* Destino */}
+              <Field density="compact" inset="icon">
+                <FieldLabel required>Destino</FieldLabel>
+                <Select density="compact" leftIcon={<ArrowRight className="h-3.5 w-3.5" />} value={form.destino} onChange={(e) => update("destino", e.target.value)}>
+                  <option value="producao">Produção</option>
+                  <option value="repanol">Repanol (manchado/tingir)</option>
+                  <option value="costureira">Costureira</option>
+                  <option value="doacao">Doação</option>
+                  <option value="descarte">Descarte</option>
+                </Select>
+                <FieldHint>Ajustado automaticamente pela cor selecionada</FieldHint>
+              </Field>
+
+              {/* Aviso Repanol */}
+              {form.destino === "repanol" && (
+                <div className="rounded-[10px_10px_10px_18px] border border-[var(--fips-warning)]/30 bg-[var(--fips-warning)]/[0.06] p-4">
+                  <div className="mb-2 flex items-center gap-2">
+                    <AlertTriangle className="h-3.5 w-3.5 text-[var(--fips-warning)]" />
+                    <p className="text-[10px] font-bold uppercase tracking-[1px] text-[var(--fips-warning)]">Material para Repanol</p>
+                  </div>
+                  <p className="text-xs text-[var(--fips-fg-muted)]">Manchado, molhado ou precisa tingir. Será registrado no módulo Repanol.</p>
+                </div>
+              )}
+
+              {/* Colaborador */}
+              <Field density="compact" inset="icon">
+                <FieldLabel>Colaborador</FieldLabel>
+                <Input density="compact" placeholder="Nome do colaborador"
+                  leftIcon={<User className="h-3.5 w-3.5" />}
+                  value={form.colaborador} onChange={(e) => update("colaborador", e.target.value)} />
+              </Field>
+
+              {/* Observação */}
+              <Field density="compact" inset="none">
+                <FieldLabel>Observação</FieldLabel>
+                <Textarea density="compact" placeholder="Detalhes adicionais sobre a separação..."
+                  value={form.observacao} onChange={(e) => update("observacao", e.target.value)}
+                  className={isWide ? "min-h-[100px]" : ""} />
+              </Field>
+            </div>
           </div>
-
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              Cancelar
-            </Button>
-            <Button type="submit" loading={loading}>
-              Registrar Separação
-            </Button>
-          </DialogFooter>
         </form>
+
+        {/* === FOOTER === */}
+        <DialogFooter className="border-t border-[var(--fips-border)] px-6 py-3">
+          <div className="flex w-full items-center justify-between gap-3">
+            <p className="hidden text-xs text-[var(--fips-fg-muted)] sm:block">⌘ + Enter para salvar</p>
+            <div className="flex flex-1 justify-end gap-2 sm:flex-none">
+              <Button type="button" variant="secondary" onClick={() => onOpenChange(false)}>Cancelar</Button>
+              <Button type="submit" form="form-separacao" variant="success" loading={loading} className="gap-2">
+                <Check className="h-4 w-4" /> Registrar separação
+              </Button>
+            </div>
+          </div>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

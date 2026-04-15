@@ -1,22 +1,40 @@
-import { useEffect, useState } from "react";
-import { ClipboardList, Plus, Search, QrCode, Factory, Droplets, Scissors, Gift, Trash2 } from "lucide-react";
+import { useEffect, useState, useMemo } from "react";
+import {
+  ClipboardList,
+  Plus,
+  QrCode,
+  Factory,
+  Droplets,
+  Scissors,
+  Gift,
+  Trash2,
+  Eye,
+} from "lucide-react";
 import { PageHeader } from "@/components/domain/PageHeader";
 import { StatsCard } from "@/components/domain/StatsCard";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
+import { DataListingToolbar } from "@/components/domain/DataListingToolbar";
 import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableEmpty,
-} from "@/components/ui/table";
+  DataListingTable,
+  type DataListingColumn,
+  CellMonoStrong,
+  CellMonoMuted,
+  CellMuted,
+  CellActions,
+  CellActionButton,
+} from "@/components/domain/DataListingTable";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { NovaSeparacaoDialog } from "./NovaSeparacaoDialog";
 
+/* ─── Cores FIPS DS canônicas para os Cards Relatório ─── */
+const FIPS_COLORS = {
+  azulProfundo: "#004B9B",
+  verdeFloresta: "#00C64C",
+  amareloEscuro: "#F6921E",
+  azulEscuro: "#002A68",
+};
+
+/* ─── Tipos ─── */
 interface Separacao {
   id: string;
   coletaId: string;
@@ -30,7 +48,10 @@ interface Separacao {
   data: string;
 }
 
-const destinoConfig: Record<string, { label: string; variant: "default" | "success" | "warning" | "info" | "danger" | "secondary"; icon: typeof Factory }> = {
+const destinoConfig: Record<
+  string,
+  { label: string; variant: "default" | "success" | "warning" | "info" | "danger" | "secondary"; icon: typeof Factory }
+> = {
   producao: { label: "Produção", variant: "info", icon: Factory },
   repanol: { label: "Repanol", variant: "warning", icon: Droplets },
   costureira: { label: "Costureira", variant: "default", icon: Scissors },
@@ -45,12 +66,14 @@ const TIPOS_MATERIAL = [
   "EDREDON", "FAIXA", "LENÇOL",
 ];
 
+/* ─── Componente principal ─── */
 export default function SeparacaoList() {
   const [separacoes, setSeparacoes] = useState<Separacao[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [filterDestino, setFilterDestino] = useState("");
-  const [filterMaterial, setFilterMaterial] = useState("");
+  const [periodo, setPeriodo] = useState("Últimos 30 dias");
+  const [filterDestino, setFilterDestino] = useState<string>("");
+  const [filterMaterial, setFilterMaterial] = useState<string>("");
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const fetchSeparacoes = async () => {
@@ -69,30 +92,35 @@ export default function SeparacaoList() {
     fetchSeparacoes();
   }, []);
 
-  const filtered = separacoes.filter((s) => {
-    const matchSearch =
-      !search ||
-      s.fornecedor.toLowerCase().includes(search.toLowerCase()) ||
-      s.tipoMaterial.toLowerCase().includes(search.toLowerCase()) ||
-      String(s.coletaNumero).includes(search);
-    const matchDestino = !filterDestino || s.destino === filterDestino;
-    const matchMaterial = !filterMaterial || s.tipoMaterial === filterMaterial;
-    return matchSearch && matchDestino && matchMaterial;
-  });
+  /* ─── Stats memoizados ─── */
+  const stats = useMemo(() => {
+    const total = separacoes.length;
+    const pesoTotal = separacoes.reduce((acc, s) => acc + s.peso, 0);
+    const producao = separacoes.filter((s) => s.destino === "producao").length;
+    const repanol = separacoes.filter((s) => s.destino === "repanol").length;
+    return { total, pesoTotal, producao, repanol };
+  }, [separacoes]);
 
-  const stats = {
-    total: separacoes.length,
-    pesoTotal: separacoes.reduce((acc, s) => acc + s.peso, 0),
-    producao: separacoes.filter((s) => s.destino === "producao").length,
-    repanol: separacoes.filter((s) => s.destino === "repanol").length,
-  };
+  /* ─── Dados filtrados ─── */
+  const filtered = useMemo(() => {
+    return separacoes.filter((s) => {
+      const q = search.trim().toLowerCase();
+      const matchSearch =
+        !q ||
+        s.fornecedor.toLowerCase().includes(q) ||
+        s.tipoMaterial.toLowerCase().includes(q) ||
+        String(s.coletaNumero).includes(q);
+      const matchDestino = !filterDestino || s.destino === filterDestino;
+      const matchMaterial = !filterMaterial || s.tipoMaterial === filterMaterial;
+      return matchSearch && matchDestino && matchMaterial;
+    });
+  }, [separacoes, search, filterDestino, filterMaterial]);
 
-  const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString("pt-BR");
-  };
+  const activeFilters = [filterDestino, filterMaterial].filter(Boolean).length;
 
   return (
     <div className="space-y-6">
+      {/* ─── PageHeader com stats pills ─── */}
       <PageHeader
         title="Separação"
         description="Triagem e classificação do material recebido"
@@ -117,90 +145,131 @@ export default function SeparacaoList() {
         }
       />
 
-      {/* KPIs */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatsCard label="Total Separações" value={stats.total} icon={ClipboardList} color="text-blue-500" bg="bg-blue-500/10" />
-        <StatsCard label="Peso Total" value={`${stats.pesoTotal.toLocaleString("pt-BR")} kg`} icon={ClipboardList} color="text-emerald-500" bg="bg-emerald-500/10" />
-        <StatsCard label="Para Produção" value={stats.producao} icon={Factory} color="text-purple-500" bg="bg-purple-500/10" />
-        <StatsCard label="Para Repanol" value={stats.repanol} icon={Droplets} color="text-amber-500" bg="bg-amber-500/10" />
+      {/* ─── Cards Relatório — padrão FIPS DS ─── */}
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
+        <StatsCard
+          label="Total Separações"
+          value={stats.total}
+          subtitle="Registros cadastrados"
+          icon={ClipboardList}
+          color={FIPS_COLORS.azulProfundo}
+        />
+        <StatsCard
+          label="Peso Total"
+          value={`${stats.pesoTotal.toLocaleString("pt-BR")} kg`}
+          subtitle="Peso total separado"
+          icon={ClipboardList}
+          color={FIPS_COLORS.verdeFloresta}
+        />
+        <StatsCard
+          label="Para Produção"
+          value={stats.producao}
+          subtitle="Destinados à produção"
+          icon={Factory}
+          color={FIPS_COLORS.amareloEscuro}
+        />
+        <StatsCard
+          label="Para Repanol"
+          value={stats.repanol}
+          subtitle="Destinados ao Repanol"
+          icon={Droplets}
+          color={FIPS_COLORS.azulEscuro}
+        />
       </div>
 
-      {/* Filtros */}
-      <div className="fips-surface-panel p-4">
-        <div className="flex flex-col sm:flex-row gap-3">
-          <div className="flex-1">
-            <Input
-              placeholder="Buscar por fornecedor, material ou nº coleta..."
-              icon={<Search />}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </div>
-          <div className="w-full sm:w-44">
-            <Select value={filterDestino} onChange={(e) => setFilterDestino(e.target.value)}>
-              <option value="">Todos destinos</option>
-              <option value="producao">Produção</option>
-              <option value="repanol">Repanol</option>
-              <option value="costureira">Costureira</option>
-              <option value="doacao">Doação</option>
-              <option value="descarte">Descarte</option>
-            </Select>
-          </div>
-          <div className="w-full sm:w-44">
-            <Select value={filterMaterial} onChange={(e) => setFilterMaterial(e.target.value)}>
-              <option value="">Todos materiais</option>
-              {TIPOS_MATERIAL.map((m) => (
-                <option key={m} value={m}>{m}</option>
-              ))}
-            </Select>
-          </div>
-        </div>
-      </div>
+      {/* ─── Toolbar — padrão FIPS DS Data Listing ─── */}
+      <DataListingToolbar
+        search={search}
+        onSearchChange={setSearch}
+        searchPlaceholder="Buscar por fornecedor, material ou nº coleta..."
+        activeFilters={activeFilters}
+        filtersContent={
+          <div className="px-4 py-3 space-y-4">
+            {/* Destino */}
+            <div>
+              <p className="mb-2 text-[9px] font-bold uppercase tracking-[1px] text-[var(--fips-fg-muted)]">
+                Destino
+              </p>
+              <div className="flex flex-col gap-1">
+                {[
+                  { v: "", l: "Todos os destinos" },
+                  { v: "producao", l: "Produção" },
+                  { v: "repanol", l: "Repanol" },
+                  { v: "costureira", l: "Costureira" },
+                  { v: "doacao", l: "Doação" },
+                  { v: "descarte", l: "Descarte" },
+                ].map((opt) => (
+                  <button
+                    key={opt.v || "todos-destino"}
+                    onClick={() => setFilterDestino(opt.v)}
+                    className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
+                      filterDestino === opt.v
+                        ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                        : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
+                    }`}
+                  >
+                    {opt.l}
+                  </button>
+                ))}
+              </div>
+            </div>
 
-      {/* Tabela */}
-      <div className="fips-surface-panel">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Coleta</TableHead>
-              <TableHead>Fornecedor</TableHead>
-              <TableHead>Tipo Material</TableHead>
-              <TableHead>Cor</TableHead>
-              <TableHead>Peso</TableHead>
-              <TableHead>Destino</TableHead>
-              <TableHead>Colaborador</TableHead>
-              <TableHead>Data</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {loading ? (
-              <TableEmpty colSpan={8} message="Carregando..." />
-            ) : filtered.length === 0 ? (
-              <TableEmpty colSpan={8} />
-            ) : (
-              filtered.map((sep) => {
-                const dc = destinoConfig[sep.destino] || { label: sep.destino, variant: "secondary" as const };
-                return (
-                  <TableRow key={sep.id}>
-                    <TableCell className="font-bold">#{sep.coletaNumero}</TableCell>
-                    <TableCell>{sep.fornecedor}</TableCell>
-                    <TableCell>
-                      <Badge variant="outline">{sep.tipoMaterial}</Badge>
-                    </TableCell>
-                    <TableCell>{sep.cor}</TableCell>
-                    <TableCell className="font-medium">{sep.peso.toLocaleString("pt-BR")} kg</TableCell>
-                    <TableCell>
-                      <Badge variant={dc.variant} dot>{dc.label}</Badge>
-                    </TableCell>
-                    <TableCell>{sep.colaborador}</TableCell>
-                    <TableCell>{formatDate(sep.data)}</TableCell>
-                  </TableRow>
-                );
-              })
-            )}
-          </TableBody>
-        </Table>
-      </div>
+            {/* Tipo Material */}
+            <div>
+              <p className="mb-2 text-[9px] font-bold uppercase tracking-[1px] text-[var(--fips-fg-muted)]">
+                Tipo Material
+              </p>
+              <div className="flex flex-col gap-1">
+                <button
+                  onClick={() => setFilterMaterial("")}
+                  className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
+                    !filterMaterial
+                      ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                      : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
+                  }`}
+                >
+                  Todos os materiais
+                </button>
+                {TIPOS_MATERIAL.map((m) => (
+                  <button
+                    key={m}
+                    onClick={() => setFilterMaterial(m)}
+                    className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
+                      filterMaterial === m
+                        ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                        : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
+                    }`}
+                  >
+                    {m}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        }
+        periodo={periodo}
+        onPeriodoChange={setPeriodo}
+        onExportExcel={() => alert("Export Excel — placeholder")}
+        onExportPdf={() => alert("Export PDF — placeholder")}
+      />
+
+      {/* ─── Tabela canônica DS-FIPS — Data Listing ─── */}
+      <DataListingTable<Separacao>
+        icon={<ClipboardList className="h-[22px] w-[22px]" />}
+        title="Separação"
+        subtitle={`${filtered.length} ${filtered.length === 1 ? "registro" : "registros"} ${
+          activeFilters || search ? "filtrados" : "no total"
+        } · Atualizado agora`}
+        filtered={!!(search || activeFilters)}
+        data={filtered}
+        getRowId={(s) => s.id}
+        emptyState={
+          loading
+            ? "Carregando..."
+            : "Nenhuma separação encontrada"
+        }
+        columns={separacaoColumns()}
+      />
 
       <NovaSeparacaoDialog
         open={dialogOpen}
@@ -210,4 +279,101 @@ export default function SeparacaoList() {
       />
     </div>
   );
+}
+
+/* ──────────────────────────── COLUMNS DEFINITION ──────────────────────────── */
+
+const formatDateBR = (s: string | null | undefined) =>
+  s ? new Date(s).toLocaleDateString("pt-BR") : "—";
+
+const formatKg = (n: number | null | undefined) =>
+  n ? `${n.toLocaleString("pt-BR")} kg` : "—";
+
+function separacaoColumns(): DataListingColumn<Separacao>[] {
+  return [
+    {
+      id: "coleta",
+      label: "Coleta",
+      fixed: true,
+      sortable: true,
+      width: "80px",
+      render: (s) => <CellMonoStrong>#{s.coletaNumero}</CellMonoStrong>,
+    },
+    {
+      id: "fornecedor",
+      label: "Fornecedor",
+      sortable: true,
+      width: "160px",
+      render: (s) => (
+        <div className="truncate max-w-[150px]" title={s.fornecedor}>
+          <span className="text-[11px] font-semibold text-[var(--fips-fg)]">{s.fornecedor}</span>
+        </div>
+      ),
+    },
+    {
+      id: "tipoMaterial",
+      label: "Material",
+      sortable: true,
+      width: "120px",
+      render: (s) => <Badge variant="outline">{s.tipoMaterial}</Badge>,
+    },
+    {
+      id: "cor",
+      label: "Cor",
+      sortable: true,
+      width: "90px",
+      render: (s) => <CellMuted>{s.cor}</CellMuted>,
+    },
+    {
+      id: "peso",
+      label: "Peso",
+      sortable: true,
+      align: "right",
+      width: "90px",
+      render: (s) => <CellMonoStrong align="right">{formatKg(s.peso)}</CellMonoStrong>,
+    },
+    {
+      id: "destino",
+      label: "Destino",
+      sortable: true,
+      width: "100px",
+      render: (s) => {
+        const dc = destinoConfig[s.destino] || {
+          label: s.destino,
+          variant: "secondary" as const,
+        };
+        return <Badge variant={dc.variant} dot>{dc.label}</Badge>;
+      },
+    },
+    {
+      id: "colaborador",
+      label: "Colaborador",
+      sortable: true,
+      width: "130px",
+      render: (s) => <CellMuted>{s.colaborador}</CellMuted>,
+    },
+    {
+      id: "data",
+      label: "Data",
+      sortable: true,
+      width: "80px",
+      render: (s) => <CellMonoMuted>{formatDateBR(s.data)}</CellMonoMuted>,
+    },
+    {
+      id: "actions",
+      label: "Ação",
+      fixed: true,
+      align: "center",
+      width: "50px",
+      render: (s) => (
+        <CellActions>
+          <CellActionButton
+            title="Ver detalhes"
+            icon={<Eye className="h-3.5 w-3.5 text-[var(--fips-primary)]" />}
+            onClick={() => {}}
+          />
+        </CellActions>
+      ),
+    },
+  ];
 }

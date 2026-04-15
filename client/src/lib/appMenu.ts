@@ -111,6 +111,7 @@ export const APP_MENU: AppMenuItem[] = [
     perfis: ["administrador", "motorista", "expedicao", "galpao", "michele"],
     children: [
       { icon: Truck, label: "Motorista", href: "/motorista", perfis: ["administrador", "motorista", "expedicao", "galpao", "michele"] },
+      { icon: UserCog, label: "Cadastro", href: "/motorista-cadastro", perfis: ["administrador", "motorista", "galpao"] },
     ],
   },
 

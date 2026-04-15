@@ -694,6 +694,33 @@ export function registerRoutes(app: Express) {
     res.status(201).json(nova);
   });
 
+  // ==================== COSTUREIRAS EXTERNAS (cadastro) ====================
+  app.get("/api/costureiras-externas", (_req: Request, res: Response) => {
+    res.json([
+      { id: "ce1", nome: "Madalena Mister", telefone: "(13) 99111-0001", ativo: true },
+      { id: "ce2", nome: "Gisele C. Fonseca", telefone: "(13) 99111-0002", ativo: true },
+      { id: "ce3", nome: "Gisele M. R. Ozzi", telefone: "(13) 99111-0003", ativo: true },
+      { id: "ce4", nome: "Bárbara S. Santos", telefone: "(13) 99111-0004", ativo: true },
+      { id: "ce5", nome: "Bruno S. Cardoso", telefone: "(13) 99111-0005", ativo: true },
+      { id: "ce6", nome: "Josilma M. Correia", telefone: "(13) 99111-0006", ativo: true },
+      { id: "ce7", nome: "Reinaldo", telefone: "(13) 99111-0007", ativo: true },
+      { id: "ce8", nome: "Patrícia A. Diego", telefone: "(13) 99111-0008", ativo: true },
+      { id: "ce9", nome: "Delma Alves", telefone: "(13) 99111-0009", ativo: true },
+      { id: "ce10", nome: "Elaete Teixeira", telefone: "(13) 99111-0010", ativo: true },
+      { id: "ce11", nome: "Márcia Matos", telefone: "(13) 99111-0011", ativo: true },
+      { id: "ce12", nome: "Zorilda", telefone: "(13) 99111-0012", ativo: true },
+      { id: "ce13", nome: "Maria Luiza Leonete", telefone: "(13) 99111-0013", ativo: true },
+      { id: "ce14", nome: "Rita Anailde", telefone: "(13) 99111-0014", ativo: true },
+      { id: "ce15", nome: "Zelândia de Lima", telefone: "(13) 99111-0015", ativo: true },
+      { id: "ce16", nome: "Andreia Cristina", telefone: "(13) 99111-0016", ativo: true },
+      { id: "ce17", nome: "Marcia Regina Pedro", telefone: "(13) 99111-0017", ativo: true },
+      { id: "ce18", nome: "Marcia Garrido", telefone: "(13) 99111-0018", ativo: true },
+      { id: "ce19", nome: "Luana Maria", telefone: "(13) 99111-0019", ativo: true },
+      { id: "ce20", nome: "Julia Cássia", telefone: "(13) 99111-0020", ativo: true },
+      { id: "ce21", nome: "Maria Silva (CLT)", telefone: "(13) 99111-0021", ativo: true },
+    ]);
+  });
+
   // ==================== COSTUREIRA ====================
   app.get("/api/costureira", (_req: Request, res: Response) => {
     res.json(costureiraList);
@@ -721,8 +748,8 @@ export function registerRoutes(app: Express) {
       qtdsPacotesRetorno: 0,
       totalDifKg: 0,
       residuos: 0,
-      assCostEntrega: null,
-      assMotEntrega: null,
+      assCostEntrega: req.body.assCostEntrega || null,
+      assMotEntrega: req.body.assMotEntrega || null,
       assCostDevolucao: null,
       assMotDevolucao: null,
       galpaoEnvio: req.body.galpaoEnvio || "Vicente",
@@ -745,8 +772,8 @@ export function registerRoutes(app: Express) {
       qtdsPacotesRetorno: Number(req.body.qtdsPacotesRetorno) || 0,
       totalDifKg: Number(req.body.totalDifKg) || 0,
       residuos: Number(req.body.residuos) || 0,
-      assCostDevolucao: "signed",
-      assMotDevolucao: "signed",
+      assCostDevolucao: req.body.assCostDevolucao || "signed",
+      assMotDevolucao: req.body.assMotDevolucao || "signed",
     };
     res.json(costureiraList[idx]);
   });
