@@ -138,6 +138,7 @@ export default function ProducaoList() {
 
   /* ─── State: production form (auto-filled from QR) ─── */
   const [formSala, setFormSala] = useState("");
+  const [formCor, setFormCor] = useState(""); // manual se QR não tem cor
   const [formAcabamento, setFormAcabamento] = useState("");
   const [formMedida, setFormMedida] = useState("");
   const [formQtdePacote, setFormQtdePacote] = useState("");
@@ -324,7 +325,7 @@ export default function ProducaoList() {
         fornecedor: qrData.fornecedor,
         sala: formSala,
         tipoMaterial: qrData.tipoMaterial,
-        cor: qrData.cor,
+        cor: qrData.cor || formCor || "",
         acabamento: formAcabamento || null,
         medida: formMedida || null,
         kilo: qrData.peso,
@@ -612,15 +613,23 @@ export default function ProducaoList() {
                     </div>
                   </div>
 
-                  {/* Cor */}
-                  <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-3">
-                    <div className="text-[9px] font-bold uppercase tracking-[0.08em] text-[var(--fips-fg-muted)] mb-1">
-                      Cor
+                  {/* Cor — auto se QR tem, manual se não */}
+                  {qrData.cor ? (
+                    <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-3">
+                      <div className="text-[9px] font-bold uppercase tracking-[0.08em] text-[var(--fips-fg-muted)] mb-1">Cor (auto)</div>
+                      <div className="text-[13px] font-bold text-[var(--fips-fg)]">{qrData.cor}</div>
                     </div>
-                    <div className="text-[13px] font-bold text-[var(--fips-fg)]">
-                      {qrData.cor || "\u2014"}
+                  ) : (
+                    <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3">
+                      <div className="text-[9px] font-bold uppercase tracking-[0.08em] text-amber-600 mb-1">Cor (manual)</div>
+                      <Select density="compact" value={formCor} onChange={(e: any) => setFormCor(e.target.value)}>
+                        <option value="">Selecione a cor</option>
+                        {[...new Set(produtos.filter(p => p.tipoMaterial === qrData.tipoMaterial).map(p => p.cor).filter(Boolean))].sort().map(c => (
+                          <option key={c} value={c}>{c}</option>
+                        ))}
+                      </Select>
                     </div>
-                  </div>
+                  )}
 
                   {/* Peso */}
                   <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-3">

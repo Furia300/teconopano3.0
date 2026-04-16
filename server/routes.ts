@@ -757,6 +757,54 @@ export function registerRoutes(app: Express) {
         await dbUpdateColeta(req.body.coletaId, { status: "em_separacao" });
       } catch {}
 
+      // Auto-create costureira/repanol task when destino matches
+      const destino = req.body.destino;
+      if (destino === "costureira") {
+        try {
+          const coleta = await dbGetColeta(req.body.coletaId);
+          costureiraList.push({
+            id: `c${nextCostureiraId++}`,
+            coletaId: req.body.coletaId,
+            coletaNumero: coleta?.numero || 0,
+            fornecedor: coleta?.nomeFantasia || "",
+            costureira: "", // a definir pelo motorista
+            tipoMaterial: req.body.tipoMaterial,
+            tipoMedida: "",
+            status: "pendente",
+            dataEnvio: null, dataRetorno: null,
+            motoristaEnvio: "", motoristaRetorno: "",
+            qtdsSaidaKg: Number(req.body.peso) || 0,
+            qtdsRetornoKg: 0, qtdsPacotesRetorno: 0,
+            totalDifKg: 0, residuos: 0,
+            assCostEntrega: null, assMotEntrega: null,
+            assCostDevolucao: null, assMotDevolucao: null,
+            galpaoEnvio: "Vicente", observacao: "Gerado automaticamente pela triagem",
+          });
+          console.log(`[Triagem→Costureira] Auto-criado envio para ${req.body.tipoMaterial} ${req.body.peso}kg`);
+        } catch (e) { console.warn("[Triagem→Costureira] Erro:", e); }
+      }
+
+      if (destino === "repanol") {
+        try {
+          const coleta = await dbGetColeta(req.body.coletaId);
+          repanolList.push({
+            id: `r${nextRepanolId++}`,
+            coletaId: req.body.coletaId,
+            coletaNumero: coleta?.numero || 0,
+            fornecedor: coleta?.nomeFantasia || "",
+            empresaFornecedor: "", // a definir
+            tipoMaterial: req.body.tipoMaterial,
+            status: "pendente",
+            dataEnvio: null, dataRetorno: null,
+            pesoManchadoEnvio: 0, pesoMolhadoEnvio: 0, pesoTingidoEnvio: Number(req.body.peso) || 0,
+            pesoManchadoRetorno: 0, pesoMolhadoRetorno: 0, pesoTingidoRetorno: 0,
+            repanolResiduo: 0, galpao: "Vicente",
+            observacao: "Gerado automaticamente pela triagem",
+          });
+          console.log(`[Triagem→Repanol] Auto-criado envio para ${req.body.tipoMaterial} ${req.body.peso}kg`);
+        } catch (e) { console.warn("[Triagem→Repanol] Erro:", e); }
+      }
+
       res.status(201).json(nova);
     } catch (err) {
       console.error("[POST /api/separacoes]", err);
