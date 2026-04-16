@@ -17,6 +17,7 @@ import {
 import { PageHeader } from "@/components/domain/PageHeader";
 import { StatsCard } from "@/components/domain/StatsCard";
 import { DataListingToolbar } from "@/components/domain/DataListingToolbar";
+import { QrScanner } from "@/components/domain/QrScanner";
 import {
   DataListingTable,
   type DataListingColumn,
@@ -482,36 +483,11 @@ export default function ProducaoList() {
               </div>
             </div>
 
-            <div className="flex gap-2">
-              <div className="flex-1">
-                <Input
-                  ref={qrInputRef}
-                  density="compact"
-                  leftIcon={<Search className="h-4 w-4" />}
-                  placeholder="Escanear ou digitar codigo... (ex: TN-MO0MYNSW-KKJU)"
-                  value={qrInput}
-                  onChange={(e) => {
-                    setQrInput(e.target.value);
-                    setQrError("");
-                  }}
-                  onKeyDown={handleQrKeyDown}
-                  className="font-mono text-[13px] tracking-wide"
-                  autoComplete="off"
-                  autoFocus
-                />
-              </div>
-              <Button
-                onClick={() => handleQrScan()}
-                disabled={qrLoading || !qrInput.trim()}
-              >
-                {qrLoading ? (
-                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                ) : (
-                  <Search className="h-4 w-4" />
-                )}
-                Buscar
-              </Button>
-            </div>
+            <QrScanner
+              onScan={(code) => handleQrScan(code)}
+              scanning={qrLoading}
+              placeholder="Escanear ou digitar codigo... (ex: TN-MO0MYNSW-KKJU)"
+            />
 
             {/* Error message */}
             {qrError && (

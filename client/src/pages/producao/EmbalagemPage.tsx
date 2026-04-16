@@ -18,6 +18,7 @@ import {
 import { PageHeader } from "@/components/domain/PageHeader";
 import { StatsCard } from "@/components/domain/StatsCard";
 import { DataListingToolbar } from "@/components/domain/DataListingToolbar";
+import { QrScanner } from "@/components/domain/QrScanner";
 import {
   DataListingTable,
   type DataListingColumn,
