@@ -139,6 +139,12 @@ export default function ProducaoList() {
     try {
       const res = await fetch("/api/producoes");
       const data = await res.json();
+      // Ordem decrescente — mais recente primeiro
+      data.sort((a: any, b: any) => {
+        const da = a.horarioInicio || a.createdAt || a.dataCriacao || "";
+        const db = b.horarioInicio || b.createdAt || b.dataCriacao || "";
+        return db.localeCompare(da);
+      });
       setProducoes(data);
     } catch (err) {
       console.error("Erro ao buscar producoes:", err);
@@ -933,6 +939,12 @@ function producaoColumns({ onFinalizar }: ProducaoColumnActions): DataListingCol
       align: "right",
       width: "70px",
       render: (p) => <CellMonoMuted>{p.qtdePacotes ?? "\u2014"}</CellMonoMuted>,
+    },
+    {
+      id: "unidade",
+      label: "Unidade",
+      width: "70px",
+      render: (p: any) => <Badge variant={p.unidadeSaida === "kilo" ? "info" : "success"} className="text-[9px]">{p.unidadeSaida === "kilo" ? "Kilo" : "Unidade"}</Badge>,
     },
     {
       id: "status",
