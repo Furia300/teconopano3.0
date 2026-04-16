@@ -957,34 +957,57 @@ export function registerRoutes(app: Express) {
     res.json(producoes);
   });
 
-  app.post("/api/producoes", (req: Request, res: Response) => {
-    const coleta = coletas.find((c) => c.id === req.body.coletaId);
-    if (!coleta) return res.status(404).json({ message: "Coleta não encontrada" });
+  app.post("/api/producoes", async (req: Request, res: Response) => {
+    try {
+      // Try to get coleta from Supabase first, fallback to in-memory
+      let coletaInfo = { numero: 0, nomeFantasia: "" };
+      try {
+        const coleta = await dbGetColeta(req.body.coletaId);
+        if (coleta) coletaInfo = { numero: coleta.numero, nomeFantasia: coleta.nomeFantasia || "" };
+      } catch {
+        const local = coletas.find((c) => c.id === req.body.coletaId);
+        if (local) coletaInfo = { numero: local.numero, nomeFantasia: local.nomeFantasia || "" };
+      }
 
-    if (coleta.status === "em_separacao" || coleta.status === "separado") {
-      coleta.status = "em_producao";
+      const nova = {
+        id: `p${nextProducaoId++}`,
+        coletaId: req.body.coletaId || "",
+        qrCodeId: req.body.qrCodeId || "",
+        coletaNumero: req.body.coletaNumero || coletaInfo.numero,
+        fornecedor: req.body.fornecedor || coletaInfo.nomeFantasia,
+        sala: req.body.sala || "",
+        tipoMaterial: req.body.tipoMaterial || "",
+        cor: req.body.cor || "",
+        pesoEntrada: Number(req.body.pesoEntrada) || Number(req.body.kilo) || 0,
+        pesoProduzido: null,
+        qtdePacotes: null,
+        operador: req.body.operador || "",
+        status: req.body.status || "em_andamento",
+        horarioInicio: req.body.horarioInicio || new Date().toISOString(),
+        horarioFim: null,
+        createdAt: new Date().toISOString(),
+      };
+      producoes.push(nova);
+      res.status(201).json(nova);
+    } catch (err) {
+      console.error("[POST /api/producoes]", err);
+      res.status(500).json({ message: "Erro ao criar produção" });
     }
+  });
 
-    const nova = {
-      id: `p${nextProducaoId++}`,
-      coletaId: req.body.coletaId,
-      coletaNumero: coleta.numero,
-      fornecedor: coleta.nomeFantasia,
-      sala: req.body.sala,
-      tipoMaterial: req.body.tipoMaterial,
-      cor: req.body.cor || "",
-      acabamento: req.body.acabamento || "",
-      medida: req.body.medida || "",
-      kilo: Number(req.body.kilo) || 0,
-      pesoMedio: Number(req.body.pesoMedio) || 0,
-      qtdePacote: Number(req.body.qtdePacote) || 0,
-      unidadeSaida: req.body.unidadeSaida || "unidade",
-      statusEstoque: "pendente",
-      operador: req.body.operador || "",
-      dataCriacao: new Date().toISOString(),
+  app.put("/api/producoes/:id", (req: Request, res: Response) => {
+    const idx = producoes.findIndex((p) => p.id === req.params.id);
+    if (idx === -1) return res.status(404).json({ message: "Produção não encontrada" });
+
+    producoes[idx] = {
+      ...producoes[idx],
+      ...req.body,
+      pesoProduzido: req.body.pesoProduzido != null ? Number(req.body.pesoProduzido) : producoes[idx].pesoProduzido,
+      qtdePacotes: req.body.qtdePacotes != null ? Number(req.body.qtdePacotes) : producoes[idx].qtdePacotes,
+      horarioFim: req.body.horarioFim || producoes[idx].horarioFim,
+      status: req.body.status || producoes[idx].status,
     };
-    producoes.push(nova);
-    res.status(201).json(nova);
+    res.json(producoes[idx]);
   });
 
   // ==================== CLIENTES (Supabase) ====================

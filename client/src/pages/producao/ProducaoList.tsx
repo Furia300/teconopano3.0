@@ -45,8 +45,7 @@ const FIPS = {
 
 /* ─── Salas de producao ─── */
 const SALAS = [
-  "O1","O2","O3","O4","O5","O6","O7","O8",
-  "COBERTORIO","CORTE 01","CORTE 02","CORTE 03","CORTE 04","CORTE 05",
+  "CORTE 01","CORTE 02","CORTE 03","CORTE 04","CORTE 05",
   "FAIXA","CORTE VLI",
 ];
 
