@@ -13,6 +13,7 @@ import {
   X,
   Play,
   Square,
+  Scale,
 } from "lucide-react";
 import { PageHeader } from "@/components/domain/PageHeader";
 import { StatsCard } from "@/components/domain/StatsCard";
@@ -132,6 +133,7 @@ export default function ProducaoList() {
   const [finalizarId, setFinalizarId] = useState<string | null>(null);
   const [finPesoProduzido, setFinPesoProduzido] = useState("");
   const [finQtdePacotes, setFinQtdePacotes] = useState("");
+  const [finUnidade, setFinUnidade] = useState("unidade");
   const [finSubmitting, setFinSubmitting] = useState(false);
 
   /* ─── Fetch producoes ─── */
@@ -325,6 +327,7 @@ export default function ProducaoList() {
       const body = {
         pesoProduzido: peso,
         qtdePacotes: pacotes,
+        unidadeSaida: finUnidade,
         horarioFim: new Date().toISOString(),
         status: "finalizado",
       };
@@ -702,8 +705,8 @@ export default function ProducaoList() {
             </span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
-            <Field density="compact">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4">
+            <Field density="compact" inset="icon">
               <FieldLabel>Peso Produzido (kg) *</FieldLabel>
               <Input
                 density="compact"
@@ -717,7 +720,7 @@ export default function ProducaoList() {
                 autoFocus
               />
             </Field>
-            <Field density="compact">
+            <Field density="compact" inset="icon">
               <FieldLabel>Qtde Pacotes *</FieldLabel>
               <Input
                 density="compact"
@@ -728,6 +731,13 @@ export default function ProducaoList() {
                 value={finQtdePacotes}
                 onChange={(e) => setFinQtdePacotes(e.target.value)}
               />
+            </Field>
+            <Field density="compact" inset="icon">
+              <FieldLabel>Unidade de Medida *</FieldLabel>
+              <Select density="compact" leftIcon={<Scale className="h-3.5 w-3.5" />} value={finUnidade} onChange={(e: any) => setFinUnidade(e.target.value)}>
+                <option value="unidade">Unidade</option>
+                <option value="kilo">Kilo</option>
+              </Select>
             </Field>
             <div className="flex items-end gap-2">
               <Button
@@ -751,6 +761,7 @@ export default function ProducaoList() {
                   setFinalizarId(null);
                   setFinPesoProduzido("");
                   setFinQtdePacotes("");
+                  setFinUnidade("unidade");
                 }}
               >
                 <X className="h-4 w-4" />
