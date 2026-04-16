@@ -2,20 +2,17 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import {
   Factory,
-  Plus,
   QrCode,
   Weight,
   Package,
-  Ruler,
-  Eye,
   CheckCircle2,
   ChevronLeft,
   User,
   Search,
-  Scissors,
-  Palette,
-  Layers,
+  Clock,
   X,
+  Play,
+  Square,
 } from "lucide-react";
 import { PageHeader } from "@/components/domain/PageHeader";
 import { StatsCard } from "@/components/domain/StatsCard";
@@ -33,12 +30,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
-import { Field, FieldLabel, FieldHint } from "@/components/ui/field";
-import { NovaProducaoDialog } from "./NovaProducaoDialog";
+import { Field, FieldLabel } from "@/components/ui/field";
 import { useAppAuthMe } from "@/hooks/useAppUserPerfil";
 
-/* ─── Cores FIPS DS canonicas para os Cards Relatorio ─── */
-const FIPS_COLORS = {
+/* ─── Cores FIPS DS canonicas ─── */
+const FIPS = {
   azulProfundo: "#004B9B",
   verdeFloresta: "#00C64C",
   amareloEscuro: "#F6921E",
@@ -46,24 +42,30 @@ const FIPS_COLORS = {
   danger: "#DC3545",
 };
 
+/* ─── Salas de producao ─── */
+const SALAS = [
+  "O1","O2","O3","O4","O5","O6","O7","O8",
+  "COBERTORIO","CORTE 01","CORTE 02","CORTE 03","CORTE 04","CORTE 05",
+  "FAIXA","CORTE VLI",
+];
+
 /* ─── Tipos ─── */
 interface Producao {
   id: string;
   coletaId: string;
-  coletaNumero: number;
+  qrCodeId: string;
   fornecedor: string;
   sala: string;
   tipoMaterial: string;
   cor: string;
-  acabamento: string;
-  medida: string;
-  kilo: number;
-  pesoMedio: number;
-  qtdePacote: number;
-  unidadeSaida: string;
-  statusEstoque: string;
+  pesoEntrada: number;
+  pesoProduzido: number | null;
+  qtdePacotes: number | null;
   operador: string;
-  dataCriacao: string;
+  status: "em_andamento" | "finalizado";
+  horarioInicio: string;
+  horarioFim: string | null;
+  createdAt: string;
 }
 
 interface QRScanResult {
@@ -84,35 +86,22 @@ interface QRScanResult {
   };
 }
 
-const SALAS = [
-  "CORTE 01", "CORTE 02", "CORTE 03", "CORTE 04", "CORTE 05",
-  "CORTE VLI", "FAIXA",
-];
-
-const salaSaidaMap: Record<string, string> = {
-  "CORTE 01": "unidade",
-  "CORTE 02": "unidade",
-  "CORTE 03": "unidade",
-  "CORTE 04": "unidade",
-  "CORTE 05": "kilo",
-  "CORTE VLI": "kilo",
-  "FAIXA": "kilo",
-};
-
-const statusConfig: Record<
+const STATUS_VARIANTS: Record<
   string,
   { label: string; variant: "default" | "secondary" | "success" | "warning" | "danger" | "info" }
 > = {
-  pendente: { label: "Pendente", variant: "warning" },
-  em_estoque: { label: "No Estoque", variant: "success" },
   em_andamento: { label: "Em Andamento", variant: "info" },
+  finalizado: { label: "Finalizado", variant: "success" },
 };
 
 const formatDateBR = (s: string | null | undefined) =>
   s ? new Date(s).toLocaleDateString("pt-BR") : "\u2014";
 
+const formatTimeBR = (s: string | null | undefined) =>
+  s ? new Date(s).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }) : "\u2014";
+
 const formatKg = (n: number | null | undefined) =>
-  n ? `${n.toLocaleString("pt-BR")} kg` : "\u2014";
+  n != null && n > 0 ? `${n.toLocaleString("pt-BR", { minimumFractionDigits: 1 })} kg` : "\u2014";
 
 /* ─── Componente principal ─── */
 export default function ProducaoList() {
@@ -125,8 +114,6 @@ export default function ProducaoList() {
   const [periodo, setPeriodo] = useState("Ultimos 30 dias");
   const [filterSala, setFilterSala] = useState<string>("");
   const [filterStatus, setFilterStatus] = useState<string>("");
-  const [filterSaida, setFilterSaida] = useState<string>("");
-  const [dialogOpen, setDialogOpen] = useState(false);
 
   /* ─── State: QR scan panel ─── */
   const [showQrPanel, setShowQrPanel] = useState(false);
@@ -136,62 +123,16 @@ export default function ProducaoList() {
   const [qrError, setQrError] = useState("");
   const qrInputRef = useRef<HTMLInputElement>(null);
 
-  /* ─── State: production form (auto-filled from QR) ─── */
+  /* ─── State: production start form ─── */
   const [formSala, setFormSala] = useState("");
-  const [formCor, setFormCor] = useState(""); // manual se QR não tem cor
-  const [formAcabamento, setFormAcabamento] = useState("");
-  const [formMedida, setFormMedida] = useState("");
-  const [formQtdePacote, setFormQtdePacote] = useState("");
+  const [formCor, setFormCor] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  /* ─── Produtos para cascata acabamento/medida ─── */
-  const [produtos, setProdutos] = useState<{ tipoMaterial: string; cor: string; medida: string; pesoMedio: number }[]>([]);
-  useEffect(() => {
-    fetch("/api/produtos")
-      .then((r) => r.json())
-      .then((data: any[]) =>
-        setProdutos(
-          data.map((p: any) => ({
-            tipoMaterial: (p.tipoMaterial || "").trim(),
-            cor: (p.cor || "").trim(),
-            medida: (p.medida || "").trim(),
-            pesoMedio: p.pesoMedio || 0,
-          })),
-        ),
-      )
-      .catch(() => {});
-  }, []);
-
-  /* Acabamentos filtrados pelo material do QR */
-  const acabamentosDoMaterial = useMemo(() => {
-    if (!qrData?.tipoMaterial) return [];
-    const norm = qrData.tipoMaterial.replace(/\s+/g, " ").trim().toLowerCase();
-    const set = new Set(
-      produtos
-        .filter((p) => p.tipoMaterial.replace(/\s+/g, " ").trim().toLowerCase() === norm)
-        .map((p) => p.medida)
-        .filter(Boolean),
-    );
-    return Array.from(set).sort();
-  }, [produtos, qrData?.tipoMaterial]);
-
-  /* Medidas filtradas */
-  const medidasDoMaterial = useMemo(() => {
-    if (!qrData?.tipoMaterial) return [];
-    const norm = qrData.tipoMaterial.replace(/\s+/g, " ").trim().toLowerCase();
-    const set = new Set(
-      produtos
-        .filter((p) => p.tipoMaterial.replace(/\s+/g, " ").trim().toLowerCase() === norm)
-        .map((p) => p.medida)
-        .filter(Boolean),
-    );
-    return Array.from(set).sort();
-  }, [produtos, qrData?.tipoMaterial]);
-
-  /* Unidade de saida automatica pela sala */
-  const unidadeSaida = useMemo(() => {
-    return formSala ? (salaSaidaMap[formSala] || "unidade") : "";
-  }, [formSala]);
+  /* ─── State: finalizar inline ─── */
+  const [finalizarId, setFinalizarId] = useState<string | null>(null);
+  const [finPesoProduzido, setFinPesoProduzido] = useState("");
+  const [finQtdePacotes, setFinQtdePacotes] = useState("");
+  const [finSubmitting, setFinSubmitting] = useState(false);
 
   /* ─── Fetch producoes ─── */
   const fetchProducoes = useCallback(async () => {
@@ -219,31 +160,16 @@ export default function ProducaoList() {
 
   /* ─── Stats memoizados ─── */
   const stats = useMemo(() => {
-    let pesoTotal = 0;
-    let porUnidade = 0;
-    let porKilo = 0;
-    for (let i = 0; i < producoes.length; i++) {
-      const p = producoes[i];
-      pesoTotal += p.kilo;
-      if (p.unidadeSaida === "unidade") porUnidade++;
-      else if (p.unidadeSaida === "kilo") porKilo++;
-    }
-    return {
-      total: producoes.length,
-      pesoTotal,
-      porUnidade,
-      porKilo,
-    };
-  }, [producoes]);
-
-  /* ─── Contagem por sala ─── */
-  const countBySala = useMemo(() => {
-    const m: Record<string, number> = {};
-    for (let i = 0; i < producoes.length; i++) {
-      const s = producoes[i].sala;
-      m[s] = (m[s] || 0) + 1;
-    }
-    return m;
+    const emAndamento = producoes.filter((p) => p.status === "em_andamento").length;
+    const hoje = new Date().toISOString().slice(0, 10);
+    const finalizadasHoje = producoes.filter(
+      (p) => p.status === "finalizado" && p.horarioFim && p.horarioFim.slice(0, 10) === hoje,
+    ).length;
+    const pesoProduzido = producoes
+      .filter((p) => p.status === "finalizado")
+      .reduce((acc, p) => acc + (p.pesoProduzido ?? 0), 0);
+    const colaboradores = new Set(producoes.map((p) => p.operador)).size;
+    return { emAndamento, finalizadasHoje, pesoProduzido, colaboradores };
   }, [producoes]);
 
   /* ─── Dados filtrados ─── */
@@ -255,15 +181,15 @@ export default function ProducaoList() {
         p.fornecedor.toLowerCase().includes(q) ||
         p.tipoMaterial.toLowerCase().includes(q) ||
         p.sala.toLowerCase().includes(q) ||
-        String(p.coletaNumero).includes(q);
+        p.operador.toLowerCase().includes(q) ||
+        (p.cor || "").toLowerCase().includes(q);
       const matchSala = !filterSala || p.sala === filterSala;
-      const matchStatus = !filterStatus || p.statusEstoque === filterStatus;
-      const matchSaida = !filterSaida || p.unidadeSaida === filterSaida;
-      return matchSearch && matchSala && matchStatus && matchSaida;
+      const matchStatus = !filterStatus || p.status === filterStatus;
+      return matchSearch && matchSala && matchStatus;
     });
-  }, [producoes, search, filterSala, filterStatus, filterSaida]);
+  }, [producoes, search, filterSala, filterStatus]);
 
-  const activeFilters = [filterSala, filterStatus, filterSaida].filter(Boolean).length;
+  const activeFilters = [filterSala, filterStatus].filter(Boolean).length;
 
   /* ─── QR Scan handler ─── */
   const handleQrScan = async (code?: string) => {
@@ -291,12 +217,8 @@ export default function ProducaoList() {
       setQrData(data);
       setQrError("");
       toast.success("QR Code escaneado com sucesso!");
-
-      // Reset form fields for manual input
       setFormSala("");
-      setFormAcabamento("");
-      setFormMedida("");
-      setFormQtdePacote("");
+      setFormCor("");
     } catch {
       setQrError("Erro de conexao. Verifique sua rede.");
     } finally {
@@ -304,7 +226,7 @@ export default function ProducaoList() {
     }
   };
 
-  /* ─── QR Input key handler (Enter = scan, for barcode scanner) ─── */
+  /* ─── QR Input key handler ─── */
   const handleQrKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -312,27 +234,27 @@ export default function ProducaoList() {
     }
   };
 
-  /* ─── Submit production from QR data ─── */
-  const handleSubmitProducao = async () => {
+  /* ─── Iniciar Producao ─── */
+  const handleIniciarProducao = async () => {
     if (!qrData) return;
-    if (!formSala) { toast.error("Selecione a sala de producao"); return; }
+    if (!formSala) {
+      toast.error("Selecione a sala de producao");
+      return;
+    }
 
     setSubmitting(true);
     try {
       const body = {
         coletaId: qrData.coletaId,
-        coletaNumero: qrData.coletaNumero || qrData.coleta?.numero,
+        qrCodeId: qrData.id,
         fornecedor: qrData.fornecedor,
         sala: formSala,
         tipoMaterial: qrData.tipoMaterial,
         cor: qrData.cor || formCor || "",
-        acabamento: formAcabamento || null,
-        medida: formMedida || null,
-        kilo: qrData.peso,
-        qtdePacote: formQtdePacote ? parseInt(formQtdePacote, 10) : null,
-        unidadeSaida: unidadeSaida || "unidade",
+        pesoEntrada: qrData.peso,
         operador: me.nome,
-        qrCodeId: qrData.id,
+        status: "em_andamento",
+        horarioInicio: new Date().toISOString(),
       };
 
       const res = await fetch("/api/producoes", {
@@ -343,23 +265,63 @@ export default function ProducaoList() {
 
       if (!res.ok) throw new Error();
 
-      toast.success("Producao registrada com sucesso!");
+      toast.success("Producao iniciada!");
       fetchProducoes();
 
-      // Reset QR panel
+      // Reset for next scan
       setQrData(null);
       setQrInput("");
       setFormSala("");
-      setFormAcabamento("");
-      setFormMedida("");
-      setFormQtdePacote("");
-
-      // Re-focus for next scan
+      setFormCor("");
       setTimeout(() => qrInputRef.current?.focus(), 100);
     } catch {
-      toast.error("Erro ao registrar producao. Tente novamente.");
+      toast.error("Erro ao iniciar producao. Tente novamente.");
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  /* ─── Finalizar Producao ─── */
+  const handleFinalizarProducao = async () => {
+    if (!finalizarId) return;
+    const peso = parseFloat(finPesoProduzido);
+    const pacotes = parseInt(finQtdePacotes, 10);
+
+    if (!peso || peso <= 0) {
+      toast.error("Informe o peso produzido");
+      return;
+    }
+    if (!pacotes || pacotes <= 0) {
+      toast.error("Informe a quantidade de pacotes");
+      return;
+    }
+
+    setFinSubmitting(true);
+    try {
+      const body = {
+        pesoProduzido: peso,
+        qtdePacotes: pacotes,
+        horarioFim: new Date().toISOString(),
+        status: "finalizado",
+      };
+
+      const res = await fetch(`/api/producoes/${finalizarId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
+      if (!res.ok) throw new Error();
+
+      toast.success("Producao finalizada!");
+      setFinalizarId(null);
+      setFinPesoProduzido("");
+      setFinQtdePacotes("");
+      fetchProducoes();
+    } catch {
+      toast.error("Erro ao finalizar producao.");
+    } finally {
+      setFinSubmitting(false);
     }
   };
 
@@ -370,9 +332,7 @@ export default function ProducaoList() {
     setQrInput("");
     setQrError("");
     setFormSala("");
-    setFormAcabamento("");
-    setFormMedida("");
-    setFormQtdePacote("");
+    setFormCor("");
   };
 
   /* ═══════════════════════════════════════════════════════════════════════════ */
@@ -380,74 +340,65 @@ export default function ProducaoList() {
   /* ═══════════════════════════════════════════════════════════════════════════ */
   return (
     <div className="space-y-6">
-      {/* ─── PageHeader com stats pills ─── */}
+      {/* ─── PageHeader ─── */}
       <PageHeader
         title="Producao"
         description="Salas de corte e processamento de material"
         icon={Factory}
         stats={[
-          { label: "Total", value: stats.total, color: "#93BDE4" },
-          { label: "Peso Total", value: `${stats.pesoTotal.toLocaleString("pt-BR")}kg`, color: "#00C64C" },
-          { label: "Por Unidade", value: stats.porUnidade, color: "#FDC24E" },
-          { label: "Por Kilo", value: stats.porKilo, color: "#ed1b24" },
+          { label: "Em Andamento", value: stats.emAndamento, color: "#93BDE4" },
+          { label: "Finalizadas Hoje", value: stats.finalizadasHoje, color: "#00C64C" },
+          { label: "Peso Produzido", value: `${stats.pesoProduzido.toLocaleString("pt-BR")}kg`, color: "#FDC24E" },
+          { label: "Colaboradores", value: stats.colaboradores, color: "#ed1b24" },
         ]}
         actions={
-          <div className="flex gap-2">
-            <Button
-              variant={showQrPanel ? "default" : "outline"}
-              onClick={() => {
-                if (showQrPanel) {
-                  closeQrPanel();
-                } else {
-                  setShowQrPanel(true);
-                }
-              }}
-            >
-              <QrCode className="h-4 w-4" />
-              Escanear QR
-            </Button>
-            <Button onClick={() => setDialogOpen(true)}>
-              <Plus className="h-4 w-4" />
-              Registrar Producao
-            </Button>
-          </div>
+          <Button
+            variant={showQrPanel ? "default" : "outline"}
+            onClick={() => {
+              if (showQrPanel) closeQrPanel();
+              else setShowQrPanel(true);
+            }}
+          >
+            <QrCode className="h-4 w-4" />
+            Escanear QR
+          </Button>
         }
       />
 
-      {/* ─── Cards Relatorio -- padrao FIPS DS ─── */}
+      {/* ─── Cards Relatorio ─── */}
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
         <StatsCard
-          label="Total Producoes"
-          value={stats.total}
-          subtitle="Registradas no sistema"
-          icon={Factory}
-          color={FIPS_COLORS.azulProfundo}
+          label="Em Andamento"
+          value={stats.emAndamento}
+          subtitle="Producoes ativas agora"
+          icon={Clock}
+          color={FIPS.azulProfundo}
         />
         <StatsCard
-          label="Peso Total"
-          value={`${stats.pesoTotal.toLocaleString("pt-BR")} kg`}
-          subtitle="Material processado"
+          label="Finalizadas Hoje"
+          value={stats.finalizadasHoje}
+          subtitle="Concluidas no dia"
+          icon={CheckCircle2}
+          color={FIPS.verdeFloresta}
+        />
+        <StatsCard
+          label="Peso Produzido"
+          value={`${stats.pesoProduzido.toLocaleString("pt-BR")} kg`}
+          subtitle="Total finalizado"
           icon={Weight}
-          color={FIPS_COLORS.verdeFloresta}
+          color={FIPS.amareloEscuro}
         />
         <StatsCard
-          label="Saida Unidade"
-          value={stats.porUnidade}
-          subtitle="Producoes por unidade"
-          icon={Package}
-          color={FIPS_COLORS.amareloEscuro}
-        />
-        <StatsCard
-          label="Saida Kilo"
-          value={stats.porKilo}
-          subtitle="Producoes por kilo"
-          icon={Ruler}
-          color={FIPS_COLORS.azulEscuro}
+          label="Colaboradores"
+          value={stats.colaboradores}
+          subtitle="Operadores ativos"
+          icon={User}
+          color={FIPS.azulEscuro}
         />
       </div>
 
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      {/*  QR SCAN PANEL                                                    */}
+      {/*  QR SCAN + START PRODUCTION PANEL                                 */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
       {showQrPanel && (
         <div className="space-y-4">
@@ -474,7 +425,7 @@ export default function ProducaoList() {
                   </span>
                 </h3>
                 <p className="text-white/50 text-[11px]">
-                  {me.nome} -- Escaneie ou digite o codigo do QR para auto-preencher a producao
+                  {me.nome} -- Escaneie o QR, selecione a sala e inicie a producao
                 </p>
               </div>
             </div>
@@ -488,12 +439,12 @@ export default function ProducaoList() {
             className="rounded-lg border-2 border-dashed p-6 transition-colors"
             style={{
               borderColor: qrData
-                ? FIPS_COLORS.verdeFloresta
+                ? FIPS.verdeFloresta
                 : qrError
-                  ? FIPS_COLORS.danger
+                  ? FIPS.danger
                   : "var(--fips-border)",
               background: qrData
-                ? `${FIPS_COLORS.verdeFloresta}06`
+                ? `${FIPS.verdeFloresta}06`
                 : "var(--fips-surface)",
             }}
           >
@@ -502,14 +453,14 @@ export default function ProducaoList() {
                 className="flex h-10 w-10 items-center justify-center rounded-lg"
                 style={{
                   background: qrData
-                    ? `${FIPS_COLORS.verdeFloresta}15`
-                    : `${FIPS_COLORS.azulProfundo}15`,
+                    ? `${FIPS.verdeFloresta}15`
+                    : `${FIPS.azulProfundo}15`,
                 }}
               >
                 <QrCode
                   className="h-5 w-5"
                   style={{
-                    color: qrData ? FIPS_COLORS.verdeFloresta : FIPS_COLORS.azulProfundo,
+                    color: qrData ? FIPS.verdeFloresta : FIPS.azulProfundo,
                   }}
                 />
               </div>
@@ -517,7 +468,7 @@ export default function ProducaoList() {
                 <p
                   className="text-[12px] font-bold uppercase tracking-[0.06em]"
                   style={{
-                    color: qrData ? FIPS_COLORS.verdeFloresta : FIPS_COLORS.azulProfundo,
+                    color: qrData ? FIPS.verdeFloresta : FIPS.azulProfundo,
                     fontFamily: "'Saira Expanded', sans-serif",
                   }}
                 >
@@ -571,28 +522,28 @@ export default function ProducaoList() {
             )}
           </div>
 
-          {/* ─── QR Data Card (when scanned) ─── */}
+          {/* ─── QR Data Card + Start Form ─── */}
           {qrData && (
             <div className="space-y-4">
               {/* Material info from QR -- read only */}
               <div
                 className="rounded-lg border-2 p-5"
                 style={{
-                  borderColor: FIPS_COLORS.verdeFloresta,
-                  background: `${FIPS_COLORS.verdeFloresta}06`,
+                  borderColor: FIPS.verdeFloresta,
+                  background: `${FIPS.verdeFloresta}06`,
                 }}
               >
                 <div className="flex items-center gap-2 mb-4">
-                  <CheckCircle2 className="h-4 w-4" style={{ color: FIPS_COLORS.verdeFloresta }} />
+                  <CheckCircle2 className="h-4 w-4" style={{ color: FIPS.verdeFloresta }} />
                   <span
                     className="text-[12px] font-bold uppercase tracking-[0.06em]"
-                    style={{ color: FIPS_COLORS.verdeFloresta, fontFamily: "'Saira Expanded', sans-serif" }}
+                    style={{ color: FIPS.verdeFloresta, fontFamily: "'Saira Expanded', sans-serif" }}
                   >
                     Dados do Lote (Auto-preenchido)
                   </span>
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {/* Fornecedor */}
                   <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-3">
                     <div className="text-[9px] font-bold uppercase tracking-[0.08em] text-[var(--fips-fg-muted)] mb-1">
@@ -613,67 +564,58 @@ export default function ProducaoList() {
                     </div>
                   </div>
 
-                  {/* Cor — auto se QR tem, manual se não */}
+                  {/* Cor */}
                   {qrData.cor ? (
                     <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-3">
-                      <div className="text-[9px] font-bold uppercase tracking-[0.08em] text-[var(--fips-fg-muted)] mb-1">Cor (auto)</div>
-                      <div className="text-[13px] font-bold text-[var(--fips-fg)]">{qrData.cor}</div>
+                      <div className="text-[9px] font-bold uppercase tracking-[0.08em] text-[var(--fips-fg-muted)] mb-1">
+                        Cor (auto)
+                      </div>
+                      <div className="text-[13px] font-bold text-[var(--fips-fg)]">
+                        {qrData.cor}
+                      </div>
                     </div>
                   ) : (
                     <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3">
-                      <div className="text-[9px] font-bold uppercase tracking-[0.08em] text-amber-600 mb-1">Cor (manual)</div>
-                      <Select density="compact" value={formCor} onChange={(e: any) => setFormCor(e.target.value)}>
-                        <option value="">Selecione a cor</option>
-                        {[...new Set(produtos.filter(p => p.tipoMaterial === qrData.tipoMaterial).map(p => p.cor).filter(Boolean))].sort().map(c => (
-                          <option key={c} value={c}>{c}</option>
-                        ))}
-                      </Select>
+                      <div className="text-[9px] font-bold uppercase tracking-[0.08em] text-amber-600 mb-1">
+                        Cor (manual)
+                      </div>
+                      <Input
+                        density="compact"
+                        placeholder="Informe a cor"
+                        value={formCor}
+                        onChange={(e) => setFormCor(e.target.value)}
+                      />
                     </div>
                   )}
 
                   {/* Peso */}
                   <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-3">
                     <div className="text-[9px] font-bold uppercase tracking-[0.08em] text-[var(--fips-fg-muted)] mb-1">
-                      Peso
+                      Peso Entrada
                     </div>
                     <div
                       className="text-[16px] font-extrabold"
-                      style={{ color: FIPS_COLORS.verdeFloresta, fontFamily: "'Saira Expanded', sans-serif" }}
+                      style={{ color: FIPS.verdeFloresta, fontFamily: "'Saira Expanded', sans-serif" }}
                     >
                       {qrData.peso.toLocaleString("pt-BR", { minimumFractionDigits: 1 })} kg
                     </div>
                   </div>
-
-                  {/* Coleta */}
-                  <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-3">
-                    <div className="text-[9px] font-bold uppercase tracking-[0.08em] text-[var(--fips-fg-muted)] mb-1">
-                      Coleta
-                    </div>
-                    <div className="text-[13px] font-bold text-[var(--fips-fg)]">
-                      #{qrData.coletaNumero || qrData.coleta?.numero || "\u2014"}
-                    </div>
-                    {qrData.coleta?.dataColeta && (
-                      <div className="text-[9px] text-[var(--fips-fg-muted)]">
-                        {formatDateBR(qrData.coleta.dataColeta)}
-                      </div>
-                    )}
-                  </div>
                 </div>
               </div>
 
-              {/* ─── Production Form -- manual fields ─── */}
+              {/* ─── Start Production Form ─── */}
               <div className="rounded-lg border border-[var(--fips-border)] bg-[var(--fips-surface)] p-5">
                 <div className="flex items-center gap-2 mb-4">
-                  <Scissors className="h-4 w-4" style={{ color: FIPS_COLORS.azulProfundo }} />
+                  <Play className="h-4 w-4" style={{ color: FIPS.azulProfundo }} />
                   <span
                     className="text-[12px] font-bold uppercase tracking-[0.06em]"
-                    style={{ color: FIPS_COLORS.azulProfundo, fontFamily: "'Saira Expanded', sans-serif" }}
+                    style={{ color: FIPS.azulProfundo, fontFamily: "'Saira Expanded', sans-serif" }}
                   >
-                    Dados da Producao (Preencher)
+                    Iniciar Producao
                   </span>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
                   {/* Sala */}
                   <Field density="compact">
                     <FieldLabel>Sala de Producao *</FieldLabel>
@@ -685,106 +627,48 @@ export default function ProducaoList() {
                     >
                       <option value="">Selecione a sala...</option>
                       {SALAS.map((s) => (
-                        <option key={s} value={s}>
-                          {s} {countBySala[s] ? `(${countBySala[s]})` : ""}
-                        </option>
-                      ))}
-                    </Select>
-                    {formSala && (
-                      <FieldHint>
-                        Saida automatica: {salaSaidaMap[formSala] === "kilo" ? "Kilo" : "Unidade"}
-                      </FieldHint>
-                    )}
-                  </Field>
-
-                  {/* Acabamento */}
-                  <Field density="compact">
-                    <FieldLabel>Acabamento</FieldLabel>
-                    <Select
-                      density="compact"
-                      leftIcon={<Palette className="h-3.5 w-3.5" />}
-                      value={formAcabamento}
-                      onChange={(e) => setFormAcabamento(e.target.value)}
-                    >
-                      <option value="">Selecione...</option>
-                      {acabamentosDoMaterial.map((a) => (
-                        <option key={a} value={a}>{a}</option>
+                        <option key={s} value={s}>{s}</option>
                       ))}
                     </Select>
                   </Field>
 
-                  {/* Medida */}
-                  <Field density="compact">
-                    <FieldLabel>Medida</FieldLabel>
-                    <Select
-                      density="compact"
-                      leftIcon={<Ruler className="h-3.5 w-3.5" />}
-                      value={formMedida}
-                      onChange={(e) => setFormMedida(e.target.value)}
-                    >
-                      <option value="">Selecione...</option>
-                      {medidasDoMaterial.map((m) => (
-                        <option key={m} value={m}>{m}</option>
-                      ))}
-                    </Select>
-                  </Field>
-
-                  {/* Qtde Pacote */}
-                  <Field density="compact">
-                    <FieldLabel>Qtde Pacotes</FieldLabel>
-                    <Input
-                      density="compact"
-                      leftIcon={<Layers className="h-3.5 w-3.5" />}
-                      type="number"
-                      min="0"
-                      placeholder="0"
-                      value={formQtdePacote}
-                      onChange={(e) => setFormQtdePacote(e.target.value)}
-                    />
-                  </Field>
-                </div>
-
-                {/* Operador info + unidade saida */}
-                <div className="flex items-center justify-between rounded-lg bg-[var(--fips-surface-soft)] border border-[var(--fips-border)] px-4 py-2.5 mb-4">
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-1.5">
-                      <User className="h-3.5 w-3.5 text-[var(--fips-fg-muted)]" />
-                      <span className="text-[10px] text-[var(--fips-fg-muted)]">Operador:</span>
-                      <span className="text-[10px] font-bold text-[var(--fips-fg)]">{me.nome}</span>
-                    </div>
-                    {formSala && (
-                      <div className="flex items-center gap-1.5">
-                        <Package className="h-3.5 w-3.5 text-[var(--fips-fg-muted)]" />
-                        <span className="text-[10px] text-[var(--fips-fg-muted)]">Saida:</span>
-                        <Badge variant={unidadeSaida === "kilo" ? "info" : "success"} className="text-[9px]">
-                          {unidadeSaida === "kilo" ? "Kilo" : "Unidade"}
-                        </Badge>
+                  {/* Operador (readonly) */}
+                  <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-3 flex items-center gap-2">
+                    <User className="h-4 w-4 text-[var(--fips-fg-muted)]" />
+                    <div>
+                      <div className="text-[9px] font-bold uppercase tracking-[0.08em] text-[var(--fips-fg-muted)]">
+                        Operador
                       </div>
-                    )}
+                      <div className="text-[13px] font-bold text-[var(--fips-fg)]">{me.nome}</div>
+                    </div>
                   </div>
                 </div>
 
                 {/* Submit */}
                 <div className="flex gap-2">
                   <Button
-                    onClick={handleSubmitProducao}
+                    onClick={handleIniciarProducao}
                     disabled={submitting || !formSala}
                     className="flex-1"
+                    style={{
+                      background: submitting ? undefined : `linear-gradient(135deg, ${FIPS.azulProfundo}, ${FIPS.azulEscuro})`,
+                      fontSize: "14px",
+                      fontWeight: 700,
+                      padding: "12px 24px",
+                    }}
                   >
                     {submitting ? (
                       <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                     ) : (
-                      <CheckCircle2 className="h-4 w-4" />
+                      <Play className="h-5 w-5" />
                     )}
-                    Registrar Producao
+                    Iniciar Producao
                   </Button>
                   <Button variant="outline" onClick={() => {
                     setQrData(null);
                     setQrInput("");
                     setFormSala("");
-                    setFormAcabamento("");
-                    setFormMedida("");
-                    setFormQtdePacote("");
+                    setFormCor("");
                     setTimeout(() => qrInputRef.current?.focus(), 100);
                   }}>
                     <QrCode className="h-4 w-4" />
@@ -798,17 +682,121 @@ export default function ProducaoList() {
       )}
 
       {/* ═══════════════════════════════════════════════════════════════════ */}
-      {/*  DATA LISTING (always visible)                                    */}
+      {/*  FINALIZAR INLINE FORM                                            */}
+      {/* ═══════════════════════════════════════════════════════════════════ */}
+      {finalizarId && (
+        <div
+          className="rounded-lg border-2 p-5"
+          style={{ borderColor: FIPS.amareloEscuro, background: `${FIPS.amareloEscuro}08` }}
+        >
+          <div className="flex items-center gap-2 mb-4">
+            <Square className="h-4 w-4" style={{ color: FIPS.amareloEscuro }} />
+            <span
+              className="text-[12px] font-bold uppercase tracking-[0.06em]"
+              style={{ color: FIPS.amareloEscuro, fontFamily: "'Saira Expanded', sans-serif" }}
+            >
+              Finalizar Producao
+            </span>
+            <span className="text-[10px] text-[var(--fips-fg-muted)] ml-2">
+              ID: {finalizarId.slice(0, 8)}...
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+            <Field density="compact">
+              <FieldLabel>Peso Produzido (kg) *</FieldLabel>
+              <Input
+                density="compact"
+                leftIcon={<Weight className="h-3.5 w-3.5" />}
+                type="number"
+                min="0"
+                step="0.1"
+                placeholder="0.0"
+                value={finPesoProduzido}
+                onChange={(e) => setFinPesoProduzido(e.target.value)}
+                autoFocus
+              />
+            </Field>
+            <Field density="compact">
+              <FieldLabel>Qtde Pacotes *</FieldLabel>
+              <Input
+                density="compact"
+                leftIcon={<Package className="h-3.5 w-3.5" />}
+                type="number"
+                min="1"
+                placeholder="0"
+                value={finQtdePacotes}
+                onChange={(e) => setFinQtdePacotes(e.target.value)}
+              />
+            </Field>
+            <div className="flex items-end gap-2">
+              <Button
+                onClick={handleFinalizarProducao}
+                disabled={finSubmitting}
+                className="flex-1"
+                style={{
+                  background: finSubmitting ? undefined : FIPS.verdeFloresta,
+                }}
+              >
+                {finSubmitting ? (
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                ) : (
+                  <CheckCircle2 className="h-4 w-4" />
+                )}
+                Finalizar Producao
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setFinalizarId(null);
+                  setFinPesoProduzido("");
+                  setFinQtdePacotes("");
+                }}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════════════ */}
+      {/*  DATA LISTING                                                     */}
       {/* ═══════════════════════════════════════════════════════════════════ */}
 
-      {/* ─── Toolbar -- padrao FIPS DS Data Listing ─── */}
       <DataListingToolbar
         search={search}
         onSearchChange={setSearch}
-        searchPlaceholder="Buscar por fornecedor, material, sala ou coleta..."
+        searchPlaceholder="Buscar por operador, material, sala ou fornecedor..."
         activeFilters={activeFilters}
         filtersContent={
           <div className="px-4 py-3 space-y-4">
+            {/* Status */}
+            <div>
+              <p className="mb-2 text-[9px] font-bold uppercase tracking-[1px] text-[var(--fips-fg-muted)]">
+                Status
+              </p>
+              <div className="flex flex-col gap-1">
+                {[
+                  { v: "", l: "Todos os status" },
+                  { v: "em_andamento", l: "Em Andamento" },
+                  { v: "finalizado", l: "Finalizado" },
+                ].map((opt) => (
+                  <button
+                    key={opt.v || "todos-status"}
+                    onClick={() => setFilterStatus(opt.v)}
+                    className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
+                      filterStatus === opt.v
+                        ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                        : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
+                    }`}
+                  >
+                    {opt.l}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* Sala */}
             <div>
               <p className="mb-2 text-[9px] font-bold uppercase tracking-[1px] text-[var(--fips-fg-muted)]">
@@ -840,59 +828,6 @@ export default function ProducaoList() {
                 ))}
               </div>
             </div>
-
-            {/* Status */}
-            <div>
-              <p className="mb-2 text-[9px] font-bold uppercase tracking-[1px] text-[var(--fips-fg-muted)]">
-                Status
-              </p>
-              <div className="flex flex-col gap-1">
-                {[
-                  { v: "", l: "Todos os status" },
-                  { v: "pendente", l: "Pendente" },
-                  { v: "em_andamento", l: "Em Andamento" },
-                  { v: "em_estoque", l: "No Estoque" },
-                ].map((opt) => (
-                  <button
-                    key={opt.v || "todos-status"}
-                    onClick={() => setFilterStatus(opt.v)}
-                    className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
-                      filterStatus === opt.v
-                        ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
-                        : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
-                    }`}
-                  >
-                    {opt.l}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Unidade de Saida */}
-            <div>
-              <p className="mb-2 text-[9px] font-bold uppercase tracking-[1px] text-[var(--fips-fg-muted)]">
-                Unidade de Saida
-              </p>
-              <div className="flex flex-col gap-1">
-                {[
-                  { v: "", l: "Todas" },
-                  { v: "unidade", l: "Unidade" },
-                  { v: "kilo", l: "Kilo" },
-                ].map((opt) => (
-                  <button
-                    key={opt.v || "todos-saida"}
-                    onClick={() => setFilterSaida(opt.v)}
-                    className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
-                      filterSaida === opt.v
-                        ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
-                        : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
-                    }`}
-                  >
-                    {opt.l}
-                  </button>
-                ))}
-              </div>
-            </div>
           </div>
         }
         periodo={periodo}
@@ -901,7 +836,7 @@ export default function ProducaoList() {
         onExportPdf={() => alert("Export PDF -- placeholder")}
       />
 
-      {/* ─── Tabela canonica DS-FIPS -- Data Listing ─── */}
+      {/* ─── Tabela ─── */}
       <DataListingTable<Producao>
         icon={<Factory className="h-[22px] w-[22px]" />}
         title="Producao"
@@ -916,15 +851,13 @@ export default function ProducaoList() {
             ? "Carregando..."
             : "Nenhuma producao encontrada"
         }
-        columns={producaoColumns()}
-      />
-
-      <NovaProducaoDialog
-        open={dialogOpen}
-        onOpenChange={setDialogOpen}
-        onSuccess={fetchProducoes}
-        salas={SALAS}
-        salaSaidaMap={salaSaidaMap}
+        columns={producaoColumns({
+          onFinalizar: (id) => {
+            setFinalizarId(id);
+            setFinPesoProduzido("");
+            setFinQtdePacotes("");
+          },
+        })}
       />
     </div>
   );
@@ -932,72 +865,71 @@ export default function ProducaoList() {
 
 /* ──────────────────────────── COLUMNS DEFINITION ──────────────────────────── */
 
-function producaoColumns(): DataListingColumn<Producao>[] {
+interface ProducaoColumnActions {
+  onFinalizar: (id: string) => void;
+}
+
+function producaoColumns({ onFinalizar }: ProducaoColumnActions): DataListingColumn<Producao>[] {
   return [
-    {
-      id: "coleta",
-      label: "Coleta",
-      fixed: true,
-      sortable: true,
-      width: "80px",
-      render: (p) => <CellMonoStrong>#{p.coletaNumero}</CellMonoStrong>,
-    },
     {
       id: "sala",
       label: "Sala",
+      fixed: true,
       sortable: true,
       width: "100px",
-      render: (p) => <Badge variant="outline">{p.sala}</Badge>,
+      render: (p) => (
+        <div className="flex items-center gap-1.5">
+          <Factory className="h-3 w-3 text-[var(--fips-fg-muted)]" />
+          <CellMonoStrong>{p.sala}</CellMonoStrong>
+        </div>
+      ),
+    },
+    {
+      id: "operador",
+      label: "Operador",
+      sortable: true,
+      width: "120px",
+      render: (p) => (
+        <div className="flex items-center gap-1.5">
+          <User className="h-3 w-3 text-[var(--fips-fg-muted)]" />
+          <span className="text-[11px] font-semibold text-[var(--fips-fg)] truncate max-w-[100px]">
+            {p.operador}
+          </span>
+        </div>
+      ),
     },
     {
       id: "material",
       label: "Material",
       sortable: true,
-      width: "130px",
-      render: (p) => (
-        <div className="truncate max-w-[120px]" title={p.tipoMaterial}>
-          <span className="text-[11px] text-[var(--fips-fg)]">{p.tipoMaterial}</span>
-        </div>
-      ),
+      width: "120px",
+      render: (p) => <Badge variant="outline">{p.tipoMaterial}</Badge>,
     },
     {
       id: "cor",
       label: "Cor",
       sortable: true,
-      width: "90px",
+      width: "80px",
       render: (p) => <CellMuted>{p.cor || "\u2014"}</CellMuted>,
     },
     {
-      id: "medida",
-      label: "Medida",
-      sortable: true,
-      width: "80px",
-      render: (p) => <CellMuted>{p.medida || "\u2014"}</CellMuted>,
-    },
-    {
-      id: "acabamento",
-      label: "Acabamento",
-      sortable: true,
-      width: "100px",
-      render: (p) => <CellMuted>{p.acabamento || "\u2014"}</CellMuted>,
-    },
-    {
-      id: "peso",
-      label: "Peso",
+      id: "pesoEntrada",
+      label: "Peso Entrada",
       sortable: true,
       align: "right",
-      width: "90px",
-      render: (p) => <CellMonoStrong align="right">{formatKg(p.kilo)}</CellMonoStrong>,
+      width: "95px",
+      render: (p) => <CellMonoStrong align="right">{formatKg(p.pesoEntrada)}</CellMonoStrong>,
     },
     {
-      id: "saida",
-      label: "Saida",
+      id: "pesoProduzido",
+      label: "Peso Produzido",
       sortable: true,
-      width: "75px",
+      align: "right",
+      width: "105px",
       render: (p) => (
-        <Badge variant={p.unidadeSaida === "kilo" ? "info" : "success"} className="text-[10px]">
-          {p.unidadeSaida === "kilo" ? "Kilo" : "Unidade"}
-        </Badge>
+        <CellMonoStrong align="right" style={{ color: p.pesoProduzido ? "#00C64C" : undefined }}>
+          {formatKg(p.pesoProduzido)}
+        </CellMonoStrong>
       ),
     },
     {
@@ -1006,43 +938,68 @@ function producaoColumns(): DataListingColumn<Producao>[] {
       sortable: true,
       align: "right",
       width: "70px",
-      render: (p) => <CellMonoMuted>{p.qtdePacote || "\u2014"}</CellMonoMuted>,
+      render: (p) => <CellMonoMuted>{p.qtdePacotes ?? "\u2014"}</CellMonoMuted>,
     },
     {
       id: "status",
       label: "Status",
       sortable: true,
-      width: "95px",
+      width: "105px",
       render: (p) => {
-        const sc = statusConfig[p.statusEstoque] || {
-          label: p.statusEstoque,
-          variant: "secondary" as const,
-        };
+        const sc = STATUS_VARIANTS[p.status] || { label: p.status, variant: "secondary" as const };
         return <Badge variant={sc.variant} dot>{sc.label}</Badge>;
       },
     },
     {
-      id: "data",
-      label: "Data",
+      id: "inicio",
+      label: "Inicio",
       sortable: true,
-      width: "80px",
-      render: (p) => <CellMonoMuted>{formatDateBR(p.dataCriacao)}</CellMonoMuted>,
+      width: "90px",
+      render: (p) => (
+        <div className="leading-tight">
+          <CellMonoMuted>{formatDateBR(p.horarioInicio)}</CellMonoMuted>
+          <div className="text-[9px] text-[var(--fips-fg-muted)] font-mono">{formatTimeBR(p.horarioInicio)}</div>
+        </div>
+      ),
+    },
+    {
+      id: "fim",
+      label: "Fim",
+      sortable: true,
+      width: "90px",
+      render: (p) => p.horarioFim ? (
+        <div className="leading-tight">
+          <CellMonoMuted>{formatDateBR(p.horarioFim)}</CellMonoMuted>
+          <div className="text-[9px] text-[var(--fips-fg-muted)] font-mono">{formatTimeBR(p.horarioFim)}</div>
+        </div>
+      ) : (
+        <CellMuted>...</CellMuted>
+      ),
     },
     {
       id: "actions",
       label: "Acao",
       fixed: true,
       align: "center",
-      width: "50px",
-      render: (p) => (
-        <CellActions>
-          <CellActionButton
-            title="Ver detalhes"
-            icon={<Eye className="h-3.5 w-3.5" />}
-            onClick={() => console.log("Ver producao:", p.id)}
-          />
-        </CellActions>
-      ),
+      width: "80px",
+      render: (p) => {
+        if (p.status === "em_andamento") {
+          return (
+            <CellActions>
+              <CellActionButton
+                title="Finalizar producao"
+                icon={<Square className="h-3.5 w-3.5 text-[var(--fips-warning)]" />}
+                onClick={() => onFinalizar(p.id)}
+              />
+            </CellActions>
+          );
+        }
+        return (
+          <CellActions>
+            <CheckCircle2 className="h-3.5 w-3.5 text-[var(--fips-success-strong)]" />
+          </CellActions>
+        );
+      },
     },
   ];
 }

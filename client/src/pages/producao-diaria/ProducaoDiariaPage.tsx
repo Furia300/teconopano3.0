@@ -1,8 +1,11 @@
-import { useEffect, useMemo, useState, useCallback } from "react";
-import { toast } from "sonner";
+import { useEffect, useMemo, useState } from "react";
 import {
-  ClipboardList, Plus, Calendar, Clock, User, Factory,
-  CheckCircle2, AlertTriangle, Trash2, Eye,
+  CalendarDays,
+  Clock,
+  User,
+  Factory,
+  CheckCircle2,
+  AlertTriangle,
 } from "lucide-react";
 import { PageHeader } from "@/components/domain/PageHeader";
 import { StatsCard } from "@/components/domain/StatsCard";
@@ -14,205 +17,326 @@ import {
   CellMonoMuted,
   CellMuted,
   CellActions,
-  CellActionButton,
 } from "@/components/domain/DataListingTable";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useAppAuthMe } from "@/hooks/useAppUserPerfil";
-import NovaProducaoDiariaDialog from "./NovaProducaoDiariaDialog";
 
-const FIPS = { azulProfundo: "#004B9B", verdeFloresta: "#00C64C", amareloEscuro: "#F6921E", azulEscuro: "#002A68" };
-
-interface ProducaoDiariaItem {
-  id: string; data: string; nomeDupla: string; sala: string; material: string;
-  horarioInicio: string; horarioFim: string | null; status: "completa" | "incompleta";
-  assinatura: string; encarregado: string; observacao: string;
-}
-
-const formatDate = (s: string) => {
-  if (!s) return "—";
-  try { return new Date(s + "T12:00:00").toLocaleDateString("pt-BR"); } catch { return s; }
+/* ─── Cores FIPS DS canonicas ─── */
+const FIPS = {
+  azulProfundo: "#004B9B",
+  verdeFloresta: "#00C64C",
+  amareloEscuro: "#F6921E",
+  azulEscuro: "#002A68",
 };
 
-function producaoDiariaColumns({ onDelete }: { onDelete: (id: string) => void }): DataListingColumn<ProducaoDiariaItem>[] {
-  return [
-    {
-      id: "data", label: "Data", fixed: true, sortable: true, width: "90px",
-      render: (r) => <CellMonoStrong>{formatDate(r.data)}</CellMonoStrong>,
-    },
-    {
-      id: "dupla", label: "Dupla / Operador", fixed: true, sortable: true, width: "160px",
-      render: (r) => (
-        <div className="min-w-0 leading-tight">
-          <div className="font-semibold text-[11px] text-[var(--fips-fg)] truncate max-w-[150px]">{r.nomeDupla}</div>
-          {r.encarregado && <div className="text-[9px] text-[var(--fips-fg-muted)]">Enc: {r.encarregado}</div>}
-        </div>
-      ),
-    },
-    {
-      id: "sala", label: "Sala", sortable: true, width: "90px",
-      render: (r) => (
-        <div className="flex items-center gap-1.5">
-          <Factory className="h-3 w-3 text-[var(--fips-fg-muted)]" />
-          <CellMonoStrong>{r.sala}</CellMonoStrong>
-        </div>
-      ),
-    },
-    {
-      id: "material", label: "Material", sortable: true, width: "120px",
-      render: (r) => <Badge variant="outline">{r.material}</Badge>,
-    },
-    {
-      id: "horario", label: "Horário", sortable: true, width: "120px",
-      render: (r) => (
-        <div className="flex items-center gap-1 text-[11px]">
-          <Clock className="h-3 w-3 text-[var(--fips-fg-muted)]" />
-          <span className="font-mono">{r.horarioInicio}</span>
-          <span className="text-[var(--fips-fg-muted)]">—</span>
-          <span className="font-mono">{r.horarioFim || "..."}</span>
-        </div>
-      ),
-    },
-    {
-      id: "status", label: "Status", sortable: true, width: "100px",
-      render: (r) => r.status === "completa"
-        ? <Badge variant="success"><CheckCircle2 className="h-3 w-3 mr-1" />Completa</Badge>
-        : <Badge variant="warning"><AlertTriangle className="h-3 w-3 mr-1" />Incompleta</Badge>,
-    },
-    {
-      id: "assinatura", label: "Assinatura", width: "90px",
-      render: (r) => <CellMuted>{r.assinatura || "—"}</CellMuted>,
-    },
-    {
-      id: "actions", label: "", fixed: true, align: "center", width: "50px",
-      render: (r) => (
-        <CellActions>
-          <CellActionButton title="Excluir" icon={<Trash2 className="h-3.5 w-3.5 text-[var(--fips-danger)]" />} onClick={() => onDelete(r.id)} />
-        </CellActions>
-      ),
-    },
-  ];
+/* ─── Tipos ─── */
+interface Producao {
+  id: string;
+  coletaId: string;
+  qrCodeId: string;
+  fornecedor: string;
+  sala: string;
+  tipoMaterial: string;
+  cor: string;
+  pesoEntrada: number;
+  pesoProduzido: number | null;
+  qtdePacotes: number | null;
+  operador: string;
+  status: "em_andamento" | "finalizado";
+  horarioInicio: string;
+  horarioFim: string | null;
+  createdAt: string;
 }
 
+const STATUS_VARIANTS: Record<
+  string,
+  { label: string; variant: "default" | "secondary" | "success" | "warning" | "danger" | "info" }
+> = {
+  em_andamento: { label: "Em Andamento", variant: "info" },
+  finalizado: { label: "Finalizado", variant: "success" },
+};
+
+const formatTimeBR = (s: string | null | undefined) =>
+  s ? new Date(s).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }) : "\u2014";
+
+const formatKg = (n: number | null | undefined) =>
+  n != null && n > 0 ? `${n.toLocaleString("pt-BR", { minimumFractionDigits: 1 })} kg` : "\u2014";
+
+const todayStr = () => new Date().toISOString().slice(0, 10);
+
+/* ─── Componente principal ─── */
 export default function ProducaoDiariaPage() {
   const me = useAppAuthMe();
-  const [registros, setRegistros] = useState<ProducaoDiariaItem[]>([]);
+  const [producoes, setProducoes] = useState<Producao[]>([]);
   const [loading, setLoading] = useState(true);
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(todayStr());
   const [search, setSearch] = useState("");
-  const [periodo, setPeriodo] = useState("Últimos 30 dias");
   const [filterStatus, setFilterStatus] = useState("");
-  const [filterSala, setFilterSala] = useState("");
 
   useEffect(() => {
-    fetch("/api/producao-diaria")
-      .then(r => r.json())
-      .then(data => { setRegistros(data); setLoading(false); })
+    fetch("/api/producoes")
+      .then((r) => r.json())
+      .then((data) => { setProducoes(data); setLoading(false); })
       .catch(() => setLoading(false));
   }, []);
 
-  const handleSave = async (item: Omit<ProducaoDiariaItem, "id">) => {
-    const res = await fetch("/api/producao-diaria", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(item) });
-    if (res.ok) { const novo = await res.json(); setRegistros(prev => [novo, ...prev]); setDialogOpen(false); toast.success("Registro adicionado!"); }
-  };
+  /* ─── Filtrar por data selecionada ─── */
+  const doDia = useMemo(() => {
+    return producoes.filter((p) => {
+      const dt = (p.horarioInicio || p.createdAt || "").slice(0, 10);
+      return dt === selectedDate;
+    });
+  }, [producoes, selectedDate]);
 
-  const handleDelete = async (id: string) => {
-    const res = await fetch(`/api/producao-diaria/${id}`, { method: "DELETE" });
-    if (res.ok) { setRegistros(prev => prev.filter(r => r.id !== id)); toast.success("Registro removido"); }
-  };
+  /* ─── Stats do dia ─── */
+  const stats = useMemo(() => {
+    const registros = doDia.length;
+    const colaboradores = new Set(doDia.map((p) => p.operador)).size;
+    const finalizados = doDia.filter((p) => p.status === "finalizado").length;
+    const emAndamento = doDia.filter((p) => p.status === "em_andamento").length;
+    return { registros, colaboradores, finalizados, emAndamento };
+  }, [doDia]);
 
-  const salasUnicas = useMemo(() => [...new Set(registros.map(r => r.sala).filter(Boolean))].sort(), [registros]);
-
-  const filtered = useMemo(() => registros.filter(r => {
+  /* ─── Filtro busca + status ─── */
+  const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    const matchSearch = !q || r.nomeDupla.toLowerCase().includes(q) || r.sala.toLowerCase().includes(q) || r.material.toLowerCase().includes(q);
-    const matchStatus = !filterStatus || r.status === filterStatus;
-    const matchSala = !filterSala || r.sala === filterSala;
-    return matchSearch && matchStatus && matchSala;
-  }), [registros, search, filterStatus, filterSala]);
+    return doDia.filter((p) => {
+      const matchSearch =
+        !q ||
+        p.operador.toLowerCase().includes(q) ||
+        p.sala.toLowerCase().includes(q) ||
+        p.tipoMaterial.toLowerCase().includes(q) ||
+        (p.cor || "").toLowerCase().includes(q);
+      const matchStatus = !filterStatus || p.status === filterStatus;
+      return matchSearch && matchStatus;
+    });
+  }, [doDia, search, filterStatus]);
 
-  const activeFilters = [filterStatus, filterSala].filter(Boolean).length;
+  const activeFilters = [filterStatus].filter(Boolean).length;
 
-  const resumo = useMemo(() => ({
-    total: registros.length,
-    duplas: new Set(registros.map(r => r.nomeDupla)).size,
-    completas: registros.filter(r => r.status === "completa").length,
-    incompletas: registros.filter(r => r.status !== "completa").length,
-  }), [registros]);
+  const dataPretty = new Date(selectedDate + "T12:00:00").toLocaleDateString("pt-BR", {
+    weekday: "long",
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
 
   return (
     <div className="space-y-6">
+      {/* ─── PageHeader ─── */}
       <PageHeader
-        title="Produção Diária"
-        description={`Registro de produção por mesa — ${me.nome}`}
-        icon={ClipboardList}
-        actions={<Button onClick={() => setDialogOpen(true)}><Plus className="h-4 w-4 mr-1" />Novo Registro</Button>}
+        title="Producao Diaria"
+        description={`Visualizacao por dia -- ${dataPretty}`}
+        icon={CalendarDays}
         stats={[
-          { label: "Total", value: resumo.total, color: "#93BDE4" },
-          { label: "Duplas", value: resumo.duplas, color: "#00C64C" },
-          { label: "Completas", value: resumo.completas, color: "#FDC24E" },
-          { label: "Incompletas", value: resumo.incompletas, color: "#ed1b24" },
+          { label: "Registros", value: stats.registros, color: "#93BDE4" },
+          { label: "Colaboradores", value: stats.colaboradores, color: "#00C64C" },
+          { label: "Finalizados", value: stats.finalizados, color: "#FDC24E" },
+          { label: "Em Andamento", value: stats.emAndamento, color: "#ed1b24" },
         ]}
+        actions={
+          <Input
+            type="date"
+            value={selectedDate}
+            onChange={(e) => setSelectedDate(e.target.value)}
+            className="w-[160px] text-[12px]"
+            density="compact"
+          />
+        }
       />
 
+      {/* ─── Cards Relatorio ─── */}
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
-        <StatsCard label="Total Registros" value={resumo.total} subtitle="Todas as datas" icon={ClipboardList} color={FIPS.azulProfundo} />
-        <StatsCard label="Duplas/Operadores" value={resumo.duplas} subtitle="Registrados" icon={User} color={FIPS.verdeFloresta} />
-        <StatsCard label="Completas" value={resumo.completas} subtitle="Finalizadas" icon={CheckCircle2} color={FIPS.amareloEscuro} />
-        <StatsCard label="Incompletas" value={resumo.incompletas} subtitle={resumo.incompletas > 0 ? "Em andamento" : "Tudo completo"} icon={AlertTriangle} color={FIPS.azulEscuro} />
+        <StatsCard
+          label="Registros do Dia"
+          value={stats.registros}
+          subtitle={dataPretty}
+          icon={CalendarDays}
+          color={FIPS.azulProfundo}
+        />
+        <StatsCard
+          label="Colaboradores"
+          value={stats.colaboradores}
+          subtitle="Operadores no dia"
+          icon={User}
+          color={FIPS.verdeFloresta}
+        />
+        <StatsCard
+          label="Finalizados"
+          value={stats.finalizados}
+          subtitle="Producoes concluidas"
+          icon={CheckCircle2}
+          color={FIPS.amareloEscuro}
+        />
+        <StatsCard
+          label="Em Andamento"
+          value={stats.emAndamento}
+          subtitle={stats.emAndamento > 0 ? "Ainda em producao" : "Nenhuma pendente"}
+          icon={AlertTriangle}
+          color={FIPS.azulEscuro}
+        />
       </div>
 
+      {/* ─── Toolbar ─── */}
       <DataListingToolbar
         search={search}
         onSearchChange={setSearch}
-        searchPlaceholder="Buscar por dupla, sala ou material..."
+        searchPlaceholder="Buscar por operador, sala ou material..."
         activeFilters={activeFilters}
         filtersContent={
           <div className="px-4 py-3 space-y-4">
             <div>
-              <p className="mb-2 text-[9px] font-bold uppercase tracking-[1px] text-[var(--fips-fg-muted)]">Status</p>
+              <p className="mb-2 text-[9px] font-bold uppercase tracking-[1px] text-[var(--fips-fg-muted)]">
+                Status
+              </p>
               <div className="flex flex-col gap-1">
-                {[{ v: "", l: "Todos" }, { v: "completa", l: "Completa" }, { v: "incompleta", l: "Incompleta" }].map(opt => (
-                  <button key={opt.v || "all"} onClick={() => setFilterStatus(opt.v)}
-                    className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${filterStatus === opt.v ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]" : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"}`}>
+                {[
+                  { v: "", l: "Todos" },
+                  { v: "em_andamento", l: "Em Andamento" },
+                  { v: "finalizado", l: "Finalizado" },
+                ].map((opt) => (
+                  <button
+                    key={opt.v || "all"}
+                    onClick={() => setFilterStatus(opt.v)}
+                    className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
+                      filterStatus === opt.v
+                        ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                        : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
+                    }`}
+                  >
                     {opt.l}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div>
-              <p className="mb-2 text-[9px] font-bold uppercase tracking-[1px] text-[var(--fips-fg-muted)]">Sala</p>
-              <div className="flex flex-col gap-1">
-                <button onClick={() => setFilterSala("")}
-                  className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${!filterSala ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]" : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"}`}>
-                  Todas
-                </button>
-                {salasUnicas.map(sala => (
-                  <button key={sala} onClick={() => setFilterSala(sala)}
-                    className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${filterSala === sala ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]" : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"}`}>
-                    {sala}
                   </button>
                 ))}
               </div>
             </div>
           </div>
         }
-        periodo={periodo}
-        onPeriodoChange={setPeriodo}
       />
 
-      <DataListingTable<ProducaoDiariaItem>
-        icon={<ClipboardList className="h-[22px] w-[22px]" />}
-        title="Produção Diária"
-        subtitle={`${filtered.length} ${filtered.length === 1 ? "registro" : "registros"} ${activeFilters || search ? "filtrados" : "no total"} · Atualizado agora`}
+      {/* ─── Tabela ─── */}
+      <DataListingTable<Producao>
+        icon={<CalendarDays className="h-[22px] w-[22px]" />}
+        title="Producao Diaria"
+        subtitle={`${filtered.length} ${filtered.length === 1 ? "registro" : "registros"} ${
+          activeFilters || search ? "filtrados" : "no dia"
+        } \u00b7 ${dataPretty}`}
         filtered={!!(search || activeFilters)}
         data={filtered}
         getRowId={(r) => r.id}
-        emptyState={loading ? "Carregando..." : "Nenhum registro de produção diária"}
-        columns={producaoDiariaColumns({ onDelete: handleDelete })}
+        emptyState={loading ? "Carregando..." : "Nenhuma producao registrada neste dia"}
+        columns={producaoDiariaColumns()}
       />
-
-      <NovaProducaoDiariaDialog open={dialogOpen} onClose={() => setDialogOpen(false)} onSave={handleSave} defaultData={new Date().toISOString().split("T")[0]} />
     </div>
   );
+}
+
+/* ──────────────────────────── COLUMNS DEFINITION ──────────────────────────── */
+
+function producaoDiariaColumns(): DataListingColumn<Producao>[] {
+  return [
+    {
+      id: "operador",
+      label: "Operador",
+      fixed: true,
+      sortable: true,
+      width: "130px",
+      render: (p) => (
+        <div className="flex items-center gap-1.5">
+          <User className="h-3 w-3 text-[var(--fips-fg-muted)]" />
+          <span className="text-[11px] font-semibold text-[var(--fips-fg)] truncate max-w-[110px]">
+            {p.operador}
+          </span>
+        </div>
+      ),
+    },
+    {
+      id: "sala",
+      label: "Sala",
+      sortable: true,
+      width: "100px",
+      render: (p) => (
+        <div className="flex items-center gap-1.5">
+          <Factory className="h-3 w-3 text-[var(--fips-fg-muted)]" />
+          <CellMonoStrong>{p.sala}</CellMonoStrong>
+        </div>
+      ),
+    },
+    {
+      id: "material",
+      label: "Material",
+      sortable: true,
+      width: "120px",
+      render: (p) => <Badge variant="outline">{p.tipoMaterial}</Badge>,
+    },
+    {
+      id: "cor",
+      label: "Cor",
+      sortable: true,
+      width: "80px",
+      render: (p) => <CellMuted>{p.cor || "\u2014"}</CellMuted>,
+    },
+    {
+      id: "pesoEntrada",
+      label: "Peso Entrada",
+      sortable: true,
+      align: "right",
+      width: "95px",
+      render: (p) => <CellMonoStrong align="right">{formatKg(p.pesoEntrada)}</CellMonoStrong>,
+    },
+    {
+      id: "pesoProduzido",
+      label: "Peso Produzido",
+      sortable: true,
+      align: "right",
+      width: "105px",
+      render: (p) => (
+        <CellMonoStrong align="right" style={{ color: p.pesoProduzido ? "#00C64C" : undefined }}>
+          {formatKg(p.pesoProduzido)}
+        </CellMonoStrong>
+      ),
+    },
+    {
+      id: "pacotes",
+      label: "Pacotes",
+      sortable: true,
+      align: "right",
+      width: "70px",
+      render: (p) => <CellMonoMuted>{p.qtdePacotes ?? "\u2014"}</CellMonoMuted>,
+    },
+    {
+      id: "inicio",
+      label: "Inicio",
+      sortable: true,
+      width: "70px",
+      render: (p) => (
+        <div className="flex items-center gap-1 text-[11px]">
+          <Clock className="h-3 w-3 text-[var(--fips-fg-muted)]" />
+          <span className="font-mono">{formatTimeBR(p.horarioInicio)}</span>
+        </div>
+      ),
+    },
+    {
+      id: "fim",
+      label: "Fim",
+      sortable: true,
+      width: "70px",
+      render: (p) => (
+        <div className="flex items-center gap-1 text-[11px]">
+          <Clock className="h-3 w-3 text-[var(--fips-fg-muted)]" />
+          <span className="font-mono">{p.horarioFim ? formatTimeBR(p.horarioFim) : "..."}</span>
+        </div>
+      ),
+    },
+    {
+      id: "status",
+      label: "Status",
+      sortable: true,
+      width: "105px",
+      render: (p) => {
+        const sc = STATUS_VARIANTS[p.status] || { label: p.status, variant: "secondary" as const };
+        return <Badge variant={sc.variant} dot>{sc.label}</Badge>;
+      },
+    },
+  ];
 }
