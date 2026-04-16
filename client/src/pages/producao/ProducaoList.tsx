@@ -214,7 +214,25 @@ export default function ProducaoList() {
         }
         return;
       }
-      const data: QRScanResult = await res.json();
+      const raw = await res.json();
+      // Normalizar campos da API para o interface esperado
+      const data: QRScanResult = {
+        id: raw.id || "",
+        codigo: raw.codigo || "",
+        coletaId: raw.coletaId || raw.coleta_id || "",
+        coletaNumero: raw.coletaNumero || raw.coleta?.numero || 0,
+        separacaoId: raw.separacaoId || "",
+        fornecedor: raw.fornecedor || raw.coleta?.nome_fantasia || raw.coleta?.nomeFantasia || "",
+        tipoMaterial: raw.tipoMaterial || raw.tipo_material || "",
+        cor: raw.cor || "",
+        peso: raw.peso || raw.pesoInicial || raw.peso_inicial || 0,
+        destino: raw.destino || "",
+        coleta: raw.coleta ? {
+          numero: raw.coleta.numero || 0,
+          nomeFantasia: raw.coleta.nome_fantasia || raw.coleta.nomeFantasia || "",
+          dataColeta: raw.coleta.dataColeta || "",
+        } : undefined,
+      };
       setQrData(data);
       setQrError("");
       toast.success("QR Code escaneado com sucesso!");
@@ -574,7 +592,7 @@ export default function ProducaoList() {
                       className="text-[16px] font-extrabold"
                       style={{ color: FIPS.verdeFloresta, fontFamily: "'Saira Expanded', sans-serif" }}
                     >
-                      {qrData.peso.toLocaleString("pt-BR", { minimumFractionDigits: 1 })} kg
+                      {(qrData.peso || 0).toLocaleString("pt-BR", { minimumFractionDigits: 1 })} kg
                     </div>
                   </div>
                 </div>
