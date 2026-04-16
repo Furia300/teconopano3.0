@@ -354,14 +354,15 @@ export default function ProducaoList() {
         ]}
         actions={
           <Button
-            variant={showQrPanel ? "default" : "outline"}
             onClick={() => {
               if (showQrPanel) closeQrPanel();
               else setShowQrPanel(true);
             }}
+            className="gap-2 text-[13px] font-bold"
+            style={!showQrPanel ? { background: "#00C64C", color: "#fff" } : undefined}
           >
-            <QrCode className="h-4 w-4" />
-            Escanear QR
+            <QrCode className="h-5 w-5" />
+            {showQrPanel ? "Fechar Scanner" : "Iniciar Atividade"}
           </Button>
         }
       />
