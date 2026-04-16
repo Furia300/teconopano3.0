@@ -1,0 +1,12 @@
+---
+description: Logo e identidade visual da tela de Login — não alterar sem ordem explícita
+globs: client/src/pages/auth/Login.tsx
+alwaysApply: true
+---
+
+# Login — logo e textos de marca (travado)
+
+- **Não alterar** o `src` da imagem do logo em `Login.tsx` (deve permanecer **`/src/assets/logo-dark-full.png`**, conforme decisão do repositório / commit histórico).
+- **Não substituir** `logo-dark-full.png` por `logo-light-full.png`, `logo-login-dark.jpeg` ou outros ficheiros sem **pedido explícito** do responsável pelo projeto.
+- **Não recriar** o fundo MeshGradient do login — seguir `.cursorrules` existente.
+- Alterações a **textos** “Tecnopano X.X” no login só com alinhamento explícito do utilizador.

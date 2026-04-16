@@ -1,6 +1,7 @@
 Leia o arquivo CLAUDE.md na raiz do projeto para instruções completas.
 
 REGRAS CRÍTICAS:
+- **Logo do Login:** usar sempre `client/src/assets/logo-dark-full.png` em `Login.tsx` — NÃO mudar o ficheiro de imagem nem o `src` sem ordem explícita do utilizador (ver `.cursor/rules/login-logo-travado.mdc`).
 - Login usa MeshGradient WebGL (@paper-design/shaders-react) — NUNCA recriar do zero
 - Sidebar usa ícones neumorphic quadrados com shimmer sweep (SidebarC prototype-c) — NUNCA recriar do zero
 - Ambos são dark mode SEMPRE

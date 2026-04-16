@@ -1,14 +1,12 @@
 import { useState } from 'react';
 import { useLocation } from 'wouter';
 import { useAuth } from '@/hooks/useAuth';
-import { useTecnopanoTheme } from '@/hooks/useTecnopanoTheme';
 import { toast } from 'sonner';
 import { MeshGradient } from '@paper-design/shaders-react';
 import { Mail, Lock, Eye, EyeOff, CheckCircle2 } from 'lucide-react';
 import './Login.css';
 
 export default function Login() {
-  const { dark } = useTecnopanoTheme();
   const { login } = useAuth();
   const [, navigate] = useLocation();
   const [formData, setFormData] = useState({
@@ -82,13 +80,13 @@ export default function Login() {
         <div className="login-header">
           <div className="logo">
             <img
-              src={dark ? '/src/assets/logo-dark-full.png' : '/src/assets/logo-light-full.png'}
+              src="/src/assets/logo-dark-full.png"
               alt="Tecnopano"
               className="login-logo-img"
             />
           </div>
           <h1 className="login-title">Bem-vindo de volta</h1>
-          <p className="login-subtitle">Sistema de Gestão Industrial</p>
+          <p className="login-subtitle">Tecnopano 2.0 · Sistema de Gestão Industrial</p>
         </div>
 
         <form onSubmit={handleSubmit} className="login-form">
@@ -190,7 +188,7 @@ export default function Login() {
           </button>
 
           <div className="login-footer-inline" style={{ textAlign: "center" }}>
-            <p style={{ marginBottom: 8 }}>Sistema seguro · Tecnopano 3.0</p>
+            <p style={{ marginBottom: 8 }}>Sistema seguro · Tecnopano 2.0</p>
             <a
               href="/cadastro"
               style={{
