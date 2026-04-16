@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "NODE_ENV=development tsx watch server/index.ts",
     "dev:client": "vite",
+    "dev:full": "concurrently -n api,web -c blue,magenta \"npm run dev\" \"npm run dev:client\"",
     "build": "vite build && tsc -p tsconfig.server.json",
     "start": "NODE_ENV=production node dist/server/index.js",
     "db:push": "drizzle-kit push",
@@ -59,6 +60,7 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^4.7.0",
+    "concurrently": "^9.2.0",
     "drizzle-kit": "^0.31.10",
     "esbuild": "^0.28.0",
     "tailwindcss": "^4.2.2",

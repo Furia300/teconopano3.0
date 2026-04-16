@@ -6,9 +6,10 @@
 - `@paper-design/shaders-react` (WebGL shaders)
 
 ## Comandos
-- **Dev backend:** `npx tsx server/index.ts`
-- **Dev frontend:** `npx vite --host`
-- **Build:** `npx vite build`
+- **API + front ao mesmo tempo (recomendado):** `npm run dev:full` — sobe **api** (porta 3001) e **web** Vite (porta 3002) num único terminal (usa `concurrently`).
+- **Só backend:** `npm run dev` (Express em `http://localhost:3001`)
+- **Só frontend:** `npm run dev:client` (Vite em `http://localhost:3002`, proxy `/api` → 3001)
+- **Build:** `npm run build`
 
 ---
 
