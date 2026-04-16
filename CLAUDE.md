@@ -21,11 +21,14 @@ Arquivo: `client/src/pages/auth/Login.tsx` + `Login.css`
 ### Componentes do login:
 - **Fundo:** `<MeshGradient colors={['#000000','#1a1a1a','#333333','#ffffff']} speed={1.0} backgroundColor="#000000" />` dentro de `.login-bg-effect`
 - **Card:** glassmorphism (`backdrop-filter: blur(20px)`, `rgba(26,26,26,0.6)`, borda `rgba(255,255,255,0.1)`)
-- **Logo:** `/src/assets/logo.png` centralizada
+- **Logo (TRAVADO — não alterar sem ordem explícita do utilizador):**
+  - **Sempre** usar `src="/src/assets/logo-dark-full.png"` em `Login.tsx` (PNG, decisão do repositório).
+  - **Nunca** trocar por `logo-light-full.png`, `logo-login-dark.jpeg`, `logo.png` ou outro ficheiro sem pedido explícito.
+  - Regra espelhada em `.cursor/rules/login-logo-travado.mdc` e em `.cursorrules`.
 - **Campos:** email com validação (check verde CheckCircle2), senha com toggle olho (Eye/EyeOff)
 - **Opções:** checkbox "Lembrar-me" + link "Esqueceu a senha?"
 - **Botão:** gradiente `#FF073A → #B20028`, seta animada (svg arrow), shimmer no hover
-- **Footer:** "Sistema seguro · Tecnopano 3.0"
+- **Subtítulo / footer:** texto de marca alinhado ao código actual (ex.: "Tecnopano 2.0 · Sistema de Gestão Industrial" / "Sistema seguro · Tecnopano 2.0") — **não mudar a versão** sem ordem do utilizador.
 - **CSS:** arquivo separado `Login.css`, variáveis `--accent: #FF073A`, responsivo mobile-first
 
 ### Origem:
@@ -67,4 +70,5 @@ Baseado no `SidebarC.tsx` do prototype-c em `github.com/agencianookweb-hash/Tecn
 - Login e Sidebar são dark mode SEMPRE — nunca usar tema light neles
 - Sidebar preservada do prototype-c — não alterar o design visual
 - Login preservado do repo original — não alterar o design visual
+- **Logo do login:** TRAVADA — ver secção acima; não mudar `src` da imagem nem substituir o asset sem ordem explícita do utilizador
 - Se precisar alterar, partir do arquivo existente, NUNCA recriar
