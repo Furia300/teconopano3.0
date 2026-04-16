@@ -310,14 +310,14 @@ export default function ProducaoList() {
   /* ─── Finalizar Producao ─── */
   const handleFinalizarProducao = async () => {
     if (!finalizarId) return;
-    const peso = parseFloat(finPesoProduzido);
-    const pacotes = parseInt(finQtdePacotes, 10);
+    const peso = parseFloat(finPesoProduzido) || 0;
+    const pacotes = parseInt(finQtdePacotes, 10) || 0;
 
-    if (!peso || peso <= 0) {
-      toast.error("Informe o peso produzido");
+    if (finUnidade === "kilo" && peso <= 0) {
+      toast.error("Informe o peso produzido (kg)");
       return;
     }
-    if (!pacotes || pacotes <= 0) {
+    if (finUnidade === "unidade" && pacotes <= 0) {
       toast.error("Informe a quantidade de pacotes");
       return;
     }
@@ -705,39 +705,27 @@ export default function ProducaoList() {
             </span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4">
-            <Field density="compact" inset="icon">
-              <FieldLabel>Peso Produzido (kg) *</FieldLabel>
-              <Input
-                density="compact"
-                leftIcon={<Weight className="h-3.5 w-3.5" />}
-                type="number"
-                min="0"
-                step="0.1"
-                placeholder="0.0"
-                value={finPesoProduzido}
-                onChange={(e) => setFinPesoProduzido(e.target.value)}
-                autoFocus
-              />
-            </Field>
-            <Field density="compact" inset="icon">
-              <FieldLabel>Qtde Pacotes *</FieldLabel>
-              <Input
-                density="compact"
-                leftIcon={<Package className="h-3.5 w-3.5" />}
-                type="number"
-                min="1"
-                placeholder="0"
-                value={finQtdePacotes}
-                onChange={(e) => setFinQtdePacotes(e.target.value)}
-              />
-            </Field>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
             <Field density="compact" inset="icon">
               <FieldLabel>Unidade de Medida *</FieldLabel>
-              <Select density="compact" leftIcon={<Scale className="h-3.5 w-3.5" />} value={finUnidade} onChange={(e: any) => setFinUnidade(e.target.value)}>
-                <option value="unidade">Unidade</option>
-                <option value="kilo">Kilo</option>
+              <Select density="compact" leftIcon={<Scale className="h-3.5 w-3.5" />} value={finUnidade} onChange={(e: any) => { setFinUnidade(e.target.value); setFinPesoProduzido(""); setFinQtdePacotes(""); }}>
+                <option value="unidade">Pacotes (Unidade)</option>
+                <option value="kilo">Peso (Kilo)</option>
               </Select>
+            </Field>
+            <Field density="compact" inset="icon">
+              <FieldLabel>{finUnidade === "kilo" ? "Peso Produzido (kg) *" : "Qtde Pacotes *"}</FieldLabel>
+              <Input
+                density="compact"
+                leftIcon={finUnidade === "kilo" ? <Weight className="h-3.5 w-3.5" /> : <Package className="h-3.5 w-3.5" />}
+                type="number"
+                min={finUnidade === "kilo" ? "0" : "1"}
+                step={finUnidade === "kilo" ? "0.1" : "1"}
+                placeholder={finUnidade === "kilo" ? "0.0 kg" : "0 pacotes"}
+                value={finUnidade === "kilo" ? finPesoProduzido : finQtdePacotes}
+                onChange={(e) => finUnidade === "kilo" ? setFinPesoProduzido(e.target.value) : setFinQtdePacotes(e.target.value)}
+                autoFocus
+              />
             </Field>
             <div className="flex items-end gap-2">
               <Button
@@ -932,30 +920,41 @@ function producaoColumns({ onFinalizar }: ProducaoColumnActions): DataListingCol
       render: (p) => <CellMonoStrong align="right">{formatKg(p.pesoEntrada)}</CellMonoStrong>,
     },
     {
-      id: "pesoProduzido",
-      label: "Peso Produzido",
+      id: "produzido",
+      label: "Produzido",
       sortable: true,
       align: "right",
-      width: "105px",
-      render: (p) => (
-        <CellMonoStrong align="right" style={{ color: p.pesoProduzido ? "#00C64C" : undefined }}>
-          {formatKg(p.pesoProduzido)}
-        </CellMonoStrong>
-      ),
+      width: "110px",
+      render: (p: any) => {
+        const isKilo = p.unidadeSaida === "kilo";
+        if (isKilo) {
+          return p.pesoProduzido ? (
+            <div className="text-right">
+              <CellMonoStrong align="right" style={{ color: "#00C64C" }}>{formatKg(p.pesoProduzido)}</CellMonoStrong>
+              <div className="text-[9px] text-[var(--fips-fg-muted)]">Kilo</div>
+            </div>
+          ) : <CellMuted>—</CellMuted>;
+        }
+        return p.qtdePacotes ? (
+          <div className="text-right">
+            <CellMonoStrong align="right" style={{ color: "#00C64C" }}>{p.qtdePacotes} un</CellMonoStrong>
+            <div className="text-[9px] text-[var(--fips-fg-muted)]">Pacotes</div>
+          </div>
+        ) : <CellMuted>—</CellMuted>;
+      },
     },
     {
-      id: "pacotes",
-      label: "Pacotes",
+      id: "residuo",
+      label: "Resíduo",
       sortable: true,
       align: "right",
-      width: "70px",
-      render: (p) => <CellMonoMuted>{p.qtdePacotes ?? "\u2014"}</CellMonoMuted>,
-    },
-    {
-      id: "unidade",
-      label: "Unidade",
-      width: "70px",
-      render: (p: any) => <Badge variant={p.unidadeSaida === "kilo" ? "info" : "success"} className="text-[9px]">{p.unidadeSaida === "kilo" ? "Kilo" : "Unidade"}</Badge>,
+      width: "90px",
+      render: (p: any) => {
+        if (!p.pesoProduzido || !p.pesoEntrada) return <CellMuted>—</CellMuted>;
+        const residuo = (p.pesoEntrada || 0) - (p.pesoProduzido || 0);
+        if (residuo <= 0) return <CellMuted>0 kg</CellMuted>;
+        return <span className="text-[11px] font-mono font-semibold text-[#DC3545]">{residuo.toFixed(1)} kg</span>;
+      },
     },
     {
       id: "status",
