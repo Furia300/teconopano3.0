@@ -1146,9 +1146,9 @@ export function registerRoutes(app: Express) {
           dataEmissaoNota: new Date().toISOString(),
         }),
       );
-    } catch (err) {
-      console.error("[PUT emitir-nf]", err);
-      res.status(500).json({ message: "Erro ao emitir NF" });
+    } catch (err: any) {
+      console.error("[PUT emitir-nf] FULL ERROR:", JSON.stringify(err, null, 2));
+      res.status(500).json({ message: `Erro ao emitir NF: ${err?.message || err?.details || String(err)}` });
     }
   });
 

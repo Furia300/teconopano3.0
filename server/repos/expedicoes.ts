@@ -80,6 +80,7 @@ const CAMEL_TO_SNAKE: Record<string, string> = {
   statusEntrega: "status_entrega",
   statusFinanceiro: "status_financeiro",
   statusNota: "status_nota",
+  notaFiscal: "nota_fiscal",
   dataEmissaoNota: "data_emissao_nota",
   dataEntrega: "data_entrega",
   observacaoEscritorio: "observacao_escritorio",
