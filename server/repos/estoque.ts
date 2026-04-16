@@ -54,10 +54,20 @@ const CAMEL_TO_SNAKE: Record<string, string> = {
   coletaId: "coleta_id",
   producaoId: "producao_id",
   produtoId: "produto_id",
+  qrCodeId: "qr_code_id",
   descricaoProduto: "descricao_produto",
+  novaDescricao: "nova_descricao",
   tipoMaterial: "tipo_material",
   pesoMedioPct: "peso_medio_pct",
   unidadeMedida: "unidade_medida",
+  qtdeReservadaPacote: "qtde_reservada_pacote",
+  nomeFantasia: "nome_fantasia",
+  razaoSocial: "razao_social",
+  notaFiscal: "nota_fiscal",
+  idCliente: "id_cliente",
+  statusMaterial: "status_material",
+  statusServico: "status_servico",
+  dataRetirada: "data_retirada",
 };
 
 function toRow(input: Record<string, unknown>): Record<string, unknown> {
