@@ -5,6 +5,7 @@ import {
   Plus,
   Pencil,
   Trash2,
+  Eye,
   Layers,
   Palette,
   DollarSign,
@@ -333,17 +334,25 @@ function produtoColumns({ onEdit, onDelete }: ProdutoActions): DataListingColumn
       label: "Ações",
       fixed: true,
       align: "center",
-      width: "80px",
+      width: "110px",
       render: (p) => (
         <CellActions>
           <CellActionButton
+            title="Visualizar"
+            variant="primary"
+            icon={<Eye className="h-3.5 w-3.5" />}
+            onClick={() => onEdit(p)}
+          />
+          <CellActionButton
             title="Editar"
+            variant="default"
             icon={<Pencil className="h-3.5 w-3.5" />}
             onClick={() => onEdit(p)}
           />
           <CellActionButton
             title="Inativar"
-            icon={<Trash2 className="h-3.5 w-3.5 text-[var(--fips-danger)]" />}
+            variant="danger"
+            icon={<Trash2 className="h-3.5 w-3.5" />}
             onClick={() => onDelete(p.id)}
           />
         </CellActions>

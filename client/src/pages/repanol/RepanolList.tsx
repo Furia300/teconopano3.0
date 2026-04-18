@@ -470,7 +470,8 @@ function repanolColumns({
             <CellActions>
               <CellActionButton
                 title="Registrar retorno"
-                icon={<ArrowLeft className="h-3.5 w-3.5 text-[var(--fips-primary)]" />}
+                variant="success"
+                icon={<ArrowLeft className="h-3.5 w-3.5" />}
                 onClick={() => onRetorno(r)}
               />
             </CellActions>

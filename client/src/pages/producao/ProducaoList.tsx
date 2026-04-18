@@ -1004,7 +1004,8 @@ function producaoColumns({ onFinalizar }: ProducaoColumnActions): DataListingCol
             <CellActions>
               <CellActionButton
                 title="Finalizar producao"
-                icon={<Square className="h-3.5 w-3.5 text-[var(--fips-warning)]" />}
+                variant="default"
+                icon={<Square className="h-3.5 w-3.5" />}
                 onClick={() => onFinalizar(p.id)}
               />
             </CellActions>

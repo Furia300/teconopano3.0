@@ -5,6 +5,7 @@ import {
   Plus,
   Pencil,
   Trash2,
+  Eye,
   CheckCircle2,
   IdCard,
   Car,
@@ -377,17 +378,25 @@ function motoristaColumns({
       label: "Ações",
       fixed: true,
       align: "center",
-      width: "80px",
+      width: "110px",
       render: (m) => (
         <CellActions>
           <CellActionButton
+            title="Visualizar"
+            variant="primary"
+            icon={<Eye className="h-3.5 w-3.5" />}
+            onClick={() => onEdit(m)}
+          />
+          <CellActionButton
             title="Editar"
+            variant="default"
             icon={<Pencil className="h-3.5 w-3.5" />}
             onClick={() => onEdit(m)}
           />
           <CellActionButton
             title="Inativar"
-            icon={<Trash2 className="h-3.5 w-3.5 text-[var(--fips-danger)]" />}
+            variant="danger"
+            icon={<Trash2 className="h-3.5 w-3.5" />}
             onClick={() => onDelete(m.id)}
           />
         </CellActions>

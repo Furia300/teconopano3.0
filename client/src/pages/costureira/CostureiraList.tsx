@@ -125,7 +125,7 @@ function costureiraColumns({ onRetorno }: { onRetorno: (e: CostureiraEnvio) => v
       render: (e) => (
         <CellActions>
           {e.status === "enviado" && (
-            <CellActionButton title="Registrar retorno" icon={<ArrowLeft className="h-3.5 w-3.5" />} onClick={() => onRetorno(e)} />
+            <CellActionButton title="Registrar retorno" variant="success" icon={<ArrowLeft className="h-3.5 w-3.5" />} onClick={() => onRetorno(e)} />
           )}
         </CellActions>
       ),

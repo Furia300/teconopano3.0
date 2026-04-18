@@ -175,12 +175,13 @@ export function UsuariosTab() {
       width: "100px",
       render: (u) => (
         <CellActions>
-          <CellActionButton title="Editar" icon={<Pencil className="h-3.5 w-3.5" />} onClick={() => { setEditUser(u); setDialogOpen(true); }} />
-          <CellActionButton title="Enviar link de senha" icon={<Link2 className="h-3.5 w-3.5" />} onClick={() => handleInviteLink(u.id, u.nome)} />
-          <CellActionButton title="Resetar senha" icon={<KeyRound className="h-3.5 w-3.5" />} onClick={() => handleResetPassword(u.id)} />
+          <CellActionButton title="Editar" variant="default" icon={<Pencil className="h-3.5 w-3.5" />} onClick={() => { setEditUser(u); setDialogOpen(true); }} />
+          <CellActionButton title="Enviar link de senha" variant="primary" icon={<Link2 className="h-3.5 w-3.5" />} onClick={() => handleInviteLink(u.id, u.nome)} />
+          <CellActionButton title="Resetar senha" variant="default" icon={<KeyRound className="h-3.5 w-3.5" />} onClick={() => handleResetPassword(u.id)} />
           <CellActionButton
             title={u.acesso ? "Desativar" : "Reativar"}
-            icon={u.acesso ? <PowerOff className="h-3.5 w-3.5 text-[var(--fips-danger)]" /> : <Power className="h-3.5 w-3.5 text-[var(--fips-success)]" />}
+            variant={u.acesso ? "danger" : "success"}
+            icon={u.acesso ? <PowerOff className="h-3.5 w-3.5" /> : <Power className="h-3.5 w-3.5" />}
             onClick={() => handleToggleAccess(u)}
           />
         </CellActions>

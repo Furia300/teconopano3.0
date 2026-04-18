@@ -257,6 +257,7 @@ function motoristaColumns({ onView }: { onView: (t: MotoristaTask) => void }): D
         <CellActions>
           <CellActionButton
             title="Ver detalhes"
+            variant="primary"
             icon={<Eye className="h-3.5 w-3.5" />}
             onClick={() => onView(t)}
           />
@@ -584,7 +585,7 @@ export default function PainelLogisticaPage() {
         periodo={periodo}
         onPeriodoChange={setPeriodo}
         onExportExcel={() => alert("Export Excel — placeholder")}
-        onExportPdf={() => { document.body.classList.add("printing-dashboard"); document.title = "Dashboard Motorista — Tecnopano 3.0"; setTimeout(() => { window.print(); document.body.classList.remove("printing-dashboard"); document.title = "Tecnopano - Sistema de Gestão Industrial"; }, 100); }}
+        onExportPdf={() => { document.body.classList.add("printing-dashboard"); document.title = "Dashboard Motorista — Tecnopano 2.0"; setTimeout(() => { window.print(); document.body.classList.remove("printing-dashboard"); document.title = "Tecnopano - Sistema de Gestão Industrial"; }, 100); }}
       />
 
       {/* Tabela */}

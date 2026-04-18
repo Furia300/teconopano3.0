@@ -395,6 +395,7 @@ function emissaoColumns({ onEmitir }: EmissaoColumnActions): DataListingColumn<E
         <CellActions>
           <CellActionButton
             title="Emitir NF"
+            variant="primary"
             icon={<Printer className="h-3.5 w-3.5" />}
             onClick={() => onEmitir(e.id)}
           />

@@ -5,6 +5,7 @@ import {
   Plus,
   Pencil,
   Trash2,
+  Eye,
   CheckCircle2,
   FileBadge,
   Mail as MailIcon,
@@ -328,17 +329,25 @@ function fornecedorColumns({ onEdit, onDelete }: FornecedorActions): DataListing
       label: "Ações",
       fixed: true,
       align: "center",
-      width: "80px",
+      width: "110px",
       render: (f) => (
         <CellActions>
           <CellActionButton
+            title="Visualizar"
+            variant="primary"
+            icon={<Eye className="h-3.5 w-3.5" />}
+            onClick={() => onEdit(f)}
+          />
+          <CellActionButton
             title="Editar"
+            variant="default"
             icon={<Pencil className="h-3.5 w-3.5" />}
             onClick={() => onEdit(f)}
           />
           <CellActionButton
             title="Inativar"
-            icon={<Trash2 className="h-3.5 w-3.5 text-[var(--fips-danger)]" />}
+            variant="danger"
+            icon={<Trash2 className="h-3.5 w-3.5" />}
             onClick={() => onDelete(f.id)}
           />
         </CellActions>

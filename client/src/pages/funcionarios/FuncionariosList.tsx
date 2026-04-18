@@ -5,6 +5,7 @@ import {
   Plus,
   Pencil,
   Trash2,
+  Eye,
   Truck,
   Scissors,
   Warehouse,
@@ -605,17 +606,25 @@ function colaboradorColumns({ onEdit, onDelete }: ColabActions): DataListingColu
       label: "Ações",
       fixed: true,
       align: "center",
-      width: "80px",
+      width: "110px",
       render: (c) => (
         <CellActions>
           <CellActionButton
+            title="Visualizar"
+            variant="primary"
+            icon={<Eye className="h-3.5 w-3.5" />}
+            onClick={() => onEdit(c)}
+          />
+          <CellActionButton
             title="Editar"
+            variant="default"
             icon={<Pencil className="h-3.5 w-3.5" />}
             onClick={() => onEdit(c)}
           />
           <CellActionButton
             title="Excluir"
-            icon={<Trash2 className="h-3.5 w-3.5 text-[var(--fips-danger)]" />}
+            variant="danger"
+            icon={<Trash2 className="h-3.5 w-3.5" />}
             onClick={() => onDelete(c.id)}
           />
         </CellActions>

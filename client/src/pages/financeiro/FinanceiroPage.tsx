@@ -435,12 +435,12 @@ function financeiroColumns({ onAprovar, onRejeitar }: FinanceiroColumnActions): 
           return <CellActions><CheckCircle2 className="h-3.5 w-3.5 text-[var(--fips-success-strong)]" /></CellActions>;
         }
         if (e.statusFinanceiro === "rejeitado") {
-          return <CellActions><CellActionButton title="Reaprovar" icon={<Check className="h-3.5 w-3.5 text-[var(--fips-success)]" />} onClick={() => onAprovar(e.id)} /></CellActions>;
+          return <CellActions><CellActionButton title="Reaprovar" variant="success" icon={<Check className="h-3.5 w-3.5" />} onClick={() => onAprovar(e.id)} /></CellActions>;
         }
         return (
           <CellActions>
-            <CellActionButton title="Aprovar pagamento" icon={<Check className="h-3.5 w-3.5 text-[var(--fips-success)]" />} onClick={() => onAprovar(e.id)} />
-            <CellActionButton title="Rejeitar" icon={<X className="h-3.5 w-3.5 text-[var(--fips-danger)]" />} onClick={() => onRejeitar(e.id)} />
+            <CellActionButton title="Aprovar pagamento" variant="success" icon={<Check className="h-3.5 w-3.5" />} onClick={() => onAprovar(e.id)} />
+            <CellActionButton title="Rejeitar" variant="danger" icon={<X className="h-3.5 w-3.5" />} onClick={() => onRejeitar(e.id)} />
           </CellActions>
         );
       },

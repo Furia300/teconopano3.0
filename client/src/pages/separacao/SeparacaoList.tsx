@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import {
   ClipboardList, QrCode, Package, Scale, AlertTriangle, ArrowDownUp,
   CheckCircle2, ChevronLeft, Weight, Plus, Eye, User,
-  Factory, Scissors, Droplets, Trash2, Gift, Palette, MapPin, Layers,
+  Factory, Scissors, Droplets, Trash2, Gift, Palette, MapPin, Layers, Pencil,
 } from "lucide-react";
 import { PageHeader } from "@/components/domain/PageHeader";
 import { StatsCard } from "@/components/domain/StatsCard";
@@ -100,9 +100,16 @@ const formatKg = (n: number | null | undefined) =>
 /* ─── Status helpers ─── */
 const STATUS_VARIANTS: Record<string, { label: string; variant: "default" | "secondary" | "success" | "warning" | "info" }> = {
   pendente: { label: "Pendente", variant: "warning" },
+  agendado: { label: "Agendado", variant: "secondary" },
+  em_rota: { label: "Em Rota", variant: "info" },
   recebido: { label: "Recebido", variant: "info" },
   em_triagem: { label: "Em Triagem", variant: "info" },
   triada: { label: "Triada", variant: "success" },
+  em_separacao: { label: "Em Separação", variant: "info" },
+  separado: { label: "Separado", variant: "success" },
+  em_producao: { label: "Em Produção", variant: "info" },
+  finalizado: { label: "Finalizado", variant: "success" },
+  cancelado: { label: "Cancelado", variant: "default" },
 };
 
 function getStatusInfo(s: string) {
@@ -883,12 +890,19 @@ function coletaColumns({ onView }: { onView: (id: string) => void }): DataListin
       label: "Ações",
       fixed: true,
       align: "center",
-      width: "60px",
+      width: "80px",
       render: (c) => (
         <CellActions>
           <CellActionButton
             title="Abrir triagem"
+            variant="primary"
             icon={<Eye className="h-3.5 w-3.5" />}
+            onClick={() => onView(c.id)}
+          />
+          <CellActionButton
+            title="Editar"
+            variant="default"
+            icon={<Pencil className="h-3.5 w-3.5" />}
             onClick={() => onView(c.id)}
           />
         </CellActions>
