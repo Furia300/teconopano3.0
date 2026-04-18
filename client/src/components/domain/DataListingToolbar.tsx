@@ -43,6 +43,46 @@ const DEFAULT_PERIODOS = [
  *
  * Mantém o mesmo radius `8px`, mesma altura 35px e mesmo padding `7-12px` do canônico.
  */
+
+/* Botão export DS FIPS — SVG custom com dark mode auto */
+import { forwardRef } from "react";
+
+const ExportButton = forwardRef<HTMLButtonElement, {
+  onClick?: () => void;
+  lightColor: string;
+  darkColor: string;
+  children: (color: string) => React.ReactNode;
+  "aria-label"?: string;
+}>(({ onClick, lightColor, darkColor, children, ...props }, ref) => {
+  const isDark = typeof document !== "undefined" && document.documentElement.classList.contains("dark");
+  const c = isDark ? darkColor : lightColor;
+  return (
+    <button
+      ref={ref}
+      type="button"
+      onClick={onClick}
+      style={{
+        display: "inline-flex", alignItems: "center", justifyContent: "center",
+        width: 34, height: 34, borderRadius: 8, cursor: "pointer",
+        background: "var(--fips-surface)",
+        border: `1px solid ${isDark ? `${darkColor}40` : "var(--fips-border)"}`,
+        transition: "all .15s",
+      }}
+      onMouseEnter={e => {
+        e.currentTarget.style.background = `${c}14`;
+        e.currentTarget.style.borderColor = `${c}66`;
+      }}
+      onMouseLeave={e => {
+        e.currentTarget.style.background = "var(--fips-surface)";
+        e.currentTarget.style.borderColor = isDark ? `${darkColor}40` : "var(--fips-border)";
+      }}
+      {...props}
+    >
+      {children(c)}
+    </button>
+  );
+});
+
 export function DataListingToolbar({
   search,
   onSearchChange,
@@ -204,35 +244,47 @@ export function DataListingToolbar({
           {/* Spacer */}
           <div className="flex-1" />
 
-          {/* Export buttons */}
+          {/* Export buttons — ícones SVG DS FIPS */}
           {onExportExcel && (
             <Tooltip>
               <TooltipTrigger asChild>
-                <button
-                  type="button"
+                <ExportButton
                   onClick={onExportExcel}
-                  className="flex h-[34px] w-[34px] items-center justify-center rounded-lg border border-[var(--fips-border)] bg-[var(--fips-surface)] text-[#1D6F42] transition-colors hover:border-[#1D6F42]/40 hover:bg-[#1D6F42]/[0.06]"
-                  aria-label="Exportar para Excel"
+                  lightColor="#1D6F42"
+                  darkColor="#8BE5AD"
+                  aria-label="Exportar para Excel (.xlsx)"
                 >
-                  <FileSpreadsheet className="h-4 w-4" />
-                </button>
+                  {(c: string) => (
+                    <svg width={16} height={16} viewBox="0 0 20 20" fill="none">
+                      <rect x="2.5" y="2.5" width="15" height="15" rx="1.5" fill={c} fillOpacity=".08" stroke={c} strokeWidth="1.5"/>
+                      <path d="M2.5 7h15M2.5 12h15M7.5 2.5v15M12.5 2.5v15" stroke={c} strokeWidth="1.1" opacity=".6"/>
+                      <path d="M6.5 9.5l3 3M9.5 9.5l-3 3" stroke={c} strokeWidth="1.6" strokeLinecap="round"/>
+                    </svg>
+                  )}
+                </ExportButton>
               </TooltipTrigger>
-              <TooltipContent side="top">Exportar para Excel</TooltipContent>
+              <TooltipContent side="top">Exportar para Excel (.xlsx)</TooltipContent>
             </Tooltip>
           )}
           {onExportPdf && (
             <Tooltip>
               <TooltipTrigger asChild>
-                <button
-                  type="button"
+                <ExportButton
                   onClick={onExportPdf}
-                  className="flex h-[34px] w-[34px] items-center justify-center rounded-lg border border-[var(--fips-border)] bg-[var(--fips-surface)] text-[var(--fips-danger)] transition-colors hover:border-[var(--fips-danger)]/40 hover:bg-[var(--fips-danger)]/[0.06]"
-                  aria-label="Exportar para PDF"
+                  lightColor="#DC3545"
+                  darkColor="#DB2631"
+                  aria-label="Exportar para PDF (.pdf)"
                 >
-                  <FileText className="h-4 w-4" />
-                </button>
+                  {(c: string) => (
+                    <svg width={16} height={16} viewBox="0 0 20 20" fill="none">
+                      <path d="M5 2h7l4 4v12H5V2z" fill={c} fillOpacity=".08" stroke={c} strokeWidth="1.5" strokeLinejoin="round"/>
+                      <path d="M12 2v4h4" stroke={c} strokeWidth="1.5" strokeLinejoin="round"/>
+                      <path d="M7 11.5h2.2c.6 0 1 .4 1 1s-.4 1-1 1H7v1.5M11.5 11.5v3M11.5 11.5h1.5M11.5 13h1" stroke={c} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  )}
+                </ExportButton>
               </TooltipTrigger>
-              <TooltipContent side="top">Exportar para PDF</TooltipContent>
+              <TooltipContent side="top">Exportar para PDF (.pdf)</TooltipContent>
             </Tooltip>
           )}
         </div>

@@ -62,7 +62,7 @@ function tabTriggerClass(active: boolean, dark: boolean) {
       : cn(
           active
             ? "font-semibold text-[#002A68] focus-visible:ring-[#FF073A]/35"
-            : "font-normal text-[#7B8C96] hover:bg-[#002a68]/[0.04] hover:text-[#333B41] focus-visible:ring-[#FF073A]/28",
+            : "font-normal text-[#4A5568] hover:bg-[#002a68]/[0.06] hover:text-[#1A202C] focus-visible:ring-[#FF073A]/28",
           "focus-visible:ring-offset-2 focus-visible:ring-offset-transparent",
         ),
   );
@@ -71,7 +71,7 @@ function tabTriggerClass(active: boolean, dark: boolean) {
 function iconClassInactive(dark: boolean) {
   return cn(
     "shrink-0 transition-colors duration-200",
-    dark ? "text-[#71717A]" : "text-[#7B8C96]",
+    dark ? "text-[#A1A1AA]" : "text-[#4A5568]",
   );
 }
 

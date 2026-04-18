@@ -210,9 +210,15 @@
   /* FIPS DS — dark mode alinhado ao DashboardAdmin
      Página: #1A1A1A | Cards: #222222 | Borda: #2E2E2E
      Extraído de DashboardAdmin.tsx DARK palette + shellDarkGlassPanel */
+  --fips-primary: #93BDE4;
+  --fips-primary-hover: #7EAED6;
+  --fips-accent-strong: #FDC24E;
+  --fips-success: #00C64C;
+  --fips-success-strong: #8BE5AD;
+  --fips-danger: #FCA5A5;
   --fips-surface: #222222;
   --fips-surface-soft: #252525;
-  --fips-surface-muted: #1E1E1E;
+  --fips-surface-muted: #2c2c2c;
   --fips-border: #2E2E2E;
   --fips-border-strong: #3a3a3a;
   --fips-fg: #E2E2E8;
@@ -387,8 +393,8 @@ body {
   display: none !important;
 }
 
-/* DataListing: células herdam fontSize da densidade (--cell-fs) */
-td[style*="--cell-fs"] * {
+/* DataListing: células herdam fontSize da densidade (--cell-fs) — exclui badges */
+td[style*="--cell-fs"] *:not([data-badge]):not([data-badge] *) {
   font-size: inherit !important;
 }
 td[style*="--cell-fs"] [data-sub] {
@@ -473,7 +479,7 @@ td[style*="--cell-fs"] [data-sub] {
 
   /* Watermark e timestamp */
   .printing-dashboard main::after {
-    content: "Tecnopano 3.0 · Gerado em " attr(data-print-date);
+    content: "Tecnopano 2.0 · Gerado em " attr(data-print-date);
     display: block;
     text-align: center;
     font-size: 9px;

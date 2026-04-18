@@ -1,7 +1,18 @@
-import type { ReactNode } from "react";
+import { type ReactNode, useState, useEffect } from "react";
 import type { LucideIcon } from "lucide-react";
 import { PageHero } from "./PageHero";
 import { cn } from "@/lib/utils";
+
+function useDark() {
+  const [dark, setDark] = useState(() => typeof document !== "undefined" && document.documentElement.classList.contains("dark"));
+  useEffect(() => {
+    const el = document.documentElement;
+    const obs = new MutationObserver(() => setDark(el.classList.contains("dark")));
+    obs.observe(el, { attributes: true, attributeFilter: ["class"] });
+    return () => obs.disconnect();
+  }, []);
+  return dark;
+}
 
 export type HeroStat = {
   label: string;
@@ -38,24 +49,37 @@ export function FipsModulePageHero({
   stats,
   className,
 }: FipsModulePageHeroProps) {
+  const dark = useDark();
   return (
     <PageHero className={className}>
       <div className="relative flex flex-col gap-4 px-6 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-7 sm:py-6">
         {/* Left — icon + text + stats */}
         <div className="flex items-start gap-4">
           {Icon ? (
-            <div
-              className="hidden flex-shrink-0 items-center justify-center sm:flex"
+            <span
+              className="relative hidden shrink-0 items-center justify-center overflow-hidden rounded-md sm:inline-flex"
               style={{
-                width: 52,
-                height: 52,
-                borderRadius: 14,
-                background: "linear-gradient(135deg, rgba(237,27,36,0.12), rgba(178,0,40,0.06))",
-                border: "1px solid rgba(237,27,36,0.18)",
+                width: 32, height: 32,
+                border: "1px solid rgba(255,7,58,0.4)",
+                boxShadow: "0 2px 8px -2px rgba(255,7,58,0.45)",
               }}
             >
-              <Icon className="h-6 w-6" style={{ color: "#ed1b24" }} strokeWidth={1.8} />
-            </div>
+              <span className="absolute inset-0 rounded-[5px]" style={{ background: "linear-gradient(135deg,#FF073A,#B20028)" }} aria-hidden />
+              <span
+                className="pointer-events-none absolute inset-0 rounded-[5px]"
+                style={{
+                  background: "linear-gradient(135deg,transparent,rgba(255,255,255,0.38) 50%,transparent)",
+                  animation: "shimmerSweep 0.55s ease forwards",
+                }}
+                aria-hidden
+              />
+              <Icon
+                className="relative z-[1] shrink-0 text-white"
+                style={{ width: 18, height: 18 }}
+                strokeWidth={1.5}
+                aria-hidden
+              />
+            </span>
           ) : null}
 
           <div className="min-w-0">

@@ -220,7 +220,7 @@ export function DataListingTable<T>({
       {/* ───── HEADER OBRIGATÓRIO ───── */}
       <div className="flex items-center gap-3.5 border-b border-[var(--fips-border)] px-5 pt-[18px] pb-3.5">
         {/* Ícone */}
-        <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-[14px] border border-[color-mix(in_srgb,var(--fips-primary)_8%,transparent)] bg-[color-mix(in_srgb,var(--fips-primary)_4%,transparent)] text-[var(--fips-primary)]">
+        <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-[14px] border border-[color-mix(in_srgb,var(--fips-primary)_8%,transparent)] bg-[color-mix(in_srgb,var(--fips-primary)_4%,transparent)] text-[var(--fips-primary)] dark:border-[rgba(147,189,228,0.18)] dark:bg-[rgba(147,189,228,0.08)] dark:text-[#93BDE4]">
           {icon}
         </div>
         {/* Título + Subtítulo */}
@@ -506,11 +506,11 @@ export function DataListingTable<T>({
         <div className="overflow-x-auto">
           <table className="w-full border-collapse">
             <thead>
-              <tr className="bg-[var(--fips-surface-soft)]">
+              <tr className="bg-[var(--fips-surface-muted)] dark:bg-[#1A1A1A]">
                 {selectable && (
                   <th
-                    style={{ width: 36, padding: `4px ${D.padX}px` }}
-                    className="border-b-2 border-[var(--fips-border)] text-left"
+                    style={{ width: 36, padding: `8px ${D.padX}px` }}
+                    className="border-b-2 border-[var(--fips-border-strong)] text-left"
                   >
                     <MiniCheckbox
                       checked={selected.size === data.length && selected.size > 0}
@@ -523,15 +523,15 @@ export function DataListingTable<T>({
                     key={col.id}
                     onClick={() => col.sortable && handleSort(col.id)}
                     style={{
-                      padding: `4px ${D.padX}px`,
-                      fontSize: Math.max(9, D.fs - 4),
+                      padding: `8px ${D.padX}px`,
+                      fontSize: 9,
                       width: col.width,
                       borderRight: appearance.verticalBorders
                         ? "1px solid var(--fips-border)"
                         : "none",
                     }}
                     className={cn(
-                      `font-heading whitespace-nowrap border-b-2 border-[var(--fips-border)] font-bold tracking-[1px] text-[var(--fips-fg-muted)] uppercase`,
+                      `font-heading whitespace-nowrap border-b-2 border-[var(--fips-border-strong)] font-bold tracking-[1px] text-[var(--fips-fg-muted)] uppercase`,
                       col.align === "right" && "text-right",
                       col.align === "center" && "text-center",
                       col.align !== "right" && col.align !== "center" && "text-left",
@@ -583,9 +583,9 @@ export function DataListingTable<T>({
                       isSel
                         ? "bg-[var(--fips-primary)]/[0.06]"
                         : appearance.zebra && i % 2 === 1
-                          ? "bg-[var(--color-fips-blue-200)]/25"
+                          ? "bg-[var(--color-fips-blue-200)]/25 dark:bg-white/[0.03]"
                           : "",
-                      "hover:bg-white/[0.04] dark:hover:bg-white/[0.06]",
+                      "hover:bg-[var(--color-fips-blue-200)]/40 dark:hover:bg-[rgba(253,194,78,0.06)]",
                     )}
                   >
                     {selectable && (
@@ -665,62 +665,74 @@ export function DataListingTable<T>({
         </div>
       )}
 
-      {/* ───── PAGINAÇÃO FIPS DS ───── */}
-      {data.length > 0 && (
-        <div className="flex flex-col gap-3 border-t border-[var(--fips-border)] px-6 py-3 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex items-center gap-2 text-[11px] text-[var(--fips-fg-muted)]">
-            <span>Itens por página:</span>
-            <select
-              className="rounded-lg px-2 py-1 text-[11px] border"
-              style={{ background: "var(--fips-surface)", borderColor: "var(--fips-border)", color: "var(--fips-fg)" }}
-              value={itemsPerPage}
-              onChange={(e) => { setItemsPerPage(Number(e.target.value)); setPage(1); }}
-            >
-              {[10, 20, 50, 100].map((n) => (
-                <option key={n} value={n}>{n}</option>
-              ))}
-            </select>
-            <span className="ml-2">
-              {Math.min((page - 1) * itemsPerPage + 1, data.length)}–{Math.min(page * itemsPerPage, data.length)} de {data.length}
+      {/* ───── PAGINAÇÃO DS FIPS (← 1 2 3 4 →) ───── */}
+      {data.length > 0 && (() => {
+        const totalPages = Math.max(1, Math.ceil(data.length / itemsPerPage));
+        const start = Math.min((page - 1) * itemsPerPage + 1, data.length);
+        const end = Math.min(page * itemsPerPage, data.length);
+        // Gera janela de até 4 páginas ao redor da atual
+        const pages: number[] = [];
+        let lo = Math.max(1, page - 1);
+        let hi = Math.min(totalPages, lo + 3);
+        lo = Math.max(1, hi - 3);
+        for (let p = lo; p <= hi; p++) pages.push(p);
+
+        return (
+          <div
+            style={{
+              padding: "12px 18px",
+              borderTop: "1px solid var(--fips-border)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              flexWrap: "wrap",
+              gap: 8,
+            }}
+          >
+            <span style={{ fontSize: 11, color: "var(--fips-fg-muted)" }}>
+              Mostrando {start}–{end} de {data.length} registros
+              {selected.size > 0 && (
+                <> · <strong style={{ color: "var(--fips-fg)" }}>{selected.size} selecionado{selected.size > 1 ? "s" : ""}</strong></>
+              )}
             </span>
+            <div style={{ display: "flex", gap: 4 }}>
+              <button
+                onClick={() => page > 1 && setPage(page - 1)}
+                disabled={page <= 1}
+                style={{
+                  minWidth: 28, height: 28, padding: "0 8px", fontSize: 11, fontWeight: 600,
+                  color: "var(--fips-fg)", background: "var(--fips-surface)",
+                  border: "1px solid var(--fips-border)", borderRadius: 6,
+                  cursor: page <= 1 ? "not-allowed" : "pointer", opacity: page <= 1 ? 0.3 : 1,
+                }}
+              >←</button>
+              {pages.map((p) => (
+                <button
+                  key={p}
+                  onClick={() => setPage(p)}
+                  style={{
+                    minWidth: 28, height: 28, padding: "0 8px", fontSize: 11, fontWeight: 600,
+                    color: p === page ? "#1A1A1A" : "var(--fips-fg)",
+                    background: p === page ? "var(--fips-primary)" : "var(--fips-surface)",
+                    border: `1px solid ${p === page ? "var(--fips-primary)" : "var(--fips-border)"}`,
+                    borderRadius: 6, cursor: "pointer",
+                  }}
+                >{p}</button>
+              ))}
+              <button
+                onClick={() => page < totalPages && setPage(page + 1)}
+                disabled={page >= totalPages}
+                style={{
+                  minWidth: 28, height: 28, padding: "0 8px", fontSize: 11, fontWeight: 600,
+                  color: "var(--fips-fg)", background: "var(--fips-surface)",
+                  border: "1px solid var(--fips-border)", borderRadius: 6,
+                  cursor: page >= totalPages ? "not-allowed" : "pointer", opacity: page >= totalPages ? 0.3 : 1,
+                }}
+              >→</button>
+            </div>
           </div>
-          <div className="flex items-center gap-1 text-[11px] text-[var(--fips-fg-muted)]">
-            <span className="mr-2">Página {page} de {Math.max(1, Math.ceil(data.length / itemsPerPage))}</span>
-            <button
-              onClick={() => setPage(1)}
-              disabled={page <= 1}
-              className="flex h-7 w-7 items-center justify-center rounded-lg border transition-colors disabled:opacity-30"
-              style={{ background: "var(--fips-surface)", borderColor: "var(--fips-border)", cursor: page <= 1 ? "not-allowed" : "pointer", color: "var(--fips-fg-muted)" }}
-            >
-              <ChevronsLeft className="h-3.5 w-3.5" />
-            </button>
-            <button
-              onClick={() => setPage(page - 1)}
-              disabled={page <= 1}
-              className="flex h-7 w-7 items-center justify-center rounded-lg border transition-colors disabled:opacity-30"
-              style={{ background: "var(--fips-surface)", borderColor: "var(--fips-border)", cursor: page <= 1 ? "not-allowed" : "pointer", color: "var(--fips-fg-muted)" }}
-            >
-              <ChevronLeft className="h-3.5 w-3.5" />
-            </button>
-            <button
-              onClick={() => setPage(page + 1)}
-              disabled={page >= Math.ceil(data.length / itemsPerPage)}
-              className="flex h-7 w-7 items-center justify-center rounded-lg border transition-colors disabled:opacity-30"
-              style={{ background: "var(--fips-surface)", borderColor: "var(--fips-border)", cursor: page >= Math.ceil(data.length / itemsPerPage) ? "not-allowed" : "pointer", color: "var(--fips-fg-muted)" }}
-            >
-              <ChevronRight className="h-3.5 w-3.5" />
-            </button>
-            <button
-              onClick={() => setPage(Math.ceil(data.length / itemsPerPage))}
-              disabled={page >= Math.ceil(data.length / itemsPerPage)}
-              className="flex h-7 w-7 items-center justify-center rounded-lg border transition-colors disabled:opacity-30"
-              style={{ background: "var(--fips-surface)", borderColor: "var(--fips-border)", cursor: page >= Math.ceil(data.length / itemsPerPage) ? "not-allowed" : "pointer", color: "var(--fips-fg-muted)" }}
-            >
-              <ChevronsRight className="h-3.5 w-3.5" />
-            </button>
-          </div>
-        </div>
-      )}
+        );
+      })()}
     </div>
   );
 }
@@ -730,7 +742,7 @@ export function DataListingTable<T>({
 /** Código (ID) em azul mono — usar como render do col `id` */
 export function CellCodigo({ children }: { children: ReactNode }) {
   return (
-    <span className="font-mono font-semibold text-[var(--fips-primary)]" style={{ fontSize: "var(--cell-fs, inherit)" }}>{children}</span>
+    <span className="font-mono font-semibold text-[var(--color-fips-blue-900)] dark:text-[#93BDE4]" style={{ fontSize: "var(--cell-fs, inherit)" }}>{children}</span>
   );
 }
 

@@ -56,6 +56,30 @@ const statusConfig: Record<string, { label: string; variant: "default" | "second
   cancelado: { label: "Cancelado", variant: "danger" },
 };
 
+/* ═══ Prioridade (derivada do status) — padrão DS FIPS ═══ */
+const PRIO_LIGHT: Record<string, { label: string; color: string }> = {
+  pendente: { label: "Crítica", color: "#DC2626" },
+  cancelado: { label: "Crítica", color: "#DC2626" },
+  agendado: { label: "Alta", color: "#EA580C" },
+  em_rota: { label: "Alta", color: "#EA580C" },
+  em_separacao: { label: "Média", color: "#2563EB" },
+  em_producao: { label: "Média", color: "#2563EB" },
+  recebido: { label: "Baixa", color: "#4B5563" },
+  separado: { label: "Baixa", color: "#4B5563" },
+  finalizado: { label: "Baixa", color: "#4B5563" },
+};
+const PRIO_DARK: Record<string, { label: string; color: string }> = {
+  pendente: { label: "Crítica", color: "#ef4444" },
+  cancelado: { label: "Crítica", color: "#ef4444" },
+  agendado: { label: "Alta", color: "#F6921E" },
+  em_rota: { label: "Alta", color: "#F6921E" },
+  em_separacao: { label: "Média", color: "#93BDE4" },
+  em_producao: { label: "Média", color: "#93BDE4" },
+  recebido: { label: "Baixa", color: "#6B7280" },
+  separado: { label: "Baixa", color: "#6B7280" },
+  finalizado: { label: "Baixa", color: "#6B7280" },
+};
+
 export default function ColetaList() {
   const [coletas, setColetas] = useState<Coleta[]>([]);
   const [loading, setLoading] = useState(true);
@@ -268,7 +292,7 @@ function coletaColumns({ onView, onDelete }: ColetaColumnActions): DataListingCo
       id: "fornecedor",
       label: "Fornecedor",
       sortable: true,
-      width: "280px",
+      width: "200px",
       render: (c, { density }) => (
         <div className="flex items-center gap-1.5 py-0.5">
           <Avatar
@@ -292,9 +316,10 @@ function coletaColumns({ onView, onDelete }: ColetaColumnActions): DataListingCo
     {
       id: "pesoNF",
       label: "Peso NF",
+      default: false,
       sortable: true,
       align: "right",
-      width: "100px",
+      width: "80px",
       render: (c) => <CellMonoMuted>{formatKg(c.pesoTotalNF)}</CellMonoMuted>,
     },
     {
@@ -302,21 +327,21 @@ function coletaColumns({ onView, onDelete }: ColetaColumnActions): DataListingCo
       label: "Peso Atual",
       sortable: true,
       align: "right",
-      width: "110px",
+      width: "90px",
       render: (c) => <CellMonoStrong align="right">{formatKg(c.pesoTotalAtual)}</CellMonoStrong>,
     },
     {
       id: "dataPedido",
       label: "Pedido",
       sortable: true,
-      width: "100px",
+      width: "90px",
       render: (c) => <CellMonoMuted>{formatDateBR(c.dataPedido)}</CellMonoMuted>,
     },
     {
       id: "chegada",
       label: "Chegada",
       sortable: true,
-      width: "100px",
+      width: "90px",
       render: (c) => <CellMonoMuted>{formatDateBR(c.dataChegada)}</CellMonoMuted>,
     },
     {
@@ -330,6 +355,24 @@ function coletaColumns({ onView, onDelete }: ColetaColumnActions): DataListingCo
           <Badge variant={sc.variant} dot>
             {sc.label}
           </Badge>
+        );
+      },
+    },
+    {
+      id: "prioridade",
+      label: "Prioridade",
+      default: true,
+      sortable: true,
+      width: "90px",
+      render: (c) => {
+        const isDark = typeof document !== "undefined" && document.documentElement.classList.contains("dark");
+        const pMap = isDark ? PRIO_DARK : PRIO_LIGHT;
+        const p = pMap[c.status] || { label: "Baixa", color: isDark ? "#6B7280" : "#4B5563" };
+        return (
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 11, fontWeight: 600, color: p.color }}>
+            <span style={{ width: 6, height: 6, borderRadius: "50%", background: p.color, flexShrink: 0 }} />
+            {p.label}
+          </span>
         );
       },
     },

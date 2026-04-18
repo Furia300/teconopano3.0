@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Truck } from "lucide-react";
+import { LuLayoutDashboard } from "react-icons/lu";
+const DashboardIcon = LuLayoutDashboard;
 import { PageHeader } from "@/components/domain/PageHeader";
 import { DashboardPrintButton } from "@/components/domain/DashboardPrintButton";
 import { ColetaDashboard } from "./ColetaDashboard";
@@ -42,7 +43,7 @@ export default function DashboardColetaPage() {
       <PageHeader
         title="Dashboard Coleta"
         description="Visão analítica de coletas, fornecedores e movimentação de matéria-prima"
-        icon={Truck}
+        icon={DashboardIcon}
         actions={<DashboardPrintButton title="Dashboard Coleta" />}
         stats={[
           { label: "Total", value: stats.total, color: "#93BDE4" },

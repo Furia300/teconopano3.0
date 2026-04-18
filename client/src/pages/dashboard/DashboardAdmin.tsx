@@ -3,6 +3,7 @@ import type { DashboardData } from "@/types/dashboard";
 import { FipsJunctionLines, PageHero } from "@/composites/PageHero";
 import { DashboardPrintButton } from "@/components/domain/DashboardPrintButton";
 import { shellDarkGlassPanel } from "@/lib/docHeaderChrome";
+import { LuTruck, LuFactory, LuWarehouse, LuPackage, LuDollarSign, LuFile, LuScissors, LuDroplets, LuUsers, LuArrowUp, LuArrowDown, LuChartBarIncreasing, LuLayoutGrid, LuClock, LuTriangleAlert, LuCircleCheck, LuMapPin, LuScale, LuX, LuBuilding2, LuFlag, LuChevronDown, LuCheck } from "react-icons/lu";
 
 type Props = { data: DashboardData };
 
@@ -45,29 +46,37 @@ const DARK = {
 let C = LIGHT;
 const Fn = { title: "'Saira Expanded',sans-serif", body: "'Open Sans',sans-serif", mono: "'Fira Code',monospace" };
 
-/* ═══ SVG ICONS ═══ */
+/* ═══ DS FIPS Badge Variants (dark mode) ═══ */
+const BV_LIGHT = { sucesso: { bg: "#ECFDF5", color: "#00904C", border: "#A7F3D0" }, atencao: { bg: "#FFF7ED", color: "#C2410C", border: "#FDBA74" }, critico: { bg: "#FEF2F2", color: "#B91C1C", border: "#FECACA" }, info: { bg: "#D3E3F4", color: "#002A68", border: "#93BDE4" }, secondary: { bg: "#F1F5F9", color: "#64748B", border: "#CBD5E1" } };
+const BV_DARK = { sucesso: { bg: "rgba(0,198,76,0.14)", color: "#8BE5AD", border: "rgba(0,198,76,0.28)" }, atencao: { bg: "rgba(246,146,30,0.14)", color: "#FDC24E", border: "rgba(246,146,30,0.28)" }, critico: { bg: "rgba(239,68,68,0.14)", color: "#FCA5A5", border: "rgba(239,68,68,0.28)" }, info: { bg: "rgba(147,189,228,0.14)", color: "#93BDE4", border: "rgba(147,189,228,0.28)" }, secondary: { bg: "rgba(255,255,255,0.06)", color: "#A1A1AA", border: "rgba(255,255,255,0.12)" } };
+function DsBadge({ variant = "info", children, dot, dark }: { variant?: string; children: React.ReactNode; dot?: boolean; dark?: boolean }) {
+  const v = (dark ? BV_DARK : BV_LIGHT)[variant] || (dark ? BV_DARK : BV_LIGHT).info;
+  return <span style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "2px 7px", fontSize: 10, fontWeight: 600, fontFamily: Fn.body, color: v.color, background: v.bg, border: `1px solid ${v.border}`, borderRadius: 4, whiteSpace: "nowrap" }}>{dot && <span style={{ width: 5, height: 5, borderRadius: "50%", background: v.color }} />}{children}</span>;
+}
+
+/* ═══ ICONS (react-icons/lu) ═══ */
 const Ic = {
-  truck: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><rect x="1" y="6" width="11" height="9" rx="1.5" stroke={c} strokeWidth="1.4"/><path d="M12 9h4l2.5 3v3h-6.5" stroke={c} strokeWidth="1.4" strokeLinejoin="round"/><circle cx="5" cy="16" r="1.5" stroke={c} strokeWidth="1.3"/><circle cx="15.5" cy="16" r="1.5" stroke={c} strokeWidth="1.3"/></svg>,
-  factory: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><path d="M2 18V8l4-3v5l4-3v5l4-3v8H2z" stroke={c} strokeWidth="1.4" strokeLinejoin="round"/><rect x="14" y="2" width="4" height="16" rx="1" stroke={c} strokeWidth="1.4"/></svg>,
-  warehouse: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><path d="M2 8l8-5 8 5v10H2V8z" stroke={c} strokeWidth="1.4" strokeLinejoin="round"/><rect x="7" y="12" width="6" height="6" rx="1" stroke={c} strokeWidth="1.3"/></svg>,
-  package: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><path d="M3 6l7-4 7 4v8l-7 4-7-4V6z" stroke={c} strokeWidth="1.4" strokeLinejoin="round"/><path d="M3 6l7 4 7-4M10 10v8" stroke={c} strokeWidth="1.3"/></svg>,
-  dollar: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke={c} strokeWidth="1.5"/><path d="M10 4v12M7 7.5c0-1 1.5-2 3-2s3 .5 3 2-1 2-3 2.5-3 1-3 2.5 1.5 2 3 2 3-1 3-2" stroke={c} strokeWidth="1.3" strokeLinecap="round"/></svg>,
-  file: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><path d="M6 2h6l5 5v10a1 1 0 01-1 1H6a1 1 0 01-1-1V3a1 1 0 011-1z" stroke={c} strokeWidth="1.5" strokeLinejoin="round"/><path d="M12 2v5h5" stroke={c} strokeWidth="1.5"/></svg>,
-  scissors: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><circle cx="5" cy="5" r="2.5" stroke={c} strokeWidth="1.4"/><circle cx="5" cy="15" r="2.5" stroke={c} strokeWidth="1.4"/><path d="M7 6.5L17 16M7 13.5L17 4" stroke={c} strokeWidth="1.4" strokeLinecap="round"/></svg>,
-  droplets: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><path d="M10 2c-3 4-5 6-5 9a5 5 0 0010 0c0-3-2-5-5-9z" stroke={c} strokeWidth="1.5" strokeLinejoin="round"/></svg>,
-  users: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><circle cx="7" cy="6" r="3" stroke={c} strokeWidth="1.4"/><path d="M1 17c0-3 2.5-5 6-5s6 2 6 5" stroke={c} strokeWidth="1.4" strokeLinecap="round"/><circle cx="14" cy="7" r="2" stroke={c} strokeWidth="1.2"/><path d="M15 12c2 .5 4 2 4 4" stroke={c} strokeWidth="1.2" strokeLinecap="round"/></svg>,
-  arrowUp: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 16 16" fill="none"><path d="M8 12V4M5 7l3-3 3 3" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>,
-  arrowDown: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 16 16" fill="none"><path d="M8 4v8M5 9l3 3 3-3" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>,
-  chart: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><rect x="3" y="10" width="3" height="7" rx="1" stroke={c} strokeWidth="1.3"/><rect x="8.5" y="6" width="3" height="11" rx="1" stroke={c} strokeWidth="1.3"/><rect x="14" y="3" width="3" height="14" rx="1" stroke={c} strokeWidth="1.3"/></svg>,
-  grid: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="1.5" stroke={c} strokeWidth="1.4"/><rect x="11" y="2" width="7" height="7" rx="1.5" stroke={c} strokeWidth="1.4"/><rect x="2" y="11" width="7" height="7" rx="1.5" stroke={c} strokeWidth="1.4"/><rect x="11" y="11" width="7" height="7" rx="1.5" stroke={c} strokeWidth="1.4"/></svg>,
-  clock: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke={c} strokeWidth="1.5"/><path d="M10 5.5V10l3 2" stroke={c} strokeWidth="1.5" strokeLinecap="round"/></svg>,
-  alert: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><path d="M10 2L1.5 17h17L10 2z" stroke={c} strokeWidth="1.5" strokeLinejoin="round"/><path d="M10 8v4M10 14v.5" stroke={c} strokeWidth="1.8" strokeLinecap="round"/></svg>,
-  check: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke={c} strokeWidth="1.5"/><path d="M7 10l2 2 4-4" stroke={c} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>,
-  map: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><path d="M10 2C6.7 2 4 4.7 4 8c0 5 6 10 6 10s6-5 6-10c0-3.3-2.7-6-6-6z" stroke={c} strokeWidth="1.5"/><circle cx="10" cy="8" r="2" stroke={c} strokeWidth="1.3"/></svg>,
-  scale: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><path d="M10 2v16M3 6l7-2 7 2M3 6l2 6h-4L3 6zM17 6l2 6h-4L17 6z" stroke={c} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>,
-  x: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke={c} strokeWidth="1.8" strokeLinecap="round"/></svg>,
-  edificio: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><rect x="3" y="2" width="14" height="16" rx="1.5" stroke={c} strokeWidth="1.5"/><path d="M7 6h2M11 6h2M7 10h2M11 10h2M8 14h4v4H8z" stroke={c} strokeWidth="1.3" strokeLinecap="round"/></svg>,
-  flag: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><path d="M4 2v16M4 2h10l-3 4 3 4H4" stroke={c} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+  truck: (s: number, c: string) => <LuTruck size={s} color={c} />,
+  factory: (s: number, c: string) => <LuFactory size={s} color={c} />,
+  warehouse: (s: number, c: string) => <LuWarehouse size={s} color={c} />,
+  package: (s: number, c: string) => <LuPackage size={s} color={c} />,
+  dollar: (s: number, c: string) => <LuDollarSign size={s} color={c} />,
+  file: (s: number, c: string) => <LuFile size={s} color={c} />,
+  scissors: (s: number, c: string) => <LuScissors size={s} color={c} />,
+  droplets: (s: number, c: string) => <LuDroplets size={s} color={c} />,
+  users: (s: number, c: string) => <LuUsers size={s} color={c} />,
+  arrowUp: (s: number, c: string) => <LuArrowUp size={s} color={c} />,
+  arrowDown: (s: number, c: string) => <LuArrowDown size={s} color={c} />,
+  chart: (s: number, c: string) => <LuChartBarIncreasing size={s} color={c} />,
+  grid: (s: number, c: string) => <LuLayoutGrid size={s} color={c} />,
+  clock: (s: number, c: string) => <LuClock size={s} color={c} />,
+  alert: (s: number, c: string) => <LuTriangleAlert size={s} color={c} />,
+  check: (s: number, c: string) => <LuCircleCheck size={s} color={c} />,
+  map: (s: number, c: string) => <LuMapPin size={s} color={c} />,
+  scale: (s: number, c: string) => <LuScale size={s} color={c} />,
+  x: (s: number, c: string) => <LuX size={s} color={c} />,
+  edificio: (s: number, c: string) => <LuBuilding2 size={s} color={c} />,
+  flag: (s: number, c: string) => <LuFlag size={s} color={c} />,
 };
 
 function JunctionLines({ style }: { style?: React.CSSProperties }) {
@@ -124,12 +133,12 @@ function DSSelect({ label, value, onChange, options, placeholder = "Todos", icon
       <div onClick={() => setOpen(!open)} style={{ display: "flex", alignItems: "center", gap: 8, height: 30, padding: "0 12px", background: C.cardBg, border: `1.5px solid ${bc}`, borderRadius: open ? "8px 8px 0 0" : 8, transition: "all .18s", boxShadow: open ? "0 0 0 3px rgba(147,189,228,0.35)" : "none", cursor: "pointer", fontFamily: Fn.body, fontSize: 12, userSelect: "none" }}>
         {icon && <span style={{ display: "flex", flexShrink: 0, opacity: .55 }}>{icon}</span>}
         <span style={{ flex: 1, color: value ? C.cinzaEscuro : C.textLight, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{value || placeholder}</span>
-        <svg width={14} height={14} viewBox="0 0 20 20" fill="none" style={{ flexShrink: 0, opacity: .45, transition: "transform .2s", transform: open ? "rotate(180deg)" : "rotate(0)" }}><path d="M6 8l4 4 4-4" stroke={C.cinzaChumbo} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+        <LuChevronDown size={14} color={C.cinzaChumbo} style={{ flexShrink: 0, opacity: .45, transition: "transform .2s", transform: open ? "rotate(180deg)" : "rotate(0)" }} />
       </div>
       {open && <div style={{ position: "absolute", top: "100%", left: 0, right: 0, zIndex: 20, background: C.cardBg, border: `1.5px solid ${C.azulProfundo}`, borderTop: "none", borderRadius: "0 0 8px 8px", boxShadow: "0 6px 20px rgba(0,75,155,.12)", maxHeight: 200, overflowY: "auto" }}>
         <div onClick={() => { onChange(null); setOpen(false) }} style={{ padding: "6px 14px", fontSize: 12, fontFamily: Fn.body, color: !value ? C.azulProfundo : C.cinzaEscuro, fontWeight: !value ? 600 : 400, background: !value ? C.azulCeuClaro : "transparent", cursor: "pointer" }}>{placeholder}</div>
         {options.map((o, i) => { const sel = o === value; return <div key={o} onClick={() => { onChange(o); setOpen(false) }} onMouseEnter={() => setHi(i)} onMouseLeave={() => setHi(-1)} style={{ padding: "6px 14px", fontSize: 12, fontFamily: Fn.body, color: sel ? C.azulProfundo : C.cinzaEscuro, fontWeight: sel ? 600 : 400, background: sel ? C.azulCeuClaro : i === hi ? C.bg : "transparent", cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}>
-          {sel && <svg width={12} height={12} viewBox="0 0 16 16" fill="none" style={{ marginLeft: -14, flexShrink: 0 }}><path d="M3.5 8.5L6.5 11.5L12.5 4.5" stroke={C.azulProfundo} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>}
+          {sel && <LuCheck size={12} color={C.azulProfundo} style={{ marginLeft: -14, flexShrink: 0 }} />}
           {o}
         </div> })}
       </div>}
@@ -426,7 +435,7 @@ export default function DashboardAdmin({ data }: Props) {
                 {Ic.alert(24, "#ed1b24")}
               </div>
               <div className="min-w-0">
-                <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(253,194,78,0.16)", border: "1px solid rgba(253,194,78,0.42)", borderRadius: 20, padding: "4px 12px", fontSize: 10, fontWeight: 600, color: C.amareloOuro, marginBottom: 8 }}>Super Admin · Tecnopano 3.0</div>
+                <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(253,194,78,0.16)", border: "1px solid rgba(253,194,78,0.42)", borderRadius: 20, padding: "4px 12px", fontSize: 10, fontWeight: 600, color: C.amareloOuro, marginBottom: 8 }}>Super Admin · Tecnopano 2.0</div>
                 <h2 className="font-heading text-xl font-bold tracking-tight text-white sm:text-[22px]" style={{ lineHeight: 1.2 }}>Painel <span style={{ color: C.amareloOuro }}>Operacional</span></h2>
                 <p className="mt-0.5 text-xs text-white/45 sm:text-[13px]">Tecnologia Ambiental em Panos · {totalRegistros} registros operacionais{hasFilter ? " (filtrado)" : ""} · {formatKg(pesoTotal)} no fluxo</p>
                 <p className="mt-1 text-[10px] text-white/30">{new Date().toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</p>
@@ -493,11 +502,11 @@ export default function DashboardAdmin({ data }: Props) {
         {/* ═══ ACTIVE FILTER BADGES ═══ */}
         {hasFilter && (
           <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 14, flexWrap: "wrap" }}>
-            {filter.departamento && <span style={{ padding: "3px 8px", fontSize: 10, fontWeight: 600, color: C.azulProfundo, background: `${C.azulProfundo}10`, borderRadius: 4, fontFamily: Fn.body }}>Departamento: {filter.departamento}</span>}
-            {filter.statusEntrega && <span style={{ padding: "3px 8px", fontSize: 10, fontWeight: 600, color: STATUS_EXP_COLORS[filter.statusEntrega] || C.azulProfundo, background: `${STATUS_EXP_COLORS[filter.statusEntrega] || C.azulProfundo}10`, borderRadius: 4, fontFamily: Fn.body }}>Entrega: {STATUS_EXP_LABELS[filter.statusEntrega]}</span>}
-            {filter.statusFinanceiro && <span style={{ padding: "3px 8px", fontSize: 10, fontWeight: 600, color: C.amareloEscuro, background: `${C.amareloEscuro}10`, borderRadius: 4, fontFamily: Fn.body }}>Financeiro: {STATUS_FIN_LABELS[filter.statusFinanceiro] || filter.statusFinanceiro}</span>}
-            {filter.alerta && <span style={{ padding: "3px 8px", fontSize: 10, fontWeight: 600, color: C.danger, background: `${C.danger}10`, borderRadius: 4, fontFamily: Fn.body }}>Alertas: {filter.alerta === "com_pendencias" ? "Com pendencias" : "Sem pendencias"}</span>}
-            {filter.mes && <span style={{ padding: "3px 8px", fontSize: 10, fontWeight: 600, color: C.cinzaChumbo, background: `${C.cinzaChumbo}12`, borderRadius: 4, fontFamily: Fn.body }}>Mês: {allMeses.find(m => m.key === filter.mes)?.label || filter.mes}</span>}
+            {filter.departamento && <DsBadge variant="info" dot dark={dark}>Departamento: {filter.departamento}</DsBadge>}
+            {filter.statusEntrega && <DsBadge variant={filter.statusEntrega === "entregue" ? "sucesso" : filter.statusEntrega === "pendente" ? "atencao" : "info"} dot dark={dark}>Entrega: {STATUS_EXP_LABELS[filter.statusEntrega]}</DsBadge>}
+            {filter.statusFinanceiro && <DsBadge variant="atencao" dot dark={dark}>Financeiro: {STATUS_FIN_LABELS[filter.statusFinanceiro] || filter.statusFinanceiro}</DsBadge>}
+            {filter.alerta && <DsBadge variant="critico" dot dark={dark}>Alertas: {filter.alerta === "com_pendencias" ? "Com pendencias" : "Sem pendencias"}</DsBadge>}
+            {filter.mes && <DsBadge variant="secondary" dot dark={dark}>Mês: {allMeses.find(m => m.key === filter.mes)?.label || filter.mes}</DsBadge>}
           </div>
         )}
 
@@ -871,15 +880,17 @@ export default function DashboardAdmin({ data }: Props) {
                 </tr></thead>
                 <tbody>
                   {expTable.map((r: any, i: number) => {
-                    const isH = hovExpRow === i; const zebra = i % 2 === 1 ? `${C.azulCeu}0D` : "transparent";
+                    const isH = hovExpRow === i; const zebra = i % 2 === 1 ? (dark ? "rgba(255,255,255,0.03)" : `${C.azulCeu}0D`) : "transparent";
+                    const finVariant = r.statusFinanceiro === "aprovado" ? "sucesso" : "atencao";
+                    const expVariant = r.statusEntrega === "entregue" ? "sucesso" : r.statusEntrega === "pendente" ? "atencao" : "info";
                     return (
                       <tr key={i} onMouseEnter={() => setHovExpRow(i)} onMouseLeave={() => setHovExpRow(-1)} style={{ background: isH ? `${C.amareloOuro}18` : zebra, transition: "background .12s", borderBottom: i < expTable.length - 1 ? `1px solid ${C.cardBorder}` : "none" }}>
                         <td style={{ padding: "10px 14px", fontSize: 12, fontWeight: 600, color: C.azulProfundo, fontFamily: Fn.mono }}>EXP-{r.id}</td>
                         <td style={{ padding: "10px 14px", fontSize: 12, fontWeight: 500, color: C.cinzaEscuro, maxWidth: 140, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.cliente || "—"}</td>
                         {!mob && <td style={{ padding: "10px 14px", fontSize: 11, color: C.cinzaChumbo, textAlign: "center" }}>{r.galpao || "—"}</td>}
                         {!mob && <td style={{ padding: "10px 14px", fontSize: 11, color: C.cinzaChumbo, textAlign: "center" }}>{r.rota || "—"}</td>}
-                        {!mob && <td style={{ padding: "10px 14px", textAlign: "center" }}><span style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "2px 6px", fontSize: 10, fontWeight: 600, color: STATUS_FIN_COLORS[r.statusFinanceiro] || C.cinzaChumbo, background: `${STATUS_FIN_COLORS[r.statusFinanceiro] || C.cinzaChumbo}10`, border: `1px solid ${STATUS_FIN_COLORS[r.statusFinanceiro] || C.cinzaChumbo}25`, borderRadius: 4 }}><span style={{ width: 5, height: 5, borderRadius: "50%", background: STATUS_FIN_COLORS[r.statusFinanceiro] || C.cinzaChumbo }} />{STATUS_FIN_LABELS[r.statusFinanceiro] || r.statusFinanceiro}</span></td>}
-                        <td style={{ padding: "10px 14px", textAlign: "center" }}><span style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "2px 6px", fontSize: 10, fontWeight: 600, color: STATUS_EXP_COLORS[r.statusEntrega] || C.cinzaChumbo, background: `${STATUS_EXP_COLORS[r.statusEntrega] || C.cinzaChumbo}10`, border: `1px solid ${STATUS_EXP_COLORS[r.statusEntrega] || C.cinzaChumbo}25`, borderRadius: 4 }}><span style={{ width: 5, height: 5, borderRadius: "50%", background: STATUS_EXP_COLORS[r.statusEntrega] || C.cinzaChumbo }} />{STATUS_EXP_LABELS[r.statusEntrega] || r.statusEntrega}</span></td>
+                        {!mob && <td style={{ padding: "10px 14px", textAlign: "center" }}><DsBadge variant={finVariant} dot dark={dark}>{STATUS_FIN_LABELS[r.statusFinanceiro] || r.statusFinanceiro}</DsBadge></td>}
+                        <td style={{ padding: "10px 14px", textAlign: "center" }}><DsBadge variant={expVariant} dot dark={dark}>{STATUS_EXP_LABELS[r.statusEntrega] || r.statusEntrega}</DsBadge></td>
                         {!mob && <td style={{ padding: "10px 14px", fontSize: 12, fontWeight: 600, fontFamily: Fn.mono, color: C.azulEscuro, textAlign: "right" }}>{r.kilo ? formatKg(r.kilo) : "—"}</td>}
                       </tr>
                     );
