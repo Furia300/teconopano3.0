@@ -24,6 +24,7 @@ import {
   type DataListingColumn,
   CellMonoStrong,
   CellMonoMuted,
+  CellCor,
   CellActions,
   CellActionButton,
 } from "@/components/domain/DataListingTable";
@@ -542,7 +543,7 @@ export default function EmbalagemPage() {
                     onClick={() => setFilterStatus(opt.v)}
                     className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
                       filterStatus === opt.v
-                        ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                        ? "bg-[var(--fips-primary)]/10 font-bold text-[var(--fips-primary)]"
                         : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
                     }`}
                   >
@@ -562,7 +563,7 @@ export default function EmbalagemPage() {
                   onClick={() => setFilterEmbalagem("")}
                   className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
                     !filterEmbalagem
-                      ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                      ? "bg-[var(--fips-primary)]/10 font-bold text-[var(--fips-primary)]"
                       : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
                   }`}
                 >
@@ -574,7 +575,7 @@ export default function EmbalagemPage() {
                     onClick={() => setFilterEmbalagem(tipo)}
                     className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
                       filterEmbalagem === tipo
-                        ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                        ? "bg-[var(--fips-primary)]/10 font-bold text-[var(--fips-primary)]"
                         : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
                     }`}
                   >
@@ -642,12 +643,7 @@ function embalagemColumns(): DataListingColumn<Embalagem>[] {
       label: "Cor",
       sortable: true,
       width: "100px",
-      render: (e) => (
-        <div className="flex items-center gap-1.5">
-          <Palette className="h-3 w-3 text-[var(--fips-fg-muted)]" />
-          <span className="text-[11px] text-[var(--fips-fg)]">{e.cor || "—"}</span>
-        </div>
-      ),
+      render: (e) => <CellCor>{e.cor || "—"}</CellCor>,
     },
     {
       id: "medida",

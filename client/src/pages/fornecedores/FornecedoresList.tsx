@@ -25,6 +25,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { NovoFornecedorDialog } from "./NovoFornecedorDialog";
+import { FornecedorDetalhes } from "./FornecedorDetalhes";
+import { useConfirmDelete } from "@/components/domain/ConfirmDeleteDialog";
 
 interface Fornecedor {
   id: string;
@@ -57,6 +59,8 @@ export default function FornecedoresList() {
   const [filterUf, setFilterUf] = useState<string>("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingFornecedor, setEditingFornecedor] = useState<Fornecedor | null>(null);
+  const [viewingFornecedor, setViewingFornecedor] = useState<Fornecedor | null>(null);
+  const [confirmDialog, openConfirm] = useConfirmDelete();
 
   const fetchFornecedores = async () => {
     try {
@@ -115,16 +119,21 @@ export default function FornecedoresList() {
     setDialogOpen(true);
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Inativar este fornecedor? (registro permanece para histórico de coletas)")) return;
-    try {
-      const res = await fetch(`/api/fornecedores/${id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error();
-      toast.success("Fornecedor inativado.");
-      fetchFornecedores();
-    } catch {
-      toast.error("Erro ao inativar fornecedor.");
-    }
+  const handleDelete = (id: string) => {
+    openConfirm({
+      title: "Inativar fornecedor",
+      description: "Tem certeza que deseja inativar este fornecedor? O registro permanece para histórico de coletas.",
+      onConfirm: async () => {
+        try {
+          const res = await fetch(`/api/fornecedores/${id}`, { method: "DELETE" });
+          if (!res.ok) throw new Error();
+          toast.success("Fornecedor inativado.");
+          fetchFornecedores();
+        } catch {
+          toast.error("Erro ao inativar fornecedor.");
+        }
+      },
+    });
   };
 
   return (
@@ -195,7 +204,7 @@ export default function FornecedoresList() {
                 onClick={() => setFilterUf("")}
                 className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
                   !filterUf
-                    ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                    ? "bg-[var(--fips-primary)]/10 font-bold text-[var(--fips-primary)]"
                     : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
                 }`}
               >
@@ -207,7 +216,7 @@ export default function FornecedoresList() {
                   onClick={() => setFilterUf(uf)}
                   className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
                     filterUf === uf
-                      ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                      ? "bg-[var(--fips-primary)]/10 font-bold text-[var(--fips-primary)]"
                       : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
                   }`}
                 >
@@ -234,7 +243,7 @@ export default function FornecedoresList() {
         data={filtered}
         getRowId={(f) => f.id}
         emptyState={loading ? "Carregando fornecedores..." : "Nenhum fornecedor encontrado"}
-        columns={fornecedorColumns({ onEdit: openEdit, onDelete: handleDelete })}
+        columns={fornecedorColumns({ onView: (f) => setViewingFornecedor(f), onEdit: openEdit, onDelete: handleDelete })}
       />
 
       {/* Modal canônico FIPS DS Modal Form */}
@@ -244,6 +253,15 @@ export default function FornecedoresList() {
         onSuccess={fetchFornecedores}
         fornecedor={editingFornecedor}
       />
+
+      {viewingFornecedor && (
+        <FornecedorDetalhes
+          fornecedor={viewingFornecedor}
+          open={!!viewingFornecedor}
+          onOpenChange={(open) => !open && setViewingFornecedor(null)}
+        />
+      )}
+      {confirmDialog}
     </div>
   );
 }
@@ -251,11 +269,12 @@ export default function FornecedoresList() {
 /* ──────────────────────────── COLUMNS ──────────────────────────── */
 
 interface FornecedorActions {
+  onView: (f: Fornecedor) => void;
   onEdit: (f: Fornecedor) => void;
   onDelete: (id: string) => void;
 }
 
-function fornecedorColumns({ onEdit, onDelete }: FornecedorActions): DataListingColumn<Fornecedor>[] {
+function fornecedorColumns({ onView, onEdit, onDelete }: FornecedorActions): DataListingColumn<Fornecedor>[] {
   return [
     {
       id: "nome",
@@ -333,10 +352,10 @@ function fornecedorColumns({ onEdit, onDelete }: FornecedorActions): DataListing
       render: (f) => (
         <CellActions>
           <CellActionButton
-            title="Visualizar"
+            title="Ver detalhes"
             variant="primary"
             icon={<Eye className="h-3.5 w-3.5" />}
-            onClick={() => onEdit(f)}
+            onClick={() => onView(f)}
           />
           <CellActionButton
             title="Editar"

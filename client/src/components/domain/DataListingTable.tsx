@@ -771,6 +771,57 @@ export function CellMuted({ children }: { children: ReactNode }) {
   return <span className="text-[var(--fips-fg-muted)]" style={{ fontSize: "var(--cell-fs, inherit)" }}>{children}</span>;
 }
 
+const COR_MAP: Record<string, string> = {
+  branco: "#FFFFFF", branca: "#FFFFFF", white: "#FFFFFF",
+  preto: "#1A1A1A", preta: "#1A1A1A", black: "#1A1A1A",
+  azul: "#2563EB", blue: "#2563EB",
+  vermelho: "#DC2626", vermelha: "#DC2626", red: "#DC2626",
+  verde: "#16A34A", green: "#16A34A",
+  cinza: "#6B7280", grey: "#6B7280", gray: "#6B7280",
+  variado: "multi",
+  colorido: "multi",
+  amarelo: "#EAB308", yellow: "#EAB308",
+  rosa: "#EC4899", pink: "#EC4899",
+  laranja: "#F97316", orange: "#F97316",
+  marrom: "#92400E", brown: "#92400E",
+  roxo: "#7C3AED", purple: "#7C3AED",
+  bege: "#D4B896",
+  "estopa crua": "#C4A882",
+  escuro: "#374151",
+};
+
+export function CellCor({ children }: { children: ReactNode }) {
+  const text = String(children || "").trim();
+  const key = text.toLowerCase();
+  const color = COR_MAP[key];
+  const isBranco = key === "branco" || key === "branca" || key === "white";
+  const isMulti = color === "multi";
+
+  return (
+    <span className="inline-flex items-center gap-1.5" style={{ fontSize: "var(--cell-fs, inherit)" }}>
+      {color && !isMulti && (
+        <span
+          style={{
+            width: 10,
+            height: 10,
+            borderRadius: "50%",
+            flexShrink: 0,
+            background: color,
+            border: isBranco ? "1.5px solid var(--fips-border)" : "none",
+          }}
+        />
+      )}
+      {isMulti && (
+        <span style={{ width: 10, height: 10, borderRadius: "50%", flexShrink: 0, overflow: "hidden", display: "inline-flex", border: "1px solid var(--fips-border)" }}>
+          <span style={{ width: 5, height: 10, background: "#2563EB" }} />
+          <span style={{ width: 5, height: 10, background: "#DC2626" }} />
+        </span>
+      )}
+      <span className="text-[var(--fips-fg-muted)]">{text || "—"}</span>
+    </span>
+  );
+}
+
 /** Wrapper para ações inline — gap ajustado para botões neumorphic */
 export function CellActions({ children }: { children: ReactNode }) {
   return <div className="inline-flex justify-center gap-1">{children}</div>;

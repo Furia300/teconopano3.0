@@ -25,6 +25,7 @@ import {
   CellMonoStrong,
   CellMonoMuted,
   CellMuted,
+  CellCor,
   CellActions,
   CellActionButton,
 } from "@/components/domain/DataListingTable";
@@ -786,7 +787,7 @@ export default function ProducaoList() {
                     onClick={() => setFilterStatus(opt.v)}
                     className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
                       filterStatus === opt.v
-                        ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                        ? "bg-[var(--fips-primary)]/10 font-bold text-[var(--fips-primary)]"
                         : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
                     }`}
                   >
@@ -806,7 +807,7 @@ export default function ProducaoList() {
                   onClick={() => setFilterSala("")}
                   className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
                     !filterSala
-                      ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                      ? "bg-[var(--fips-primary)]/10 font-bold text-[var(--fips-primary)]"
                       : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
                   }`}
                 >
@@ -818,7 +819,7 @@ export default function ProducaoList() {
                     onClick={() => setFilterSala(sala)}
                     className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
                       filterSala === sala
-                        ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                        ? "bg-[var(--fips-primary)]/10 font-bold text-[var(--fips-primary)]"
                         : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
                     }`}
                   >
@@ -909,7 +910,7 @@ function producaoColumns({ onFinalizar }: ProducaoColumnActions): DataListingCol
       label: "Cor",
       sortable: true,
       width: "80px",
-      render: (p) => <CellMuted>{p.cor || "\u2014"}</CellMuted>,
+      render: (p) => <CellCor>{p.cor || "\u2014"}</CellCor>,
     },
     {
       id: "pesoEntrada",

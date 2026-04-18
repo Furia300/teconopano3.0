@@ -232,7 +232,7 @@ export default function RepanolList() {
                     onClick={() => setFilterStatus(opt.v)}
                     className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
                       filterStatus === opt.v
-                        ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                        ? "bg-[var(--fips-primary)]/10 font-bold text-[var(--fips-primary)]"
                         : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
                     }`}
                   >
@@ -252,7 +252,7 @@ export default function RepanolList() {
                   onClick={() => setFilterMaterial("")}
                   className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
                     !filterMaterial
-                      ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                      ? "bg-[var(--fips-primary)]/10 font-bold text-[var(--fips-primary)]"
                       : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
                   }`}
                 >
@@ -264,7 +264,7 @@ export default function RepanolList() {
                     onClick={() => setFilterMaterial(mat)}
                     className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
                       filterMaterial === mat
-                        ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                        ? "bg-[var(--fips-primary)]/10 font-bold text-[var(--fips-primary)]"
                         : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
                     }`}
                   >
@@ -439,6 +439,17 @@ function repanolColumns({
           );
         }
         return <CellMuted>—</CellMuted>;
+      },
+    },
+    {
+      id: "destinoRetorno",
+      label: "Destino Retorno",
+      width: "100px",
+      render: (r) => {
+        if (r.status !== "retornado") return <CellMuted>—</CellMuted>;
+        const dest = (r as any).destinoRetorno;
+        if (dest === "vli") return <Badge variant="info">VLI Direto</Badge>;
+        return <Badge variant="warning">Triagem</Badge>;
       },
     },
     {

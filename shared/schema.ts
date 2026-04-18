@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, timestamp, integer, decimal, boolean, pgEnum } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, timestamp, integer, decimal, numeric, boolean, pgEnum } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -60,6 +60,8 @@ export const destinoSeparacaoEnum = pgEnum("destino_separacao", [
   "producao",
   "repanol",
   "costureira",
+  "costura_interna",
+  "costura_terceirizada",
   "doacao",
   "descarte",
 ]);
@@ -129,6 +131,7 @@ export const clientes = pgTable("clientes", {
   contato: text("contato"),
   email: text("email"),
   observacao: text("observacao"),
+  empresa: text("empresa").default("indefinido"), // "brazil" | "tecnopano" | "ambas" | "indefinido"
   dataRetirada: timestamp("data_retirada"),
   ativo: boolean("ativo").default(true),
   createdAt: timestamp("created_at").defaultNow(),
@@ -461,6 +464,10 @@ export const expedicoes = pgTable("expedicoes", {
   notaFiscal: text("nota_fiscal"),
   dataEmissaoNota: timestamp("data_emissao_nota"),
   dataEntrega: timestamp("data_entrega"),
+  // Empresa (Brazil ou Tecnopano)
+  empresa: text("empresa").default("tecnopano"), // "brazil" | "tecnopano"
+  // Agendamento recorrente (JSON: { tipo, datas[], inicio, fim })
+  agendamento: text("agendamento"),
   // Observações
   observacaoEscritorio: text("observacao_escritorio"),
   observacaoGalpao: text("observacao_galpao"),
@@ -486,11 +493,17 @@ export const producaoDiaria = pgTable("producao_diaria", {
   nomeDupla: text("nome_dupla").notNull(), // ex: "GLINS/KAYAN", "EDISON/LUI"
   sala: text("sala").notNull(), // ex: "O4", "O5", "COBERTÓRIO"
   material: text("material").notNull(), // ex: "BR CASAL", "C2 RVA", "KING"
+  pacotes: integer("pacotes").default(0), // qtde pacotes produzidos
+  quilos: numeric("quilos", { precision: 10, scale: 2 }).default("0"), // kg produzidos
+  descarte: numeric("descarte", { precision: 10, scale: 2 }).default("0"), // kg descarte
+  costura: numeric("costura", { precision: 10, scale: 2 }).default("0"), // kg destinado costura
   horarioInicio: text("horario_inicio").notNull(), // ex: "08:40"
   horarioFim: text("horario_fim"), // ex: "10:55" — null se incompleta
   status: statusProducaoDiariaEnum("status").default("completa"),
   assinatura: text("assinatura"), // nome de quem assina
-  encarregado: text("encarregado"), // nome do encarregado que valida
+  encarregado: text("encarregado"), // nome do encarregado/supervisor que valida
+  destino: text("destino").default("acabamento"), // "acabamento" | "costura_interna" — supervisor decide
+  costureiraInterna: text("costureira_interna"), // nome da costureira CLT (se destino = costura_interna)
   observacao: text("observacao"),
   operadorId: varchar("operador_id").references(() => users.id),
   createdAt: timestamp("created_at").defaultNow(),

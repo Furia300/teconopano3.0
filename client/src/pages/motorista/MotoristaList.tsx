@@ -25,6 +25,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { NovoMotoristaDialog } from "./NovoMotoristaDialog";
+import { useConfirmDelete } from "@/components/domain/ConfirmDeleteDialog";
 
 interface Motorista {
   id: string;
@@ -57,6 +58,7 @@ export default function MotoristaList() {
   const [filterCategoria, setFilterCategoria] = useState<string>("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingMotorista, setEditingMotorista] = useState<Motorista | null>(null);
+  const [confirmDialog, openConfirm] = useConfirmDelete();
 
   const fetchMotoristas = async () => {
     try {
@@ -125,16 +127,21 @@ export default function MotoristaList() {
     setDialogOpen(true);
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Inativar este motorista?")) return;
-    try {
-      const res = await fetch(`/api/motoristas/${id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error();
-      toast.success("Motorista inativado.");
-      fetchMotoristas();
-    } catch {
-      toast.error("Erro ao inativar motorista.");
-    }
+  const handleDelete = (id: string) => {
+    openConfirm({
+      title: "Inativar motorista",
+      description: "Tem certeza que deseja inativar este motorista? Esta ação não pode ser desfeita.",
+      onConfirm: async () => {
+        try {
+          const res = await fetch(`/api/motoristas/${id}`, { method: "DELETE" });
+          if (!res.ok) throw new Error();
+          toast.success("Motorista inativado.");
+          fetchMotoristas();
+        } catch {
+          toast.error("Erro ao inativar motorista.");
+        }
+      },
+    });
   };
 
   return (
@@ -203,7 +210,7 @@ export default function MotoristaList() {
                 onClick={() => setFilterCategoria("")}
                 className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
                   !filterCategoria
-                    ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                    ? "bg-[var(--fips-primary)]/10 font-bold text-[var(--fips-primary)]"
                     : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
                 }`}
               >
@@ -215,7 +222,7 @@ export default function MotoristaList() {
                   onClick={() => setFilterCategoria(c)}
                   className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
                     filterCategoria === c
-                      ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                      ? "bg-[var(--fips-primary)]/10 font-bold text-[var(--fips-primary)]"
                       : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
                   }`}
                 >
@@ -259,6 +266,7 @@ export default function MotoristaList() {
         onSuccess={fetchMotoristas}
         motorista={editingMotorista}
       />
+      {confirmDialog}
     </div>
   );
 }

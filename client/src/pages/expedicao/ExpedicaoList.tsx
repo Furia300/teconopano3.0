@@ -10,6 +10,8 @@ import {
   CheckCircle2,
   FileText,
   Send,
+  CalendarDays,
+  Repeat,
 } from "lucide-react";
 import { PageHeader } from "@/components/domain/PageHeader";
 import { StatsCard } from "@/components/domain/StatsCard";
@@ -27,11 +29,15 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { NovoPedidoDialog } from "./NovoPedidoDialog";
+import { ExpedicaoDetalhes } from "./ExpedicaoDetalhes";
+import { useConfirmDelete } from "@/components/domain/ConfirmDeleteDialog";
 
 interface Expedicao {
   id: string;
   nomeFantasia?: string | null;
   cnpj?: string | null;
+  empresa?: string | null;
+  agendamento?: string | null;
   descricaoProduto?: string | null;
   tipoMaterial?: string | null;
   cor?: string | null;
@@ -78,6 +84,9 @@ export default function ExpedicaoList() {
   const [periodo, setPeriodo] = useState("Últimos 30 dias");
   const [filterStatus, setFilterStatus] = useState<string>("");
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingPedido, setEditingPedido] = useState<Expedicao | null>(null);
+  const [detailItem, setDetailItem] = useState<Expedicao | null>(null);
+  const [confirmDialog, openConfirm] = useConfirmDelete();
 
   const fetchPedidos = async () => {
     try {
@@ -119,22 +128,28 @@ export default function ExpedicaoList() {
     return { total, aguardando, aprovados, entregues };
   }, [pedidos]);
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Excluir este pedido?")) return;
-    try {
-      const res = await fetch(`/api/expedicoes/${id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error();
-      toast.success("Pedido excluído.");
-      fetchPedidos();
-    } catch {
-      toast.error("Erro ao excluir pedido.");
-    }
+  const handleDelete = (id: string) => {
+    openConfirm({
+      title: "Excluir pedido",
+      description: "Tem certeza que deseja excluir este pedido? Esta ação não pode ser desfeita.",
+      onConfirm: async () => {
+        try {
+          const res = await fetch(`/api/expedicoes/${id}`, { method: "DELETE" });
+          if (!res.ok) throw new Error();
+          toast.success("Pedido excluído.");
+          fetchPedidos();
+        } catch {
+          toast.error("Erro ao excluir pedido.");
+        }
+      },
+    });
   };
 
   return (
     <div className="space-y-6">
       <PageHeader
         title="Pedidos"
+        tutorialPage="expedicao"
         description="Pedidos de cliente B2B — fluxo Michele → Lane (libera) → Financeiro (aprova) → NF → Motorista"
         icon={Send}
         stats={[
@@ -144,7 +159,7 @@ export default function ExpedicaoList() {
           { label: "Entregues", value: stats.entregues, color: "#ed1b24" },
         ]}
         actions={
-          <Button onClick={() => setDialogOpen(true)}>
+          <Button onClick={() => { setEditingPedido(null); setDialogOpen(true); }}>
             <Plus className="h-4 w-4" />
             Novo pedido
           </Button>
@@ -197,7 +212,7 @@ export default function ExpedicaoList() {
                 onClick={() => setFilterStatus("")}
                 className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
                   !filterStatus
-                    ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                    ? "bg-[var(--fips-primary)]/10 font-bold text-[var(--fips-primary)]"
                     : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
                 }`}
               >
@@ -209,7 +224,7 @@ export default function ExpedicaoList() {
                   onClick={() => setFilterStatus(key)}
                   className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
                     filterStatus === key
-                      ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                      ? "bg-[var(--fips-primary)]/10 font-bold text-[var(--fips-primary)]"
                       : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
                   }`}
                 >
@@ -239,27 +254,88 @@ export default function ExpedicaoList() {
             ? "Carregando pedidos..."
             : "Nenhum pedido cadastrado — clique em + Novo pedido"
         }
-        columns={pedidoColumns({ onView: () => {}, onDelete: handleDelete })}
+        columns={pedidoColumns({
+          onView: (p) => setDetailItem(p),
+          onEdit: (p) => { setEditingPedido(p); setDialogOpen(true); },
+          onDelete: handleDelete,
+        })}
       />
 
       <NovoPedidoDialog
         open={dialogOpen}
-        onOpenChange={setDialogOpen}
+        onOpenChange={(v) => { setDialogOpen(v); if (!v) setEditingPedido(null); }}
         onSuccess={fetchPedidos}
+        editingPedido={editingPedido}
       />
+
+      {detailItem && (
+        <ExpedicaoDetalhes
+          expedicao={detailItem as any}
+          open={!!detailItem}
+          onOpenChange={(open) => !open && setDetailItem(null)}
+        />
+      )}
+      {confirmDialog}
     </div>
   );
 }
 
 interface PedidoActions {
   onView: (p: Expedicao) => void;
+  onEdit: (p: Expedicao) => void;
   onDelete: (id: string) => void;
 }
 
 const formatDateBR = (s: string | null | undefined) =>
   s ? new Date(s).toLocaleDateString("pt-BR") : "—";
 
-function pedidoColumns({ onView, onDelete }: PedidoActions): DataListingColumn<Expedicao>[] {
+function EmpresaDot({ empresa }: { empresa?: string | null }) {
+  const isBrazil = empresa === "brazil";
+  const isTecno = empresa === "tecnopano";
+  const isAmbas = empresa === "ambas";
+  const isIndef = !empresa || empresa === "indefinido";
+
+  if (isIndef) {
+    return (
+      <span className="inline-flex items-center gap-1.5" style={{ fontSize: 11 }}>
+        <span style={{
+          width: 12, height: 12, borderRadius: "50%", flexShrink: 0,
+          background: "linear-gradient(135deg, #FDC24E, #F59E0B)",
+          boxShadow: "0 0 6px rgba(253,194,78,0.4)",
+        }} />
+        <span style={{ fontWeight: 700, fontSize: 11, color: "#FDC24E" }}>Indefinido</span>
+      </span>
+    );
+  }
+  if (isAmbas) {
+    return (
+      <span className="inline-flex items-center gap-1.5" style={{ fontSize: 11 }}>
+        <span style={{
+          width: 12, height: 12, borderRadius: "50%", flexShrink: 0,
+          background: "linear-gradient(135deg, #16A34A, #FF073A)",
+          boxShadow: "0 0 6px rgba(139,92,246,0.4)",
+        }} />
+        <span style={{ fontWeight: 700, fontSize: 11, color: "#A78BFA" }}>Ambas</span>
+      </span>
+    );
+  }
+  return (
+    <span className="inline-flex items-center gap-1.5" style={{ fontSize: 11 }}>
+      <span style={{
+        width: 12, height: 12, borderRadius: "50%", flexShrink: 0,
+        background: isBrazil ? "linear-gradient(135deg, #16A34A, #EAB308)" : "linear-gradient(135deg, #FF073A, #1A1A1A)",
+        boxShadow: isBrazil ? "0 0 6px rgba(22,163,74,0.4)" : "0 0 6px rgba(255,7,58,0.4)",
+      }} />
+      <span style={{
+        fontWeight: 700, fontSize: 11,
+        background: isBrazil ? "linear-gradient(135deg, #16A34A, #EAB308)" : "linear-gradient(135deg, #FF073A, #B20028)",
+        WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+      }}>{isBrazil ? "Brazil" : "Tecnopano"}</span>
+    </span>
+  );
+}
+
+function pedidoColumns({ onView, onEdit, onDelete }: PedidoActions): DataListingColumn<Expedicao>[] {
   return [
     {
       id: "cliente",
@@ -278,6 +354,13 @@ function pedidoColumns({ onView, onDelete }: PedidoActions): DataListingColumn<E
           </div>
         </div>
       ),
+    },
+    {
+      id: "empresa",
+      label: "Empresa",
+      sortable: true,
+      width: "110px",
+      render: (p) => <EmpresaDot empresa={p.empresa} />,
     },
     {
       id: "produto",
@@ -378,6 +461,25 @@ function pedidoColumns({ onView, onDelete }: PedidoActions): DataListingColumn<E
       render: (p) => <CellMuted>{p.notaFiscal || "—"}</CellMuted>,
     },
     {
+      id: "agendamento",
+      label: "Agend.",
+      width: "55px",
+      align: "center",
+      render: (p) => {
+        if (!p.agendamento) return <CellMuted>—</CellMuted>;
+        try {
+          const ag = JSON.parse(p.agendamento);
+          const count = ag.datas?.length || 0;
+          return (
+            <span className="inline-flex items-center gap-1" title={`${count} entregas recorrentes`}>
+              <Repeat size={12} style={{ color: "var(--fips-primary)" }} />
+              <span className="text-[10px] font-bold" style={{ color: "var(--fips-primary)" }}>{count}</span>
+            </span>
+          );
+        } catch { return <CellMuted>—</CellMuted>; }
+      },
+    },
+    {
       id: "actions",
       label: "Ações",
       fixed: true,
@@ -395,7 +497,7 @@ function pedidoColumns({ onView, onDelete }: PedidoActions): DataListingColumn<E
             title="Editar"
             variant="default"
             icon={<Pencil className="h-3.5 w-3.5" />}
-            onClick={() => onView(p)}
+            onClick={() => onEdit(p)}
           />
           <CellActionButton
             title="Excluir"

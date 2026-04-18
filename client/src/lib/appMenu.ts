@@ -83,6 +83,7 @@ export const APP_MENU: AppMenuItem[] = [
     badge: "producaoEmAndamento",
     perfis: ["administrador", "galpao", "producao", "separacao"],
     children: [
+      { icon: Truck, label: "Coleta", href: "/galpao-coleta", perfis: ["administrador", "galpao", "separacao"] },
       { icon: ClipboardList, label: "Triagem", href: "/separacao", perfis: ["administrador", "galpao", "separacao"] },
       { icon: Factory, label: "Produção", href: "/producao", badge: "producaoEmAndamento", perfis: ["administrador", "galpao", "producao"] },
       { icon: CalendarDays, label: "Produção Diária", href: "/producao-diaria", perfis: ["administrador", "galpao", "producao"] },
@@ -90,7 +91,6 @@ export const APP_MENU: AppMenuItem[] = [
       { icon: PackageCheck, label: "Embalagem", href: "/embalagem", perfis: ["administrador", "galpao"] },
       { icon: Droplets, label: "Repanol", href: "/repanol", perfis: ["administrador", "galpao"] },
       { icon: Scissors, label: "Costureira", href: "/costureira", perfis: ["administrador", "galpao"] },
-      { icon: Trophy, label: "Gamificação", href: "/gamificacao", perfis: ["administrador", "galpao"] },
     ],
   },
 
@@ -105,6 +105,7 @@ export const APP_MENU: AppMenuItem[] = [
     perfis: ["administrador", "expedicao", "motorista", "galpao", "michele"],
     children: [
       { icon: Package, label: "Pedidos", href: "/expedicao", perfis: ["administrador", "expedicao", "galpao", "michele"] },
+      { icon: Warehouse, label: "Galpão", href: "/galpao-expedicao", perfis: ["administrador", "galpao", "expedicao"] },
       { icon: ShoppingCart, label: "Clientes", href: "/clientes", perfis: ["administrador", "expedicao", "michele"] },
       { icon: Box, label: "Produtos", href: "/produtos", perfis: ["administrador", "expedicao", "michele"] },
       { icon: Warehouse, label: "Estoque", href: "/estoque", perfis: ["administrador", "expedicao", "galpao", "michele"] },
@@ -153,8 +154,6 @@ export const APP_MENU: AppMenuItem[] = [
     perfis: ["administrador"],
     children: [
       { icon: Shield, label: "Painel Admin", href: "/administracao", perfis: ["administrador"] },
-      { icon: TrendingUp, label: "Rendimento", href: "/rendimento", perfis: ["administrador"] },
-      { icon: Settings, label: "Configurações", href: "/configuracoes", perfis: ["administrador"] },
     ],
   },
   { icon: Zap, label: "Menu Automático", action: "autoCollapse", perfis: ["administrador"] },

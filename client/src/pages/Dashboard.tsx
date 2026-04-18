@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import DashboardGamificacaoPage from "./dashboard/DashboardGamificacaoPage";
 import { Redirect } from "wouter";
 import type { DashboardData } from "@/types/dashboard";
 import { MOCK_ADMIN_DASHBOARD } from "@/data/mockAdminDashboard";
@@ -30,24 +31,7 @@ export default function Dashboard() {
   const [dataLoading, setDataLoading] = useState(true);
   const { user: currentUser, loading: userLoading } = useCurrentUser();
 
-  useEffect(() => {
-    if (userLoading) return;
-
-    const perfil = currentUser?.perfil || "administrador";
-    if (perfil.toLowerCase() === "michele") {
-      setDataLoading(false);
-      return;
-    }
-
-    const isSuperAdmin = perfil === "administrador" || perfil === "super_admin";
-
-    if (isSuperAdmin) {
-      setData(MOCK_ADMIN_DASHBOARD as unknown as DashboardData);
-      setDataLoading(false);
-      return;
-    }
-
-    setDataLoading(true);
+  const fetchDashboardData = () => {
     Promise.all([
       fetch("/api/coletas").then((r) => r.json()),
       fetch("/api/separacoes").then((r) => r.json()),
@@ -76,6 +60,19 @@ export default function Dashboard() {
       )
       .catch(() => setData(null))
       .finally(() => setDataLoading(false));
+  };
+
+  useEffect(() => {
+    if (userLoading) return;
+
+    const perfil = currentUser?.perfil || "administrador";
+    if (perfil.toLowerCase() === "michele") {
+      setDataLoading(false);
+      return;
+    }
+
+    setDataLoading(true);
+    fetchDashboardData();
   }, [currentUser, userLoading]);
 
   if (!userLoading && currentUser?.perfil?.toLowerCase() === "michele") {
@@ -102,7 +99,7 @@ export default function Dashboard() {
     case "galpao":
       return <DashboardGalpao data={data} />;
     case "financeiro":
-      return <DashboardFinanceiro data={data} />;
+      return <DashboardFinanceiro data={data} onRefresh={fetchDashboardData} />;
     case "expedicao":
       return <DashboardExpedicao data={data} />;
     case "emissao_nf":
@@ -114,10 +111,44 @@ export default function Dashboard() {
     case "separacao":
       return <DashboardSeparacaoPessoal data={data} userName={nome} />;
     case "motorista":
-      return <DashboardMotorista data={data} userName={nome} />;
+      return <DashboardMotorista data={data} userName={nome} onRefresh={fetchDashboardData} />;
     case "michele":
       return <Redirect to="/coleta" />;
     default:
-      return <DashboardAdmin data={data} />;
+      return <DashboardAdminWithTabs data={data} />;
   }
+}
+
+function DashboardAdminWithTabs({ data }: { data: DashboardData }) {
+  const [tab, setTab] = useState<"visao" | "gamificacao">("visao");
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-0.5 p-1" style={{
+        background: "var(--fips-surface)", border: "1px solid var(--fips-border)",
+        borderRadius: "10px 10px 10px 18px", boxShadow: "var(--shadow-card)", width: "fit-content",
+      }}>
+        {([
+          { id: "visao" as const, label: "Visão Geral" },
+          { id: "gamificacao" as const, label: "Gamificação" },
+        ]).map((t) => {
+          const active = tab === t.id;
+          return (
+            <button key={t.id} onClick={() => setTab(t.id)}
+              className="flex items-center gap-1.5 px-4 py-2 text-[11px] font-semibold transition-all"
+              style={{
+                borderRadius: "8px 8px 8px 14px",
+                background: active ? "rgba(0,75,155,0.15)" : "transparent",
+                color: active ? "var(--fips-primary)" : "var(--fips-fg-muted)",
+                border: active ? "1px solid var(--fips-primary)" : "1px solid transparent",
+                cursor: "pointer", fontWeight: active ? 700 : 500,
+              }}>
+              {t.label}
+            </button>
+          );
+        })}
+      </div>
+      {tab === "visao" && <DashboardAdmin data={data} />}
+      {tab === "gamificacao" && <DashboardGamificacaoPage />}
+    </div>
+  );
 }

@@ -6,7 +6,13 @@ import {
   Factory,
   CheckCircle2,
   AlertTriangle,
+  Plus,
+  Package,
+  Scale,
+  Trash2,
+  Scissors,
 } from "lucide-react";
+import { toast } from "sonner";
 import { PageHeader } from "@/components/domain/PageHeader";
 import { StatsCard } from "@/components/domain/StatsCard";
 import { DataListingToolbar } from "@/components/domain/DataListingToolbar";
@@ -17,10 +23,14 @@ import {
   CellMonoMuted,
   CellMuted,
   CellActions,
+  CellActionButton,
 } from "@/components/domain/DataListingTable";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAppAuthMe } from "@/hooks/useAppUserPerfil";
+import NovaProducaoDiariaDialog from "./NovaProducaoDiariaDialog";
+import { useConfirmDelete } from "@/components/domain/ConfirmDeleteDialog";
 
 /* ─── Cores FIPS DS canonicas ─── */
 const FIPS = {
@@ -31,21 +41,24 @@ const FIPS = {
 };
 
 /* ─── Tipos ─── */
-interface Producao {
+interface ProducaoDiaria {
   id: string;
-  coletaId: string;
-  qrCodeId: string;
-  fornecedor: string;
+  data: string;
+  nomeDupla: string;
   sala: string;
-  tipoMaterial: string;
-  cor: string;
-  pesoEntrada: number;
-  pesoProduzido: number | null;
-  qtdePacotes: number | null;
-  operador: string;
-  status: "em_andamento" | "finalizado";
+  material: string;
+  pacotes: number;
+  quilos: number;
+  descarte: number;
+  costura: number;
+  destino?: string;
+  costureiraInterna?: string | null;
   horarioInicio: string;
   horarioFim: string | null;
+  status: "completa" | "incompleta";
+  assinatura: string;
+  encarregado: string;
+  observacao: string;
   createdAt: string;
 }
 
@@ -53,49 +66,48 @@ const STATUS_VARIANTS: Record<
   string,
   { label: string; variant: "default" | "secondary" | "success" | "warning" | "danger" | "info" }
 > = {
-  em_andamento: { label: "Em Andamento", variant: "info" },
-  finalizado: { label: "Finalizado", variant: "success" },
+  completa: { label: "Completa", variant: "success" },
+  incompleta: { label: "Incompleta", variant: "warning" },
 };
-
-const formatTimeBR = (s: string | null | undefined) =>
-  s ? new Date(s).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }) : "\u2014";
-
-const formatKg = (n: number | null | undefined) =>
-  n != null && n > 0 ? `${n.toLocaleString("pt-BR", { minimumFractionDigits: 1 })} kg` : "\u2014";
 
 const todayStr = () => new Date().toISOString().slice(0, 10);
 
 /* ─── Componente principal ─── */
 export default function ProducaoDiariaPage() {
   const me = useAppAuthMe();
-  const [producoes, setProducoes] = useState<Producao[]>([]);
+  const [registros, setRegistros] = useState<ProducaoDiaria[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(todayStr());
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [confirmDialog, openConfirm] = useConfirmDelete();
 
-  useEffect(() => {
-    fetch("/api/producoes")
+  const fetchData = () => {
+    fetch("/api/producao-diaria")
       .then((r) => r.json())
-      .then((data) => { setProducoes(data); setLoading(false); })
+      .then((data) => { setRegistros(data); setLoading(false); })
       .catch(() => setLoading(false));
-  }, []);
+  };
+
+  useEffect(() => { fetchData(); }, []);
 
   /* ─── Filtrar por data selecionada ─── */
   const doDia = useMemo(() => {
-    return producoes.filter((p) => {
-      const dt = (p.horarioInicio || p.createdAt || "").slice(0, 10);
-      return dt === selectedDate;
-    });
-  }, [producoes, selectedDate]);
+    return registros.filter((p) => p.data === selectedDate);
+  }, [registros, selectedDate]);
 
   /* ─── Stats do dia ─── */
   const stats = useMemo(() => {
-    const registros = doDia.length;
-    const colaboradores = new Set(doDia.map((p) => p.operador)).size;
-    const finalizados = doDia.filter((p) => p.status === "finalizado").length;
-    const emAndamento = doDia.filter((p) => p.status === "em_andamento").length;
-    return { registros, colaboradores, finalizados, emAndamento };
+    const total = doDia.length;
+    const colaboradores = new Set(doDia.map((p) => p.nomeDupla)).size;
+    const completas = doDia.filter((p) => p.status === "completa").length;
+    const incompletas = doDia.filter((p) => p.status === "incompleta").length;
+    const totalPacotes = doDia.reduce((a, p) => a + (p.pacotes || 0), 0);
+    const totalQuilos = doDia.reduce((a, p) => a + (p.quilos || 0), 0);
+    const totalDescarte = doDia.reduce((a, p) => a + (p.descarte || 0), 0);
+    const totalCostura = doDia.reduce((a, p) => a + (p.costura || 0), 0);
+    return { total, colaboradores, completas, incompletas, totalPacotes, totalQuilos, totalDescarte, totalCostura };
   }, [doDia]);
 
   /* ─── Filtro busca + status ─── */
@@ -104,10 +116,9 @@ export default function ProducaoDiariaPage() {
     return doDia.filter((p) => {
       const matchSearch =
         !q ||
-        p.operador.toLowerCase().includes(q) ||
+        p.nomeDupla.toLowerCase().includes(q) ||
         p.sala.toLowerCase().includes(q) ||
-        p.tipoMaterial.toLowerCase().includes(q) ||
-        (p.cor || "").toLowerCase().includes(q);
+        p.material.toLowerCase().includes(q);
       const matchStatus = !filterStatus || p.status === filterStatus;
       return matchSearch && matchStatus;
     });
@@ -122,58 +133,95 @@ export default function ProducaoDiariaPage() {
     year: "numeric",
   });
 
+  const handleSave = async (item: any) => {
+    try {
+      const res = await fetch("/api/producao-diaria", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(item),
+      });
+      if (!res.ok) throw new Error();
+      toast.success("Registro salvo");
+      fetchData();
+    } catch {
+      toast.error("Erro ao salvar registro");
+    }
+  };
+
+  const handleDelete = (id: string) => {
+    openConfirm({
+      title: "Excluir registro",
+      description: "Tem certeza que deseja excluir este registro? Esta ação não pode ser desfeita.",
+      onConfirm: async () => {
+        try {
+          await fetch(`/api/producao-diaria/${id}`, { method: "DELETE" });
+          toast.success("Registro excluído");
+          fetchData();
+        } catch {
+          toast.error("Erro ao excluir");
+        }
+      },
+    });
+  };
+
   return (
     <div className="space-y-6">
       {/* ─── PageHeader ─── */}
       <PageHeader
         title="Producao Diaria"
+        tutorialPage="producao-diaria"
         description={`Visualizacao por dia -- ${dataPretty}`}
         icon={CalendarDays}
         stats={[
-          { label: "Registros", value: stats.registros, color: "#93BDE4" },
-          { label: "Colaboradores", value: stats.colaboradores, color: "#00C64C" },
-          { label: "Finalizados", value: stats.finalizados, color: "#FDC24E" },
-          { label: "Em Andamento", value: stats.emAndamento, color: "#ed1b24" },
+          { label: "Registros", value: stats.total, color: "#93BDE4" },
+          { label: "Pacotes", value: stats.totalPacotes, color: "#00C64C" },
+          { label: "Quilos", value: `${stats.totalQuilos.toFixed(1)} kg`, color: "#FDC24E" },
+          { label: "Descarte", value: `${stats.totalDescarte.toFixed(1)} kg`, color: "#ed1b24" },
         ]}
         actions={
-          <Input
-            type="date"
-            value={selectedDate}
-            onChange={(e) => setSelectedDate(e.target.value)}
-            className="w-[160px] text-[12px]"
-            density="compact"
-          />
+          <div className="flex items-center gap-2">
+            <Input
+              type="date"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              className="w-[160px] text-[12px]"
+              density="compact"
+            />
+            <Button size="sm" onClick={() => setDialogOpen(true)}>
+              <Plus className="h-4 w-4" /> Novo
+            </Button>
+          </div>
         }
       />
 
       {/* ─── Cards Relatorio ─── */}
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
         <StatsCard
-          label="Registros do Dia"
-          value={stats.registros}
-          subtitle={dataPretty}
-          icon={CalendarDays}
+          label="Total Pacotes"
+          value={stats.totalPacotes.toLocaleString("pt-BR")}
+          subtitle={`${stats.total} registros`}
+          icon={Package}
           color={FIPS.azulProfundo}
         />
         <StatsCard
-          label="Colaboradores"
-          value={stats.colaboradores}
-          subtitle="Operadores no dia"
-          icon={User}
+          label="Total Quilos"
+          value={`${stats.totalQuilos.toFixed(1)} kg`}
+          subtitle="Peso produzido"
+          icon={Scale}
           color={FIPS.verdeFloresta}
         />
         <StatsCard
-          label="Finalizados"
-          value={stats.finalizados}
-          subtitle="Producoes concluidas"
-          icon={CheckCircle2}
+          label="Descarte"
+          value={`${stats.totalDescarte.toFixed(1)} kg`}
+          subtitle={stats.totalQuilos > 0 ? `${Math.round((stats.totalDescarte / (stats.totalQuilos + stats.totalDescarte)) * 100)}% do total` : "—"}
+          icon={Trash2}
           color={FIPS.amareloEscuro}
         />
         <StatsCard
-          label="Em Andamento"
-          value={stats.emAndamento}
-          subtitle={stats.emAndamento > 0 ? "Ainda em producao" : "Nenhuma pendente"}
-          icon={AlertTriangle}
+          label="Costura"
+          value={`${stats.totalCostura.toFixed(1)} kg`}
+          subtitle="Destinado a costura"
+          icon={Scissors}
           color={FIPS.azulEscuro}
         />
       </div>
@@ -182,7 +230,7 @@ export default function ProducaoDiariaPage() {
       <DataListingToolbar
         search={search}
         onSearchChange={setSearch}
-        searchPlaceholder="Buscar por operador, sala ou material..."
+        searchPlaceholder="Buscar por dupla, sala ou material..."
         activeFilters={activeFilters}
         filtersContent={
           <div className="px-4 py-3 space-y-4">
@@ -193,15 +241,15 @@ export default function ProducaoDiariaPage() {
               <div className="flex flex-col gap-1">
                 {[
                   { v: "", l: "Todos" },
-                  { v: "em_andamento", l: "Em Andamento" },
-                  { v: "finalizado", l: "Finalizado" },
+                  { v: "completa", l: "Completa" },
+                  { v: "incompleta", l: "Incompleta" },
                 ].map((opt) => (
                   <button
                     key={opt.v || "all"}
                     onClick={() => setFilterStatus(opt.v)}
                     className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
                       filterStatus === opt.v
-                        ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                        ? "bg-[var(--fips-primary)]/10 font-bold text-[var(--fips-primary)]"
                         : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
                     }`}
                   >
@@ -215,7 +263,7 @@ export default function ProducaoDiariaPage() {
       />
 
       {/* ─── Tabela ─── */}
-      <DataListingTable<Producao>
+      <DataListingTable<ProducaoDiaria>
         icon={<CalendarDays className="h-[22px] w-[22px]" />}
         title="Producao Diaria"
         subtitle={`${filtered.length} ${filtered.length === 1 ? "registro" : "registros"} ${
@@ -225,19 +273,27 @@ export default function ProducaoDiariaPage() {
         data={filtered}
         getRowId={(r) => r.id}
         emptyState={loading ? "Carregando..." : "Nenhuma producao registrada neste dia"}
-        columns={producaoDiariaColumns()}
+        columns={producaoDiariaColumns(handleDelete)}
       />
+
+      <NovaProducaoDiariaDialog
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+        onSave={(item) => { handleSave(item); setDialogOpen(false); }}
+        defaultData={selectedDate}
+      />
+      {confirmDialog}
     </div>
   );
 }
 
 /* ──────────────────────────── COLUMNS DEFINITION ──────────────────────────── */
 
-function producaoDiariaColumns(): DataListingColumn<Producao>[] {
+function producaoDiariaColumns(onDelete: (id: string) => void): DataListingColumn<ProducaoDiaria>[] {
   return [
     {
-      id: "operador",
-      label: "Operador",
+      id: "nomeDupla",
+      label: "Dupla",
       fixed: true,
       sortable: true,
       width: "130px",
@@ -245,7 +301,7 @@ function producaoDiariaColumns(): DataListingColumn<Producao>[] {
         <div className="flex items-center gap-1.5">
           <User className="h-3 w-3 text-[var(--fips-fg-muted)]" />
           <span className="text-[11px] font-semibold text-[var(--fips-fg)] truncate max-w-[110px]">
-            {p.operador}
+            {p.nomeDupla}
           </span>
         </div>
       ),
@@ -254,7 +310,7 @@ function producaoDiariaColumns(): DataListingColumn<Producao>[] {
       id: "sala",
       label: "Sala",
       sortable: true,
-      width: "100px",
+      width: "90px",
       render: (p) => (
         <div className="flex items-center gap-1.5">
           <Factory className="h-3 w-3 text-[var(--fips-fg-muted)]" />
@@ -266,53 +322,66 @@ function producaoDiariaColumns(): DataListingColumn<Producao>[] {
       id: "material",
       label: "Material",
       sortable: true,
-      width: "120px",
-      render: (p) => <Badge variant="outline">{p.tipoMaterial}</Badge>,
-    },
-    {
-      id: "cor",
-      label: "Cor",
-      sortable: true,
-      width: "80px",
-      render: (p) => <CellMuted>{p.cor || "\u2014"}</CellMuted>,
-    },
-    {
-      id: "pesoEntrada",
-      label: "Peso Entrada",
-      sortable: true,
-      align: "right",
-      width: "95px",
-      render: (p) => <CellMonoStrong align="right">{formatKg(p.pesoEntrada)}</CellMonoStrong>,
-    },
-    {
-      id: "pesoProduzido",
-      label: "Peso Produzido",
-      sortable: true,
-      align: "right",
-      width: "105px",
-      render: (p) => (
-        <CellMonoStrong align="right" style={{ color: p.pesoProduzido ? "#00C64C" : undefined }}>
-          {formatKg(p.pesoProduzido)}
-        </CellMonoStrong>
-      ),
+      width: "110px",
+      render: (p) => <Badge variant="outline">{p.material}</Badge>,
     },
     {
       id: "pacotes",
       label: "Pacotes",
       sortable: true,
       align: "right",
-      width: "70px",
-      render: (p) => <CellMonoMuted>{p.qtdePacotes ?? "\u2014"}</CellMonoMuted>,
+      width: "75px",
+      render: (p) => (
+        <CellMonoStrong align="right" style={{ color: p.pacotes > 0 ? "var(--fips-primary)" : undefined }}>
+          {p.pacotes || "—"}
+        </CellMonoStrong>
+      ),
+    },
+    {
+      id: "quilos",
+      label: "Quilos",
+      sortable: true,
+      align: "right",
+      width: "80px",
+      render: (p) => (
+        <CellMonoStrong align="right" style={{ color: p.quilos > 0 ? "var(--fips-success-strong)" : undefined }}>
+          {p.quilos > 0 ? `${p.quilos} kg` : "—"}
+        </CellMonoStrong>
+      ),
+    },
+    {
+      id: "descarte",
+      label: "Descarte",
+      sortable: true,
+      align: "right",
+      width: "80px",
+      render: (p) => (
+        <span className="text-[11px] font-mono font-semibold" style={{ color: p.descarte > 0 ? "var(--fips-danger)" : "var(--fips-fg-muted)" }}>
+          {p.descarte > 0 ? `${p.descarte} kg` : "—"}
+        </span>
+      ),
+    },
+    {
+      id: "costura",
+      label: "Costura",
+      sortable: true,
+      align: "right",
+      width: "80px",
+      render: (p) => (
+        <span className="text-[11px] font-mono font-semibold" style={{ color: p.costura > 0 ? "var(--fips-primary)" : "var(--fips-fg-muted)" }}>
+          {p.costura > 0 ? `${p.costura} kg` : "—"}
+        </span>
+      ),
     },
     {
       id: "inicio",
       label: "Inicio",
       sortable: true,
-      width: "70px",
+      width: "65px",
       render: (p) => (
         <div className="flex items-center gap-1 text-[11px]">
           <Clock className="h-3 w-3 text-[var(--fips-fg-muted)]" />
-          <span className="font-mono">{formatTimeBR(p.horarioInicio)}</span>
+          <span className="font-mono">{p.horarioInicio}</span>
         </div>
       ),
     },
@@ -320,23 +389,57 @@ function producaoDiariaColumns(): DataListingColumn<Producao>[] {
       id: "fim",
       label: "Fim",
       sortable: true,
-      width: "70px",
+      width: "65px",
       render: (p) => (
         <div className="flex items-center gap-1 text-[11px]">
           <Clock className="h-3 w-3 text-[var(--fips-fg-muted)]" />
-          <span className="font-mono">{p.horarioFim ? formatTimeBR(p.horarioFim) : "..."}</span>
+          <span className="font-mono">{p.horarioFim || "..."}</span>
         </div>
       ),
+    },
+    {
+      id: "destino",
+      label: "Destino",
+      sortable: true,
+      width: "110px",
+      render: (p) => {
+        if (p.destino === "costura_interna") {
+          return (
+            <div>
+              <Badge variant="warning">Costura Int.</Badge>
+              {p.costureiraInterna && <div className="text-[9px] mt-0.5" style={{ color: "var(--fips-fg-muted)" }}>{p.costureiraInterna}</div>}
+            </div>
+          );
+        }
+        return <Badge variant="info">Acabamento</Badge>;
+      },
     },
     {
       id: "status",
       label: "Status",
       sortable: true,
-      width: "105px",
+      width: "95px",
       render: (p) => {
         const sc = STATUS_VARIANTS[p.status] || { label: p.status, variant: "secondary" as const };
         return <Badge variant={sc.variant} dot>{sc.label}</Badge>;
       },
+    },
+    {
+      id: "actions",
+      label: "",
+      fixed: true,
+      align: "center",
+      width: "40px",
+      render: (p) => (
+        <CellActions>
+          <CellActionButton
+            title="Excluir"
+            variant="danger"
+            icon={<Trash2 className="h-3.5 w-3.5" />}
+            onClick={() => onDelete(p.id)}
+          />
+        </CellActions>
+      ),
     },
   ];
 }

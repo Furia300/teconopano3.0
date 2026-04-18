@@ -37,6 +37,8 @@ const EXPEDICAO_SELECT = `
   notaFiscal:nota_fiscal,
   dataEmissaoNota:data_emissao_nota,
   dataEntrega:data_entrega,
+  empresa,
+  agendamento,
   observacaoEscritorio:observacao_escritorio,
   observacaoGalpao:observacao_galpao,
   createdAt:created_at,
@@ -62,6 +64,7 @@ export interface ExpedicaoInput {
   prioridade?: string | null;
   periodicidade?: string | null;
   dataEntrega?: string | null;
+  empresa?: string | null;
   observacaoEscritorio?: string | null;
   observacaoGalpao?: string | null;
 }

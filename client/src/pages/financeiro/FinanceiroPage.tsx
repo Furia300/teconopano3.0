@@ -25,6 +25,7 @@ import {
   CellActionButton,
 } from "@/components/domain/DataListingTable";
 import { Badge } from "@/components/ui/badge";
+import { useConfirmDelete } from "@/components/domain/ConfirmDeleteDialog";
 
 /* ─── Cores FIPS DS canônicas para os Cards Relatório ─── */
 const FIPS_COLORS = {
@@ -39,6 +40,8 @@ interface Expedicao {
   id: string;
   nomeFantasia?: string | null;
   cnpj?: string | null;
+  empresa?: string | null;
+  agendamento?: string | null;
   descricaoProduto?: string | null;
   tipoMaterial?: string | null;
   kilo?: number | null;
@@ -81,6 +84,7 @@ export default function FinanceiroPage() {
   const [filterStatus, setFilterStatus] = useState<string>("");
   const [filterPrioridade, setFilterPrioridade] = useState<string>("");
   const [filterRota, setFilterRota] = useState<string>("");
+  const [confirmDialog, openConfirm] = useConfirmDelete();
 
   const fetchData = async () => {
     try {
@@ -152,16 +156,21 @@ export default function FinanceiroPage() {
     }
   };
 
-  const handleRejeitar = async (id: string) => {
-    if (!confirm("Rejeitar este pagamento?")) return;
-    try {
-      const res = await fetch(`/api/expedicoes/${id}/rejeitar-financeiro`, { method: "PUT" });
-      if (!res.ok) throw new Error();
-      toast.success("Pagamento rejeitado");
-      fetchData();
-    } catch {
-      toast.error("Erro ao rejeitar");
-    }
+  const handleRejeitar = (id: string) => {
+    openConfirm({
+      title: "Rejeitar pagamento",
+      description: "Tem certeza que deseja rejeitar este pagamento? Esta ação não pode ser desfeita.",
+      onConfirm: async () => {
+        try {
+          const res = await fetch(`/api/expedicoes/${id}/rejeitar-financeiro`, { method: "PUT" });
+          if (!res.ok) throw new Error();
+          toast.success("Pagamento rejeitado");
+          fetchData();
+        } catch {
+          toast.error("Erro ao rejeitar");
+        }
+      },
+    });
   };
 
   return (
@@ -240,7 +249,7 @@ export default function FinanceiroPage() {
                     onClick={() => setFilterStatus(opt.v)}
                     className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
                       filterStatus === opt.v
-                        ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                        ? "bg-[var(--fips-primary)]/10 font-bold text-[var(--fips-primary)]"
                         : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
                     }`}
                   >
@@ -267,7 +276,7 @@ export default function FinanceiroPage() {
                     onClick={() => setFilterPrioridade(opt.v)}
                     className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
                       filterPrioridade === opt.v
-                        ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                        ? "bg-[var(--fips-primary)]/10 font-bold text-[var(--fips-primary)]"
                         : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
                     }`}
                   >
@@ -287,7 +296,7 @@ export default function FinanceiroPage() {
                   onClick={() => setFilterRota("")}
                   className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
                     !filterRota
-                      ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                      ? "bg-[var(--fips-primary)]/10 font-bold text-[var(--fips-primary)]"
                       : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
                   }`}
                 >
@@ -299,7 +308,7 @@ export default function FinanceiroPage() {
                     onClick={() => setFilterRota(rota)}
                     className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
                       filterRota === rota
-                        ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                        ? "bg-[var(--fips-primary)]/10 font-bold text-[var(--fips-primary)]"
                         : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
                     }`}
                   >
@@ -333,6 +342,7 @@ export default function FinanceiroPage() {
         }
         columns={financeiroColumns({ onAprovar: handleAprovar, onRejeitar: handleRejeitar })}
       />
+      {confirmDialog}
     </div>
   );
 }
@@ -367,6 +377,29 @@ function financeiroColumns({ onAprovar, onRejeitar }: FinanceiroColumnActions): 
           </div>
         </div>
       ),
+    },
+    {
+      id: "empresa",
+      label: "Empresa",
+      sortable: true,
+      width: "110px",
+      render: (e) => {
+        const isBrazil = e.empresa === "brazil";
+        return (
+          <span className="inline-flex items-center gap-1.5" style={{ fontSize: 11 }}>
+            <span style={{
+              width: 12, height: 12, borderRadius: "50%", flexShrink: 0,
+              background: isBrazil ? "linear-gradient(135deg, #16A34A, #EAB308)" : "linear-gradient(135deg, #FF073A, #1A1A1A)",
+              boxShadow: isBrazil ? "0 0 6px rgba(22,163,74,0.4)" : "0 0 6px rgba(255,7,58,0.4)",
+            }} />
+            <span style={{
+              fontWeight: 700, fontSize: 11,
+              background: isBrazil ? "linear-gradient(135deg, #16A34A, #EAB308)" : "linear-gradient(135deg, #FF073A, #B20028)",
+              WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+            }}>{isBrazil ? "Brazil" : "Tecnopano"}</span>
+          </span>
+        );
+      },
     },
     {
       id: "produto",

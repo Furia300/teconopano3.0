@@ -14,6 +14,7 @@ import {
   CellMonoStrong,
   CellMonoMuted,
   CellMuted,
+  CellCor,
   CellActions,
   CellActionButton,
 } from "@/components/domain/DataListingTable";
@@ -44,7 +45,8 @@ const TIPOS_MATERIAL = [
 
 const DESTINOS = [
   { value: "producao", label: "Produção", variant: "info" as const, color: "#004B9B", icon: Factory },
-  { value: "costureira", label: "Costureira", variant: "warning" as const, color: "#F6921E", icon: Scissors },
+  { value: "costura_terceirizada", label: "Costura Terceirizada", variant: "warning" as const, color: "#F6921E", icon: Scissors },
+  { value: "costureira", label: "Costureira (legado)", variant: "warning" as const, color: "#E67E22", icon: Scissors },
   { value: "repanol", label: "Repanol", variant: "secondary" as const, color: "#9B59B6", icon: Droplets },
   { value: "descarte", label: "Descarte", variant: "danger" as const, color: "#DC3545", icon: Trash2 },
   { value: "doacao", label: "Doação", variant: "success" as const, color: "#00C64C", icon: Gift },
@@ -148,6 +150,7 @@ export default function SeparacaoList() {
   const [cor, setCor] = useState("");
   const [peso, setPeso] = useState("");
   const [destino, setDestino] = useState("");
+  const [salaOrigem, setSalaOrigem] = useState("");
   const [savingLote, setSavingLote] = useState(false);
 
   /* Produtos para cascata material → cor/medida */
@@ -219,7 +222,7 @@ export default function SeparacaoList() {
 
   /* ─── Dados filtrados ─── */
   const filtered = useMemo(() => {
-    return coletas.filter(c => {
+    return [...coletas].sort((a, b) => (b.numero || 0) - (a.numero || 0)).filter(c => {
       const q = search.trim().toLowerCase();
       const matchSearch =
         !q ||
@@ -246,7 +249,7 @@ export default function SeparacaoList() {
       setPesoAtual(coleta.pesoTotalAtual ? String(coleta.pesoTotalAtual) : "");
       setNotaFiscal(coleta.notaFiscal || "");
     }
-    setTipoMaterial(""); setCor(""); setPeso(""); setDestino(""); setPesagemSalva(false);
+    setTipoMaterial(""); setCor(""); setPeso(""); setDestino(""); setSalaOrigem(""); setPesagemSalva(false);
 
     try {
       const [seps, qrs] = await Promise.all([
@@ -343,6 +346,7 @@ export default function SeparacaoList() {
           coletaNumero: currentColeta.numero,
           fornecedor: currentColeta.nomeFantasia || currentColeta.fornecedor,
           tipoMaterial, cor, peso: parseFloat(peso), destino,
+          salaOrigem: destino === "costura_interna" ? salaOrigem : undefined,
           colaborador: me.nome,
         }),
       });
@@ -365,7 +369,7 @@ export default function SeparacaoList() {
       setSeparacoes(prev => [...prev, newSep]);
       if (newQR) setQrCodes(prev => [...prev, newQR]);
 
-      setTipoMaterial(""); setCor(""); setPeso(""); setDestino("");
+      setTipoMaterial(""); setCor(""); setPeso(""); setDestino(""); setSalaOrigem("");
       toast.success(`Lote adicionada${newQR ? " + QR gerado" : ""}!`);
     } catch {
       toast.error("Erro ao criar lote");
@@ -460,7 +464,7 @@ export default function SeparacaoList() {
                         onClick={() => setFilterStatus(opt.v)}
                         className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
                           filterStatus === opt.v
-                            ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                            ? "bg-[var(--fips-primary)]/10 font-bold text-[var(--fips-primary)]"
                             : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
                         }`}
                       >
@@ -480,7 +484,7 @@ export default function SeparacaoList() {
                       onClick={() => setFilterFornecedor("")}
                       className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
                         !filterFornecedor
-                          ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                          ? "bg-[var(--fips-primary)]/10 font-bold text-[var(--fips-primary)]"
                           : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
                       }`}
                     >
@@ -492,7 +496,7 @@ export default function SeparacaoList() {
                         onClick={() => setFilterFornecedor(f)}
                         className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
                           filterFornecedor === f
-                            ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                            ? "bg-[var(--fips-primary)]/10 font-bold text-[var(--fips-primary)]"
                             : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
                         }`}
                       >
@@ -588,7 +592,7 @@ export default function SeparacaoList() {
                     className="text-[12px] font-bold uppercase tracking-[0.06em]"
                     style={{ color: FIPS_COLORS.azulProfundo, fontFamily: "'Saira Expanded', sans-serif" }}
                   >
-                    Entrada de Coleta — Pesagem
+                    Entrada de Coleta — Pesagem (Supervisor)
                   </span>
                 </div>
 
@@ -894,9 +898,9 @@ function coletaColumns({ onView }: { onView: (id: string) => void }): DataListin
       render: (c) => (
         <CellActions>
           <CellActionButton
-            title="Abrir triagem"
+            title="Separar + QR Code"
             variant="primary"
-            icon={<Eye className="h-3.5 w-3.5" />}
+            icon={<QrCode className="h-3.5 w-3.5" />}
             onClick={() => onView(c.id)}
           />
           <CellActionButton
@@ -927,7 +931,7 @@ function separacaoColumns(qrCodes: QRCode[]): DataListingColumn<Separacao>[] {
       label: "Cor",
       sortable: true,
       width: "90px",
-      render: (s) => <CellMuted>{s.cor || "—"}</CellMuted>,
+      render: (s) => <CellCor>{s.cor || "—"}</CellCor>,
     },
     {
       id: "peso",

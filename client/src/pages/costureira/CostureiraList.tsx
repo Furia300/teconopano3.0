@@ -199,7 +199,7 @@ export default function CostureiraList() {
               <div className="flex flex-col gap-1">
                 {[{ v: "", l: "Todos" }, { v: "pendente", l: "Pendente" }, { v: "enviado", l: "Enviado" }, { v: "retornado", l: "Retornado" }].map(opt => (
                   <button key={opt.v || "all"} onClick={() => setFilterStatus(opt.v)}
-                    className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${filterStatus === opt.v ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]" : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"}`}>
+                    className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${filterStatus === opt.v ? "bg-[var(--fips-primary)]/10 font-bold text-[var(--fips-primary)]" : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"}`}>
                     {opt.l}
                   </button>
                 ))}

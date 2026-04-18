@@ -1,4 +1,5 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
+import { toast } from "sonner";
 import {
   Truck,
   PackageCheck,
@@ -9,6 +10,7 @@ import {
   AlertTriangle,
   Eye,
   X,
+  CheckCircle2,
 } from "lucide-react";
 import { PageHeader } from "@/components/domain/PageHeader";
 import { StatsCard } from "@/components/domain/StatsCard";
@@ -181,11 +183,12 @@ function buildTasks(coletas: Coleta[], costureiras: CostureiraEnvio[], repanois:
   }
 
   for (const e of expedicoes) {
-    if (e.statusEntrega !== "pronto_entrega") continue;
+    if (e.statusEntrega !== "pronto_entrega" && e.statusEntrega !== "em_rota") continue;
     tasks.push({
       id: `exp-${e.id}`, rawId: e.id, tipo: "expedicao", tipoLabel: "Expedição",
       destino: e.nomeFantasia || "—", material: e.tipoMaterial || e.descricaoProduto || "—",
-      peso: e.kilo || 0, rota: e.rota || "—", statusLabel: "Entregar ao cliente",
+      peso: e.kilo || 0, rota: e.rota || "—",
+      statusLabel: e.statusEntrega === "em_rota" ? "Em rota" : "Entregar ao cliente",
       prioridade: e.prioridade === "Urgente" ? "Urgente" : e.prioridade === "Baixa" ? "Baixa" : "Normal",
       data: e.dataEntrega || e.createdAt, dataFormatted: formatDateBR(e.dataEntrega || e.createdAt),
       isOverdue: daysDiff(e.dataEntrega, today) > 0,
@@ -196,7 +199,7 @@ function buildTasks(coletas: Coleta[], costureiras: CostureiraEnvio[], repanois:
   tasks.sort((a, b) => {
     const pa = prioOrder[a.prioridade] ?? 1, pb = prioOrder[b.prioridade] ?? 1;
     if (pa !== pb) return pa - pb;
-    return new Date(a.data).getTime() - new Date(b.data).getTime();
+    return new Date(b.data).getTime() - new Date(a.data).getTime();
   });
 
   return tasks;
@@ -307,9 +310,10 @@ function DetailBlock({ title, subtitle, children }: { title: string; subtitle?: 
 }
 
 /* ─── Modal de detalhes ─── */
-function TaskDetailDialog({ task, open, onClose, onRetorno, onNovoEnvio }: {
+function TaskDetailDialog({ task, open, onClose, onRetorno, onNovoEnvio, onIniciarEntrega, onConfirmarEntrega }: {
   task: MotoristaTask | null; open: boolean; onClose: () => void;
   onRetorno: (envioData: any) => void; onNovoEnvio: () => void;
+  onIniciarEntrega: (rawId: string) => void; onConfirmarEntrega: (rawId: string) => void;
 }) {
   if (!task) return null;
   const b = TIPO_BADGE[task.tipo];
@@ -443,10 +447,18 @@ function TaskDetailDialog({ task, open, onClose, onRetorno, onNovoEnvio }: {
               Iniciar Coleta
             </Button>
           )}
-          {isExpedicao && (
-            <Button className="bg-[#00C64C] hover:bg-[#009C3D] text-white">
+          {isExpedicao && task.statusLabel === "Entregar ao cliente" && (
+            <Button className="bg-[#00C64C] hover:bg-[#009C3D] text-white"
+              onClick={() => { onIniciarEntrega(task.rawId); onClose(); }}>
               <Send className="h-4 w-4 mr-1" />
               Iniciar Entrega
+            </Button>
+          )}
+          {isExpedicao && task.statusLabel === "Em rota" && (
+            <Button className="bg-[#004B9B] hover:bg-[#003670] text-white"
+              onClick={() => { onConfirmarEntrega(task.rawId); onClose(); }}>
+              <CheckCircle2 className="h-4 w-4 mr-1" />
+              Confirmar Entrega
             </Button>
           )}
         </DialogFooter>
@@ -471,7 +483,7 @@ export default function PainelLogisticaPage() {
   const [filterTipo, setFilterTipo] = useState("");
   const [filterPrio, setFilterPrio] = useState("");
 
-  useEffect(() => {
+  const fetchTasks = useCallback(() => {
     Promise.all([
       fetch("/api/coletas").then(r => r.json()).catch(() => []),
       fetch("/api/costureira").then(r => r.json()).catch(() => []),
@@ -482,6 +494,8 @@ export default function PainelLogisticaPage() {
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => { fetchTasks(); }, [fetchTasks]);
 
   const allTasks = useMemo(() => buildTasks(coletas, costureiras, repanois, expedicoes), [coletas, costureiras, repanois, expedicoes]);
 
@@ -558,7 +572,7 @@ export default function PainelLogisticaPage() {
                   { v: "repanol", l: "Repanol" },
                 ].map(opt => (
                   <button key={opt.v || "t-all"} onClick={() => setFilterTipo(opt.v)}
-                    className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${filterTipo === opt.v ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]" : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"}`}>
+                    className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${filterTipo === opt.v ? "bg-[var(--fips-primary)]/10 font-bold text-[var(--fips-primary)]" : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"}`}>
                     {opt.l}
                   </button>
                 ))}
@@ -574,7 +588,7 @@ export default function PainelLogisticaPage() {
                   { v: "Baixa", l: "Baixa" },
                 ].map(opt => (
                   <button key={opt.v || "p-all"} onClick={() => setFilterPrio(opt.v)}
-                    className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${filterPrio === opt.v ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]" : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"}`}>
+                    className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${filterPrio === opt.v ? "bg-[var(--fips-primary)]/10 font-bold text-[var(--fips-primary)]" : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"}`}>
                     {opt.l}
                   </button>
                 ))}
@@ -608,6 +622,20 @@ export default function PainelLogisticaPage() {
         onClose={() => setDetailTask(null)}
         onRetorno={(envioData) => { setDetailTask(null); setRetornoEnvio(envioData); }}
         onNovoEnvio={() => { setDetailTask(null); setNovoEnvioOpen(true); }}
+        onIniciarEntrega={async (rawId) => {
+          try {
+            await fetch(`/api/expedicoes/${rawId}/em-rota`, { method: "PUT" });
+            toast.success("Entrega iniciada — em rota!");
+            fetchTasks();
+          } catch { toast.error("Erro ao iniciar entrega"); }
+        }}
+        onConfirmarEntrega={async (rawId) => {
+          try {
+            await fetch(`/api/expedicoes/${rawId}/entregar`, { method: "PUT" });
+            toast.success("Entrega confirmada!");
+            fetchTasks();
+          } catch { toast.error("Erro ao confirmar entrega"); }
+        }}
       />
 
       {/* Dialog de retorno costureira */}

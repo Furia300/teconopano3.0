@@ -12,6 +12,8 @@ import RepanolList from "./pages/repanol/RepanolList";
 import CostureiraList from "./pages/costureira/CostureiraList";
 import EstoqueList from "./pages/estoque/EstoqueList";
 import ExpedicaoList from "./pages/expedicao/ExpedicaoList";
+import GalpaoExpedicaoPage from "./pages/expedicao/GalpaoExpedicaoPage";
+import GalpaoColetaPage from "./pages/coleta/GalpaoColetaPage";
 import FinanceiroPage from "./pages/financeiro/FinanceiroPage";
 import EmissaoNFPage from "./pages/emissao-nf/EmissaoNFPage";
 import ClientesList from "./pages/clientes/ClientesList";
@@ -32,6 +34,7 @@ import EmbalagemPage from "./pages/producao/EmbalagemPage";
 import DashboardGamificacaoPage from "./pages/dashboard/DashboardGamificacaoPage";
 import DashboardRendimentoPage from "./pages/dashboard/DashboardRendimentoPage";
 import AdministracaoPage from "./pages/admin/AdministracaoPage";
+import { ProtectedRoute } from "./components/domain/ProtectedRoute";
 import Login from "./pages/auth/Login";
 import Cadastro from "./pages/auth/Cadastro";
 import DefinirSenha from "./pages/auth/DefinirSenha";
@@ -43,6 +46,7 @@ function AppContent() {
         <Route path="/" component={Dashboard} />
         <Route path="/coleta" component={ColetaList} />
         <Route path="/dashboard-coleta" component={DashboardColetaPage} />
+        <Route path="/galpao-coleta" component={GalpaoColetaPage} />
         <Route path="/separacao" component={SeparacaoList} />
         <Route path="/producao" component={ProducaoList} />
         <Route path="/costura-interna" component={CosturaInternaPage} />
@@ -51,6 +55,7 @@ function AppContent() {
         <Route path="/costureira" component={CostureiraList} />
         <Route path="/estoque" component={EstoqueList} />
         <Route path="/expedicao" component={ExpedicaoList} />
+        <Route path="/galpao-expedicao" component={GalpaoExpedicaoPage} />
         <Route path="/dashboard-expedicao" component={DashboardExpedicaoPage} />
         <Route path="/financeiro" component={FinanceiroPage} />
         <Route path="/dashboard-financeiro" component={DashboardFinanceiroPage} />
@@ -67,7 +72,11 @@ function AppContent() {
         <Route path="/automatico" component={AutomaticoPage} />
         <Route path="/gamificacao" component={DashboardGamificacaoPage} />
         <Route path="/rendimento" component={DashboardRendimentoPage} />
-        <Route path="/administracao" component={AdministracaoPage} />
+        <Route path="/administracao">
+          <ProtectedRoute adminOnly>
+            <AdministracaoPage />
+          </ProtectedRoute>
+        </Route>
         <Route>
           <div className="text-center py-20">
             <h1 className="text-2xl font-bold">404 - Página não encontrada</h1>

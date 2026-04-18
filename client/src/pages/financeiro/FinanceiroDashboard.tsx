@@ -207,7 +207,7 @@ function ChartTooltip({ title, color, rows, x, y, total }: { title: string; colo
   const numRows = rows.filter(r => typeof r.value === "number");
   const maxVal = numRows.length > 0 ? Math.max(...numRows.map(r => r.value as number), 1) : 1;
   return (
-    <div style={{ position: "fixed", left: x + 12, top: y - 10, zIndex: 50, pointerEvents: "none", animation: "fadeUp .15s ease" }}>
+    <div style={{ position: "absolute", left: 0, top: "100%", marginTop: 8, zIndex: 50, pointerEvents: "none", animation: "fadeUp .15s ease" }}>
       <div style={{ background: C.cardBg, borderRadius: "8px 8px 8px 14px", border: `1px solid ${C.cardBorder}`, boxShadow: "0 8px 30px rgba(0,42,104,.18)", minWidth: 180, maxWidth: 280, overflow: "hidden" }}>
         <div style={{ background: color, padding: "8px 14px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <span style={{ fontSize: 12, fontWeight: 700, color: C.branco, fontFamily: Fn.title }}>{title}</span>

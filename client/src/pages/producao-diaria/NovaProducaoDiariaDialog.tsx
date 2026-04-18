@@ -3,6 +3,7 @@ import { useAppAuthMe } from "@/hooks/useAppUserPerfil";
 import {
   Factory, CalendarDays, Clock, Users, Layers, Pen, UserCheck,
   Maximize2, Minimize2, Check, MessageSquare, CheckCircle2,
+  Package, Scale, Trash2, Scissors,
 } from "lucide-react";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
@@ -52,11 +53,17 @@ export default function NovaProducaoDiariaDialog({ open, onClose, onSave, defaul
     nomeDupla: "",
     sala: "",
     material: "",
+    pacotes: "",
+    quilos: "",
+    descarte: "",
+    costura: "",
     horarioInicio: "",
     horarioFim: "",
     status: "completa" as "completa" | "incompleta",
     assinatura: "",
     encarregado: "",
+    destino: "acabamento" as string,
+    costureiraInterna: "",
     observacao: "",
   });
   const [dialogSize, setDialogSize] = useState<DialogSize>("normal");
@@ -79,6 +86,10 @@ export default function NovaProducaoDiariaDialog({ open, onClose, onSave, defaul
     if (!form.nomeDupla || !form.sala || !form.material || !form.horarioInicio) return;
     onSave({
       ...form,
+      pacotes: Number(form.pacotes) || 0,
+      quilos: Number(form.quilos) || 0,
+      descarte: Number(form.descarte) || 0,
+      costura: Number(form.costura) || 0,
       horarioFim: form.horarioFim || null,
     });
     setForm({
@@ -86,11 +97,17 @@ export default function NovaProducaoDiariaDialog({ open, onClose, onSave, defaul
       nomeDupla: form.nomeDupla,
       sala: form.sala,
       material: "",
+      pacotes: "",
+      quilos: "",
+      descarte: "",
+      costura: "",
       horarioInicio: "",
       horarioFim: "",
       status: "completa",
       assinatura: form.assinatura,
       encarregado: form.encarregado,
+      destino: "acabamento",
+      costureiraInterna: "",
       observacao: "",
     });
   };
@@ -168,6 +185,46 @@ export default function NovaProducaoDiariaDialog({ open, onClose, onSave, defaul
                 </Field>
               </div>
 
+              {/* Resultado: Pacotes, Quilos, Descarte, Costura */}
+              <div className="grid grid-cols-4 gap-3">
+                <Field density="compact" inset="icon">
+                  <FieldLabel>Pacotes</FieldLabel>
+                  <Input density="compact" type="number" min="0"
+                    leftIcon={<Package className="h-3.5 w-3.5" />}
+                    placeholder="0"
+                    value={form.pacotes}
+                    onChange={(e) => update("pacotes", e.target.value)}
+                  />
+                </Field>
+                <Field density="compact" inset="icon">
+                  <FieldLabel>Quilos</FieldLabel>
+                  <Input density="compact" type="number" min="0" step="0.1"
+                    leftIcon={<Scale className="h-3.5 w-3.5" />}
+                    placeholder="0"
+                    value={form.quilos}
+                    onChange={(e) => update("quilos", e.target.value)}
+                  />
+                </Field>
+                <Field density="compact" inset="icon">
+                  <FieldLabel>Descarte</FieldLabel>
+                  <Input density="compact" type="number" min="0" step="0.1"
+                    leftIcon={<Trash2 className="h-3.5 w-3.5" style={{ color: "var(--fips-danger)" }} />}
+                    placeholder="0"
+                    value={form.descarte}
+                    onChange={(e) => update("descarte", e.target.value)}
+                  />
+                </Field>
+                <Field density="compact" inset="icon">
+                  <FieldLabel>Costura</FieldLabel>
+                  <Input density="compact" type="number" min="0" step="0.1"
+                    leftIcon={<Scissors className="h-3.5 w-3.5" style={{ color: "var(--fips-primary)" }} />}
+                    placeholder="0"
+                    value={form.costura}
+                    onChange={(e) => update("costura", e.target.value)}
+                  />
+                </Field>
+              </div>
+
               {/* Horarios */}
               <div className="grid grid-cols-2 gap-3">
                 <Field density="compact" inset="icon">
@@ -220,26 +277,76 @@ export default function NovaProducaoDiariaDialog({ open, onClose, onSave, defaul
                 </div>
               </div>
 
-              {/* Assinatura + Encarregado */}
-              <div className="grid grid-cols-2 gap-3">
-                <Field density="compact" inset="icon">
-                  <FieldLabel>Assinatura</FieldLabel>
-                  <Input density="compact"
-                    leftIcon={<Pen className="h-3.5 w-3.5" />}
-                    placeholder="Nome de quem assina"
-                    value={form.assinatura}
-                    onChange={(e) => update("assinatura", e.target.value)}
-                  />
-                </Field>
+              {/* Assinatura da dupla */}
+              <Field density="compact" inset="icon">
+                <FieldLabel>Assinatura da Dupla</FieldLabel>
+                <Input density="compact"
+                  leftIcon={<Pen className="h-3.5 w-3.5" />}
+                  placeholder="Nome de quem assina"
+                  value={form.assinatura}
+                  onChange={(e) => update("assinatura", e.target.value)}
+                />
+              </Field>
+
+              {/* ═══ SEÇÃO SUPERVISOR ═══ */}
+              <div className="rounded-xl p-4" style={{
+                background: "linear-gradient(135deg, rgba(0,75,155,0.04), rgba(0,75,155,0.01))",
+                border: "1px solid var(--fips-border)",
+              }}>
+                <div className="flex items-center gap-2 mb-3">
+                  <UserCheck className="h-4 w-4" style={{ color: "var(--fips-primary)" }} />
+                  <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "var(--fips-primary)" }}>Supervisor / Encarregado</span>
+                </div>
+
                 <Field density="compact" inset="icon">
                   <FieldLabel>Encarregado</FieldLabel>
                   <Input density="compact"
                     leftIcon={<UserCheck className="h-3.5 w-3.5" />}
-                    placeholder="Nome do encarregado"
+                    placeholder="Nome do supervisor"
                     value={form.encarregado}
                     onChange={(e) => update("encarregado", e.target.value)}
                   />
                 </Field>
+
+                {/* Destino — supervisor decide */}
+                <div className="mt-3">
+                  <FieldLabel className="mb-2 text-xs font-semibold text-[var(--fips-fg)]">Destino do material</FieldLabel>
+                  <div className="flex gap-2">
+                    {([
+                      { value: "acabamento", label: "Acabamento", icon: <CheckCircle2 className="h-3.5 w-3.5" /> },
+                      { value: "costura_interna", label: "Costureira Interna", icon: <Scissors className="h-3.5 w-3.5" /> },
+                    ] as const).map((opt) => {
+                      const active = form.destino === opt.value;
+                      return (
+                        <button key={opt.value} type="button" onClick={() => update("destino", opt.value)}
+                          className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-all"
+                          style={{
+                            background: active ? (opt.value === "acabamento" ? "var(--fips-primary)" : "#F6921E") : "var(--fips-surface-muted)",
+                            color: active ? "#fff" : "var(--fips-fg)",
+                            border: `1.5px solid ${active ? (opt.value === "acabamento" ? "var(--fips-primary)" : "#F6921E") : "var(--fips-border)"}`,
+                            boxShadow: active ? "0 2px 8px rgba(0,75,155,0.25)" : "none",
+                          }}>
+                          {opt.icon} {opt.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Se costureira interna → select costureira CLT */}
+                {form.destino === "costura_interna" && (
+                  <div className="mt-3">
+                    <Field density="compact" inset="icon">
+                      <FieldLabel>Costureira CLT</FieldLabel>
+                      <Input density="compact"
+                        leftIcon={<Scissors className="h-3.5 w-3.5" style={{ color: "#F6921E" }} />}
+                        placeholder="Nome da costureira interna"
+                        value={form.costureiraInterna}
+                        onChange={(e) => update("costureiraInterna", e.target.value)}
+                      />
+                    </Field>
+                  </div>
+                )}
               </div>
 
               {/* Observacao */}

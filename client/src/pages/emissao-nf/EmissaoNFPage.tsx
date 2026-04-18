@@ -7,7 +7,14 @@ import {
   Printer,
   Package,
   Inbox,
+  Pencil,
+  X,
+  AlertCircle,
 } from "lucide-react";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/domain/PageHeader";
 import { StatsCard } from "@/components/domain/StatsCard";
 import { DataListingToolbar } from "@/components/domain/DataListingToolbar";
@@ -24,8 +31,11 @@ import { Badge } from "@/components/ui/badge";
 
 interface Expedicao {
   id: string;
+  clienteId?: string | null;
   nomeFantasia?: string | null;
   cnpj?: string | null;
+  empresa?: string | null;
+  agendamento?: string | null;
   descricaoProduto?: string | null;
   tipoMaterial?: string | null;
   kilo?: number | null;
@@ -104,14 +114,53 @@ export default function EmissaoNFPage() {
     return { pendentes, emitidas, pesoPendente, total };
   }, [expedicoes]);
 
-  const handleEmitir = async (id: string) => {
+  // Modal de emissão
+  const [emitirItem, setEmitirItem] = useState<Expedicao | null>(null);
+  const [emitirEmpresa, setEmitirEmpresa] = useState<string>("tecnopano");
+  const [emitindo, setEmitindo] = useState(false);
+
+  const openEmitir = (e: Expedicao) => {
+    setEmitirItem(e);
+    setEmitirEmpresa(e.empresa && e.empresa !== "indefinido" ? e.empresa : "tecnopano");
+  };
+
+  const handleEmitir = async () => {
+    if (!emitirItem) return;
+    setEmitindo(true);
     try {
-      const res = await fetch(`/api/expedicoes/${id}/emitir-nf`, { method: "PUT" });
+      const res = await fetch(`/api/expedicoes/${emitirItem.id}/emitir-nf`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ empresa: emitirEmpresa, clienteId: emitirItem.clienteId }),
+      });
       if (!res.ok) throw new Error();
-      toast.success("Nota fiscal emitida!");
+      const isIndefinido = !emitirItem.empresa || emitirItem.empresa === "indefinido";
+      toast.success(
+        `NF emitida via ${emitirEmpresa === "brazil" ? "Brazil" : "Tecnopano"}!` +
+        (isIndefinido ? ` Cliente classificado como ${emitirEmpresa === "brazil" ? "Brazil" : "Tecnopano"}.` : ""),
+      );
+      setEmitirItem(null);
       fetchData();
     } catch {
       toast.error("Erro ao emitir nota fiscal.");
+    } finally {
+      setEmitindo(false);
+    }
+  };
+
+  // Alterar empresa de um pedido
+  const handleAlterarEmpresa = async (id: string, novaEmpresa: string) => {
+    try {
+      const res = await fetch(`/api/expedicoes/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ empresa: novaEmpresa }),
+      });
+      if (!res.ok) throw new Error();
+      toast.success(`Empresa alterada para ${novaEmpresa === "brazil" ? "Brazil" : "Tecnopano"}`);
+      fetchData();
+    } catch {
+      toast.error("Erro ao alterar empresa.");
     }
   };
 
@@ -184,7 +233,7 @@ export default function EmissaoNFPage() {
                   onClick={() => setFilterStatusNF("")}
                   className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
                     !filterStatusNF
-                      ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                      ? "bg-[var(--fips-primary)]/10 font-bold text-[var(--fips-primary)]"
                       : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
                   }`}
                 >
@@ -196,7 +245,7 @@ export default function EmissaoNFPage() {
                     onClick={() => setFilterStatusNF(key)}
                     className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
                       filterStatusNF === key
-                        ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                        ? "bg-[var(--fips-primary)]/10 font-bold text-[var(--fips-primary)]"
                         : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
                     }`}
                   >
@@ -221,7 +270,7 @@ export default function EmissaoNFPage() {
                     onClick={() => setFilterPrioridade(opt.v)}
                     className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
                       filterPrioridade === opt.v
-                        ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                        ? "bg-[var(--fips-primary)]/10 font-bold text-[var(--fips-primary)]"
                         : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
                     }`}
                   >
@@ -253,8 +302,118 @@ export default function EmissaoNFPage() {
             ? "Carregando..."
             : "Nenhuma nota fiscal pendente — todas as NFs foram emitidas"
         }
-        columns={emissaoColumns({ onEmitir: handleEmitir })}
+        columns={emissaoColumns({ onEmitir: openEmitir, onAlterarEmpresa: handleAlterarEmpresa })}
       />
+
+      {/* ═══ MODAL EMISSÃO DE NF ═══ */}
+      {emitirItem && (
+        <Dialog open={!!emitirItem} onOpenChange={(open) => !open && setEmitirItem(null)}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Printer className="h-5 w-5 text-primary" />
+                Emitir Nota Fiscal
+              </DialogTitle>
+            </DialogHeader>
+
+            <div className="space-y-4 py-2">
+              {/* Info do pedido */}
+              <div className="rounded-xl px-4 py-3 text-xs space-y-1.5" style={{
+                background: "var(--fips-surface-muted)", border: "1px solid var(--fips-border)",
+              }}>
+                <div className="flex justify-between">
+                  <span style={{ color: "var(--fips-fg-muted)" }}>Cliente</span>
+                  <span className="font-semibold" style={{ color: "var(--fips-fg)" }}>{emitirItem.nomeFantasia || "—"}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span style={{ color: "var(--fips-fg-muted)" }}>Produto</span>
+                  <span className="font-semibold" style={{ color: "var(--fips-fg)" }}>{emitirItem.descricaoProduto || "—"}</span>
+                </div>
+                {emitirItem.cnpj && (
+                  <div className="flex justify-between">
+                    <span style={{ color: "var(--fips-fg-muted)" }}>CNPJ</span>
+                    <span className="font-mono" style={{ color: "var(--fips-fg)" }}>{emitirItem.cnpj}</span>
+                  </div>
+                )}
+                <div className="flex justify-between">
+                  <span style={{ color: "var(--fips-fg-muted)" }}>Peso/Qtde</span>
+                  <span className="font-semibold" style={{ color: "var(--fips-fg)" }}>
+                    {emitirItem.kilo ? `${emitirItem.kilo} kg` : ""} {emitirItem.unidade ? `/ ${emitirItem.unidade} un` : ""}
+                  </span>
+                </div>
+              </div>
+
+              {/* Seletor de empresa emissora */}
+              <div>
+                <p className="text-xs font-bold mb-2" style={{ color: "var(--fips-fg)" }}>
+                  Emitir nota por qual empresa?
+                </p>
+                {(!emitirItem.empresa || emitirItem.empresa === "indefinido") && (
+                  <div className="mb-3 flex items-center gap-2 rounded-lg px-3 py-2 text-xs"
+                    style={{ background: "rgba(253,194,78,0.1)", border: "1px solid rgba(253,194,78,0.3)", color: "#FDC24E" }}>
+                    <AlertCircle size={14} />
+                    <span>Cliente ainda não classificado — selecione a empresa e ela será salva automaticamente.</span>
+                  </div>
+                )}
+                <div className="grid grid-cols-2 gap-3">
+                  {/* Brazil */}
+                  <button type="button" onClick={() => setEmitirEmpresa("brazil")}
+                    className="flex flex-col items-center gap-2 p-4 rounded-xl transition-all"
+                    style={{
+                      background: emitirEmpresa === "brazil" ? "rgba(22,163,74,0.08)" : "var(--fips-surface)",
+                      border: `2px solid ${emitirEmpresa === "brazil" ? "#16A34A" : "var(--fips-border)"}`,
+                      cursor: "pointer",
+                      boxShadow: emitirEmpresa === "brazil" ? "0 0 12px rgba(22,163,74,0.2)" : "none",
+                    }}>
+                    <span style={{
+                      width: 24, height: 24, borderRadius: "50%",
+                      background: "linear-gradient(135deg, #16A34A, #EAB308)",
+                      boxShadow: "0 0 8px rgba(22,163,74,0.3)",
+                    }} />
+                    <span className="text-xs font-bold" style={{
+                      background: "linear-gradient(135deg, #16A34A, #EAB308)",
+                      WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+                    }}>Brazil</span>
+                    {emitirEmpresa === "brazil" && <CheckCircle2 size={14} style={{ color: "#16A34A" }} />}
+                  </button>
+
+                  {/* Tecnopano */}
+                  <button type="button" onClick={() => setEmitirEmpresa("tecnopano")}
+                    className="flex flex-col items-center gap-2 p-4 rounded-xl transition-all"
+                    style={{
+                      background: emitirEmpresa === "tecnopano" ? "rgba(255,7,58,0.06)" : "var(--fips-surface)",
+                      border: `2px solid ${emitirEmpresa === "tecnopano" ? "#FF073A" : "var(--fips-border)"}`,
+                      cursor: "pointer",
+                      boxShadow: emitirEmpresa === "tecnopano" ? "0 0 12px rgba(255,7,58,0.15)" : "none",
+                    }}>
+                    <span style={{
+                      width: 24, height: 24, borderRadius: "50%",
+                      background: "linear-gradient(135deg, #FF073A, #1A1A1A)",
+                      boxShadow: "0 0 8px rgba(255,7,58,0.3)",
+                    }} />
+                    <span className="text-xs font-bold" style={{
+                      background: "linear-gradient(135deg, #FF073A, #B20028)",
+                      WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+                    }}>Tecnopano</span>
+                    {emitirEmpresa === "tecnopano" && <CheckCircle2 size={14} style={{ color: "#FF073A" }} />}
+                  </button>
+                </div>
+                <p className="mt-2 text-[10px]" style={{ color: "var(--fips-fg-muted)" }}>
+                  A NF será gerada com prefixo {emitirEmpresa === "brazil" ? "NF-BRZ-" : "NF-TNP-"}XXXX
+                </p>
+              </div>
+            </div>
+
+            <DialogFooter>
+              <Button variant="secondary" onClick={() => setEmitirItem(null)}>Cancelar</Button>
+              <Button variant="success" onClick={handleEmitir} loading={emitindo} className="gap-2">
+                <FileText className="h-4 w-4" />
+                Emitir NF ({emitirEmpresa === "brazil" ? "Brazil" : "Tecnopano"})
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }
@@ -262,7 +421,8 @@ export default function EmissaoNFPage() {
 /* ──────────────────────────── COLUMNS DEFINITION ──────────────────────────── */
 
 interface EmissaoColumnActions {
-  onEmitir: (id: string) => void;
+  onEmitir: (e: Expedicao) => void;
+  onAlterarEmpresa: (id: string, empresa: string) => void;
 }
 
 const formatDateBR = (s: string | null | undefined) =>
@@ -271,7 +431,7 @@ const formatDateBR = (s: string | null | undefined) =>
 const formatKg = (n: number | null | undefined) =>
   n ? `${n.toLocaleString("pt-BR")} kg` : "—";
 
-function emissaoColumns({ onEmitir }: EmissaoColumnActions): DataListingColumn<Expedicao>[] {
+function emissaoColumns({ onEmitir, onAlterarEmpresa }: EmissaoColumnActions): DataListingColumn<Expedicao>[] {
   return [
     {
       id: "notaFiscal",
@@ -297,6 +457,57 @@ function emissaoColumns({ onEmitir }: EmissaoColumnActions): DataListingColumn<E
           </div>
         </div>
       ),
+    },
+    {
+      id: "empresa",
+      label: "Empresa",
+      sortable: true,
+      width: "120px",
+      render: (e) => {
+        const isBrazil = e.empresa === "brazil";
+        const isTecno = e.empresa === "tecnopano";
+        const isAmbas = e.empresa === "ambas";
+        const isIndef = !e.empresa || e.empresa === "indefinido";
+
+        if (isIndef) {
+          return (
+            <span className="inline-flex items-center gap-1.5" style={{ fontSize: 11 }}>
+              <span style={{
+                width: 12, height: 12, borderRadius: "50%", flexShrink: 0,
+                background: "linear-gradient(135deg, #FDC24E, #F59E0B)",
+                boxShadow: "0 0 6px rgba(253,194,78,0.4)",
+              }} />
+              <span style={{ fontWeight: 700, fontSize: 11, color: "#FDC24E" }}>Indefinido</span>
+            </span>
+          );
+        }
+        if (isAmbas) {
+          return (
+            <span className="inline-flex items-center gap-1.5" style={{ fontSize: 11 }}>
+              <span style={{
+                width: 12, height: 12, borderRadius: "50%", flexShrink: 0,
+                background: "linear-gradient(135deg, #16A34A, #FF073A)",
+                boxShadow: "0 0 6px rgba(139,92,246,0.4)",
+              }} />
+              <span style={{ fontWeight: 700, fontSize: 11, color: "#A78BFA" }}>Ambas</span>
+            </span>
+          );
+        }
+        return (
+          <span className="inline-flex items-center gap-1.5" style={{ fontSize: 11 }}>
+            <span style={{
+              width: 12, height: 12, borderRadius: "50%", flexShrink: 0,
+              background: isBrazil ? "linear-gradient(135deg, #16A34A, #EAB308)" : "linear-gradient(135deg, #FF073A, #1A1A1A)",
+              boxShadow: isBrazil ? "0 0 6px rgba(22,163,74,0.4)" : "0 0 6px rgba(255,7,58,0.4)",
+            }} />
+            <span style={{
+              fontWeight: 700, fontSize: 11,
+              background: isBrazil ? "linear-gradient(135deg, #16A34A, #EAB308)" : "linear-gradient(135deg, #FF073A, #B20028)",
+              WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+            }}>{isBrazil ? "Brazil" : "Tecnopano"}</span>
+          </span>
+        );
+      },
     },
     {
       id: "produto",
@@ -387,17 +598,25 @@ function emissaoColumns({ onEmitir }: EmissaoColumnActions): DataListingColumn<E
     },
     {
       id: "actions",
-      label: "Acao",
+      label: "Ações",
       fixed: true,
       align: "center",
-      width: "80px",
+      width: "110px",
       render: (e) => (
         <CellActions>
+          {e.statusNota !== "emitida" && (
+            <CellActionButton
+              title="Emitir NF"
+              variant="primary"
+              icon={<FileText className="h-3.5 w-3.5" />}
+              onClick={() => onEmitir(e)}
+            />
+          )}
           <CellActionButton
-            title="Emitir NF"
-            variant="primary"
-            icon={<Printer className="h-3.5 w-3.5" />}
-            onClick={() => onEmitir(e.id)}
+            title={`Alterar para ${e.empresa === "brazil" ? "Tecnopano" : "Brazil"}`}
+            variant="default"
+            icon={<Pencil className="h-3.5 w-3.5" />}
+            onClick={() => onAlterarEmpresa(e.id, e.empresa === "brazil" ? "tecnopano" : "brazil")}
           />
         </CellActions>
       ),

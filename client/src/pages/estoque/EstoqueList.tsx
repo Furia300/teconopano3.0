@@ -24,6 +24,7 @@ import {
   CellActionButton,
 } from "@/components/domain/DataListingTable";
 import { Badge } from "@/components/ui/badge";
+import { EstoqueDetalhes } from "./EstoqueDetalhes";
 
 interface EstoqueItem {
   id: string;
@@ -58,6 +59,7 @@ export default function EstoqueList() {
   const [search, setSearch] = useState("");
   const [periodo, setPeriodo] = useState("Últimos 30 dias");
   const [filterGalpao, setFilterGalpao] = useState<string>("");
+  const [detailItem, setDetailItem] = useState<EstoqueItem | null>(null);
 
   const fetchEstoque = async () => {
     try {
@@ -108,6 +110,7 @@ export default function EstoqueList() {
     <div className="space-y-6">
       <PageHeader
         title="Estoque"
+        tutorialPage="estoque"
         description="Produtos prontos no galpão — distinção total / reservado / disponível (regra R2)"
         icon={Warehouse}
         stats={[
@@ -164,7 +167,7 @@ export default function EstoqueList() {
                 onClick={() => setFilterGalpao("")}
                 className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
                   !filterGalpao
-                    ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                    ? "bg-[var(--fips-primary)]/10 font-bold text-[var(--fips-primary)]"
                     : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
                 }`}
               >
@@ -176,7 +179,7 @@ export default function EstoqueList() {
                   onClick={() => setFilterGalpao(g)}
                   className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
                     filterGalpao === g
-                      ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                      ? "bg-[var(--fips-primary)]/10 font-bold text-[var(--fips-primary)]"
                       : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
                   }`}
                 >
@@ -206,8 +209,16 @@ export default function EstoqueList() {
             ? "Carregando estoque..."
             : "Estoque vazio — ainda não há produção concluída encaminhada"
         }
-        columns={estoqueColumns({ onView: () => {}, onDelete: () => {} })}
+        columns={estoqueColumns({ onView: (e) => setDetailItem(e), onDelete: () => {} })}
       />
+
+      {detailItem && (
+        <EstoqueDetalhes
+          item={detailItem}
+          open={!!detailItem}
+          onOpenChange={(open) => !open && setDetailItem(null)}
+        />
+      )}
     </div>
   );
 }

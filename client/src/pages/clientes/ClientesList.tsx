@@ -25,6 +25,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { NovoClienteDialog } from "./NovoClienteDialog";
+import { ClienteDetalhes } from "./ClienteDetalhes";
+import { useConfirmDelete } from "@/components/domain/ConfirmDeleteDialog";
 
 interface Cliente {
   id: string;
@@ -59,6 +61,8 @@ export default function ClientesList() {
   const [filterUf, setFilterUf] = useState<string>("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingCliente, setEditingCliente] = useState<Cliente | null>(null);
+  const [viewingCliente, setViewingCliente] = useState<Cliente | null>(null);
+  const [confirmDialog, openConfirm] = useConfirmDelete();
 
   const fetchClientes = async () => {
     try {
@@ -114,16 +118,21 @@ export default function ClientesList() {
     setDialogOpen(true);
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Inativar este cliente? (registro permanece para histórico de pedidos)")) return;
-    try {
-      const res = await fetch(`/api/clientes/${id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error();
-      toast.success("Cliente inativado.");
-      fetchClientes();
-    } catch {
-      toast.error("Erro ao inativar cliente.");
-    }
+  const handleDelete = (id: string) => {
+    openConfirm({
+      title: "Inativar cliente",
+      description: "Tem certeza que deseja inativar este cliente? O registro permanece para histórico de pedidos.",
+      onConfirm: async () => {
+        try {
+          const res = await fetch(`/api/clientes/${id}`, { method: "DELETE" });
+          if (!res.ok) throw new Error();
+          toast.success("Cliente inativado.");
+          fetchClientes();
+        } catch {
+          toast.error("Erro ao inativar cliente.");
+        }
+      },
+    });
   };
 
   return (
@@ -194,7 +203,7 @@ export default function ClientesList() {
                 onClick={() => setFilterUf("")}
                 className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
                   !filterUf
-                    ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                    ? "bg-[var(--fips-primary)]/10 font-bold text-[var(--fips-primary)]"
                     : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
                 }`}
               >
@@ -206,7 +215,7 @@ export default function ClientesList() {
                   onClick={() => setFilterUf(uf)}
                   className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
                     filterUf === uf
-                      ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                      ? "bg-[var(--fips-primary)]/10 font-bold text-[var(--fips-primary)]"
                       : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
                   }`}
                 >
@@ -233,7 +242,7 @@ export default function ClientesList() {
         data={filtered}
         getRowId={(c) => c.id}
         emptyState={loading ? "Carregando clientes..." : "Nenhum cliente encontrado"}
-        columns={clienteColumns({ onEdit: openEdit, onDelete: handleDelete })}
+        columns={clienteColumns({ onView: (c) => setViewingCliente(c), onEdit: openEdit, onDelete: handleDelete })}
       />
 
       {/* Modal canônico FIPS DS Modal Form */}
@@ -243,6 +252,15 @@ export default function ClientesList() {
         onSuccess={fetchClientes}
         cliente={editingCliente}
       />
+
+      {viewingCliente && (
+        <ClienteDetalhes
+          cliente={viewingCliente}
+          open={!!viewingCliente}
+          onOpenChange={(open) => !open && setViewingCliente(null)}
+        />
+      )}
+      {confirmDialog}
     </div>
   );
 }
@@ -250,11 +268,12 @@ export default function ClientesList() {
 /* ──────────────────────────── COLUMNS ──────────────────────────── */
 
 interface ClienteActions {
+  onView: (c: Cliente) => void;
   onEdit: (c: Cliente) => void;
   onDelete: (id: string) => void;
 }
 
-function clienteColumns({ onEdit, onDelete }: ClienteActions): DataListingColumn<Cliente>[] {
+function clienteColumns({ onView, onEdit, onDelete }: ClienteActions): DataListingColumn<Cliente>[] {
   return [
     {
       id: "nome",
@@ -332,10 +351,10 @@ function clienteColumns({ onEdit, onDelete }: ClienteActions): DataListingColumn
       render: (c) => (
         <CellActions>
           <CellActionButton
-            title="Visualizar"
+            title="Ver detalhes"
             variant="primary"
             icon={<Eye className="h-3.5 w-3.5" />}
-            onClick={() => onEdit(c)}
+            onClick={() => onView(c)}
           />
           <CellActionButton
             title="Editar"

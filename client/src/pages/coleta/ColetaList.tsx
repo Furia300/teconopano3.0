@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
-import { Truck, Plus, Eye, Trash2, Package, Activity, CheckCircle2, Inbox, MoreHorizontal, Scissors, Pencil } from "lucide-react";
+import { useEffect, useState, useMemo, useCallback } from "react";
+import { toast } from "sonner";
+import { Truck, Plus, Eye, Trash2, Package, Activity, CheckCircle2, Inbox, MoreHorizontal, Scissors, Pencil, CalendarDays, Shield, FileText, Scale, ClipboardCheck } from "lucide-react";
 import { PageHeader } from "@/components/domain/PageHeader";
 import { StatsCard } from "@/components/domain/StatsCard";
 import { DataListingToolbar } from "@/components/domain/DataListingToolbar";
@@ -16,8 +17,10 @@ import {
 } from "@/components/domain/DataListingTable";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { NovaColetaDialog } from "./NovaColetaDialog";
 import { ColetaDetalhes } from "./ColetaDetalhes";
+import { useConfirmDelete } from "@/components/domain/ConfirmDeleteDialog";
 
 // Cores FIPS DS canônicas para os Cards Relatório
 const FIPS_COLORS = {
@@ -42,7 +45,10 @@ interface Coleta {
   statusServico: string;
   observacao: string;
   fornecedorId: string;
+  recorrencia?: string | null;
 }
+
+// Sem tabs — lista única. Coletas que já tiveram NF registrada vão para triagem automaticamente.
 
 const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "success" | "warning" | "danger" | "info" }> = {
   pendente: { label: "Pendente", variant: "warning" },
@@ -88,6 +94,10 @@ export default function ColetaList() {
   const [periodo, setPeriodo] = useState("Últimos 30 dias");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [detalhesColeta, setDetalhesColeta] = useState<Coleta | null>(null);
+  const [nfEditColeta, setNfEditColeta] = useState<Coleta | null>(null);
+  const [editingColeta, setEditingColeta] = useState<Coleta | null>(null);
+  const [nfForm, setNfForm] = useState({ pesoTotalNF: "", pesoTotalAtual: "", notaFiscal: "" });
+  const [confirmDialog, openConfirm] = useConfirmDelete();
 
   const fetchColetas = async () => {
     try {
@@ -105,7 +115,13 @@ export default function ColetaList() {
     fetchColetas();
   }, []);
 
-  const filtered = coletas.filter((c) => {
+  // Mostrar todas as coletas em ordem decrescente (mais recente primeiro)
+  const sorted = useMemo(() =>
+    [...coletas].sort((a, b) => (b.dataPedido || "").localeCompare(a.dataPedido || "")),
+    [coletas],
+  );
+
+  const filtered = sorted.filter((c) => {
     const q = search.trim().toLowerCase();
     const matchSearch =
       !q ||
@@ -124,10 +140,44 @@ export default function ColetaList() {
     finalizados: coletas.filter((c) => c.status === "finalizado").length,
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Tem certeza que deseja excluir esta coleta?")) return;
-    await fetch(`/api/coletas/${id}`, { method: "DELETE" });
-    fetchColetas();
+  const openNFEdit = (c: Coleta) => {
+    setNfEditColeta(c);
+    setNfForm({
+      pesoTotalNF: c.pesoTotalNF ? String(c.pesoTotalNF) : "",
+      pesoTotalAtual: c.pesoTotalAtual ? String(c.pesoTotalAtual) : "",
+      notaFiscal: c.notaFiscal || "",
+    });
+  };
+
+  const saveNF = async () => {
+    if (!nfEditColeta) return;
+    try {
+      await fetch(`/api/coletas/${nfEditColeta.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          pesoTotalNF: parseFloat(nfForm.pesoTotalNF) || 0,
+          pesoTotalAtual: parseFloat(nfForm.pesoTotalAtual) || 0,
+          notaFiscal: nfForm.notaFiscal,
+          status: "recebido",
+        }),
+      });
+      toast.success("NF salva — coleta marcada como recebida!");
+      setNfEditColeta(null);
+      fetchColetas();
+    } catch { toast.error("Erro ao salvar NF"); }
+  };
+
+  const handleDelete = (id: string) => {
+    openConfirm({
+      title: "Excluir coleta",
+      description: "Tem certeza que deseja excluir esta coleta? Esta ação não pode ser desfeita.",
+      onConfirm: async () => {
+        await fetch(`/api/coletas/${id}`, { method: "DELETE" });
+        toast.success("Coleta excluída!");
+        fetchColetas();
+      },
+    });
   };
 
   const formatDate = (dateStr: string | null) => {
@@ -144,6 +194,7 @@ export default function ColetaList() {
     <div className="space-y-6">
       <PageHeader
         title="Coleta"
+        tutorialPage="coleta"
         description="Início do fluxo: pedidos e agendamento de matéria-prima (retirada no fornecedor / chegada ao galpão)"
         icon={Truck}
         stats={[
@@ -153,7 +204,7 @@ export default function ColetaList() {
           { label: "Finalizados", value: stats.finalizados, color: "#ed1b24" },
         ]}
         actions={
-          <Button onClick={() => setDialogOpen(true)}>
+          <Button onClick={() => { setEditingColeta(null); setDialogOpen(true); }}>
             <Plus className="h-4 w-4" />
             Pedido de coleta
           </Button>
@@ -192,7 +243,8 @@ export default function ColetaList() {
         />
       </div>
 
-      {/* Toolbar — padrão FIPS DS Data Listing */}
+      {/* Lista única — coletas aguardando NF */}
+      <>
       <DataListingToolbar
         search={search}
         onSearchChange={setSearch}
@@ -218,7 +270,7 @@ export default function ColetaList() {
                   onClick={() => setFilterStatus(opt.v)}
                   className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
                     filterStatus === opt.v
-                      ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                      ? "bg-[var(--fips-primary)]/10 font-bold text-[var(--fips-primary)]"
                       : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
                   }`}
                 >
@@ -245,14 +297,20 @@ export default function ColetaList() {
         data={filtered}
         getRowId={(c) => c.id}
         emptyState={loading ? "Carregando..." : "Nenhuma coleta encontrada"}
-        columns={coletaColumns({ onView: setDetalhesColeta, onDelete: handleDelete })}
+        columns={coletaColumns({
+          onView: setDetalhesColeta,
+          onDelete: handleDelete,
+          onEditNF: openNFEdit,
+          onEditColeta: (c) => { setEditingColeta(c); setDialogOpen(true); },
+        })}
       />
 
       {/* Modal Nova Coleta */}
       <NovaColetaDialog
         open={dialogOpen}
-        onOpenChange={setDialogOpen}
+        onOpenChange={(v) => { setDialogOpen(v); if (!v) setEditingColeta(null); }}
         onSuccess={fetchColetas}
+        editingColeta={editingColeta}
       />
 
       {/* Modal Detalhes */}
@@ -263,6 +321,180 @@ export default function ColetaList() {
           onOpenChange={(open) => { if (!open) setDetalhesColeta(null); }}
         />
       )}
+
+      {/* Dialog NF — inserir/editar nota fiscal */}
+      {nfEditColeta && (
+        <Dialog open={!!nfEditColeta} onOpenChange={(open) => { if (!open) setNfEditColeta(null); }}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <FileText className="h-5 w-5 text-primary" />
+                {nfEditColeta.notaFiscal ? "Editar Nota Fiscal" : "Inserir Nota Fiscal"}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-2">
+              <div className="rounded-xl px-4 py-3 text-xs" style={{ background: "var(--fips-surface-muted)", border: "1px solid var(--fips-border)" }}>
+                <div className="flex justify-between"><span style={{ color: "var(--fips-fg-muted)" }}>Coleta</span><span className="font-bold" style={{ color: "var(--fips-fg)" }}>#{nfEditColeta.numero}</span></div>
+                <div className="flex justify-between mt-1"><span style={{ color: "var(--fips-fg-muted)" }}>Fornecedor</span><span className="font-bold" style={{ color: "var(--fips-fg)" }}>{nfEditColeta.nomeFantasia}</span></div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-[10px] font-bold uppercase text-[var(--fips-fg-muted)] block mb-1">Peso NF (kg)</label>
+                  <input type="number" step="0.1" placeholder="0.0"
+                    className="w-full rounded-lg border px-3 py-2 text-sm font-bold"
+                    style={{ background: "var(--fips-surface)", borderColor: "var(--fips-border)", color: "var(--fips-fg)" }}
+                    value={nfForm.pesoTotalNF} onChange={(e) => setNfForm(f => ({ ...f, pesoTotalNF: e.target.value }))} />
+                </div>
+                <div>
+                  <label className="text-[10px] font-bold uppercase text-[var(--fips-fg-muted)] block mb-1">Peso Atual (kg)</label>
+                  <input type="number" step="0.1" placeholder="0.0"
+                    className="w-full rounded-lg border px-3 py-2 text-sm font-bold"
+                    style={{ background: "var(--fips-surface)", borderColor: "var(--fips-border)", color: "var(--fips-fg)" }}
+                    value={nfForm.pesoTotalAtual} onChange={(e) => setNfForm(f => ({ ...f, pesoTotalAtual: e.target.value }))} />
+                </div>
+              </div>
+              <div>
+                <label className="text-[10px] font-bold uppercase text-[var(--fips-fg-muted)] block mb-1">Nº Nota Fiscal</label>
+                <input type="text" placeholder="NF-XXXXX"
+                  className="w-full rounded-lg border px-3 py-2 text-sm"
+                  style={{ background: "var(--fips-surface)", borderColor: "var(--fips-border)", color: "var(--fips-fg)" }}
+                  value={nfForm.notaFiscal} onChange={(e) => setNfForm(f => ({ ...f, notaFiscal: e.target.value }))} />
+              </div>
+              {nfForm.pesoTotalNF && nfForm.pesoTotalAtual && (() => {
+                const dif = parseFloat(nfForm.pesoTotalAtual) - parseFloat(nfForm.pesoTotalNF);
+                return (
+                  <div className="flex items-center gap-2 rounded-lg p-3" style={{
+                    background: dif >= 0 ? "rgba(0,198,76,0.06)" : "rgba(220,38,38,0.06)",
+                    border: `1px solid ${dif >= 0 ? "rgba(0,198,76,0.2)" : "rgba(220,38,38,0.2)"}`,
+                  }}>
+                    <Scale size={14} style={{ color: dif >= 0 ? "#00C64C" : "#DC2626" }} />
+                    <span className="text-xs font-bold" style={{ color: dif >= 0 ? "#00C64C" : "#DC2626" }}>
+                      Diferença: {dif >= 0 ? "+" : ""}{dif.toFixed(1)} kg
+                    </span>
+                  </div>
+                );
+              })()}
+            </div>
+            <DialogFooter>
+              <Button variant="secondary" onClick={() => setNfEditColeta(null)}>Cancelar</Button>
+              <Button variant="success" onClick={saveNF} className="gap-2">
+                <FileText className="h-4 w-4" /> Salvar NF
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
+      </>
+      {confirmDialog}
+    </div>
+  );
+}
+
+/* ──────────────────────────── COLUMNS DEFINITION (below) ──────────────────────────── */
+
+// SupervisorTab removed — NF action is directly in the table.
+// When supervisor saves NF, status changes to em_separacao automatically.
+
+function _SupervisorTabRemoved() {
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [separacoes, setSeparacoes] = useState<any[]>([]);
+
+  const coletasEmSeparacao = useMemo(() =>
+    coletas.filter(c => ["recebido", "em_separacao", "em_producao"].includes(c.status)),
+    [coletas],
+  );
+
+  const openSeparacoes = useCallback((c: Coleta) => {
+    setSelectedId(c.id);
+    fetch(`/api/separacoes/coleta/${c.id}`).then(r => r.json()).then(setSeparacoes).catch(() => setSeparacoes([]));
+  }, []);
+
+  const selectedColeta = coletas.find(c => c.id === selectedId);
+
+  return (
+    <div className="space-y-4">
+      <DataListingTable<Coleta>
+        icon={<Shield className="h-[22px] w-[22px]" style={{ color: "var(--fips-primary)" }} />}
+        title="Supervisor — Triagem"
+        subtitle={`${coletasEmSeparacao.length} coletas em separação`}
+        data={coletasEmSeparacao}
+        getRowId={(c) => c.id}
+        emptyState="Nenhuma coleta em triagem"
+        columns={[
+          {
+            id: "numero", label: "#", fixed: true, width: "60px", sortable: true,
+            render: (c) => <CellCodigo>#{c.numero}</CellCodigo>,
+          },
+          {
+            id: "fornecedor", label: "Fornecedor", fixed: true, sortable: true,
+            render: (c) => <span className="text-[11px] font-semibold text-[var(--fips-fg)]">{c.nomeFantasia}</span>,
+          },
+          {
+            id: "notaFiscal", label: "Nota Fiscal", width: "100px",
+            render: (c) => c.notaFiscal
+              ? <Badge variant="success" dot>{c.notaFiscal}</Badge>
+              : <Badge variant="warning">Sem NF</Badge>,
+          },
+          {
+            id: "pesoNF", label: "Peso NF", align: "right" as const, width: "80px",
+            render: (c) => <CellMonoStrong align="right">{c.pesoTotalNF ? `${c.pesoTotalNF}kg` : "—"}</CellMonoStrong>,
+          },
+          {
+            id: "pesoAtual", label: "Peso Atual", align: "right" as const, width: "80px",
+            render: (c) => <CellMonoStrong align="right">{c.pesoTotalAtual ? `${c.pesoTotalAtual}kg` : "—"}</CellMonoStrong>,
+          },
+          {
+            id: "status", label: "Status", width: "100px", sortable: true,
+            render: (c) => {
+              const sc = statusConfig[c.status] || { label: c.status, variant: "secondary" as const };
+              return <Badge variant={sc.variant} dot>{sc.label}</Badge>;
+            },
+          },
+          {
+            id: "acoes", label: "Ações", fixed: true, width: "80px", align: "center" as const,
+            render: (c) => (
+              <CellActions>
+                <CellActionButton title="Ver separações" variant="primary"
+                  icon={<Eye className="h-3.5 w-3.5" />} onClick={() => openSeparacoes(c)} />
+              </CellActions>
+            ),
+          },
+        ]}
+      />
+
+      {/* Detalhe das separações */}
+      {selectedId && selectedColeta && (
+        <div className="rounded-xl p-4" style={{ border: "1px solid var(--fips-border)", background: "var(--fips-surface)" }}>
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <ClipboardCheck size={16} style={{ color: "var(--fips-primary)" }} />
+              <span className="text-sm font-bold" style={{ color: "var(--fips-fg)" }}>
+                Coleta #{selectedColeta.numero} — {selectedColeta.nomeFantasia}
+              </span>
+              <Badge variant="info">{separacoes.length} lotes separados</Badge>
+            </div>
+            <button onClick={() => setSelectedId(null)} className="text-xs px-2 py-1 rounded-lg"
+              style={{ background: "var(--fips-surface-muted)", color: "var(--fips-fg-muted)", cursor: "pointer", border: "1px solid var(--fips-border)" }}>
+              Fechar
+            </button>
+          </div>
+          {separacoes.length === 0 ? (
+            <p className="text-xs py-6 text-center" style={{ color: "var(--fips-fg-muted)" }}>Triagem ainda não separou lotes</p>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+              {separacoes.map((sep: any) => (
+                <div key={sep.id} className="rounded-lg p-3" style={{ background: "var(--fips-surface-muted)", border: "1px solid var(--fips-border)" }}>
+                  <div className="text-[11px] font-semibold" style={{ color: "var(--fips-fg)" }}>{sep.tipoMaterial}</div>
+                  <div className="text-[10px]" style={{ color: "var(--fips-fg-muted)" }}>{sep.cor || "—"} · {sep.peso}kg</div>
+                  <Badge variant={sep.destino === "producao" ? "info" : sep.destino === "descarte" ? "danger" : "warning"} className="mt-1 text-[9px]">
+                    {sep.destino}
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -272,13 +504,15 @@ export default function ColetaList() {
 interface ColetaColumnActions {
   onView: (c: Coleta) => void;
   onDelete: (id: string) => void;
+  onEditNF: (c: Coleta) => void;
+  onEditColeta: (c: Coleta) => void;
 }
 
 const formatDateBR = (s: string | null) =>
   s ? new Date(s).toLocaleDateString("pt-BR") : "—";
 const formatKg = (n: number) => (n ? `${n.toLocaleString("pt-BR")} kg` : "—");
 
-function coletaColumns({ onView, onDelete }: ColetaColumnActions): DataListingColumn<Coleta>[] {
+function coletaColumns({ onView, onDelete, onEditNF, onEditColeta }: ColetaColumnActions): DataListingColumn<Coleta>[] {
   return [
     {
       id: "numero",
@@ -311,7 +545,9 @@ function coletaColumns({ onView, onDelete }: ColetaColumnActions): DataListingCo
       label: "NF",
       sortable: true,
       width: "90px",
-      render: (c) => <CellMuted>{c.notaFiscal || "—"}</CellMuted>,
+      render: (c) => c.notaFiscal
+        ? <span className="text-[11px] font-mono font-semibold" style={{ color: "var(--fips-fg)" }}>{c.notaFiscal}</span>
+        : <span className="text-[11px]" style={{ color: "var(--fips-fg-muted)" }}>S/NF</span>,
     },
     {
       id: "pesoNF",
@@ -382,19 +618,25 @@ function coletaColumns({ onView, onDelete }: ColetaColumnActions): DataListingCo
       label: "Ações",
       fixed: true,
       align: "center",
-      width: "110px",
+      width: "130px",
       render: (c) => (
         <CellActions>
           <CellActionButton
-            title="Ver detalhes"
-            icon={<Eye className="h-3.5 w-3.5" />}
-            variant="primary"
-            onClick={() => onView(c)}
+            title={c.notaFiscal ? "Editar NF" : "Inserir NF"}
+            icon={<FileText className="h-3.5 w-3.5" />}
+            variant={c.notaFiscal ? "default" : "success"}
+            onClick={() => onEditNF(c)}
           />
           <CellActionButton
             title="Editar coleta"
             icon={<Pencil className="h-3.5 w-3.5" />}
             variant="default"
+            onClick={() => onEditColeta(c)}
+          />
+          <CellActionButton
+            title="Ver detalhes"
+            icon={<Eye className="h-3.5 w-3.5" />}
+            variant="primary"
             onClick={() => onView(c)}
           />
           <CellActionButton

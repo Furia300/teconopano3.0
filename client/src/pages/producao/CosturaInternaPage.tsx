@@ -23,6 +23,8 @@ import {
   type DataListingColumn,
   CellMonoStrong,
   CellMonoMuted,
+  CellMuted,
+  CellCor,
   CellActions,
   CellActionButton,
 } from "@/components/domain/DataListingTable";
@@ -642,7 +644,7 @@ export default function CosturaInternaPage() {
                     onClick={() => setFilterStatus(opt.v)}
                     className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
                       filterStatus === opt.v
-                        ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                        ? "bg-[var(--fips-primary)]/10 font-bold text-[var(--fips-primary)]"
                         : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
                     }`}
                   >
@@ -662,7 +664,7 @@ export default function CosturaInternaPage() {
                   onClick={() => setFilterMaterial("")}
                   className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
                     !filterMaterial
-                      ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                      ? "bg-[var(--fips-primary)]/10 font-bold text-[var(--fips-primary)]"
                       : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
                   }`}
                 >
@@ -674,7 +676,7 @@ export default function CosturaInternaPage() {
                     onClick={() => setFilterMaterial(mat)}
                     className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
                       filterMaterial === mat
-                        ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                        ? "bg-[var(--fips-primary)]/10 font-bold text-[var(--fips-primary)]"
                         : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
                     }`}
                   >
@@ -737,12 +739,14 @@ const costuraColumns: DataListingColumn<CosturaRegistro>[] = [
     label: "Cor",
     sortable: true,
     width: "100px",
-    render: (r) => (
-      <div className="flex items-center gap-1.5">
-        <Palette className="h-3 w-3 text-[var(--fips-fg-muted)]" />
-        <span className="text-[11px] text-[var(--fips-fg)]">{r.cor}</span>
-      </div>
-    ),
+    render: (r) => <CellCor>{r.cor || "—"}</CellCor>,
+  },
+  {
+    id: "salaOrigem",
+    label: "Enviado por",
+    sortable: true,
+    width: "100px",
+    render: (r) => <CellMuted>{(r as any).salaOrigem || (r as any).observacao?.match(/enviado de (.+)/)?.[1] || "—"}</CellMuted>,
   },
   {
     id: "peso",

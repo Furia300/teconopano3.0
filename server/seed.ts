@@ -145,9 +145,23 @@ async function seedFornecedores(): Promise<Map<string, string>> {
   const cnpjToId = new Map<string, string>();
 
   for (const f of FORNECEDORES) {
+    // Check if exists
+    const { data: existing } = await supabase
+      .from("fornecedores")
+      .select("id, cnpj")
+      .eq("cnpj", f.cnpj)
+      .limit(1)
+      .maybeSingle();
+
+    if (existing) {
+      cnpjToId.set(existing.cnpj, existing.id);
+      console.log(`  ⊘ ${f.nome} (já existe: ${existing.id})`);
+      continue;
+    }
+
     const { data, error } = await supabase
       .from("fornecedores")
-      .upsert(f, { onConflict: "cnpj" })
+      .insert(f)
       .select("id, cnpj")
       .single();
     if (error) {
@@ -163,7 +177,15 @@ async function seedFornecedores(): Promise<Map<string, string>> {
 async function seedClientes(): Promise<void> {
   console.log("→ Seedando clientes B2B...");
   for (const c of CLIENTES_B2B) {
-    const { error } = await supabase.from("clientes").upsert(c, { onConflict: "cnpj" });
+    const { data: existing } = await supabase
+      .from("clientes")
+      .select("id")
+      .eq("nome_fantasia", c.nome_fantasia)
+      .limit(1)
+      .maybeSingle();
+    if (existing) { console.log(`  ⊘ ${c.nome_fantasia} (já existe)`); continue; }
+
+    const { error } = await supabase.from("clientes").insert(c);
     if (error) console.error(`  ✗ ${c.nome_fantasia}:`, error.message);
     else console.log(`  ✓ ${c.nome_fantasia}`);
   }
@@ -177,16 +199,104 @@ async function seedColetas(fornecedorMap: Map<string, string>): Promise<void> {
       console.error(`  ✗ #${c.numero}: fornecedor ${c.fornecedorCnpj} não encontrado`);
       continue;
     }
+    const { data: existingCol } = await supabase
+      .from("coletas")
+      .select("id")
+      .eq("numero", c.numero)
+      .limit(1)
+      .maybeSingle();
+    if (existingCol) { console.log(`  ⊘ #${c.numero} (já existe)`); continue; }
+
     const { fornecedorCnpj, ...rest } = c;
     const row = {
       ...rest,
       fornecedor_id,
       cnpj_fornecedor: fornecedorCnpj,
     };
-    const { error } = await supabase.from("coletas").upsert(row, { onConflict: "numero" });
+    const { error } = await supabase.from("coletas").insert(row);
     if (error) console.error(`  ✗ #${c.numero}:`, error.message);
     else console.log(`  ✓ #${c.numero} ${c.nome_fantasia} (${c.status})`);
   }
+}
+
+// ─── SEED DADOS REAIS DAS PLANILHAS ───
+import { readFileSync } from "fs";
+import { resolve, dirname } from "path";
+import { fileURLToPath } from "url";
+
+const __filename2 = typeof __filename !== "undefined" ? __filename : fileURLToPath(import.meta.url);
+const __dirname2 = dirname(__filename2);
+
+async function seedProdutosReais(): Promise<void> {
+  console.log("→ Seedando produtos reais (planilha)...");
+  let seedData: any;
+  try {
+    const raw = readFileSync(resolve(__dirname2, "seed-data.json"), "utf8");
+    seedData = JSON.parse(raw);
+  } catch {
+    console.log("  ⚠ seed-data.json não encontrado, pulando produtos/clientes reais");
+    return;
+  }
+
+  const produtos = seedData.produtos || [];
+  let inserted = 0, skipped = 0;
+
+  for (let i = 0; i < produtos.length; i += 50) {
+    const batch = produtos.slice(i, i + 50);
+    const rows = batch.map((p: any) => ({
+      descricao: p.descricao || p.nome,
+      tipo_material: p.tipoMaterial || "Geral",
+      cor: p.cor,
+      medida: p.medida,
+      acabamento: p.acabamento,
+      peso_medio: p.pesoMedio,
+      unidade_medida: p.unidadeMedida || "Pacote/Kilo",
+      observacao: `ID Planilha: ${p.codigo}`,
+      ativo: p.ativo ?? true,
+    }));
+    const { error } = await supabase.from("produtos").insert(rows);
+    if (error) {
+      if (error.message.includes("duplicate")) { skipped += batch.length; }
+      else { console.error(`  ✗ batch ${i}: ${error.message}`); skipped += batch.length; }
+    }
+    else inserted += batch.length;
+  }
+  console.log(`  ✓ ${inserted} produtos inseridos, ${skipped} erros`);
+}
+
+async function seedClientesReais(): Promise<void> {
+  console.log("→ Seedando clientes reais (planilha NF Brazil + Tecnopano)...");
+  let seedData: any;
+  try {
+    const raw = readFileSync(resolve(__dirname2, "seed-data.json"), "utf8");
+    seedData = JSON.parse(raw);
+  } catch {
+    return;
+  }
+
+  const clientes = seedData.clientes || [];
+  let inserted = 0, skipped = 0;
+
+  for (let i = 0; i < clientes.length; i += 50) {
+    const batch = clientes.slice(i, i + 50);
+    const rows = batch.map((c: any) => ({
+      nome_fantasia: c.nomeFantasia,
+      razao_social: c.razaoSocial,
+      codigo_legado: c.idCliente ? String(c.idCliente) : null,
+      estado: c.estado,
+      observacao: c.empresa === "brazil" ? "Empresa: Brazil" : "Empresa: Tecnopano",
+      ativo: c.ativo ?? true,
+    }));
+    const { error } = await supabase.from("clientes").insert(rows);
+    if (error) {
+      if (error.message.includes("duplicate")) { skipped += batch.length; }
+      else { console.error(`  ✗ batch ${i}: ${error.message}`); skipped += batch.length; }
+    }
+    else inserted += batch.length;
+  }
+  const tecno = clientes.filter((c: any) => c.empresa === "tecnopano").length;
+  const brazil = clientes.filter((c: any) => c.empresa === "brazil").length;
+  console.log(`  ✓ ${inserted} clientes inseridos (${tecno} Tecnopano + ${brazil} Brazil), ${skipped} erros`);
 }
 
 async function main() {
@@ -195,6 +305,8 @@ async function main() {
     const map = await seedFornecedores();
     await seedClientes();
     await seedColetas(map);
+    await seedProdutosReais();
+    await seedClientesReais();
     console.log("\n✅ Seed concluído.\n");
   } catch (err) {
     console.error("\n❌ Erro fatal:", err);

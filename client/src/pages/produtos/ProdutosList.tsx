@@ -20,12 +20,15 @@ import {
   CellMonoStrong,
   CellMonoMuted,
   CellMuted,
+  CellCor,
   CellActions,
   CellActionButton,
 } from "@/components/domain/DataListingTable";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { NovoProdutoDialog } from "./NovoProdutoDialog";
+import { ProdutoDetalhes } from "./ProdutoDetalhes";
+import { useConfirmDelete } from "@/components/domain/ConfirmDeleteDialog";
 
 interface Produto {
   id: string;
@@ -58,6 +61,8 @@ export default function ProdutosList() {
   const [filterTipo, setFilterTipo] = useState<string>("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingProduto, setEditingProduto] = useState<Produto | null>(null);
+  const [viewingProduto, setViewingProduto] = useState<Produto | null>(null);
+  const [confirmDialog, openConfirm] = useConfirmDelete();
 
   const fetchProdutos = async () => {
     try {
@@ -117,16 +122,21 @@ export default function ProdutosList() {
     setDialogOpen(true);
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Inativar este produto?")) return;
-    try {
-      const res = await fetch(`/api/produtos/${id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error();
-      toast.success("Produto inativado.");
-      fetchProdutos();
-    } catch {
-      toast.error("Erro ao inativar produto.");
-    }
+  const handleDelete = (id: string) => {
+    openConfirm({
+      title: "Inativar produto",
+      description: "Tem certeza que deseja inativar este produto? Esta ação não pode ser desfeita.",
+      onConfirm: async () => {
+        try {
+          const res = await fetch(`/api/produtos/${id}`, { method: "DELETE" });
+          if (!res.ok) throw new Error();
+          toast.success("Produto inativado.");
+          fetchProdutos();
+        } catch {
+          toast.error("Erro ao inativar produto.");
+        }
+      },
+    });
   };
 
   return (
@@ -195,7 +205,7 @@ export default function ProdutosList() {
                 onClick={() => setFilterTipo("")}
                 className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
                   !filterTipo
-                    ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                    ? "bg-[var(--fips-primary)]/10 font-bold text-[var(--fips-primary)]"
                     : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
                 }`}
               >
@@ -207,7 +217,7 @@ export default function ProdutosList() {
                   onClick={() => setFilterTipo(t)}
                   className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
                     filterTipo === t
-                      ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                      ? "bg-[var(--fips-primary)]/10 font-bold text-[var(--fips-primary)]"
                       : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
                   }`}
                 >
@@ -233,7 +243,7 @@ export default function ProdutosList() {
         data={filtered}
         getRowId={(p) => p.id}
         emptyState={loading ? "Carregando produtos..." : "Nenhum produto encontrado"}
-        columns={produtoColumns({ onEdit: openEdit, onDelete: handleDelete })}
+        columns={produtoColumns({ onView: (p) => setViewingProduto(p), onEdit: openEdit, onDelete: handleDelete })}
       />
 
       <NovoProdutoDialog
@@ -242,11 +252,21 @@ export default function ProdutosList() {
         onSuccess={fetchProdutos}
         produto={editingProduto}
       />
+
+      {viewingProduto && (
+        <ProdutoDetalhes
+          produto={viewingProduto}
+          open={!!viewingProduto}
+          onOpenChange={(open) => !open && setViewingProduto(null)}
+        />
+      )}
+      {confirmDialog}
     </div>
   );
 }
 
 interface ProdutoActions {
+  onView: (p: Produto) => void;
   onEdit: (p: Produto) => void;
   onDelete: (id: string) => void;
 }
@@ -254,7 +274,7 @@ interface ProdutoActions {
 const formatCurrency = (n: number | null | undefined) =>
   n ? `R$ ${n.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}` : "—";
 
-function produtoColumns({ onEdit, onDelete }: ProdutoActions): DataListingColumn<Produto>[] {
+function produtoColumns({ onView, onEdit, onDelete }: ProdutoActions): DataListingColumn<Produto>[] {
   return [
     {
       id: "codigo",
@@ -287,7 +307,7 @@ function produtoColumns({ onEdit, onDelete }: ProdutoActions): DataListingColumn
       id: "cor",
       label: "Cor",
       sortable: true,
-      render: (p) => <CellMuted>{p.cor || "—"}</CellMuted>,
+      render: (p) => <CellCor>{p.cor || "—"}</CellCor>,
     },
     {
       id: "medida",
@@ -338,10 +358,10 @@ function produtoColumns({ onEdit, onDelete }: ProdutoActions): DataListingColumn
       render: (p) => (
         <CellActions>
           <CellActionButton
-            title="Visualizar"
+            title="Ver detalhes"
             variant="primary"
             icon={<Eye className="h-3.5 w-3.5" />}
-            onClick={() => onEdit(p)}
+            onClick={() => onView(p)}
           />
           <CellActionButton
             title="Editar"

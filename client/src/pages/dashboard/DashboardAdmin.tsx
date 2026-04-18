@@ -155,7 +155,7 @@ function Donut({ pct, color, size = 48, stroke = 4 }: { pct: number; color: stri
 function ChartTooltip({ title, color, rows, x, y, total }: { title: string; color: string; rows: { label: string; value: number; color?: string }[]; x: number; y: number; total?: number }) {
   const maxVal = Math.max(...rows.map(r => r.value), 1);
   return (
-    <div style={{ position: "fixed", left: x + 12, top: y - 10, zIndex: 50, pointerEvents: "none", animation: "fadeUp .15s ease" }}>
+    <div style={{ position: "absolute", left: 0, top: "100%", marginTop: 8, zIndex: 50, pointerEvents: "none", animation: "fadeUp .15s ease" }}>
       <div style={{ background: C.cardBg, borderRadius: "8px 8px 8px 14px", border: `1px solid ${C.cardBorder}`, boxShadow: "0 8px 30px rgba(0,42,104,.18)", minWidth: 180, maxWidth: 260, overflow: "hidden" }}>
         <div style={{ background: color, padding: "8px 14px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <span style={{ fontSize: 12, fontWeight: 700, color: C.branco, fontFamily: Fn.title }}>{title}</span>
@@ -353,7 +353,9 @@ export default function DashboardAdmin({ data }: Props) {
   const [hovColetaStatus, setHovColetaStatus] = useState<number | null>(null);
   const [hovFornAdmin, setHovFornAdmin] = useState(-1);
   const [tipPos, setTipPos] = useState({ x: 0, y: 0 });
-  const trackMouse = (e: React.MouseEvent) => setTipPos({ x: e.clientX, y: e.clientY });
+  const trackMouse = (e: React.MouseEvent) => {
+    setTipPos({ x: e.clientX + 16, y: e.clientY + 20 });
+  };
 
   /* ═══ CÁLCULOS (FILTRADOS) ═══ */
   const coletasPendentes = fColetas.filter(c => ["pendente", "agendado"].includes(c.status)).length;
@@ -862,7 +864,7 @@ export default function DashboardAdmin({ data }: Props) {
         })()}
 
         {/* ═══ TABELA EXPEDIÇÕES + SIDEBAR ═══ */}
-        <div style={{ display: "grid", gridTemplateColumns: mob ? "1fr" : "2fr 1fr", gap: mob ? 16 : 20 }}>
+        <div style={{ display: "grid", gridTemplateColumns: mob ? "1fr" : "2fr 1fr", gap: mob ? 16 : 20, alignItems: "start" }}>
           {/* Tabela */}
           <div style={{ background: C.cardBg, borderRadius: "12px 12px 12px 24px", border: `1px solid ${C.cardBorder}`, overflow: "hidden", boxShadow: "0 1px 3px rgba(0,75,155,.04)" }}>
             <div style={{ padding: "16px 20px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -956,6 +958,92 @@ export default function DashboardAdmin({ data }: Props) {
             </div>
           </div>
         </div>
+
+        {/* ═══ RENDIMENTO POR FORNECEDOR ═══ */}
+        {(() => {
+          const fornRendMap: Record<string, { nome: string; coletas: number; pesoEntrada: number; pesoProducao: number; pesoDescarte: number; ultima: string }> = {};
+          for (const c of fColetas) {
+            const nome = c.nomeFantasia || "Desconhecido";
+            if (!fornRendMap[nome]) fornRendMap[nome] = { nome, coletas: 0, pesoEntrada: 0, pesoProducao: 0, pesoDescarte: 0, ultima: "" };
+            fornRendMap[nome].coletas++;
+            fornRendMap[nome].pesoEntrada += c.pesoTotalAtual || c.pesoTotalNF || 0;
+            if (c.createdAt && (!fornRendMap[nome].ultima || c.createdAt > fornRendMap[nome].ultima)) fornRendMap[nome].ultima = c.createdAt;
+          }
+          for (const p of data.producoes) {
+            const coleta = fColetas.find((c: any) => c.id === p.coletaId);
+            if (coleta) {
+              const nome = coleta.nomeFantasia || "Desconhecido";
+              if (fornRendMap[nome]) fornRendMap[nome].pesoProducao += (p as any).pesoTotal || (p as any).kilo || 0;
+            }
+          }
+          for (const s of data.separacoes) {
+            if ((s as any).destino === "descarte") {
+              const coleta = fColetas.find((c: any) => c.id === (s as any).coletaId);
+              if (coleta) {
+                const nome = coleta.nomeFantasia || "Desconhecido";
+                if (fornRendMap[nome]) fornRendMap[nome].pesoDescarte += (s as any).peso || 0;
+              }
+            }
+          }
+          const rendList = Object.values(fornRendMap)
+            .map(f => ({ ...f, rendimento: f.pesoEntrada > 0 ? Math.round((f.pesoProducao / f.pesoEntrada) * 100) : 0 }))
+            .sort((a, b) => b.pesoEntrada - a.pesoEntrada);
+          const rendGeral = (() => { const e = rendList.reduce((a, r) => a + r.pesoEntrada, 0); const p = rendList.reduce((a, r) => a + r.pesoProducao, 0); return e > 0 ? Math.round((p / e) * 100) : 0; })();
+
+          return (
+            <div style={{ background: C.cardBg, borderRadius: "12px 12px 12px 24px", border: `1px solid ${C.cardBorder}`, overflow: "hidden", boxShadow: "0 1px 3px rgba(0,75,155,.04)" }}>
+              <div style={{ padding: "16px 20px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                  <div style={{ width: 44, height: 44, borderRadius: 14, background: `${C.verdeFloresta}0A`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{Ic.scale(20, C.verdeFloresta)}</div>
+                  <div>
+                    <span style={{ fontSize: 15, fontWeight: 700, color: C.azulEscuro, fontFamily: Fn.title, display: "block" }}>Rendimento por Fornecedor</span>
+                    <span style={{ fontSize: 12, color: C.cinzaChumbo }}>{rendList.length} fornecedores · Rendimento geral: {rendGeral}%</span>
+                  </div>
+                </div>
+              </div>
+              <div style={{ overflowX: "auto" }}>
+                <table style={{ width: "100%", borderCollapse: "collapse", fontFamily: Fn.body }}>
+                  <thead><tr style={{ background: C.bg }}>
+                    {(mob ? ["#", "Fornecedor", "Rend."] : ["#", "Fornecedor", "Coletas", "Entrada", "Produção", "Descarte", "Rendimento", "Última"]).map(h => (
+                      <th key={h} style={{ padding: "12px 14px", textAlign: h === "#" ? "center" : "left", fontSize: 10, fontWeight: 700, letterSpacing: "1px", textTransform: "uppercase", color: C.cinzaChumbo, fontFamily: Fn.title, borderBottom: `2px solid ${C.cardBorder}`, whiteSpace: "nowrap" }}>{h}</th>
+                    ))}
+                  </tr></thead>
+                  <tbody>
+                    {rendList.map((r, i) => {
+                      const zebra = i % 2 === 1 ? (dark ? "rgba(255,255,255,0.03)" : `${C.azulCeu}0D`) : "transparent";
+                      const rendColor = r.rendimento >= 80 ? C.verdeFloresta : r.rendimento >= 50 ? C.amareloEscuro : C.danger;
+                      return (
+                        <tr key={i} style={{ background: zebra, borderBottom: i < rendList.length - 1 ? `1px solid ${C.cardBorder}` : "none" }}>
+                          <td style={{ padding: "10px 14px", textAlign: "center" }}>
+                            <div style={{ width: 22, height: 22, borderRadius: 5, background: i < 3 ? C.azulProfundo : C.cardBorder, color: i < 3 ? C.branco : C.cinzaChumbo, display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 700, fontFamily: Fn.mono }}>{i + 1}</div>
+                          </td>
+                          <td style={{ padding: "10px 14px", fontSize: 12, fontWeight: 600, color: C.cinzaEscuro }}>{r.nome}</td>
+                          {!mob && <td style={{ padding: "10px 14px", fontSize: 12, fontWeight: 700, fontFamily: Fn.mono, color: C.azulProfundo, textAlign: "center" }}>{r.coletas}</td>}
+                          {!mob && <td style={{ padding: "10px 14px", fontSize: 12, fontFamily: Fn.mono, color: C.cinzaEscuro }}>{formatKg(r.pesoEntrada)}</td>}
+                          {!mob && <td style={{ padding: "10px 14px", fontSize: 12, fontFamily: Fn.mono, color: C.verdeFloresta, fontWeight: 600 }}>{formatKg(r.pesoProducao)}</td>}
+                          {!mob && <td style={{ padding: "10px 14px", fontSize: 12, fontFamily: Fn.mono, color: C.danger }}>{formatKg(r.pesoDescarte)}</td>}
+                          <td style={{ padding: "10px 14px" }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                              <div style={{ width: 50, height: 6, borderRadius: 3, background: `${C.cardBorder}` }}>
+                                <div style={{ height: 6, borderRadius: 3, background: rendColor, width: `${Math.min(r.rendimento, 100)}%` }} />
+                              </div>
+                              <span style={{ fontSize: 11, fontWeight: 700, fontFamily: Fn.mono, color: rendColor }}>{r.rendimento}%</span>
+                            </div>
+                          </td>
+                          {!mob && <td style={{ padding: "10px 14px", fontSize: 11, fontFamily: Fn.mono, color: C.cinzaChumbo }}>{r.ultima ? new Date(r.ultima).toLocaleDateString("pt-BR") : "—"}</td>}
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+              <div style={{ padding: "10px 16px", borderTop: `1px solid ${C.cardBorder}`, background: C.bg, display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: 11, color: C.cinzaChumbo }}>
+                <span>{rendList.length} fornecedores</span>
+                <span style={{ fontWeight: 600, color: C.verdeFloresta }}>Rendimento geral: {rendGeral}%</span>
+              </div>
+            </div>
+          );
+        })()}
 
       </div>
     </div>

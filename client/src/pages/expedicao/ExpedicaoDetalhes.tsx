@@ -10,30 +10,30 @@ import { Package, User, FileText, DollarSign, Truck, MapPin, Weight } from "luci
 
 interface Expedicao {
   id: string;
-  nomeFantasia: string;
-  razaoSocial: string;
-  cnpj: string;
-  contato: string;
-  descricaoProduto: string;
-  tipoMaterial: string;
-  cor: string;
-  medida: string;
-  kilo: number;
-  kiloSolicitada: number;
-  unidade: number;
-  qtdePedido: number;
-  unidadeMedida: string;
-  statusPedido: string;
-  statusEntrega: string;
-  statusFinanceiro: string;
-  statusNota: string;
-  galpao: string;
-  rota: string;
-  prioridade: string;
-  notaFiscal: string;
-  observacaoEscritorio: string;
-  observacaoGalpao: string;
-  createdAt: string;
+  nomeFantasia?: string | null;
+  razaoSocial?: string | null;
+  cnpj?: string | null;
+  contato?: string | null;
+  descricaoProduto?: string | null;
+  tipoMaterial?: string | null;
+  cor?: string | null;
+  medida?: string | null;
+  kilo?: number | null;
+  kiloSolicitada?: number | null;
+  unidade?: number | null;
+  qtdePedido?: number | null;
+  unidadeMedida?: string | null;
+  statusPedido?: string | null;
+  statusEntrega?: string | null;
+  statusFinanceiro?: string | null;
+  statusNota?: string | null;
+  galpao?: string | null;
+  rota?: string | null;
+  prioridade?: string | null;
+  notaFiscal?: string | null;
+  observacaoEscritorio?: string | null;
+  observacaoGalpao?: string | null;
+  createdAt?: string | null;
 }
 
 interface ExpedicaoDetalhesProps {
@@ -67,7 +67,7 @@ export function ExpedicaoDetalhes({ expedicao, open, onOpenChange }: ExpedicaoDe
           <div className="flex items-center justify-between">
             <DialogTitle className="flex items-center gap-2">
               <Package className="h-5 w-5 text-primary" />
-              Expedição — {expedicao.nomeFantasia}
+              Expedição — {expedicao.nomeFantasia || "Sem nome"}
             </DialogTitle>
             {expedicao.prioridade === "Urgente" && (
               <Badge variant="danger">Urgente</Badge>
@@ -139,8 +139,8 @@ export function ExpedicaoDetalhes({ expedicao, open, onOpenChange }: ExpedicaoDe
               <User className="h-4 w-4 text-muted-foreground mt-0.5" />
               <div>
                 <p className="text-xs text-muted-foreground">Cliente</p>
-                <p className="font-medium">{expedicao.nomeFantasia}</p>
-                <p className="text-xs text-muted-foreground">{expedicao.cnpj}</p>
+                <p className="font-medium">{expedicao.nomeFantasia || "—"}</p>
+                <p className="text-xs text-muted-foreground">{expedicao.cnpj || ""}</p>
                 {expedicao.contato && <p className="text-xs">{expedicao.contato}</p>}
               </div>
             </div>
@@ -149,9 +149,9 @@ export function ExpedicaoDetalhes({ expedicao, open, onOpenChange }: ExpedicaoDe
               <Package className="h-4 w-4 text-muted-foreground mt-0.5" />
               <div>
                 <p className="text-xs text-muted-foreground">Produto</p>
-                <p className="font-medium">{expedicao.descricaoProduto}</p>
+                <p className="font-medium">{expedicao.descricaoProduto || "—"}</p>
                 <div className="flex gap-1 mt-0.5">
-                  <Badge variant="outline" className="text-[10px]">{expedicao.tipoMaterial}</Badge>
+                  {expedicao.tipoMaterial && <Badge variant="outline" className="text-[10px]">{expedicao.tipoMaterial}</Badge>}
                   {expedicao.cor && <Badge variant="outline" className="text-[10px]">{expedicao.cor}</Badge>}
                 </div>
               </div>
@@ -163,9 +163,9 @@ export function ExpedicaoDetalhes({ expedicao, open, onOpenChange }: ExpedicaoDe
               <Weight className="h-4 w-4 text-muted-foreground mt-0.5" />
               <div>
                 <p className="text-xs text-muted-foreground">Quantidade</p>
-                <p className="font-medium">{expedicao.kilo} kg</p>
-                {expedicao.unidade > 0 && (
-                  <p className="text-xs">{expedicao.unidade} unidades</p>
+                <p className="font-medium">{expedicao.kilo ?? 0} kg</p>
+                {(expedicao.unidade ?? 0) > 0 && (
+                  <p className="text-xs">{expedicao.unidade ?? 0} unidades</p>
                 )}
               </div>
             </div>
@@ -175,7 +175,7 @@ export function ExpedicaoDetalhes({ expedicao, open, onOpenChange }: ExpedicaoDe
               <div>
                 <p className="text-xs text-muted-foreground">Logística</p>
                 <p className="font-medium">{expedicao.rota || "Sem rota definida"}</p>
-                <p className="text-xs">Galpão: {expedicao.galpao}</p>
+                <p className="text-xs">Galpão: {expedicao.galpao || "—"}</p>
               </div>
             </div>
           </div>

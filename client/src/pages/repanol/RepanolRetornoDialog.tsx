@@ -47,6 +47,7 @@ export function RepanolRetornoDialog({ repanol, open, onOpenChange, onSuccess }:
     pesoMolhadoRetorno: "",
     pesoTingidoRetorno: "",
     repanolResiduo: "",
+    destinoRetorno: "triagem" as string, // tingido → triagem, GRU cru → VLI direto
   });
   const [dialogSize, setDialogSize] = useState<DialogSize>("normal");
 
@@ -214,6 +215,32 @@ export function RepanolRetornoDialog({ repanol, open, onOpenChange, onSuccess }:
                 />
                 <FieldHint>Peso perdido no processo de tratamento</FieldHint>
               </Field>
+
+              {/* Destino após retorno */}
+              <div>
+                <FieldLabel className="mb-2 text-xs font-semibold text-[var(--fips-fg)]">Destino do material</FieldLabel>
+                <div className="flex gap-2">
+                  {[
+                    { value: "triagem", label: "Tingido → Triagem", desc: "Volta para triagem/separação", color: "#F6921E" },
+                    { value: "vli", label: "GRU Cru → VLI Direto", desc: "Vai direto para VLI sem triagem", color: "#004B9B" },
+                  ].map((opt) => {
+                    const active = form.destinoRetorno === opt.value;
+                    return (
+                      <button key={opt.value} type="button"
+                        onClick={() => update("destinoRetorno", opt.value)}
+                        className="flex-1 flex flex-col items-center gap-1 rounded-xl p-3 text-xs transition-all"
+                        style={{
+                          background: active ? `${opt.color}10` : "var(--fips-surface)",
+                          border: `2px solid ${active ? opt.color : "var(--fips-border)"}`,
+                          cursor: "pointer",
+                        }}>
+                        <span className="font-bold" style={{ color: active ? opt.color : "var(--fips-fg)" }}>{opt.label}</span>
+                        <span className="text-[9px]" style={{ color: "var(--fips-fg-muted)" }}>{opt.desc}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
           </div>
         </form>

@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { toast } from "sonner";
 import {
-  Truck, Building2, CalendarDays, Clock,
+  Truck, Building2, CalendarDays, Clock, Scale,
   Check, Search, Repeat, MapPin,
   Maximize2, Minimize2, CalendarPlus, X,
 } from "lucide-react";
@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Field, FieldLabel, FieldHint } from "@/components/ui/field";
+import { gerarDatasRecorrentesDiasUteis } from "@/lib/diasUteis";
 
 /* ─────────────────────── Types ─────────────────────── */
 
@@ -30,6 +31,7 @@ interface NovaColetaDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess: () => void;
+  editingColeta?: any | null;
 }
 
 /** "ATMOSFERA — SP — DIADEMA" */
@@ -81,8 +83,88 @@ const FREQUENCIAS = [
 
 /* ─────────────────────── Component ─────────────────────── */
 
-export function NovaColetaDialog({ open, onOpenChange, onSuccess }: NovaColetaDialogProps) {
+function FornecedorInsights({ fornecedorNome, coletas }: { fornecedorNome: string; coletas: any[] }) {
+  const pedidosForn = useMemo(() =>
+    coletas.filter((c: any) => (c.nomeFantasia || "").toLowerCase() === fornecedorNome.toLowerCase())
+      .sort((a: any, b: any) => (b.createdAt || "").localeCompare(a.createdAt || "")),
+    [coletas, fornecedorNome],
+  );
+
+  if (pedidosForn.length === 0) {
+    return (
+      <div className="rounded-xl px-4 py-3 text-xs flex items-center gap-2" style={{
+        background: "linear-gradient(135deg, rgba(0,75,155,0.04), rgba(0,75,155,0.01))",
+        border: "1px solid var(--fips-border)",
+      }}>
+        <span style={{ fontSize: 13 }}>✨</span>
+        <span style={{ color: "var(--fips-fg-muted)" }}>Primeira coleta deste fornecedor</span>
+      </div>
+    );
+  }
+
+  const datas = pedidosForn.map((c: any) => new Date(c.createdAt || c.dataPedido || "").getTime()).filter(Boolean).sort((a, b) => a - b);
+  let mediaDias = 0;
+  if (datas.length >= 2) {
+    const diffs: number[] = [];
+    for (let i = 1; i < datas.length; i++) diffs.push((datas[i] - datas[i - 1]) / 86400000);
+    mediaDias = Math.round(diffs.reduce((a, b) => a + b, 0) / diffs.length);
+  }
+  let freqDetectada = "";
+  if (mediaDias > 0) {
+    if (mediaDias <= 5) freqDetectada = "A cada 3 dias";
+    else if (mediaDias <= 10) freqDetectada = "Semanal";
+    else if (mediaDias <= 20) freqDetectada = "Quinzenal";
+    else if (mediaDias <= 45) freqDetectada = "Mensal";
+    else freqDetectada = `~${mediaDias} dias`;
+  }
+
+  const pesoTotal = pedidosForn.reduce((a: number, c: any) => a + (c.pesoTotalNF || 0), 0);
+  const ultimo = pedidosForn[0];
+  const diasDesde = ultimo?.createdAt ? Math.round((Date.now() - new Date(ultimo.createdAt).getTime()) / 86400000) : null;
+
+  return (
+    <div className="rounded-xl overflow-hidden" style={{
+      border: "1px solid var(--fips-border)",
+      background: "linear-gradient(135deg, rgba(0,75,155,0.03), rgba(0,198,76,0.02))",
+    }}>
+      <div className="px-3 py-2 flex items-center justify-between" style={{
+        borderBottom: "1px solid var(--fips-border)", background: "rgba(0,75,155,0.04)",
+      }}>
+        <div className="flex items-center gap-1.5">
+          <span style={{ fontSize: 13 }}>💡</span>
+          <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "var(--fips-primary)" }}>Insights do fornecedor</span>
+        </div>
+        <span className="text-[9px] font-bold px-2 py-0.5 rounded-full" style={{ background: "rgba(0,75,155,0.08)", color: "var(--fips-primary)" }}>{pedidosForn.length} coletas</span>
+      </div>
+      <div className="px-3 py-2.5 space-y-2">
+        <div className="flex items-center gap-2 text-[11px]">
+          <Clock size={11} style={{ color: "var(--fips-fg-muted)", flexShrink: 0 }} />
+          <span style={{ color: "var(--fips-fg-muted)" }}>Última coleta:</span>
+          <span className="font-semibold" style={{ color: diasDesde != null && diasDesde > 30 ? "var(--fips-danger)" : "var(--fips-fg)" }}>
+            {diasDesde != null ? `há ${diasDesde} dias` : "—"}
+          </span>
+        </div>
+        {freqDetectada && (
+          <div className="flex items-center gap-2 text-[11px]">
+            <Repeat size={11} style={{ color: "var(--fips-primary)", flexShrink: 0 }} />
+            <span style={{ color: "var(--fips-fg-muted)" }}>Frequência habitual:</span>
+            <span className="font-bold" style={{ color: "var(--fips-primary)" }}>{freqDetectada}</span>
+          </div>
+        )}
+        <div className="flex items-center gap-2 text-[11px]">
+          <Scale size={11} style={{ color: "var(--fips-success)", flexShrink: 0 }} />
+          <span style={{ color: "var(--fips-fg-muted)" }}>Peso total recebido:</span>
+          <span className="font-bold" style={{ color: "var(--fips-success)" }}>{pesoTotal.toLocaleString("pt-BR")} kg</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function NovaColetaDialog({ open, onOpenChange, onSuccess, editingColeta }: NovaColetaDialogProps) {
+  const isEditing = !!editingColeta;
   const [fornecedores, setFornecedores] = useState<Fornecedor[]>([]);
+  const [coletasHistorico, setColetasHistorico] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchForn, setSearchForn] = useState("");
   const [showFornList, setShowFornList] = useState(false);
@@ -104,7 +186,22 @@ export function NovaColetaDialog({ open, onOpenChange, onSuccess }: NovaColetaDi
   /* ─── Fetch ─── */
   useEffect(() => {
     if (open) {
-      fetch("/api/fornecedores").then((r) => r.json()).then(setFornecedores);
+      if (editingColeta) {
+        setForm({
+          fornecedorId: editingColeta.fornecedorId || "",
+          fornecedorNome: editingColeta.nomeFantasia || "",
+          dataChegada: editingColeta.dataChegada ? editingColeta.dataChegada.slice(0, 10) : "",
+          horaChegada: editingColeta.dataChegada ? editingColeta.dataChegada.slice(11, 16) : "",
+          observacao: editingColeta.observacao || "",
+          recorrencia: editingColeta.recorrencia || "",
+        });
+      } else {
+        setForm({ fornecedorId: "", fornecedorNome: "", dataChegada: "", horaChegada: "", observacao: "", recorrencia: "" });
+      }
+      Promise.all([
+        fetch("/api/fornecedores").then((r) => r.json()),
+        fetch("/api/coletas").then((r) => r.json()).catch(() => []),
+      ]).then(([fs, cs]) => { setFornecedores(fs); setColetasHistorico(cs); });
     }
   }, [open]);
 
@@ -153,13 +250,15 @@ export function NovaColetaDialog({ open, onOpenChange, onSuccess }: NovaColetaDi
       }
       const payload = { ...form, dataChegada };
 
-      const res = await fetch("/api/coletas", {
-        method: "POST",
+      const url = isEditing ? `/api/coletas/${editingColeta.id}` : "/api/coletas";
+      const method = isEditing ? "PUT" : "POST";
+      const res = await fetch(url, {
+        method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
       if (!res.ok) throw new Error();
-      toast.success("Pedido de coleta registrado.");
+      toast.success(isEditing ? "Coleta atualizada!" : "Pedido de coleta registrado.");
       setForm({ fornecedorId: "", fornecedorNome: "", dataChegada: "", horaChegada: "", observacao: "", recorrencia: "" });
       onOpenChange(false);
       onSuccess();
@@ -184,7 +283,7 @@ export function NovaColetaDialog({ open, onOpenChange, onSuccess }: NovaColetaDi
               <Truck className="h-5 w-5 text-[var(--fips-secondary)]" />
             </div>
             <div className="min-w-0 flex-1">
-              <DialogTitle>Pedido de coleta</DialogTitle>
+              <DialogTitle>{isEditing ? "Editar coleta" : "Pedido de coleta"}</DialogTitle>
               <DialogDescription>
                 Escritório → Motorista → Galpão. NF e peso serão preenchidos pelo galpão na chegada.
               </DialogDescription>
@@ -316,6 +415,11 @@ export function NovaColetaDialog({ open, onOpenChange, onSuccess }: NovaColetaDi
                   )}
                 </div>
               )}
+
+              {/* Insights do fornecedor */}
+              {form.fornecedorId && selectedForn && (
+                <FornecedorInsights fornecedorNome={selectedForn.nome} coletas={coletasHistorico} />
+              )}
             </div>
 
             {/* ── Agendamento + Obs ── */}
@@ -378,33 +482,41 @@ export function NovaColetaDialog({ open, onOpenChange, onSuccess }: NovaColetaDi
                   })}
                 </div>
 
-                {/* Preview da próxima data se recorrência + data selecionadas */}
+                {/* Lista de datas em dias úteis */}
                 {form.recorrencia && form.dataChegada && (() => {
-                  const base = new Date(form.dataChegada + "T12:00:00");
-                  if (isNaN(base.getTime())) return null;
-                  const next = new Date(base);
-                  switch (form.recorrencia) {
-                    case "3dias":     next.setDate(next.getDate() + 3); break;
-                    case "semanal":   next.setDate(next.getDate() + 7); break;
-                    case "quinzenal": next.setDate(next.getDate() + 15); break;
-                    case "mensal":    next.setMonth(next.getMonth() + 1); break;
-                    case "trimestral":next.setMonth(next.getMonth() + 3); break;
-                    case "semestral": next.setMonth(next.getMonth() + 6); break;
-                    case "anual":     next.setFullYear(next.getFullYear() + 1); break;
-                    default: return null;
-                  }
-                  const fmt = next.toLocaleDateString("pt-BR", { day: "2-digit", month: "short", year: "numeric" });
+                  const tipoMap: Record<string, string> = { "3dias": "3-dias", semanal: "semanal", quinzenal: "quinzenal", mensal: "mensal", trimestral: "mensal", semestral: "mensal", anual: "mensal" };
+                  const tipo = tipoMap[form.recorrencia];
+                  if (!tipo) return null;
+                  const datas = gerarDatasRecorrentesDiasUteis(tipo, form.dataChegada, 6);
+                  if (datas.length === 0) return null;
+                  const labels: Record<string, string> = { "3dias": "A cada 3 dias", semanal: "Semanal", quinzenal: "Quinzenal", mensal: "Mensal", trimestral: "Trimestral", semestral: "Semestral", anual: "Anual" };
                   return (
-                    <div className="mt-2 flex items-center gap-2 rounded-lg border border-[var(--fips-border)] bg-[var(--fips-surface-muted)] px-3 py-2 text-xs">
-                      <CalendarPlus size={13} className="flex-shrink-0 text-[var(--fips-primary)]" />
-                      <span className="text-[var(--fips-fg-muted)]">Próxima coleta automática:</span>
-                      <span className="font-semibold text-[var(--fips-fg)]">{fmt}</span>
+                    <div className="mt-3 rounded-xl overflow-hidden" style={{ border: "1px solid var(--fips-border)", background: "var(--fips-surface)" }}>
+                      <div className="px-3 py-2 flex items-center justify-between" style={{ background: "linear-gradient(135deg, rgba(0,75,155,0.08), rgba(0,75,155,0.02))", borderBottom: "1px solid var(--fips-border)" }}>
+                        <div className="flex items-center gap-2">
+                          <CalendarPlus size={13} style={{ color: "var(--fips-primary)" }} />
+                          <span className="text-[11px] font-bold" style={{ color: "var(--fips-fg)" }}>{labels[form.recorrencia] || form.recorrencia} — {datas.length} coletas (dias úteis)</span>
+                        </div>
+                        <span className="text-[9px] px-2 py-0.5 rounded-full font-bold" style={{ background: "var(--fips-primary)", color: "#fff" }}>Recorrente</span>
+                      </div>
+                      <div className="max-h-[180px] overflow-y-auto">
+                        {datas.map((ds, i) => {
+                          const label = new Date(ds + "T12:00:00").toLocaleDateString("pt-BR", { weekday: "short", day: "2-digit", month: "short", year: "numeric" });
+                          return (
+                            <div key={ds} className="flex items-center gap-3 px-3 py-2" style={{ borderBottom: i < datas.length - 1 ? "1px solid var(--fips-border)" : "none", background: i === 0 ? "rgba(0,75,155,0.04)" : "transparent" }}>
+                              <div style={{ width: 10, height: 10, borderRadius: "50%", background: i === 0 ? "var(--fips-primary)" : "var(--fips-border)", boxShadow: i === 0 ? "0 0 8px rgba(0,75,155,0.3)" : "none" }} />
+                              <span className="flex-1 text-[11px] font-semibold capitalize" style={{ color: i === 0 ? "var(--fips-primary)" : "var(--fips-fg)" }}>{label}</span>
+                              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded" style={{ background: i === 0 ? "rgba(0,75,155,0.08)" : "var(--fips-surface-muted)", color: i === 0 ? "var(--fips-primary)" : "var(--fips-fg-muted)", fontFamily: "'Fira Code',monospace" }}>#{i + 1}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
                   );
                 })()}
 
                 {!form.recorrencia && (
-                  <p className="mt-1.5 text-xs text-[var(--fips-fg-muted)]">Selecione para criar coletas automaticamente</p>
+                  <p className="mt-1.5 text-xs text-[var(--fips-fg-muted)]">Selecione para criar coletas automaticamente (apenas dias úteis)</p>
                 )}
               </div>
 
@@ -432,7 +544,7 @@ export function NovaColetaDialog({ open, onOpenChange, onSuccess }: NovaColetaDi
                 Cancelar
               </Button>
               <Button type="submit" form="form-nova-coleta" variant="success" loading={loading} className="gap-2">
-                <Check className="h-4 w-4" /> Registrar pedido
+                <Check className="h-4 w-4" /> {isEditing ? "Salvar alterações" : "Registrar pedido"}
               </Button>
             </div>
           </div>

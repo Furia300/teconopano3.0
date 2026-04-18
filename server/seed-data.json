@@ -1,0 +1,4574 @@
+{
+  "produtos": [
+    {
+      "codigo": "37",
+      "nome": "Tecnopano Fur 2.2",
+      "descricao": "Tecnopano Fur 2.2",
+      "tipoMaterial": "Corte-Reto",
+      "cor": "Branco",
+      "medida": "20x20 Cm",
+      "acabamento": "Corte-Reto",
+      "pesoMedio": 9.9,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "39",
+      "nome": "Tecnopano Gr 3.3 Zig-Zag",
+      "descricao": "Tecnopano Gr 3.3 Zig-Zag",
+      "tipoMaterial": "Zig-Zag",
+      "cor": "Branco",
+      "medida": "30x30 Cm",
+      "acabamento": "Zig-Zag",
+      "pesoMedio": 2.6,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "42",
+      "nome": "Tecnopano Gr Por Kilo",
+      "descricao": "Tecnopano Gr Por Kilo",
+      "tipoMaterial": "Corte-Reto",
+      "cor": "Variado",
+      "medida": "50x50 Cm",
+      "acabamento": "Corte-Reto",
+      "pesoMedio": 1.9,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "45",
+      "nome": "Tecnopano Kit O cina Limpa",
+      "descricao": "Tecnopano Kit O cina Limpa",
+      "tipoMaterial": "Limpa",
+      "cor": "Branco",
+      "medida": "37x37 Cm",
+      "acabamento": "Limpa",
+      "pesoMedio": 0.5,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "47",
+      "nome": "Tecnopano Lençol Branco M",
+      "descricao": "Tecnopano Lençol Branco M",
+      "tipoMaterial": "Maca",
+      "cor": "Branco",
+      "medida": "1.10x2.20 M",
+      "acabamento": "Maca",
+      "pesoMedio": 0.8,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "54",
+      "nome": "Tecnopano Malha Esp 2.2",
+      "descricao": "Tecnopano Malha Esp 2.2",
+      "tipoMaterial": "Especial",
+      "cor": "Branco",
+      "medida": "20x20 Cm",
+      "acabamento": "Especial",
+      "pesoMedio": 25.0,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "60",
+      "nome": "Tecnopano Saco Alvejado Pa",
+      "descricao": "Tecnopano Saco Alvejado Pa",
+      "tipoMaterial": "Alvejado",
+      "cor": "Branco",
+      "medida": "50x70 Cm",
+      "acabamento": "Alvejado",
+      "pesoMedio": 3.6,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "58",
+      "nome": "Tecnopano Pano Micro bra",
+      "descricao": "Tecnopano Pano Micro bra",
+      "tipoMaterial": "Micro bra",
+      "cor": "Variado",
+      "medida": "33x33 Cm",
+      "acabamento": "Micro bra",
+      "pesoMedio": null,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "48",
+      "nome": "Tecnopano Lençol Branco Q",
+      "descricao": "Tecnopano Lençol Branco Q",
+      "tipoMaterial": "Queen",
+      "cor": "Branco",
+      "medida": "2.80x2.00 M",
+      "acabamento": "Queen",
+      "pesoMedio": 1.9,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "55",
+      "nome": "Tecnopano Malha Especial 4",
+      "descricao": "Tecnopano Malha Especial 4",
+      "tipoMaterial": "Especial",
+      "cor": "Branco",
+      "medida": "40x40 Cm",
+      "acabamento": "Especial",
+      "pesoMedio": 2.4,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "9",
+      "nome": "Tecnopano Barreiras De Con",
+      "descricao": "Tecnopano Barreiras De Con",
+      "tipoMaterial": "Overlock",
+      "cor": "Variado",
+      "medida": "80 Cm",
+      "acabamento": "Overlock",
+      "pesoMedio": 2.6,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "3",
+      "nome": "Tecnopano Panos Para Limp",
+      "descricao": "Tecnopano Panos Para Limp",
+      "tipoMaterial": "Overlock",
+      "cor": "Vermelho",
+      "medida": "33x33 Cm",
+      "acabamento": "Overlock",
+      "pesoMedio": 2.6,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "3",
+      "nome": "Tecnopano Panos Para Limp",
+      "descricao": "Tecnopano Panos Para Limp",
+      "tipoMaterial": "Overlock",
+      "cor": "Azul",
+      "medida": "33x33 Cm",
+      "acabamento": "Overlock",
+      "pesoMedio": 2.6,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "3",
+      "nome": "Tecnopano Panos Para Limp",
+      "descricao": "Tecnopano Panos Para Limp",
+      "tipoMaterial": "Overlock",
+      "cor": "Variado",
+      "medida": "33x33 Cm",
+      "acabamento": "Overlock",
+      "pesoMedio": 2.6,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "3",
+      "nome": "Tecnopano Panos Para Limp",
+      "descricao": "Tecnopano Panos Para Limp",
+      "tipoMaterial": "Overlock",
+      "cor": "Verde",
+      "medida": "33x33 Cm",
+      "acabamento": "Overlock",
+      "pesoMedio": 2.6,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "15",
+      "nome": "Tecnopano Br Algodão 3.35",
+      "descricao": "Tecnopano Br Algodão 3.35",
+      "tipoMaterial": "Corte-Reto",
+      "cor": "Branco",
+      "medida": "30x35 Cm",
+      "acabamento": "Corte-Reto",
+      "pesoMedio": 1.4,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "11",
+      "nome": "Tecnopano Br Algodão 2.2 Z",
+      "descricao": "Tecnopano Br Algodão 2.2 Z",
+      "tipoMaterial": "Zig-Zag",
+      "cor": "Branco",
+      "medida": "20x20 Cm",
+      "acabamento": "Zig-Zag",
+      "pesoMedio": 1.0,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "13",
+      "nome": "Tecnopano Br Algodão 3.2 Z",
+      "descricao": "Tecnopano Br Algodão 3.2 Z",
+      "tipoMaterial": "Zig-Zag",
+      "cor": "Branco",
+      "medida": "30x20 Cm",
+      "acabamento": "Zig-Zag",
+      "pesoMedio": 0.6,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "14",
+      "nome": "Tecnopano Br Algodão 3.3 Z",
+      "descricao": "Tecnopano Br Algodão 3.3 Z",
+      "tipoMaterial": "Zig-Zag",
+      "cor": "Branco",
+      "medida": "30x30 Cm",
+      "acabamento": "Zig-Zag",
+      "pesoMedio": 1.3,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "25",
+      "nome": "Tecnopano Gr Diversas Core",
+      "descricao": "Tecnopano Gr Diversas Core",
+      "tipoMaterial": "Zig-Zag",
+      "cor": "Cinza",
+      "medida": "30x30 Cm",
+      "acabamento": "Zig-Zag",
+      "pesoMedio": 2.6,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "16",
+      "nome": "Tecnopano Br Algodão 4.4 Z",
+      "descricao": "Tecnopano Br Algodão 4.4 Z",
+      "tipoMaterial": "Zig-Zag",
+      "cor": "Branco",
+      "medida": "40x50 Cm",
+      "acabamento": "Zig-Zag",
+      "pesoMedio": 1.9,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "21",
+      "nome": "Tecnopano Br Algodão 5.5 P",
+      "descricao": "Tecnopano Br Algodão 5.5 P",
+      "tipoMaterial": "Corte-Reto",
+      "cor": "Branco",
+      "medida": "50x50 Cm",
+      "acabamento": "Corte-Reto",
+      "pesoMedio": 2.0,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "19",
+      "nome": "Tecnopano Br Algodão 80X1",
+      "descricao": "Tecnopano Br Algodão 80X1",
+      "tipoMaterial": "Corte-Reto",
+      "cor": "Branco",
+      "medida": "80x100 Cm",
+      "acabamento": "Corte-Reto",
+      "pesoMedio": 10.0,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "24",
+      "nome": "Tecnopano Br Algodão 4.5 Z",
+      "descricao": "Tecnopano Br Algodão 4.5 Z",
+      "tipoMaterial": "Zig-Zag",
+      "cor": "Branco",
+      "medida": "40x50 Cm",
+      "acabamento": "Zig-Zag",
+      "pesoMedio": 3.8,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "22",
+      "nome": "Tecnopano Br Algodão 2.2 O",
+      "descricao": "Tecnopano Br Algodão 2.2 O",
+      "tipoMaterial": "Overlock",
+      "cor": "Branco",
+      "medida": "20x20 Cm",
+      "acabamento": "Overlock",
+      "pesoMedio": 1.0,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "25",
+      "nome": "Tecnopano Gr Diversas Core",
+      "descricao": "Tecnopano Gr Diversas Core",
+      "tipoMaterial": "Zig-Zag",
+      "cor": "Azul",
+      "medida": "30x30 Cm",
+      "acabamento": "Zig-Zag",
+      "pesoMedio": 3.6,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "18",
+      "nome": "Tecnopano Br Algodão Frz P",
+      "descricao": "Tecnopano Br Algodão Frz P",
+      "tipoMaterial": "Corte-Reto",
+      "cor": "Branco",
+      "medida": "40x70 Cm",
+      "acabamento": "Corte-Reto",
+      "pesoMedio": 4.8,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "25",
+      "nome": "Tecnopano Gr Diversas Core",
+      "descricao": "Tecnopano Gr Diversas Core",
+      "tipoMaterial": "Zig-Zag",
+      "cor": "Verde",
+      "medida": "30x30 Cm",
+      "acabamento": "Zig-Zag",
+      "pesoMedio": 3.6,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "18",
+      "nome": "Tecnopano Br Algodão 4.7 P",
+      "descricao": "Tecnopano Br Algodão 4.7 P",
+      "tipoMaterial": "Corte-Reto",
+      "cor": "Branco",
+      "medida": "40x70 Cm",
+      "acabamento": "Corte-Reto",
+      "pesoMedio": 4.8,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "26",
+      "nome": "Tecnopano Gr Diversas Core",
+      "descricao": "Tecnopano Gr Diversas Core",
+      "tipoMaterial": "Zig-Zag",
+      "cor": "Cinza",
+      "medida": "40x40 Cm",
+      "acabamento": "Zig-Zag",
+      "pesoMedio": 3.6,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "25",
+      "nome": "Tecnopano Gr Diversas Core",
+      "descricao": "Tecnopano Gr Diversas Core",
+      "tipoMaterial": "Zig-Zag",
+      "cor": "Branco",
+      "medida": "30x30 Cm",
+      "acabamento": "Zig-Zag",
+      "pesoMedio": 3.6,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "26",
+      "nome": "Tecnopano Gr Diversas Core",
+      "descricao": "Tecnopano Gr Diversas Core",
+      "tipoMaterial": "Zig-Zag",
+      "cor": "Branco",
+      "medida": "40x40 Cm",
+      "acabamento": "Zig-Zag",
+      "pesoMedio": 5.8,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "30",
+      "nome": "Retalho Textil Para Bene cia",
+      "descricao": "Retalho Textil Para Bene cia",
+      "tipoMaterial": "Novo",
+      "cor": "Branco",
+      "medida": "In nita",
+      "acabamento": "Novo",
+      "pesoMedio": 25.0,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "27",
+      "nome": "Tecnopano Gr Diversas Core",
+      "descricao": "Tecnopano Gr Diversas Core",
+      "tipoMaterial": "Overlock",
+      "cor": "Branco",
+      "medida": "80x80 Cm",
+      "acabamento": "Overlock",
+      "pesoMedio": 17.6,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "27",
+      "nome": "Tecnopano Gr Diversas Core",
+      "descricao": "Tecnopano Gr Diversas Core",
+      "tipoMaterial": "Overlock",
+      "cor": "Cinza",
+      "medida": "80x80 Cm",
+      "acabamento": "Overlock",
+      "pesoMedio": 17.6,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "26",
+      "nome": "Tecnopano Gr Diversas Core",
+      "descricao": "Tecnopano Gr Diversas Core",
+      "tipoMaterial": "Zig-Zag",
+      "cor": "Verde",
+      "medida": "40x40 Cm",
+      "acabamento": "Zig-Zag",
+      "pesoMedio": 4.0,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "27",
+      "nome": "Tecnopano Gr Diversas Core",
+      "descricao": "Tecnopano Gr Diversas Core",
+      "tipoMaterial": "Overlock",
+      "cor": "Verde",
+      "medida": "80x80 Cm",
+      "acabamento": "Overlock",
+      "pesoMedio": 17.6,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "27",
+      "nome": "Tecnopano Gr Diversas Core",
+      "descricao": "Tecnopano Gr Diversas Core",
+      "tipoMaterial": "Overlock",
+      "cor": "Azul",
+      "medida": "80x80 Cm",
+      "acabamento": "Overlock",
+      "pesoMedio": 17.6,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "26",
+      "nome": "Tecnopano Gr Diversas Core",
+      "descricao": "Tecnopano Gr Diversas Core",
+      "tipoMaterial": "Zig-Zag",
+      "cor": "Azul",
+      "medida": "40x40 Cm",
+      "acabamento": "Zig-Zag",
+      "pesoMedio": null,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "39",
+      "nome": "Tecnopano Gr 3.3 Zig-Zag",
+      "descricao": "Tecnopano Gr 3.3 Zig-Zag",
+      "tipoMaterial": "Zig-Zag",
+      "cor": "Azul",
+      "medida": "30x30 Cm",
+      "acabamento": "Zig-Zag",
+      "pesoMedio": 3.6,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "35",
+      "nome": "Tecnopano Faixa Ind Branca",
+      "descricao": "Tecnopano Faixa Ind Branca",
+      "tipoMaterial": "Retalho",
+      "cor": "Branco",
+      "medida": "25x70 Cm",
+      "acabamento": "Retalho",
+      "pesoMedio": 25.0,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "34",
+      "nome": "Tecnopano Estopas Por Kilo",
+      "descricao": "Tecnopano Estopas Por Kilo",
+      "tipoMaterial": "Estopinha",
+      "cor": "Estopa Crua",
+      "medida": "Variável",
+      "acabamento": "Estopinha",
+      "pesoMedio": 25.0,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "39",
+      "nome": "Tecnopano Gr 3.3 Zig-Zag",
+      "descricao": "Tecnopano Gr 3.3 Zig-Zag",
+      "tipoMaterial": "Zig-Zag",
+      "cor": "Cinza",
+      "medida": "30x30 Cm",
+      "acabamento": "Zig-Zag",
+      "pesoMedio": 3.6,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "39",
+      "nome": "Tecnopano Gr 3.3 Zig-Zag",
+      "descricao": "Tecnopano Gr 3.3 Zig-Zag",
+      "tipoMaterial": "Zig-Zag",
+      "cor": "Verde",
+      "medida": "30x30 Cm",
+      "acabamento": "Zig-Zag",
+      "pesoMedio": 30.6,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "56",
+      "nome": "Tecnopano Manta Absorção",
+      "descricao": "Tecnopano Manta Absorção",
+      "tipoMaterial": "Plástico",
+      "cor": "Branco",
+      "medida": "40x50 Cm",
+      "acabamento": "Plástico",
+      "pesoMedio": 0.35,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "57",
+      "nome": "Tecnopano Trapo colorido p",
+      "descricao": "Tecnopano Trapo colorido p",
+      "tipoMaterial": "Colorido",
+      "cor": "Variado",
+      "medida": "15x15 Cm",
+      "acabamento": "Colorido",
+      "pesoMedio": 10.0,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "61",
+      "nome": "Tecnopano Pano Tecnolim",
+      "descricao": "Tecnopano Pano Tecnolim",
+      "tipoMaterial": "Corte-Reto",
+      "cor": "Variado",
+      "medida": "30x30 Cm",
+      "acabamento": "Corte-Reto",
+      "pesoMedio": 3.4,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "62",
+      "nome": "Tecnopano Tl 3.3",
+      "descricao": "Tecnopano Tl 3.3",
+      "tipoMaterial": "Corte-Reto",
+      "cor": "Preto",
+      "medida": "30x30 Cm",
+      "acabamento": "Corte-Reto",
+      "pesoMedio": 0.5,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "62",
+      "nome": "Tecnopano Tl 3.3",
+      "descricao": "Tecnopano Tl 3.3",
+      "tipoMaterial": "Corte-Reto",
+      "cor": "Azul",
+      "medida": "30x30 Cm",
+      "acabamento": "Corte-Reto",
+      "pesoMedio": 0.5,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "62",
+      "nome": "Tecnopano Tl 3.3",
+      "descricao": "Tecnopano Tl 3.3",
+      "tipoMaterial": "Corte-Reto",
+      "cor": "Branco",
+      "medida": "30x30 Cm",
+      "acabamento": "Corte-Reto",
+      "pesoMedio": 0.5,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "64",
+      "nome": "Tecnopano Tnt Liso 3.3",
+      "descricao": "Tecnopano Tnt Liso 3.3",
+      "tipoMaterial": "Corte-Reto",
+      "cor": "Branco",
+      "medida": "30x30 Cm",
+      "acabamento": "Corte-Reto",
+      "pesoMedio": 0.5,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "79",
+      "nome": "Tecnopano Pp A9",
+      "descricao": "Tecnopano Pp A9",
+      "tipoMaterial": "Overlock",
+      "cor": "Verde",
+      "medida": "33x33 Cm",
+      "acabamento": "Overlock",
+      "pesoMedio": 1.35,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "90",
+      "nome": "Tecnopano Malha Algodão",
+      "descricao": "Tecnopano Malha Algodão",
+      "tipoMaterial": "Algodão",
+      "cor": "Branco",
+      "medida": "20x20 Cm",
+      "acabamento": "Algodão",
+      "pesoMedio": 0.8,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "79",
+      "nome": "Tecnopano Pp A9",
+      "descricao": "Tecnopano Pp A9",
+      "tipoMaterial": "Overlock",
+      "cor": "Azul",
+      "medida": "33x33 Cm",
+      "acabamento": "Overlock",
+      "pesoMedio": 1.9,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "85",
+      "nome": "Tecnopano Gr Branco 4.4 Ov",
+      "descricao": "Tecnopano Gr Branco 4.4 Ov",
+      "tipoMaterial": "Overlock",
+      "cor": "Branco",
+      "medida": "40x40 Cm",
+      "acabamento": "Overlock",
+      "pesoMedio": 4.6,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "79",
+      "nome": "Tecnopano Pp A9",
+      "descricao": "Tecnopano Pp A9",
+      "tipoMaterial": "Overlock",
+      "cor": "Variado",
+      "medida": "33x33 Cm",
+      "acabamento": "Overlock",
+      "pesoMedio": 1.9,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "85",
+      "nome": "Tecnopano Gr 3.5 Overlok",
+      "descricao": "Tecnopano Gr 3.5 Overlok",
+      "tipoMaterial": "Overlock",
+      "cor": "Variado",
+      "medida": "35x35 Cm",
+      "acabamento": "Overlock",
+      "pesoMedio": 4.0,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "79",
+      "nome": "Tecnopano Pp A9",
+      "descricao": "Tecnopano Pp A9",
+      "tipoMaterial": "Overlock",
+      "cor": "Vermelho",
+      "medida": "33x33 Cm",
+      "acabamento": "Overlock",
+      "pesoMedio": 1.35,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "84",
+      "nome": "Tecnopano Br Algodão 4.6 F",
+      "descricao": "Tecnopano Br Algodão 4.6 F",
+      "tipoMaterial": "Corte-Reto",
+      "cor": "Branco",
+      "medida": "40x70 Cm",
+      "acabamento": "Corte-Reto",
+      "pesoMedio": 2.5,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "95",
+      "nome": "H-Pano Limpeza 40X40 Cm",
+      "descricao": "H-Pano Limpeza 40X40 Cm",
+      "tipoMaterial": "Algodão",
+      "cor": "Branco",
+      "medida": "40x40 Cm",
+      "acabamento": "Algodão",
+      "pesoMedio": 1.35,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "93",
+      "nome": "Tecnopano Malha Algodão P",
+      "descricao": "Tecnopano Malha Algodão P",
+      "tipoMaterial": "Algodão",
+      "cor": "Branco",
+      "medida": "12x12 Cm",
+      "acabamento": "Algodão",
+      "pesoMedio": 4.9,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "117",
+      "nome": "Tecnopano A9 Por Kilo",
+      "descricao": "Tecnopano A9 Por Kilo",
+      "tipoMaterial": "Overlock",
+      "cor": "Variado",
+      "medida": "30x30 Cm",
+      "acabamento": "Overlock",
+      "pesoMedio": 2.5,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "111",
+      "nome": "Tecnopano Tecnowipers t 30",
+      "descricao": "Tecnopano Tecnowipers t 30",
+      "tipoMaterial": "Corte-Reto",
+      "cor": "Branco",
+      "medida": "30x30 Cm",
+      "acabamento": "Corte-Reto",
+      "pesoMedio": 0.2,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "107",
+      "nome": "Tecnopano A2 4.7",
+      "descricao": "Tecnopano A2 4.7",
+      "tipoMaterial": "Overlock",
+      "cor": "Variado",
+      "medida": "40x70 Cm",
+      "acabamento": "Overlock",
+      "pesoMedio": 25.0,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "102",
+      "nome": "Tecnopano Atm",
+      "descricao": "Tecnopano Atm",
+      "tipoMaterial": "Overlock",
+      "cor": "Branco",
+      "medida": "30x30 Cm",
+      "acabamento": "Overlock",
+      "pesoMedio": 25.0,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "100",
+      "nome": "Tecnopano Fur 4.8",
+      "descricao": "Tecnopano Fur 4.8",
+      "tipoMaterial": "Corte-Reto",
+      "cor": "Branco",
+      "medida": "40x80 Cm",
+      "acabamento": "Corte-Reto",
+      "pesoMedio": 6.1,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "99",
+      "nome": "Tecnopano Pano Algodao 4.",
+      "descricao": "Tecnopano Pano Algodao 4.",
+      "tipoMaterial": "Overlock",
+      "cor": "Branco",
+      "medida": "30x30 Cm",
+      "acabamento": "Overlock",
+      "pesoMedio": 2.0,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "99",
+      "nome": "Tecnopano Pano Reciclado 3",
+      "descricao": "Tecnopano Pano Reciclado 3",
+      "tipoMaterial": "Reciclado",
+      "cor": "Branco",
+      "medida": "30x40 Cm",
+      "acabamento": "Reciclado",
+      "pesoMedio": 3.8,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "120",
+      "nome": "Tecnopano Gr Diversas Core",
+      "descricao": "Tecnopano Gr Diversas Core",
+      "tipoMaterial": "Zig-Zag",
+      "cor": "Cinza",
+      "medida": "50x70 Cm",
+      "acabamento": "Zig-Zag",
+      "pesoMedio": 2.5,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "120",
+      "nome": "Tecnopano Gr Diversas Core",
+      "descricao": "Tecnopano Gr Diversas Core",
+      "tipoMaterial": "Zig-Zag",
+      "cor": "Azul",
+      "medida": "50x70 Cm",
+      "acabamento": "Zig-Zag",
+      "pesoMedio": 3.2,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "137",
+      "nome": "Tecnopano Br Algodão Listra",
+      "descricao": "Tecnopano Br Algodão Listra",
+      "tipoMaterial": "Zig-Zag",
+      "cor": "Listrado",
+      "medida": "37x37 Cm",
+      "acabamento": "Zig-Zag",
+      "pesoMedio": 600.0,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "131",
+      "nome": "Tecnopano Fronha Por Kilo",
+      "descricao": "Tecnopano Fronha Por Kilo",
+      "tipoMaterial": "Overlock",
+      "cor": "Branco",
+      "medida": "40x70 Cm",
+      "acabamento": "Overlock",
+      "pesoMedio": 1.9,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "130",
+      "nome": "Tecnopano Gru Diversas Cor",
+      "descricao": "Tecnopano Gru Diversas Cor",
+      "tipoMaterial": "Zig-Zag",
+      "cor": "Variado",
+      "medida": "30x40 Cm",
+      "acabamento": "Zig-Zag",
+      "pesoMedio": 3.7,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "120",
+      "nome": "Tecnopano Gr Diversas Core",
+      "descricao": "Tecnopano Gr Diversas Core",
+      "tipoMaterial": "Zig-Zag",
+      "cor": "Branco",
+      "medida": "50x70 Cm",
+      "acabamento": "Zig-Zag",
+      "pesoMedio": 6.0,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "123",
+      "nome": "Tecnopano Faixa Ind Colorid",
+      "descricao": "Tecnopano Faixa Ind Colorid",
+      "tipoMaterial": "Retalho",
+      "cor": "Colorida",
+      "medida": "25x70 Cm",
+      "acabamento": "Retalho",
+      "pesoMedio": 25.0,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "120",
+      "nome": "Tecnopano Gr Diversas Core",
+      "descricao": "Tecnopano Gr Diversas Core",
+      "tipoMaterial": "Zig-Zag",
+      "cor": "Verde",
+      "medida": "50x70 Cm",
+      "acabamento": "Zig-Zag",
+      "pesoMedio": 3.6,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "147",
+      "nome": "Tecnopano Pega Pó 40X40",
+      "descricao": "Tecnopano Pega Pó 40X40",
+      "tipoMaterial": "Sem ImpregnaBranco",
+      "cor": null,
+      "medida": "40x40 Cm",
+      "acabamento": "Sem ImpregnaBranco",
+      "pesoMedio": 1.9,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "133",
+      "nome": "Tecnopano Retalho Material",
+      "descricao": "Tecnopano Retalho Material",
+      "tipoMaterial": "Corte-Reto    Branco",
+      "cor": null,
+      "medida": "Variável",
+      "acabamento": "Corte-Reto    Branco",
+      "pesoMedio": 25.0,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "147",
+      "nome": "Tecnopano Pega Pó 4.4 Sem",
+      "descricao": "Tecnopano Pega Pó 4.4 Sem",
+      "tipoMaterial": "Corte-Reto    Branco",
+      "cor": null,
+      "medida": "40x40 Cm",
+      "acabamento": "Corte-Reto    Branco",
+      "pesoMedio": 1.9,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "158",
+      "nome": "Tecnopano Br Algodão 4.4 C",
+      "descricao": "Tecnopano Br Algodão 4.4 C",
+      "tipoMaterial": "Overlock        Branco",
+      "cor": null,
+      "medida": "40x40 Cm",
+      "acabamento": "Overlock        Branco",
+      "pesoMedio": 2.6,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "155",
+      "nome": "Tecnopano Tecnowipers Me",
+      "descricao": "Tecnopano Tecnowipers Me",
+      "tipoMaterial": "Corte-Reto    Branco",
+      "cor": null,
+      "medida": "10x10 Cm",
+      "acabamento": "Corte-Reto    Branco",
+      "pesoMedio": 0.87,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "154",
+      "nome": "Tecnopano Br Algodão 3.2 C",
+      "descricao": "Tecnopano Br Algodão 3.2 C",
+      "tipoMaterial": "Overlock        Branco",
+      "cor": null,
+      "medida": "30x20 Cm",
+      "acabamento": "Overlock        Branco",
+      "pesoMedio": 0.6,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "148",
+      "nome": "Tecnopano Enxoval Por Kilo",
+      "descricao": "Tecnopano Enxoval Por Kilo",
+      "tipoMaterial": "Dropdown     Branco",
+      "cor": null,
+      "medida": "Todos",
+      "acabamento": "Dropdown     Branco",
+      "pesoMedio": 25.0,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "162",
+      "nome": "Tecnopano Gr 4.4 Kilo",
+      "descricao": "Tecnopano Gr 4.4 Kilo",
+      "tipoMaterial": "Corte-Reto    Variado",
+      "cor": null,
+      "medida": "50x50 Cm",
+      "acabamento": "Corte-Reto    Variado",
+      "pesoMedio": 4.5,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "163",
+      "nome": "Tecnopano Br Algodão 3.4 K",
+      "descricao": "Tecnopano Br Algodão 3.4 K",
+      "tipoMaterial": "Overlock        Branco",
+      "cor": null,
+      "medida": "30x40 Cm",
+      "acabamento": "Overlock        Branco",
+      "pesoMedio": 1.9,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "160",
+      "nome": "Tecnopano Fur 4.4",
+      "descricao": "Tecnopano Fur 4.4",
+      "tipoMaterial": "Corte-Reto    Branco",
+      "cor": null,
+      "medida": "40x40 Cm",
+      "acabamento": "Corte-Reto    Branco",
+      "pesoMedio": 1.7,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "160",
+      "nome": "Tecnopano Pano Fur 4.4",
+      "descricao": "Tecnopano Pano Fur 4.4",
+      "tipoMaterial": "Corte-Reto    Branco",
+      "cor": null,
+      "medida": "40x40 Cm",
+      "acabamento": "Corte-Reto    Branco",
+      "pesoMedio": 1.8,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "161",
+      "nome": "Tecnopano Br Algodão 3.4 Z",
+      "descricao": "Tecnopano Br Algodão 3.4 Z",
+      "tipoMaterial": "Zig-Zag         Branco",
+      "cor": null,
+      "medida": "30x40 Cm",
+      "acabamento": "Zig-Zag         Branco",
+      "pesoMedio": 1.5,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "169",
+      "nome": "Tecnopano Tecnowipers Co",
+      "descricao": "Tecnopano Tecnowipers Co",
+      "tipoMaterial": "Corte-Reto    Branco",
+      "cor": null,
+      "medida": "30x30 Cm",
+      "acabamento": "Corte-Reto    Branco",
+      "pesoMedio": 0.3,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "168",
+      "nome": "Tecnopano Gru 4.7 Por Kilo",
+      "descricao": "Tecnopano Gru 4.7 Por Kilo",
+      "tipoMaterial": "Corte-Reto",
+      "cor": "Variado",
+      "medida": "40x70 Cm",
+      "acabamento": "Corte-Reto",
+      "pesoMedio": null,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "87",
+      "nome": "Tecnopano Uniformes",
+      "descricao": "Tecnopano Uniformes",
+      "tipoMaterial": "Uniforme Kilo",
+      "cor": "Variado",
+      "medida": "P",
+      "acabamento": "Uniforme Kilo",
+      "pesoMedio": 0.4,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "87",
+      "nome": "Tecnopano Uniformes",
+      "descricao": "Tecnopano Uniformes",
+      "tipoMaterial": "Uniforme Kilo",
+      "cor": "Variado",
+      "medida": "M",
+      "acabamento": "Uniforme Kilo",
+      "pesoMedio": 0.4,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "87",
+      "nome": "Tecnopano Uniformes",
+      "descricao": "Tecnopano Uniformes",
+      "tipoMaterial": "Uniforme Kilo",
+      "cor": "Variado",
+      "medida": "G",
+      "acabamento": "Uniforme Kilo",
+      "pesoMedio": 0.4,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "87",
+      "nome": "Tecnopano Uniforme",
+      "descricao": "Tecnopano Uniforme",
+      "tipoMaterial": "Uniformes Kil",
+      "cor": "Variado",
+      "medida": "GG",
+      "acabamento": "Uniformes Kil",
+      "pesoMedio": 0.41,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "184",
+      "nome": "Tecnopano Avental Verde",
+      "descricao": "Tecnopano Avental Verde",
+      "tipoMaterial": "Corte-Reto",
+      "cor": "Verde",
+      "medida": "Tamanho Único",
+      "acabamento": "Corte-Reto",
+      "pesoMedio": 0.7,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "178",
+      "nome": "Gs Branco Overlocado Sabe",
+      "descricao": "Gs Branco Overlocado Sabe",
+      "tipoMaterial": "Overlock",
+      "cor": "Branco",
+      "medida": "30x30 Cm",
+      "acabamento": "Overlock",
+      "pesoMedio": 2.4,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "105",
+      "nome": "Tecnopano Vestimenta Frz U",
+      "descricao": "Tecnopano Vestimenta Frz U",
+      "tipoMaterial": "Corte-Reto",
+      "cor": "Florzinha",
+      "medida": "P",
+      "acabamento": "Corte-Reto",
+      "pesoMedio": 0.25,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "105",
+      "nome": "Tecnopano Vestimenta Frz U",
+      "descricao": "Tecnopano Vestimenta Frz U",
+      "tipoMaterial": "Corte-Reto",
+      "cor": "Florzinha",
+      "medida": "M",
+      "acabamento": "Corte-Reto",
+      "pesoMedio": 0.26,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "105",
+      "nome": "Tecnopano Vestimenta Frz U",
+      "descricao": "Tecnopano Vestimenta Frz U",
+      "tipoMaterial": "Corte-Reto",
+      "cor": "Florzinha",
+      "medida": "G",
+      "acabamento": "Corte-Reto",
+      "pesoMedio": 0.25,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "105",
+      "nome": "Tecnopano Vestimenta Frz U",
+      "descricao": "Tecnopano Vestimenta Frz U",
+      "tipoMaterial": "Corte-Reto",
+      "cor": "Florzinha",
+      "medida": "4.7",
+      "acabamento": "Corte-Reto",
+      "pesoMedio": 0.25,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "2",
+      "nome": "Tecnopano Vestimenta De P",
+      "descricao": "Tecnopano Vestimenta De P",
+      "tipoMaterial": "Corte-Reto",
+      "cor": "Variado",
+      "medida": "P",
+      "acabamento": "Corte-Reto",
+      "pesoMedio": 0.27,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "2",
+      "nome": "Tecnopano Vestimenta De P",
+      "descricao": "Tecnopano Vestimenta De P",
+      "tipoMaterial": "Corte-Reto",
+      "cor": "Variado",
+      "medida": "M",
+      "acabamento": "Corte-Reto",
+      "pesoMedio": 0.4,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "2",
+      "nome": "Tecnopano Vestimenta De P",
+      "descricao": "Tecnopano Vestimenta De P",
+      "tipoMaterial": "Corte-Reto",
+      "cor": "Variado",
+      "medida": "GG",
+      "acabamento": "Corte-Reto",
+      "pesoMedio": 0.42,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "2",
+      "nome": "Tecnopano Vestimenta De P",
+      "descricao": "Tecnopano Vestimenta De P",
+      "tipoMaterial": "Corte-Reto",
+      "cor": "Variado",
+      "medida": "G",
+      "acabamento": "Corte-Reto",
+      "pesoMedio": 0.45,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "73",
+      "nome": "Tecnopano Vestimenta De P",
+      "descricao": "Tecnopano Vestimenta De P",
+      "tipoMaterial": "Corte-Reto",
+      "cor": "Variado",
+      "medida": "P",
+      "acabamento": "Corte-Reto",
+      "pesoMedio": 0.44,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "73",
+      "nome": "Tecnopano Vestimenta De P",
+      "descricao": "Tecnopano Vestimenta De P",
+      "tipoMaterial": "Corte-Reto",
+      "cor": "Variado",
+      "medida": "M",
+      "acabamento": "Corte-Reto",
+      "pesoMedio": 0.4,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "73",
+      "nome": "Tecnopano Vestimenta De P",
+      "descricao": "Tecnopano Vestimenta De P",
+      "tipoMaterial": "Corte-Reto",
+      "cor": "Variado",
+      "medida": "G",
+      "acabamento": "Corte-Reto",
+      "pesoMedio": 3.0,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "73",
+      "nome": "Tecnopano Vestimenta De P",
+      "descricao": "Tecnopano Vestimenta De P",
+      "tipoMaterial": "Corte-Reto",
+      "cor": "Variado",
+      "medida": "GG",
+      "acabamento": "Corte-Reto",
+      "pesoMedio": 0.4,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "103",
+      "nome": "Tecnopano Par Luvas",
+      "descricao": "Tecnopano Par Luvas",
+      "tipoMaterial": "Reciclada",
+      "cor": "Cinza",
+      "medida": "P",
+      "acabamento": "Reciclada",
+      "pesoMedio": null,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "103",
+      "nome": "Tecnopano Par Luvas",
+      "descricao": "Tecnopano Par Luvas",
+      "tipoMaterial": "Reciclada",
+      "cor": "Cinza",
+      "medida": "G",
+      "acabamento": "Reciclada",
+      "pesoMedio": null,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "103",
+      "nome": "Tecnopano Par Luvas",
+      "descricao": "Tecnopano Par Luvas",
+      "tipoMaterial": "Reciclada",
+      "cor": "Cinza",
+      "medida": "GG",
+      "acabamento": "Reciclada",
+      "pesoMedio": null,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "103",
+      "nome": "Tecnopano Par Luvas",
+      "descricao": "Tecnopano Par Luvas",
+      "tipoMaterial": "Reciclada",
+      "cor": "Cinza",
+      "medida": "M",
+      "acabamento": "Reciclada",
+      "pesoMedio": null,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "76",
+      "nome": "Tecnopano Capote Traçado",
+      "descricao": "Tecnopano Capote Traçado",
+      "tipoMaterial": "Corte-Reto",
+      "cor": "Variado",
+      "medida": "2.00x1.00 Cm",
+      "acabamento": "Corte-Reto",
+      "pesoMedio": 0.7,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "109",
+      "nome": "Tecnopano Conjunto Hidrore",
+      "descricao": "Tecnopano Conjunto Hidrore",
+      "tipoMaterial": "Corte-Reto",
+      "cor": "Bege",
+      "medida": "P",
+      "acabamento": "Corte-Reto",
+      "pesoMedio": 0.6,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "105",
+      "nome": "Tecnopano Vestimenta Frz U",
+      "descricao": "Tecnopano Vestimenta Frz U",
+      "tipoMaterial": "Corte-Reto",
+      "cor": "Variado",
+      "medida": "P",
+      "acabamento": "Corte-Reto",
+      "pesoMedio": 0.25,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "105",
+      "nome": "Tecnopano Vestimenta Frz U",
+      "descricao": "Tecnopano Vestimenta Frz U",
+      "tipoMaterial": "Corte-Reto",
+      "cor": "Variado",
+      "medida": "M",
+      "acabamento": "Corte-Reto",
+      "pesoMedio": 0.25,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "105",
+      "nome": "Tecnopano Vestimenta Frz U",
+      "descricao": "Tecnopano Vestimenta Frz U",
+      "tipoMaterial": "Corte-Reto",
+      "cor": "Variado",
+      "medida": "G",
+      "acabamento": "Corte-Reto",
+      "pesoMedio": 0.25,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "105",
+      "nome": "Tecnopano Vestimenta Frz U",
+      "descricao": "Tecnopano Vestimenta Frz U",
+      "tipoMaterial": "Corte-Reto",
+      "cor": "Variado",
+      "medida": "GG",
+      "acabamento": "Corte-Reto",
+      "pesoMedio": 0.25,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "109",
+      "nome": "Tecnopano Conjunto Hidrore",
+      "descricao": "Tecnopano Conjunto Hidrore",
+      "tipoMaterial": "Corte-Reto",
+      "cor": "Verde",
+      "medida": "M",
+      "acabamento": "Corte-Reto",
+      "pesoMedio": 0.6,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "109",
+      "nome": "Tecnopano Conjunto Hidrore",
+      "descricao": "Tecnopano Conjunto Hidrore",
+      "tipoMaterial": "Corte-Reto",
+      "cor": "Verde",
+      "medida": "GG",
+      "acabamento": "Corte-Reto",
+      "pesoMedio": 0.64,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "109",
+      "nome": "Tecnopano Conjunto Hidrore",
+      "descricao": "Tecnopano Conjunto Hidrore",
+      "tipoMaterial": "Corte-Reto",
+      "cor": "Verde",
+      "medida": "P",
+      "acabamento": "Corte-Reto",
+      "pesoMedio": 0.59,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "109",
+      "nome": "Tecnopano Conjunto Hidrore",
+      "descricao": "Tecnopano Conjunto Hidrore",
+      "tipoMaterial": "Corte-Reto",
+      "cor": "Bege",
+      "medida": "M",
+      "acabamento": "Corte-Reto",
+      "pesoMedio": 0.6,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "109",
+      "nome": "Tecnopano Conjunto Hidrore",
+      "descricao": "Tecnopano Conjunto Hidrore",
+      "tipoMaterial": "Corte-Reto",
+      "cor": "Verde",
+      "medida": "G",
+      "acabamento": "Corte-Reto",
+      "pesoMedio": 0.61,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "110",
+      "nome": "Tecnopano Par De Luvas De",
+      "descricao": "Tecnopano Par De Luvas De",
+      "tipoMaterial": "Reciclada",
+      "cor": "Branco",
+      "medida": "P",
+      "acabamento": "Reciclada",
+      "pesoMedio": 0.6,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "109",
+      "nome": "Tecnopano Conjunto Hidrore",
+      "descricao": "Tecnopano Conjunto Hidrore",
+      "tipoMaterial": "Corte-Reto",
+      "cor": "Bege",
+      "medida": "GG",
+      "acabamento": "Corte-Reto",
+      "pesoMedio": 0.63,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "109",
+      "nome": "Tecnopano Conjunto Hidrore",
+      "descricao": "Tecnopano Conjunto Hidrore",
+      "tipoMaterial": "Corte-Reto",
+      "cor": "Bege",
+      "medida": "G",
+      "acabamento": "Corte-Reto",
+      "pesoMedio": 0.63,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "110",
+      "nome": "Tecnopano Par De Luvas De",
+      "descricao": "Tecnopano Par De Luvas De",
+      "tipoMaterial": "Reciclada",
+      "cor": "Branco",
+      "medida": "M",
+      "acabamento": "Reciclada",
+      "pesoMedio": null,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "110",
+      "nome": "Tecnopano Par De Luvas De",
+      "descricao": "Tecnopano Par De Luvas De",
+      "tipoMaterial": "Reciclada",
+      "cor": "Preto",
+      "medida": "P",
+      "acabamento": "Reciclada",
+      "pesoMedio": null,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "110",
+      "nome": "Tecnopano Par De Luvas De",
+      "descricao": "Tecnopano Par De Luvas De",
+      "tipoMaterial": "Reciclada",
+      "cor": "Branco",
+      "medida": "G",
+      "acabamento": "Reciclada",
+      "pesoMedio": null,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "110",
+      "nome": "Tecnopano Par De Luvas De",
+      "descricao": "Tecnopano Par De Luvas De",
+      "tipoMaterial": "Reciclada",
+      "cor": "Preto",
+      "medida": "M",
+      "acabamento": "Reciclada",
+      "pesoMedio": null,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "110",
+      "nome": "Tecnopano Par De Luvas De",
+      "descricao": "Tecnopano Par De Luvas De",
+      "tipoMaterial": "Reciclada",
+      "cor": "Preto",
+      "medida": "G",
+      "acabamento": "Reciclada",
+      "pesoMedio": null,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "110",
+      "nome": "Tecnopano Luvas De Malha",
+      "descricao": "Tecnopano Luvas De Malha",
+      "tipoMaterial": "Reciclada",
+      "cor": "Preto",
+      "medida": "P",
+      "acabamento": "Reciclada",
+      "pesoMedio": null,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "110",
+      "nome": "Tecnopano Luvas De Malha",
+      "descricao": "Tecnopano Luvas De Malha",
+      "tipoMaterial": "Reciclada",
+      "cor": "Preto",
+      "medida": "M",
+      "acabamento": "Reciclada",
+      "pesoMedio": null,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "110",
+      "nome": "Tecnopano Par De Luvas De",
+      "descricao": "Tecnopano Par De Luvas De",
+      "tipoMaterial": "Reciclada",
+      "cor": "Preto",
+      "medida": "GG",
+      "acabamento": "Reciclada",
+      "pesoMedio": null,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "110",
+      "nome": "Tecnopano Par De Luvas De",
+      "descricao": "Tecnopano Par De Luvas De",
+      "tipoMaterial": "Reciclada",
+      "cor": "Branco",
+      "medida": "GG",
+      "acabamento": "Reciclada",
+      "pesoMedio": null,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "110",
+      "nome": "Tecnopano Luvas De Malha",
+      "descricao": "Tecnopano Luvas De Malha",
+      "tipoMaterial": "Reciclada",
+      "cor": "Branco",
+      "medida": "P",
+      "acabamento": "Reciclada",
+      "pesoMedio": null,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "110",
+      "nome": "Tecnopano Luvas De Malha",
+      "descricao": "Tecnopano Luvas De Malha",
+      "tipoMaterial": "Reciclada",
+      "cor": "Branco",
+      "medida": "M",
+      "acabamento": "Reciclada",
+      "pesoMedio": null,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "110",
+      "nome": "Tecnopano Luvas De Malha",
+      "descricao": "Tecnopano Luvas De Malha",
+      "tipoMaterial": "Reciclada",
+      "cor": "Branco",
+      "medida": "G",
+      "acabamento": "Reciclada",
+      "pesoMedio": null,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "110",
+      "nome": "Tecnopano Luvas De Malha",
+      "descricao": "Tecnopano Luvas De Malha",
+      "tipoMaterial": "Reciclada",
+      "cor": "Branco",
+      "medida": "GG",
+      "acabamento": "Reciclada",
+      "pesoMedio": null,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "110",
+      "nome": "Tecnopano Luvas De Malha",
+      "descricao": "Tecnopano Luvas De Malha",
+      "tipoMaterial": "Reciclada",
+      "cor": "Preto",
+      "medida": "G",
+      "acabamento": "Reciclada",
+      "pesoMedio": null,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "157",
+      "nome": "Tecnopano Manta Fina Recic",
+      "descricao": "Tecnopano Manta Fina Recic",
+      "tipoMaterial": "Reciclada",
+      "cor": "Variado",
+      "medida": "1.10x2.20 Cm",
+      "acabamento": "Reciclada",
+      "pesoMedio": 0.8,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "165",
+      "nome": "Tecnopano Gaiola P",
+      "descricao": "Tecnopano Gaiola P",
+      "tipoMaterial": "Ferro",
+      "cor": "Dourada",
+      "medida": "1.80x0.50 Cm",
+      "acabamento": "Ferro",
+      "pesoMedio": 42.0,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "164",
+      "nome": "Tecnopano Gaiola G",
+      "descricao": "Tecnopano Gaiola G",
+      "tipoMaterial": "Ferro",
+      "cor": "Cinza",
+      "medida": "1.00x1.70 Cm",
+      "acabamento": "Ferro",
+      "pesoMedio": 75.0,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "156",
+      "nome": "Tecnopano Manta Reciclada",
+      "descricao": "Tecnopano Manta Reciclada",
+      "tipoMaterial": "Reciclada",
+      "cor": "Variado",
+      "medida": "1.10x2.20 Cm",
+      "acabamento": "Reciclada",
+      "pesoMedio": 0.7,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "150",
+      "nome": "Tecnopano Capa de Fardo",
+      "descricao": "Tecnopano Capa de Fardo",
+      "tipoMaterial": "Corte-Reto",
+      "cor": "Branco",
+      "medida": "40x40 Cm",
+      "acabamento": "Corte-Reto",
+      "pesoMedio": 25.0,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "113",
+      "nome": "Tecnopano Edredon Kilo",
+      "descricao": "Tecnopano Edredon Kilo",
+      "tipoMaterial": "Corte-Reto",
+      "cor": "Branco",
+      "medida": "1.20x2.40 Cm",
+      "acabamento": "Corte-Reto",
+      "pesoMedio": null,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "110",
+      "nome": "Tecnopano Luvas De Malha",
+      "descricao": "Tecnopano Luvas De Malha",
+      "tipoMaterial": "Reciclada",
+      "cor": "Preto",
+      "medida": "GG",
+      "acabamento": "Reciclada",
+      "pesoMedio": null,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "207",
+      "nome": "Toalha por Kilo",
+      "descricao": "Toalha por Kilo",
+      "tipoMaterial": "Corte-Reto",
+      "cor": "Branco",
+      "medida": "30x30 Cm",
+      "acabamento": "Corte-Reto",
+      "pesoMedio": 25.0,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "200",
+      "nome": "Capa Fardo Corte Reto 4.5",
+      "descricao": "Capa Fardo Corte Reto 4.5",
+      "tipoMaterial": "Corte-Reto",
+      "cor": "Branco",
+      "medida": "40x50 Cm",
+      "acabamento": "Corte-Reto",
+      "pesoMedio": 25.0,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "26",
+      "nome": "Tecnopano Gr Diversas Core",
+      "descricao": "Tecnopano Gr Diversas Core",
+      "tipoMaterial": "Zig-Zag",
+      "cor": "Diversas Core",
+      "medida": "35X35 Cm",
+      "acabamento": "Zig-Zag",
+      "pesoMedio": 3.6,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "120",
+      "nome": "Tecnopano Gr Diversas Core",
+      "descricao": "Tecnopano Gr Diversas Core",
+      "tipoMaterial": "Zig-Zag",
+      "cor": "Diversas Core",
+      "medida": "35x70 Cm",
+      "acabamento": "Zig-Zag",
+      "pesoMedio": 4.0,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "101",
+      "nome": "Gr2 lavado",
+      "descricao": "Gr2 lavado",
+      "tipoMaterial": "Lavado",
+      "cor": "Variados",
+      "medida": "3.4",
+      "acabamento": "Lavado",
+      "pesoMedio": 3.6,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "180",
+      "nome": "GR KG 4.4",
+      "descricao": "GR KG 4.4",
+      "tipoMaterial": "Overlock",
+      "cor": "Variado",
+      "medida": "30x30 Cm",
+      "acabamento": "Overlock",
+      "pesoMedio": 25.0,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "8",
+      "nome": "Avental tecnopano Frz unida",
+      "descricao": "Avental tecnopano Frz unida",
+      "tipoMaterial": "Overlock",
+      "cor": "Branco",
+      "medida": "P,M,G,GG",
+      "acabamento": "Overlock",
+      "pesoMedio": 0.26,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "224",
+      "nome": "BR overlocado por kilo",
+      "descricao": "BR overlocado por kilo",
+      "tipoMaterial": "Overlock",
+      "cor": "Variado",
+      "medida": "30x30 Cm",
+      "acabamento": "Overlock",
+      "pesoMedio": 25.0,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "224",
+      "nome": "BR overlocado por kilo",
+      "descricao": "BR overlocado por kilo",
+      "tipoMaterial": "Overlock",
+      "cor": "Variado",
+      "medida": "40x40 Cm",
+      "acabamento": "Overlock",
+      "pesoMedio": 25.0,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "205",
+      "nome": "Campo cirúrgico tecnopano",
+      "descricao": "Campo cirúrgico tecnopano",
+      "tipoMaterial": null,
+      "cor": "Variado",
+      "medida": "Variado",
+      "acabamento": null,
+      "pesoMedio": 0.6,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    },
+    {
+      "codigo": "128",
+      "nome": "TECNOPANO MANTAS XAD",
+      "descricao": "TECNOPANO MANTAS XAD",
+      "tipoMaterial": "OVERLOK",
+      "cor": "DIVERSAS",
+      "medida": "1,80X2,20",
+      "acabamento": "OVERLOK",
+      "pesoMedio": 1.8,
+      "unidadeMedida": "Kilo",
+      "ativo": true
+    }
+  ],
+  "clientes": [
+    {
+      "nomeFantasia": "GLOBO CENTRAL DE USINAGEM LTDA",
+      "razaoSocial": "GLOBO CENTRAL DE USINAGEM LTDA",
+      "idCliente": 1505,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "GREIF EMBALAGENS INDUSTRIAIS DO BRASIL LTDA",
+      "razaoSocial": "GREIF EMBALAGENS INDUSTRIAIS DO BRASIL LTDA",
+      "idCliente": 1436,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "BR MOBILIDADE BAIXADA SANTISTA SPE S.A",
+      "razaoSocial": "BR MOBILIDADE BAIXADA SANTISTA SPE S.A",
+      "idCliente": 859,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "VIACAO PIRACICABANA S.A.",
+      "razaoSocial": "VIACAO PIRACICABANA S.A.",
+      "idCliente": 1302,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "VIACAO PIRACICABANA SA",
+      "razaoSocial": "VIACAO PIRACICABANA SA",
+      "idCliente": 86,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "FERROVIA CENTRO-ATLANTICA S.A",
+      "razaoSocial": "FERROVIA CENTRO-ATLANTICA S.A",
+      "idCliente": 1212,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "VLI MULTIMODAL S.A",
+      "razaoSocial": "VLI MULTIMODAL S.A",
+      "idCliente": 1337,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "FERROVIA CENTRO ATLANTICA S.A",
+      "razaoSocial": "FERROVIA CENTRO ATLANTICA S.A",
+      "idCliente": 1216,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "VLI MULTIMODAL",
+      "razaoSocial": "VLI MULTIMODAL",
+      "idCliente": 1190,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "POLIERG INDUSTRIA COMERCIO",
+      "razaoSocial": "POLIERG INDUSTRIA COMERCIO",
+      "idCliente": 1192,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "ADM DO BRASIL LTDA",
+      "razaoSocial": "ADM DO BRASIL LTDA",
+      "idCliente": 833,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "EMBRAPORT EMPRESA BRASILEIRA DE TERMINAIS PORTUARIOS S/A",
+      "razaoSocial": "EMBRAPORT EMPRESA BRASILEIRA DE TERMINAIS PORTUARIOS S/A",
+      "idCliente": 116,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "WILSON SONS ESTALEIROS LTDA",
+      "razaoSocial": "WILSON SONS ESTALEIROS LTDA",
+      "idCliente": 114,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "SST-CONSULTORIA SERV E COMERCIO DE PECAS E EQUIP IND LTDA",
+      "razaoSocial": "SST-CONSULTORIA SERV E COMERCIO DE PECAS E EQUIP IND LTDA",
+      "idCliente": 1371,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "BIOENERGETICA VALE DO PARACATU SA",
+      "razaoSocial": "BIOENERGETICA VALE DO PARACATU SA",
+      "idCliente": 429,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "ALUCOMAXX BRASIL INDUSTRIA E COMERCIO DE REVESTIMENTOS LTDA",
+      "razaoSocial": "ALUCOMAXX BRASIL INDUSTRIA E COMERCIO DE REVESTIMENTOS LTDA",
+      "idCliente": 1889,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "DEXCO S.A",
+      "razaoSocial": "DEXCO S.A",
+      "idCliente": 517,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "COMPANHIA AUXILIAR DE ARMAZENS GERAIS",
+      "razaoSocial": "COMPANHIA AUXILIAR DE ARMAZENS GERAIS",
+      "idCliente": 228,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "LATECOERE DO BRASIL INDUSTRIA AERONAUTICA LTDA",
+      "razaoSocial": "LATECOERE DO BRASIL INDUSTRIA AERONAUTICA LTDA",
+      "idCliente": 236,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "USIMAZA INDUSTRIA LTDA",
+      "razaoSocial": "USIMAZA INDUSTRIA LTDA",
+      "idCliente": 576,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "TECNOCURVA INDUSTRIA DE PECAS AUTOMOBILISTICAS LTDA",
+      "razaoSocial": "TECNOCURVA INDUSTRIA DE PECAS AUTOMOBILISTICAS LTDA",
+      "idCliente": 1263,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "SANCETUR - SANTA CECILIA TURISMO LTDA",
+      "razaoSocial": "SANCETUR - SANTA CECILIA TURISMO LTDA",
+      "idCliente": null,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "ALLTEC INDUSTRIA DE COMPONENTES EM MATERIAIS COMPOSTOS IMPOR",
+      "razaoSocial": "ALLTEC INDUSTRIA DE COMPONENTES EM MATERIAIS COMPOSTOS IMPOR",
+      "idCliente": 1576,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "EXPRESSO MARINGA DO VALE S/A",
+      "razaoSocial": "EXPRESSO MARINGA DO VALE S/A",
+      "idCliente": 1628,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "JOSEENSE TRANSPORTES DE PASSAGEIROS LTDA",
+      "razaoSocial": "JOSEENSE TRANSPORTES DE PASSAGEIROS LTDA",
+      "idCliente": 1629,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "MOGI MOB TRANSPORTES DE PASSAGEIRO",
+      "razaoSocial": "MOGI MOB TRANSPORTES DE PASSAGEIRO",
+      "idCliente": 1193,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "PDB AEROSPACE LTDA",
+      "razaoSocial": "PDB AEROSPACE LTDA",
+      "idCliente": 1116,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "EMBALAGENS365 LTDA",
+      "razaoSocial": "EMBALAGENS365 LTDA",
+      "idCliente": 1873,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "VIACAO PIRACICABANA S.A",
+      "razaoSocial": "VIACAO PIRACICABANA S.A",
+      "idCliente": 1609,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "WILSON SONS SERVICOS MARITIMOS LTDA",
+      "razaoSocial": "WILSON SONS SERVICOS MARITIMOS LTDA",
+      "idCliente": 1704,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "COMPANHIA REFINADORA DA AMAZONIA",
+      "razaoSocial": "COMPANHIA REFINADORA DA AMAZONIA",
+      "idCliente": 524,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "PAGRISA-PARA PASTORIL E AGRICOLA S/A",
+      "razaoSocial": "PAGRISA-PARA PASTORIL E AGRICOLA S/A",
+      "idCliente": 1218,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "56.889.727 CLAYTON MENEZES",
+      "razaoSocial": "56.889.727 CLAYTON MENEZES",
+      "idCliente": 26,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "ENERPEIXE S.A",
+      "razaoSocial": "ENERPEIXE S.A",
+      "idCliente": 1538,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "DRUCKENT IND COM IMPORT E EXPORTACAO",
+      "razaoSocial": "DRUCKENT IND COM IMPORT E EXPORTACAO",
+      "idCliente": 761,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "BUNGE ALIMENTOS",
+      "razaoSocial": "BUNGE ALIMENTOS",
+      "idCliente": 280,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "ADONAI QUIMICA S/A",
+      "razaoSocial": "ADONAI QUIMICA S/A",
+      "idCliente": 173,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "INBRASP - INDUSTRIA BRASILEIRA DE PLASTICOS LTDA.",
+      "razaoSocial": "INBRASP - INDUSTRIA BRASILEIRA DE PLASTICOS LTDA.",
+      "idCliente": 867,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "TRANSBRASA TRANSITARIA BRASILEIRA LTDA",
+      "razaoSocial": "TRANSBRASA TRANSITARIA BRASILEIRA LTDA",
+      "idCliente": 1673,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "SPLACK S.A.",
+      "razaoSocial": "SPLACK S.A.",
+      "idCliente": 2014,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "VIACAO PIRACICABANA S/A",
+      "razaoSocial": "VIACAO PIRACICABANA S/A",
+      "idCliente": 1258,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "POLIMETRI IND METALURGICA LTDA",
+      "razaoSocial": "POLIMETRI IND METALURGICA LTDA",
+      "idCliente": 674,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "TERMINAL DE GRANEIS DO GUARUJA S.A.",
+      "razaoSocial": "TERMINAL DE GRANEIS DO GUARUJA S.A.",
+      "idCliente": 9,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "DRAUSUISSE BRASIL COM E LOC DE UN",
+      "razaoSocial": "DRAUSUISSE BRASIL COM E LOC DE UN",
+      "idCliente": 1186,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "COMPANHIA DE ENGENHARIA DE TRAFEGO",
+      "razaoSocial": "COMPANHIA DE ENGENHARIA DE TRAFEGO",
+      "idCliente": 147,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "SANCETUR-SANTA CECILIA TURISMO LTDA",
+      "razaoSocial": "SANCETUR-SANTA CECILIA TURISMO LTDA",
+      "idCliente": 1490,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "ZERO CARBON LOGISTICS S.A.",
+      "razaoSocial": "ZERO CARBON LOGISTICS S.A.",
+      "idCliente": 2024,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "SONACA NOTA TRAVADA",
+      "razaoSocial": "SONACA NOTA TRAVADA",
+      "idCliente": 11,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "PAN-METAL IND METALURGICA LTDA",
+      "razaoSocial": "PAN-METAL IND METALURGICA LTDA",
+      "idCliente": 1413,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "FERROVIA NORTE SUL",
+      "razaoSocial": "FERROVIA NORTE SUL",
+      "idCliente": 1194,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "AUTOLIV DO BRASIL LTDA",
+      "razaoSocial": "AUTOLIV DO BRASIL LTDA",
+      "idCliente": 523,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "FERROVIA CENTRO ATLANTICA",
+      "razaoSocial": "FERROVIA CENTRO ATLANTICA",
+      "idCliente": 1202,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "BRAZIL PANOS LTDA",
+      "razaoSocial": "BRAZIL PANOS LTDA",
+      "idCliente": 1498,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "ADECOAGRO VALE DO IVINHEMA S.A",
+      "razaoSocial": "ADECOAGRO VALE DO IVINHEMA S.A",
+      "idCliente": 456,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "MULTILOG COM E TRANSPORTE",
+      "razaoSocial": "MULTILOG COM E TRANSPORTE",
+      "idCliente": 1689,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "BUNGE ALIMENTOS S/A",
+      "razaoSocial": "BUNGE ALIMENTOS S/A",
+      "idCliente": 280,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "TECPLAS IND E COMERCIO LTDA",
+      "razaoSocial": "TECPLAS IND E COMERCIO LTDA",
+      "idCliente": 1583,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "WF ESTRUTURAS E SISTEMAS LTDA",
+      "razaoSocial": "WF ESTRUTURAS E SISTEMAS LTDA",
+      "idCliente": 1351,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "ELEVADORES OTIS LTDA",
+      "razaoSocial": "ELEVADORES OTIS LTDA",
+      "idCliente": 10,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "LANMAR INDUSTRIA METALURGICA LTDA",
+      "razaoSocial": "LANMAR INDUSTRIA METALURGICA LTDA",
+      "idCliente": 1657,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "CLI SUL S/A",
+      "razaoSocial": "CLI SUL S/A",
+      "idCliente": 1694,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "LIMA & BONFA INDUSTRIA E COM DE FERRAMENTAS LTDA",
+      "razaoSocial": "LIMA & BONFA INDUSTRIA E COM DE FERRAMENTAS LTDA",
+      "idCliente": 1641,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "VIACAO PIRACICABANA S.A. (AMERICANA)",
+      "razaoSocial": "VIACAO PIRACICABANA S.A. (AMERICANA)",
+      "idCliente": 1310,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "AUTOLIV DO BRASIL LTDA\t( TAUBATÉ)",
+      "razaoSocial": "AUTOLIV DO BRASIL LTDA\t( TAUBATÉ)",
+      "idCliente": 523,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "DECKEL IND E COM DE PLAST TEC LTDA",
+      "razaoSocial": "DECKEL IND E COM DE PLAST TEC LTDA",
+      "idCliente": 1009,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "BTM ELETROMECANICA LTDA",
+      "razaoSocial": "BTM ELETROMECANICA LTDA",
+      "idCliente": 1077,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "MONTEJO PARTICIPACOES LTDA",
+      "razaoSocial": "MONTEJO PARTICIPACOES LTDA",
+      "idCliente": 23023,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "SANCETUR -SANTA CECILIA E TURISMO LTDA (BERTIOGA)",
+      "razaoSocial": "SANCETUR -SANTA CECILIA E TURISMO LTDA (BERTIOGA)",
+      "idCliente": 23024,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "AUTOLIV DO BRASIL LTDA ( TAUBATÉ)",
+      "razaoSocial": "AUTOLIV DO BRASIL LTDA ( TAUBATÉ)",
+      "idCliente": 523,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "HERNANDES FIM & CIA LTDA",
+      "razaoSocial": "HERNANDES FIM & CIA LTDA",
+      "idCliente": 1620,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "KADU XIMENES TAVARES MAQUINAS - ME",
+      "razaoSocial": "KADU XIMENES TAVARES MAQUINAS - ME",
+      "idCliente": 749,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "POLIERG INDUSTRIA E COMERCIO LTDA",
+      "razaoSocial": "POLIERG INDUSTRIA E COMERCIO LTDA",
+      "idCliente": 1436,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "VIACAO PIRACICABANA SA (SANTOS)",
+      "razaoSocial": "VIACAO PIRACICABANA SA (SANTOS)",
+      "idCliente": 86,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "BR MOBILIDADE BAIXADA SANTISTA SPE S.A (SÃO VICENTE)",
+      "razaoSocial": "BR MOBILIDADE BAIXADA SANTISTA SPE S.A (SÃO VICENTE)",
+      "idCliente": 87,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "VIACAO PIRACICABANA S.A. (PRAIA GRANDE)",
+      "razaoSocial": "VIACAO PIRACICABANA S.A. (PRAIA GRANDE)",
+      "idCliente": 88,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "BR MOBILIDADE BAIXADA SANTISTA SPE S.A (VLT SANTOS)",
+      "razaoSocial": "BR MOBILIDADE BAIXADA SANTISTA SPE S.A (VLT SANTOS)",
+      "idCliente": 859,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "VIACAO PIRACICABANA S.A. ( SÃO VICENTE)",
+      "razaoSocial": "VIACAO PIRACICABANA S.A. ( SÃO VICENTE)",
+      "idCliente": 1302,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "ECOGRAPH GRAFICA LTDA",
+      "razaoSocial": "ECOGRAPH GRAFICA LTDA",
+      "idCliente": 1882,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "HIDROVIAS DO BRASIL ADMINISTRACAO PORTUARIA SANTOS S.A.",
+      "razaoSocial": "HIDROVIAS DO BRASIL ADMINISTRACAO PORTUARIA SANTOS S.A.",
+      "idCliente": 1298,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "CHOCOLATE TEXTIL LTDA",
+      "razaoSocial": "CHOCOLATE TEXTIL LTDA",
+      "idCliente": 1652,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "INBRA-AEROSPACE IND E COM COMP AERO S.A",
+      "razaoSocial": "INBRA-AEROSPACE IND E COM COMP AERO S.A",
+      "idCliente": 1859,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "INBRAFILTRO INDUSTRIA E COMERCIO DE FILTROS LTDA",
+      "razaoSocial": "INBRAFILTRO INDUSTRIA E COMERCIO DE FILTROS LTDA",
+      "idCliente": 23006,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "STOLTHAVEN SANTOS LTDA",
+      "razaoSocial": "STOLTHAVEN SANTOS LTDA",
+      "idCliente": 2027,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "ELEVADORES OTIS LTDA ( SANTOS)",
+      "razaoSocial": "ELEVADORES OTIS LTDA ( SANTOS)",
+      "idCliente": 1402,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "VIACAO PIRACICABANA S.A. (GUARULHOS)",
+      "razaoSocial": "VIACAO PIRACICABANA S.A. (GUARULHOS)",
+      "idCliente": 1874,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "ELEVADORES OTIS LTDA (CAMPINAS) ENTR . STS",
+      "razaoSocial": "ELEVADORES OTIS LTDA (CAMPINAS) ENTR . STS",
+      "idCliente": 1698,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "CONSORCIO EXPRESSO MONOTRILHO LESTE",
+      "razaoSocial": "CONSORCIO EXPRESSO MONOTRILHO LESTE",
+      "idCliente": 64,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "CONSORCIO EXPRESSO BOA ESPERANCA",
+      "razaoSocial": "CONSORCIO EXPRESSO BOA ESPERANCA",
+      "idCliente": 65,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "MASSUCATO INDUSTRIA E COMERCIO LTDA",
+      "razaoSocial": "MASSUCATO INDUSTRIA E COMERCIO LTDA",
+      "idCliente": 1644,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "CONAB CONSERBOMBAS LTDA",
+      "razaoSocial": "CONAB CONSERBOMBAS LTDA",
+      "idCliente": 613,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "ELEVADORES OTIS LTDA (LONDRINHA)",
+      "razaoSocial": "ELEVADORES OTIS LTDA (LONDRINHA)",
+      "idCliente": 33,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "GH INDUCAO DO BRASIL LTDA",
+      "razaoSocial": "GH INDUCAO DO BRASIL LTDA",
+      "idCliente": 361,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "VLI MULTIMODAL S/A",
+      "razaoSocial": "VLI MULTIMODAL S/A",
+      "idCliente": 1278,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "WILSON SONS ESTALEIROS LTDA (GUARUJÁ)",
+      "razaoSocial": "WILSON SONS ESTALEIROS LTDA (GUARUJÁ)",
+      "idCliente": 114,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "VIACAO PIRACICABANA SA STS",
+      "razaoSocial": "VIACAO PIRACICABANA SA STS",
+      "idCliente": 86,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "BR MOBILIDADE BAIXADA SANTISTA SPE S.A SV",
+      "razaoSocial": "BR MOBILIDADE BAIXADA SANTISTA SPE S.A SV",
+      "idCliente": 87,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "VIACAO PIRACICABANA S.A. PG",
+      "razaoSocial": "VIACAO PIRACICABANA S.A. PG",
+      "idCliente": 88,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "FASTWORK PROGRAM SYSTEMS LTDA",
+      "razaoSocial": "FASTWORK PROGRAM SYSTEMS LTDA",
+      "idCliente": 1516,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "CONSISTEC CONTROLES E SISTEMAS DE AUTOMACAO LTDA",
+      "razaoSocial": "CONSISTEC CONTROLES E SISTEMAS DE AUTOMACAO LTDA",
+      "idCliente": 1172,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "ALUSSIN INDUSTRIA E COMERCIO DE METAIS LIMITADA",
+      "razaoSocial": "ALUSSIN INDUSTRIA E COMERCIO DE METAIS LIMITADA",
+      "idCliente": 1887,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "VIACAO PIRACICABANA S/A (DF)",
+      "razaoSocial": "VIACAO PIRACICABANA S/A (DF)",
+      "idCliente": 1258,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "VIACAO PIRACICABANA S/A (PLANALTINA)",
+      "razaoSocial": "VIACAO PIRACICABANA S/A (PLANALTINA)",
+      "idCliente": 1259,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "MULTILOG BRASIL S.A (SANTOS)",
+      "razaoSocial": "MULTILOG BRASIL S.A (SANTOS)",
+      "idCliente": 31,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "GLOBO CENTRAL DE USINAGEM LTDA (JAMBEIRO)",
+      "razaoSocial": "GLOBO CENTRAL DE USINAGEM LTDA (JAMBEIRO)",
+      "idCliente": 1505,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "VIACAO PIRACICABANA SA. ( SÃO JOSÉ DOS CAMPOS)",
+      "razaoSocial": "VIACAO PIRACICABANA SA. ( SÃO JOSÉ DOS CAMPOS)",
+      "idCliente": 1495,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "FIBRAX FIBRAS TEXTEIS RECICLADAS LTDA",
+      "razaoSocial": "FIBRAX FIBRAS TEXTEIS RECICLADAS LTDA",
+      "idCliente": 1685,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "FERROVIA NORTE SUL S/A",
+      "razaoSocial": "FERROVIA NORTE SUL S/A",
+      "idCliente": 1191,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "WINNSTAL IND E COM LTDA",
+      "razaoSocial": "WINNSTAL IND E COM LTDA",
+      "idCliente": 1375,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "ADECOAGRO VALE DO IVINHEMA S/A",
+      "razaoSocial": "ADECOAGRO VALE DO IVINHEMA S/A",
+      "idCliente": 142,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "ADECOAGRO VALE DO IVINHEMA S.A.",
+      "razaoSocial": "ADECOAGRO VALE DO IVINHEMA S.A.",
+      "idCliente": 456,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "VIACAO PIRACICABANA AS",
+      "razaoSocial": "VIACAO PIRACICABANA AS",
+      "idCliente": 86,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "VIACAO PIRACICABANA S.A (DIADEMA)",
+      "razaoSocial": "VIACAO PIRACICABANA S.A (DIADEMA)",
+      "idCliente": 1609,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "ANR SERVICOS E COMERC DE BORRACHAS LTDA",
+      "razaoSocial": "ANR SERVICOS E COMERC DE BORRACHAS LTDA",
+      "idCliente": 1727,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "SAFRAN CABIN BRAZIL LTDA.",
+      "razaoSocial": "SAFRAN CABIN BRAZIL LTDA.",
+      "idCliente": 347,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "DYNA INDUSTRIA E COMERCIO LTDA",
+      "razaoSocial": "DYNA INDUSTRIA E COMERCIO LTDA",
+      "idCliente": 1050,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "P.R.L. INDUSTRIA E COMERCIO DE ADESIVOS LTDA",
+      "razaoSocial": "P.R.L. INDUSTRIA E COMERCIO DE ADESIVOS LTDA",
+      "idCliente": 39,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "ELEVADORES OTIS LTDA (MIRANDOPOLIS)",
+      "razaoSocial": "ELEVADORES OTIS LTDA (MIRANDOPOLIS)",
+      "idCliente": 1365,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "VLI MULTIMODAL S.A.",
+      "razaoSocial": "VLI MULTIMODAL S.A.",
+      "idCliente": 1190,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "BIKE FIX IND E COMERCIO DE PARAFUSOS LTDA",
+      "razaoSocial": "BIKE FIX IND E COMERCIO DE PARAFUSOS LTDA",
+      "idCliente": 1643,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "ELEVADORES OTIS LTDA (CAMPINAS)",
+      "razaoSocial": "ELEVADORES OTIS LTDA (CAMPINAS)",
+      "idCliente": 1698,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "UFT DO BRASIL INDUSTRIA MECANICA LTDA",
+      "razaoSocial": "UFT DO BRASIL INDUSTRIA MECANICA LTDA",
+      "idCliente": 1394,
+      "empresa": "tecnopano",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "TOLEDO DO BRASIL INDUSTRIA DE BALANCAS LTDA",
+      "razaoSocial": "TOLEDO DO BRASIL INDUSTRIA DE BALANCAS LTDA",
+      "idCliente": 367,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "RANDON S/A IMPLEMENTOS E PARTICIPACOES (CAXIAS DO SUL)",
+      "razaoSocial": "RANDON S/A IMPLEMENTOS E PARTICIPACOES (CAXIAS DO SUL)",
+      "idCliente": 1556,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "PERFECTA INDUSTRIA COMERCIO E SERVICOS LTDA",
+      "razaoSocial": "PERFECTA INDUSTRIA COMERCIO E SERVICOS LTDA",
+      "idCliente": 2016,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "RANDON SA IMPLEMENTOS E PARTICIPACOES (ARARAQUARA)",
+      "razaoSocial": "RANDON SA IMPLEMENTOS E PARTICIPACOES (ARARAQUARA)",
+      "idCliente": 1560,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "TRANSPORTADORA TURISTICA SUZANO LTDA",
+      "razaoSocial": "TRANSPORTADORA TURISTICA SUZANO LTDA",
+      "idCliente": 508,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "MOBIBRASIL TRANSPORTE SAO PAULO LTDA",
+      "razaoSocial": "MOBIBRASIL TRANSPORTE SAO PAULO LTDA",
+      "idCliente": 811,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "NORTEL SUPRIMENTOS INDUSTRIAIS LTDA",
+      "razaoSocial": "NORTEL SUPRIMENTOS INDUSTRIAIS LTDA",
+      "idCliente": 21,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "SOMA SOLUCOES NAGNETICAS",
+      "razaoSocial": "SOMA SOLUCOES NAGNETICAS",
+      "idCliente": 1065,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "MANPEC COMERCIO E SERVICOS DE EQUIPAMENTOS INDUSTRIAIS LTDA",
+      "razaoSocial": "MANPEC COMERCIO E SERVICOS DE EQUIPAMENTOS INDUSTRIAIS LTDA",
+      "idCliente": 1282,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "ZANETTINI BAROSSI S/A IND E COM",
+      "razaoSocial": "ZANETTINI BAROSSI S/A IND E COM",
+      "idCliente": 1437,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "ABC SISTEMA DE TRANSPORTE SPE S.A.",
+      "razaoSocial": "ABC SISTEMA DE TRANSPORTE SPE S.A.",
+      "idCliente": 1695,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "PINHALENSE SA MAQUINAS AGRICOLAS",
+      "razaoSocial": "PINHALENSE SA MAQUINAS AGRICOLAS",
+      "idCliente": 940,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "ARETE COLORS - INDUSTRIA E COMERCIO LTDA",
+      "razaoSocial": "ARETE COLORS - INDUSTRIA E COMERCIO LTDA",
+      "idCliente": 1724,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "CORNELIO AUTO PECAS LTDA",
+      "razaoSocial": "CORNELIO AUTO PECAS LTDA",
+      "idCliente": 123,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "POLI-COR INDUSTRIA DE TINTAS E VERNIZES LTDA",
+      "razaoSocial": "POLI-COR INDUSTRIA DE TINTAS E VERNIZES LTDA",
+      "idCliente": 269,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "CB MAR COMERCIO DE VEICULOS LTDA",
+      "razaoSocial": "CB MAR COMERCIO DE VEICULOS LTDA",
+      "idCliente": 1682,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "DELTA TERMINAIS DE CONTEINERS LTDA",
+      "razaoSocial": "DELTA TERMINAIS DE CONTEINERS LTDA",
+      "idCliente": 330,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "DIVENA LITORAL",
+      "razaoSocial": "DIVENA LITORAL",
+      "idCliente": 254,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "UNIMETAL SAO VICENTE",
+      "razaoSocial": "UNIMETAL SAO VICENTE",
+      "idCliente": 1045,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "BRASIL TERMINAL PORTUARIO S.A.",
+      "razaoSocial": "BRASIL TERMINAL PORTUARIO S.A.",
+      "idCliente": 953,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "SANMELL MOTOS LTDA",
+      "razaoSocial": "SANMELL MOTOS LTDA",
+      "idCliente": 46,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "REEFERBRAS COMERCIO E SERVICOS LTDA",
+      "razaoSocial": "REEFERBRAS COMERCIO E SERVICOS LTDA",
+      "idCliente": 51,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "BANDEIRANTES DEICMAR ARMAZENAGEM E DISTRIBUICAO S.A",
+      "razaoSocial": "BANDEIRANTES DEICMAR ARMAZENAGEM E DISTRIBUICAO S.A",
+      "idCliente": 915,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "BANDEIRANTES DEICMAR LOGISTICA INTEGRADA S/A",
+      "razaoSocial": "BANDEIRANTES DEICMAR LOGISTICA INTEGRADA S/A",
+      "idCliente": 221,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "SANTOS TRANPORTES DE CARGAS EIRELLI",
+      "razaoSocial": "SANTOS TRANPORTES DE CARGAS EIRELLI",
+      "idCliente": 469,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "SOMAK COMERCIO E SERVICOS LTDA - ME",
+      "razaoSocial": "SOMAK COMERCIO E SERVICOS LTDA - ME",
+      "idCliente": 806,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "MARIMAR ASSESSORIA E COMERCIO LTDA",
+      "razaoSocial": "MARIMAR ASSESSORIA E COMERCIO LTDA",
+      "idCliente": 1618,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "T-GRAO TERMINAL DE GRANEIS S/A",
+      "razaoSocial": "T-GRAO TERMINAL DE GRANEIS S/A",
+      "idCliente": 468,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "HELSSEK DO BRASIL PECAS E SERVICOS LTDA",
+      "razaoSocial": "HELSSEK DO BRASIL PECAS E SERVICOS LTDA",
+      "idCliente": 1315,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "TRANSPORTE E COMERCIO FASSINA LTDA",
+      "razaoSocial": "TRANSPORTE E COMERCIO FASSINA LTDA",
+      "idCliente": 658,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "ALAMO LOGISTICA E TRANSP INTERMODAL LTDA",
+      "razaoSocial": "ALAMO LOGISTICA E TRANSP INTERMODAL LTDA",
+      "idCliente": 1141,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "IDEAL GUINDASTE E EQUIPAMENTOS",
+      "razaoSocial": "IDEAL GUINDASTE E EQUIPAMENTOS",
+      "idCliente": 1145,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "TRANSPARENCY LOGISTICA & TRANSP LTDA",
+      "razaoSocial": "TRANSPARENCY LOGISTICA & TRANSP LTDA",
+      "idCliente": 1181,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "CARAVELLAS TRANSPORTES E TURISMO LTDA",
+      "razaoSocial": "CARAVELLAS TRANSPORTES E TURISMO LTDA",
+      "idCliente": 274,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "G. PIEROTTI SHIP SUPPLIER LTDA",
+      "razaoSocial": "G. PIEROTTI SHIP SUPPLIER LTDA",
+      "idCliente": 857,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "MMA3 RJ COMERCIO E SERVICOS LTDA",
+      "razaoSocial": "MMA3 RJ COMERCIO E SERVICOS LTDA",
+      "idCliente": 1674,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "SPECIAL DECOR ART EM VIDROS LTDA",
+      "razaoSocial": "SPECIAL DECOR ART EM VIDROS LTDA",
+      "idCliente": 1027,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "VIAPOL LTDA",
+      "razaoSocial": "VIAPOL LTDA",
+      "idCliente": 697,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "SERCO COOPERATIVA DE TRABALHO",
+      "razaoSocial": "SERCO COOPERATIVA DE TRABALHO",
+      "idCliente": 1517,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "NACHI BRASIL LTDA",
+      "razaoSocial": "NACHI BRASIL LTDA",
+      "idCliente": 1223,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "SONACA BRASIL LTDA",
+      "razaoSocial": "SONACA BRASIL LTDA",
+      "idCliente": 11,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "NAMBEI INDUSTRIA DE CONDUTORES ELETRICOS LTDA",
+      "razaoSocial": "NAMBEI INDUSTRIA DE CONDUTORES ELETRICOS LTDA",
+      "idCliente": 1161,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "LUXOTTICA BRASIL PRODUTOS OTICOS E ESPORTIVOS LTDA",
+      "razaoSocial": "LUXOTTICA BRASIL PRODUTOS OTICOS E ESPORTIVOS LTDA",
+      "idCliente": 1863,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "DUVON INDUSTRIA E COMERCIO LTDA",
+      "razaoSocial": "DUVON INDUSTRIA E COMERCIO LTDA",
+      "idCliente": 853,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "BERNATTRANS TRANSPORTES URBANO S/A",
+      "razaoSocial": "BERNATTRANS TRANSPORTES URBANO S/A",
+      "idCliente": 1295,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "RESINAR MATERIAIS COMPOSTOS LTDA",
+      "razaoSocial": "RESINAR MATERIAIS COMPOSTOS LTDA",
+      "idCliente": 825,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "SULFIX INDUSTRIA E COMERCIO LTDA",
+      "razaoSocial": "SULFIX INDUSTRIA E COMERCIO LTDA",
+      "idCliente": 772,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "INDUSTRIA AUTO METALURGICA S/A",
+      "razaoSocial": "INDUSTRIA AUTO METALURGICA S/A",
+      "idCliente": 1080,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "AUT SISTEMAS DE AUTOMACAO LTDA",
+      "razaoSocial": "AUT SISTEMAS DE AUTOMACAO LTDA",
+      "idCliente": 1128,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "IGPECOGRAPH IND METALURGICA LTDA",
+      "razaoSocial": "IGPECOGRAPH IND METALURGICA LTDA",
+      "idCliente": 1138,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "SP RENTAL LTDA",
+      "razaoSocial": "SP RENTAL LTDA",
+      "idCliente": 1430,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "JSL S/A",
+      "razaoSocial": "JSL S/A",
+      "idCliente": 1634,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "DSF-SERV E FORNEC DE NAVIOS LT",
+      "razaoSocial": "DSF-SERV E FORNEC DE NAVIOS LT",
+      "idCliente": 1408,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "TEKFORT INDUSTRIAL LTDA",
+      "razaoSocial": "TEKFORT INDUSTRIAL LTDA",
+      "idCliente": 530,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "TRATOR HIDRA LTDA",
+      "razaoSocial": "TRATOR HIDRA LTDA",
+      "idCliente": 957,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "TMK ENGENHARIA S.A.",
+      "razaoSocial": "TMK ENGENHARIA S.A.",
+      "idCliente": 1204,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "ESSEMAGA LOGISTICA E TRANSPORTES LTDA",
+      "razaoSocial": "ESSEMAGA LOGISTICA E TRANSPORTES LTDA",
+      "idCliente": 60,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "MARIMEX DESPACHOS TRANSPORTES E SERVICOS LTDA",
+      "razaoSocial": "MARIMEX DESPACHOS TRANSPORTES E SERVICOS LTDA",
+      "idCliente": 1104,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "CLOMAC LOJAS IN COMPANY LTDA",
+      "razaoSocial": "CLOMAC LOJAS IN COMPANY LTDA",
+      "idCliente": 1099,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "PAM PRODUTOS PARA LIMPEZA LTDA",
+      "razaoSocial": "PAM PRODUTOS PARA LIMPEZA LTDA",
+      "idCliente": 687,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "NELCAR TRANSPORTES RODOVIARIOS LTDA",
+      "razaoSocial": "NELCAR TRANSPORTES RODOVIARIOS LTDA",
+      "idCliente": 1355,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "SANTOS BRASIL PARTICIPACOES S.A",
+      "razaoSocial": "SANTOS BRASIL PARTICIPACOES S.A",
+      "idCliente": 669,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "EVER EXPRESS TRANSPORTES E ARMAZENS GERAIS LTDA",
+      "razaoSocial": "EVER EXPRESS TRANSPORTES E ARMAZENS GERAIS LTDA",
+      "idCliente": 802,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "CSRL-CESARI SERVICOS DE REVENDA E LOCACAO LTDA",
+      "razaoSocial": "CSRL-CESARI SERVICOS DE REVENDA E LOCACAO LTDA",
+      "idCliente": 1640,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "WR MAQUINAS MANUTENCOES EM EQUIP PORTUARIOS E INDUSTRIAS LTDA",
+      "razaoSocial": "WR MAQUINAS MANUTENCOES EM EQUIP PORTUARIOS E INDUSTRIAS LTDA",
+      "idCliente": 1370,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "LOCAMINAS LOCACAO DE MAQUINAS E EQUIPAMENTOS LTDA",
+      "razaoSocial": "LOCAMINAS LOCACAO DE MAQUINAS E EQUIPAMENTOS LTDA",
+      "idCliente": 287,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "PORA SISTEMA DE REMOCOES LTDA",
+      "razaoSocial": "PORA SISTEMA DE REMOCOES LTDA",
+      "idCliente": 220,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "GLOBAL S/A TRANSPORTES URBANO",
+      "razaoSocial": "GLOBAL S/A TRANSPORTES URBANO",
+      "idCliente": 1876,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "CITY TRANSPORTE URBANO INTERMODAL LTDA",
+      "razaoSocial": "CITY TRANSPORTE URBANO INTERMODAL LTDA",
+      "idCliente": 1100,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "TRANSTECWORLD LOGISTICA",
+      "razaoSocial": "TRANSTECWORLD LOGISTICA",
+      "idCliente": 997,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "PEDREIRA ENGEBRITA LTDA",
+      "razaoSocial": "PEDREIRA ENGEBRITA LTDA",
+      "idCliente": 410,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "SUCOCITRICO CUTRALE LTDA",
+      "razaoSocial": "SUCOCITRICO CUTRALE LTDA",
+      "idCliente": 40,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "INTERVALES MINERIOS LTDA",
+      "razaoSocial": "INTERVALES MINERIOS LTDA",
+      "idCliente": 59,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "GREEN ROAD SOLUCOES LOGISTICAS LTDA",
+      "razaoSocial": "GREEN ROAD SOLUCOES LOGISTICAS LTDA",
+      "idCliente": 327,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "SIKA AUTOMOTIVE LTDA.",
+      "razaoSocial": "SIKA AUTOMOTIVE LTDA.",
+      "idCliente": 887,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "INSTRONIC INSTRUMENTOS DE TESTES LTDA",
+      "razaoSocial": "INSTRONIC INSTRUMENTOS DE TESTES LTDA",
+      "idCliente": 1891,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "PISSARDI INDUSTRIA E COMERCIO DE ARTEFATOS PLASTICOS LTDA",
+      "razaoSocial": "PISSARDI INDUSTRIA E COMERCIO DE ARTEFATOS PLASTICOS LTDA",
+      "idCliente": 799,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "VIACAO MIRACATIBA LTDA",
+      "razaoSocial": "VIACAO MIRACATIBA LTDA",
+      "idCliente": 973,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "VIACAO OSASCO LTDA",
+      "razaoSocial": "VIACAO OSASCO LTDA",
+      "idCliente": 966,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "GROW AMBIENTAL ITAPECERICA SPE S.A.",
+      "razaoSocial": "GROW AMBIENTAL ITAPECERICA SPE S.A.",
+      "idCliente": 1872,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "JAS INDUSTRIA E COMERCIO S.A.",
+      "razaoSocial": "JAS INDUSTRIA E COMERCIO S.A.",
+      "idCliente": 916,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "JTP TRANSPORTES, SERVICOS, GERENCIAMENTO E RECURSOS HUMANOS",
+      "razaoSocial": "JTP TRANSPORTES, SERVICOS, GERENCIAMENTO E RECURSOS HUMANOS",
+      "idCliente": 2017,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "LINK JET INDUSTRIA E SERVICOS EM EQUIPAMENTOS LTDA",
+      "razaoSocial": "LINK JET INDUSTRIA E SERVICOS EM EQUIPAMENTOS LTDA",
+      "idCliente": 1755,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "Tsa Tambore Pecas e Serv Ltda",
+      "razaoSocial": "Tsa Tambore Pecas e Serv Ltda",
+      "idCliente": 550,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "WORK PLASTIC INDUSTRIA E COMERCIO DE PLASTICOS LTDA",
+      "razaoSocial": "WORK PLASTIC INDUSTRIA E COMERCIO DE PLASTICOS LTDA",
+      "idCliente": 1307,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "VANDERLANDE INDUSTRIES DO BRASIL COMERCIALIZACAO, IMPORTACAO",
+      "razaoSocial": "VANDERLANDE INDUSTRIES DO BRASIL COMERCIALIZACAO, IMPORTACAO",
+      "idCliente": 1095,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "ALIANCA METALURGICA S.A.",
+      "razaoSocial": "ALIANCA METALURGICA S.A.",
+      "idCliente": 1118,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "T LAVANDERIA LTDA",
+      "razaoSocial": "T LAVANDERIA LTDA",
+      "idCliente": 1228,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "COMERCIAL GUIMARAES DE TECIDOS E PANOS LTDA",
+      "razaoSocial": "COMERCIAL GUIMARAES DE TECIDOS E PANOS LTDA",
+      "idCliente": 1347,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "7 LIFT SERVICE ELEVADORES EIRELI",
+      "razaoSocial": "7 LIFT SERVICE ELEVADORES EIRELI",
+      "idCliente": 1265,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "FABRICIO DE PAULA JIMENEZ ME",
+      "razaoSocial": "FABRICIO DE PAULA JIMENEZ ME",
+      "idCliente": 535,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "DCTECH SYSTEMS AUTOMACAO IND LTDA",
+      "razaoSocial": "DCTECH SYSTEMS AUTOMACAO IND LTDA",
+      "idCliente": 1203,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "ABSOLUTA DISTRIBUIDORA DE AUTOMOVEIS LTDA",
+      "razaoSocial": "ABSOLUTA DISTRIBUIDORA DE AUTOMOVEIS LTDA",
+      "idCliente": 1379,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "CEFERTIL FERTILIZANTES LTDA",
+      "razaoSocial": "CEFERTIL FERTILIZANTES LTDA",
+      "idCliente": 1529,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "INTERCEMENT BRASIL S.A",
+      "razaoSocial": "INTERCEMENT BRASIL S.A",
+      "idCliente": 1750,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "SERRA TRANSPORTES RODOVIARIOS, TERMINAIS DE CONTEINERES E LO",
+      "razaoSocial": "SERRA TRANSPORTES RODOVIARIOS, TERMINAIS DE CONTEINERES E LO",
+      "idCliente": 1345,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "FABIANA - TRANSPORTES MARITIMOS LTDA",
+      "razaoSocial": "FABIANA - TRANSPORTES MARITIMOS LTDA",
+      "idCliente": 952,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "WHEATON PINTURA E BENEFICIAMENTO DE VIDROS LTDA",
+      "razaoSocial": "WHEATON PINTURA E BENEFICIAMENTO DE VIDROS LTDA",
+      "idCliente": 828,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "ITURRI COIMPAR INDUSTRIA E COMERCIO DE EPI'S LTDA",
+      "razaoSocial": "ITURRI COIMPAR INDUSTRIA E COMERCIO DE EPI'S LTDA",
+      "idCliente": 2005,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "MANITOU BRASIL IMPORTACAO",
+      "razaoSocial": "MANITOU BRASIL IMPORTACAO",
+      "idCliente": 830,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "CLAUDIO KYOICHI NIIMOTO 04327200816",
+      "razaoSocial": "CLAUDIO KYOICHI NIIMOTO 04327200816",
+      "idCliente": 1407,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "STAHL ENGENHARIA, FABRICACAO, MONTAGEM E MANUTENCAO ELETROME",
+      "razaoSocial": "STAHL ENGENHARIA, FABRICACAO, MONTAGEM E MANUTENCAO ELETROME",
+      "idCliente": 1661,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "ALTEMON IMPORTACAO E COMERCIO LTDA",
+      "razaoSocial": "ALTEMON IMPORTACAO E COMERCIO LTDA",
+      "idCliente": 1878,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "BATERIAS CRAL LTDA",
+      "razaoSocial": "BATERIAS CRAL LTDA",
+      "idCliente": 895,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "NEUR LEDER DO BRASIL MATERAIS TEXTEIS E PLASTICOS LTDA",
+      "razaoSocial": "NEUR LEDER DO BRASIL MATERAIS TEXTEIS E PLASTICOS LTDA",
+      "idCliente": 1886,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "ELITE RECUPERADORA LTDA",
+      "razaoSocial": "ELITE RECUPERADORA LTDA",
+      "idCliente": 34,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "S.MAGALHAES S.A. LOGISTICA EM COMERCIO EXTERIOR",
+      "razaoSocial": "S.MAGALHAES S.A. LOGISTICA EM COMERCIO EXTERIOR",
+      "idCliente": 13,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "CLARK SUL TRANSMISSOES E TORQUES LTDA",
+      "razaoSocial": "CLARK SUL TRANSMISSOES E TORQUES LTDA",
+      "idCliente": 892,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "MARTINS & CAETANO INSPECOES VEICULARES LTDA",
+      "razaoSocial": "MARTINS & CAETANO INSPECOES VEICULARES LTDA",
+      "idCliente": 499,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "MULTILOG BRASIL S.A",
+      "razaoSocial": "MULTILOG BRASIL S.A",
+      "idCliente": 1421,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "SERVITAL DIESEL COMERCIAL LTDA",
+      "razaoSocial": "SERVITAL DIESEL COMERCIAL LTDA",
+      "idCliente": 440,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "ENGEMAN MANUTENCAO DE EQUIPAMENTOS COM E INDUSTRIA LTDA",
+      "razaoSocial": "ENGEMAN MANUTENCAO DE EQUIPAMENTOS COM E INDUSTRIA LTDA",
+      "idCliente": 1587,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "INTERCEMENT BRASIL S/A",
+      "razaoSocial": "INTERCEMENT BRASIL S/A",
+      "idCliente": 94,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "EPGI-EMPRESA PAULISTA DE GELO SECO EIRELI",
+      "razaoSocial": "EPGI-EMPRESA PAULISTA DE GELO SECO EIRELI",
+      "idCliente": 1710,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "SERVBRASIL SOLUCOES EM ALIMENTACAO,LIMPEZA E LAVANDERIA LTDA",
+      "razaoSocial": "SERVBRASIL SOLUCOES EM ALIMENTACAO,LIMPEZA E LAVANDERIA LTDA",
+      "idCliente": null,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "CORREIA DIAS & RODRIGUES DIAS LTDA - EPP",
+      "razaoSocial": "CORREIA DIAS & RODRIGUES DIAS LTDA - EPP",
+      "idCliente": 538,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "MILLS ESTRUTURAS E SERVICOS DE ENGENHARIA S/A",
+      "razaoSocial": "MILLS ESTRUTURAS E SERVICOS DE ENGENHARIA S/A",
+      "idCliente": 944,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "DECORIDEA COMERCIO DECORACAO EM VIDROS LTDA",
+      "razaoSocial": "DECORIDEA COMERCIO DECORACAO EM VIDROS LTDA",
+      "idCliente": 200,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "CEMIG GERACAO CAMARGO S.A",
+      "razaoSocial": "CEMIG GERACAO CAMARGO S.A",
+      "idCliente": 2019,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "COMERI LITORAL COMERCIO DE VEICULOS LTDA",
+      "razaoSocial": "COMERI LITORAL COMERCIO DE VEICULOS LTDA",
+      "idCliente": 139,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "ESTRELA LOGISTICA E TRANSPORTES LTDA.",
+      "razaoSocial": "ESTRELA LOGISTICA E TRANSPORTES LTDA.",
+      "idCliente": 278,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "CEINSPEC INSPECOES VEICULARES E INDUSTRIAIS LTDA",
+      "razaoSocial": "CEINSPEC INSPECOES VEICULARES E INDUSTRIAIS LTDA",
+      "idCliente": 1668,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "A.J.R TRANSPORTES LTDA",
+      "razaoSocial": "A.J.R TRANSPORTES LTDA",
+      "idCliente": 1749,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "CEMIG GERACAO SUL S.A.",
+      "razaoSocial": "CEMIG GERACAO SUL S.A.",
+      "idCliente": 2020,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "CEMIG GERACAO ITUTINGA S.A.",
+      "razaoSocial": "CEMIG GERACAO ITUTINGA S.A.",
+      "idCliente": 2021,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "CEMIG GERACAO OESTE S.A.",
+      "razaoSocial": "CEMIG GERACAO OESTE S.A.",
+      "idCliente": 2022,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "CEMIG GERACAO POCO FUNDO S.A.",
+      "razaoSocial": "CEMIG GERACAO POCO FUNDO S.A.",
+      "idCliente": 2023,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "JNJ mecanica e Usinagem Ltda",
+      "razaoSocial": "JNJ mecanica e Usinagem Ltda",
+      "idCliente": 1084,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "DSF-SERV E FORNEC DE NAVIOS LTDA",
+      "razaoSocial": "DSF-SERV E FORNEC DE NAVIOS LTDA",
+      "idCliente": 1408,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "SGI DISTRIBUIDORA DE VIDROS-EIRELI",
+      "razaoSocial": "SGI DISTRIBUIDORA DE VIDROS-EIRELI",
+      "idCliente": 1559,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "travada latecoere",
+      "razaoSocial": "travada latecoere",
+      "idCliente": null,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "SIM PNEUS LTDA",
+      "razaoSocial": "SIM PNEUS LTDA",
+      "idCliente": 1208,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "J. S. B. MANUTENCAO INDUSTRIAL - EIRELI",
+      "razaoSocial": "J. S. B. MANUTENCAO INDUSTRIAL - EIRELI",
+      "idCliente": 285,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "INDUSTRIAS ROMI S/A",
+      "razaoSocial": "INDUSTRIAS ROMI S/A",
+      "idCliente": 1147,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "PINHALENSE S/A.-MAQUINAS AGRICOLAS",
+      "razaoSocial": "PINHALENSE S/A.-MAQUINAS AGRICOLAS",
+      "idCliente": 820,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "SUL FLUMINENSE DIESEL LTDA - EPP",
+      "razaoSocial": "SUL FLUMINENSE DIESEL LTDA - EPP",
+      "idCliente": 933,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "LECHMAN TERMINAIS EIRELI",
+      "razaoSocial": "LECHMAN TERMINAIS EIRELI",
+      "idCliente": 1335,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "TEC - TERMINAL EXPORT COFCO LTDA",
+      "razaoSocial": "TEC - TERMINAL EXPORT COFCO LTDA",
+      "idCliente": 16,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "TSA TAMBORE PECAS E SERVICOS LTDA",
+      "razaoSocial": "TSA TAMBORE PECAS E SERVICOS LTDA",
+      "idCliente": 550,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "INDUSTRIA METALURGICA FRUM LTDA",
+      "razaoSocial": "INDUSTRIA METALURGICA FRUM LTDA",
+      "idCliente": 1131,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "ABSOLUTA MAR DISTRIBUIDORA DE AUTOMOVEIS LTDA",
+      "razaoSocial": "ABSOLUTA MAR DISTRIBUIDORA DE AUTOMOVEIS LTDA",
+      "idCliente": 57,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "RIBFER USINAGEM E FERRAMENTARIA LTDA",
+      "razaoSocial": "RIBFER USINAGEM E FERRAMENTARIA LTDA",
+      "idCliente": 6,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "PINHALENSE S/A.- MAQUINAS AGRICOLAS",
+      "razaoSocial": "PINHALENSE S/A.- MAQUINAS AGRICOLAS",
+      "idCliente": 820,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "ENGEMAN (REPLAN SP)",
+      "razaoSocial": "ENGEMAN (REPLAN SP)",
+      "idCliente": 1737,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "RAZZO LTDA",
+      "razaoSocial": "RAZZO LTDA",
+      "idCliente": 771,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "CLOMAC SUPRIMENTOS INDUSTRIAIS LTDA",
+      "razaoSocial": "CLOMAC SUPRIMENTOS INDUSTRIAIS LTDA",
+      "idCliente": 690,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "PGV LOCACAO DE VEICULOS E EQUIPAMENTOS LTDA - ME",
+      "razaoSocial": "PGV LOCACAO DE VEICULOS E EQUIPAMENTOS LTDA - ME",
+      "idCliente": 227,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "G.R. DIAS COMERCIO DE LUBRIFICANTES E FILTROS LTDA",
+      "razaoSocial": "G.R. DIAS COMERCIO DE LUBRIFICANTES E FILTROS LTDA",
+      "idCliente": 1574,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "NEUR LEDER DO BRASIL MATERIAIS TEXTEIS E PLASTICOS LTDA",
+      "razaoSocial": "NEUR LEDER DO BRASIL MATERIAIS TEXTEIS E PLASTICOS LTDA",
+      "idCliente": 1886,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "P R MANUTENCAO DE ELEVADORES LTDA",
+      "razaoSocial": "P R MANUTENCAO DE ELEVADORES LTDA",
+      "idCliente": 38,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "AUTOMATA INDUSTRIAL LTDA",
+      "razaoSocial": "AUTOMATA INDUSTRIAL LTDA",
+      "idCliente": 1578,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "DELTALUBRI SERV DE LUB E FIL LTDA",
+      "razaoSocial": "DELTALUBRI SERV DE LUB E FIL LTDA",
+      "idCliente": 1106,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "DEPOTAINER SERVICOS EM CONTAINERS LTDA",
+      "razaoSocial": "DEPOTAINER SERVICOS EM CONTAINERS LTDA",
+      "idCliente": 2009,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "LAINEZ INDUSTRIA E COM DE PECAS USINADAS LTDA",
+      "razaoSocial": "LAINEZ INDUSTRIA E COM DE PECAS USINADAS LTDA",
+      "idCliente": 1399,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "TITANIUM LUBRIFICANTES IND LTDA",
+      "razaoSocial": "TITANIUM LUBRIFICANTES IND LTDA",
+      "idCliente": 1021,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "FEMATIC SOLUCOES INDUSTRIAIS E USINAGEM LTDA",
+      "razaoSocial": "FEMATIC SOLUCOES INDUSTRIAIS E USINAGEM LTDA",
+      "idCliente": 1610,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "SOMA SOLUCOES MAGNETICAS IND. E COM. LTDA.",
+      "razaoSocial": "SOMA SOLUCOES MAGNETICAS IND. E COM. LTDA.",
+      "idCliente": 1065,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "DIVENA LITORAL VEICULOS LTDA.",
+      "razaoSocial": "DIVENA LITORAL VEICULOS LTDA.",
+      "idCliente": 254,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "ECOPANOS COMERCIAL TEXTIL EIRELI",
+      "razaoSocial": "ECOPANOS COMERCIAL TEXTIL EIRELI",
+      "idCliente": 1732,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "ABC SISTEMA DE TRANSPORTE SPE S.A",
+      "razaoSocial": "ABC SISTEMA DE TRANSPORTE SPE S.A",
+      "idCliente": 1419,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "ITAFOS ARRAIAS MINERACAO E FERTILIZANTES S.A",
+      "razaoSocial": "ITAFOS ARRAIAS MINERACAO E FERTILIZANTES S.A",
+      "idCliente": 1511,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "CONSORCIO CDG",
+      "razaoSocial": "CONSORCIO CDG",
+      "idCliente": 2026,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "SERVBRASIL SOLUCOES EM ALIMENTACAO, LIMPEZA E LAVANDERIA LTD",
+      "razaoSocial": "SERVBRASIL SOLUCOES EM ALIMENTACAO, LIMPEZA E LAVANDERIA LTD",
+      "idCliente": 2025,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "UNIMETAL SAO VICENTE INDUSTRIA, COMERCIO E EMPREENDIMENTOS LTDA",
+      "razaoSocial": "UNIMETAL SAO VICENTE INDUSTRIA, COMERCIO E EMPREENDIMENTOS LTDA",
+      "idCliente": 1045,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "ALAMO LOGISTICA E TRANSPORTE INTERMODAL LTDA",
+      "razaoSocial": "ALAMO LOGISTICA E TRANSPORTE INTERMODAL LTDA",
+      "idCliente": 1141,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "CHOCOLATE TEXTIL LTDA",
+      "razaoSocial": "CHOCOLATE TEXTIL LTDA",
+      "idCliente": 1652,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "EXPRESSO CAXIENSE AS",
+      "razaoSocial": "EXPRESSO CAXIENSE AS",
+      "idCliente": 1546,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "MEVI INDUSTRIA DE ENGRENAGENS LTDA.",
+      "razaoSocial": "MEVI INDUSTRIA DE ENGRENAGENS LTDA.",
+      "idCliente": 291,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "ESTORIL DISTRIBUIDORA DE VEICULOS LTDA        (SANTOS)",
+      "razaoSocial": "ESTORIL DISTRIBUIDORA DE VEICULOS LTDA        (SANTOS)",
+      "idCliente": 132,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "PAM PRODUTOS PARA LIMPEZA LTDA PAM PONTA GROSSA",
+      "razaoSocial": "PAM PRODUTOS PARA LIMPEZA LTDA PAM PONTA GROSSA",
+      "idCliente": 687,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "TRANSTECWORLD LOGISTICA LTDA",
+      "razaoSocial": "TRANSTECWORLD LOGISTICA LTDA",
+      "idCliente": 997,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "SANISA MANUTENCAO E CONSERVACAO DE ELEVADORES LTDA",
+      "razaoSocial": "SANISA MANUTENCAO E CONSERVACAO DE ELEVADORES LTDA",
+      "idCliente": 1507,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "GOLDEN LIFT ELEVADORES LTDA. - EPP",
+      "razaoSocial": "GOLDEN LIFT ELEVADORES LTDA. - EPP",
+      "idCliente": 941,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "HELP MARINE & SUPPLIERS IMP E EXP PROD MARITIMO LTDA",
+      "razaoSocial": "HELP MARINE & SUPPLIERS IMP E EXP PROD MARITIMO LTDA",
+      "idCliente": 643,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "SANTOS BRASIL LOGISTICA S.A.",
+      "razaoSocial": "SANTOS BRASIL LOGISTICA S.A.",
+      "idCliente": 133,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "ENERGETICA SANTA HELENA S/A",
+      "razaoSocial": "ENERGETICA SANTA HELENA S/A",
+      "idCliente": 1139,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "ATLANTIDA INSPECAO VEICULAR LTDA.",
+      "razaoSocial": "ATLANTIDA INSPECAO VEICULAR LTDA.",
+      "idCliente": 558,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "FW TRANSPORTES LTDA",
+      "razaoSocial": "FW TRANSPORTES LTDA",
+      "idCliente": 289,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "VIACAO DANUBIO AZUL LTDA",
+      "razaoSocial": "VIACAO DANUBIO AZUL LTDA",
+      "idCliente": 1884,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "INTERCEMENT BRASIL S/A - (- EM RECUPERACAO JUDICIAL)",
+      "razaoSocial": "INTERCEMENT BRASIL S/A - (- EM RECUPERACAO JUDICIAL)",
+      "idCliente": 94,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "RANDON SA IMPLEMENTOS E PARTICIPACOES (ARARAQUARA",
+      "razaoSocial": "RANDON SA IMPLEMENTOS E PARTICIPACOES (ARARAQUARA",
+      "idCliente": 1560,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "C B DOS SANTOS GRAFICA ME",
+      "razaoSocial": "C B DOS SANTOS GRAFICA ME",
+      "idCliente": 951,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "WILLIAN BRAITNER ALMEIDA ROSA",
+      "razaoSocial": "WILLIAN BRAITNER ALMEIDA ROSA",
+      "idCliente": 1633,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "IMEP DO BRASIL IND MECANICA",
+      "razaoSocial": "IMEP DO BRASIL IND MECANICA",
+      "idCliente": 1001,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "METALURGICA DULONG LTDA",
+      "razaoSocial": "METALURGICA DULONG LTDA",
+      "idCliente": 1020,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "SERV BRASIL SOLUCOES EM ALIMENTACAO,LIMPEZA E LAVANDERIA LTDA",
+      "razaoSocial": "SERV BRASIL SOLUCOES EM ALIMENTACAO,LIMPEZA E LAVANDERIA LTDA",
+      "idCliente": 1363,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "FOCO ELEVADORES LTDA - ME",
+      "razaoSocial": "FOCO ELEVADORES LTDA - ME",
+      "idCliente": 960,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "SET PORT LOGISTICS LTDA",
+      "razaoSocial": "SET PORT LOGISTICS LTDA",
+      "idCliente": 1220,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "PLANIFER FERRAMENTARIA E ESTAMPARIA LTDA",
+      "razaoSocial": "PLANIFER FERRAMENTARIA E ESTAMPARIA LTDA",
+      "idCliente": 1617,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "CLOPAR SUPRIMENTOS INDUSTRIAIS EIRELLI-EPP",
+      "razaoSocial": "CLOPAR SUPRIMENTOS INDUSTRIAIS EIRELLI-EPP",
+      "idCliente": 522,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "M & M CONSERVADORA DE ELEVADORES LTDA",
+      "razaoSocial": "M & M CONSERVADORA DE ELEVADORES LTDA",
+      "idCliente": 1266,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "MASTER SISTEMAS AUTOMOTIVOS LTDA",
+      "razaoSocial": "MASTER SISTEMAS AUTOMOTIVOS LTDA",
+      "idCliente": 18,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "RANDON S/A IMPLEMENTOS E PARTICIPACOES",
+      "razaoSocial": "RANDON S/A IMPLEMENTOS E PARTICIPACOES",
+      "idCliente": 1556,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "DABOL INDUSTRIA E COMERCIO DE MOV",
+      "razaoSocial": "DABOL INDUSTRIA E COMERCIO DE MOV",
+      "idCliente": 1025,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "APPLAUSO VEICULOS LTDA",
+      "razaoSocial": "APPLAUSO VEICULOS LTDA",
+      "idCliente": 904,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "SUL FLUMINENSE COMERCIO DE PECAS E IMPORTACAO EIRELLI ME",
+      "razaoSocial": "SUL FLUMINENSE COMERCIO DE PECAS E IMPORTACAO EIRELLI ME",
+      "idCliente": 1346,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "ELASA SOLUCOES INDUSTRIAS LTDA",
+      "razaoSocial": "ELASA SOLUCOES INDUSTRIAS LTDA",
+      "idCliente": 2010,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "J T LAVANDERIA LTDA",
+      "razaoSocial": "J T LAVANDERIA LTDA",
+      "idCliente": 1228,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "REBARBABRILHO INDUSTRIA E COMERCIO LTDA",
+      "razaoSocial": "REBARBABRILHO INDUSTRIA E COMERCIO LTDA",
+      "idCliente": 73,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "CEMIG GERACAO E TRANSMISSAO S.A",
+      "razaoSocial": "CEMIG GERACAO E TRANSMISSAO S.A",
+      "idCliente": 1742,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "LOXAM DO BRASIL AS",
+      "razaoSocial": "LOXAM DO BRASIL AS",
+      "idCliente": 433,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "CARMAR COMERCIO E MANUTENCAO DE VEICULOS LTDA",
+      "razaoSocial": "CARMAR COMERCIO E MANUTENCAO DE VEICULOS LTDA",
+      "idCliente": 350,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "TRANSPARENCY LOGISTICA & TRANSPORTE LTDA",
+      "razaoSocial": "TRANSPARENCY LOGISTICA & TRANSPORTE LTDA",
+      "idCliente": 1181,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "SERRA TRANSPORTES RODOVIARIOS, TERMINAIS DE CONTEINERES E LOCA",
+      "razaoSocial": "SERRA TRANSPORTES RODOVIARIOS, TERMINAIS DE CONTEINERES E LOCA",
+      "idCliente": 1345,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "FIBRAX FIBRAS TEXTEIS RECICLADAS LTDA",
+      "razaoSocial": "FIBRAX FIBRAS TEXTEIS RECICLADAS LTDA",
+      "idCliente": 1685,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "UNIMETAL SAO VICENTE INDUSTRIA, COMERCIO E EMPREENDIMENTOS L",
+      "razaoSocial": "UNIMETAL SAO VICENTE INDUSTRIA, COMERCIO E EMPREENDIMENTOS L",
+      "idCliente": 1045,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "ABSOLUTA DISTRIBUIDORA DE AUTOMOVEIS LTDA (PRAIA GRANDE)",
+      "razaoSocial": "ABSOLUTA DISTRIBUIDORA DE AUTOMOVEIS LTDA (PRAIA GRANDE)",
+      "idCliente": 55,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "KHEFREN DIST DE HIGIENE E DESCART",
+      "razaoSocial": "KHEFREN DIST DE HIGIENE E DESCART",
+      "idCliente": 1388,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "HORTIPLAST EMBALAGENS EIRELLI - EPP",
+      "razaoSocial": "HORTIPLAST EMBALAGENS EIRELLI - EPP",
+      "idCliente": 2028,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "BR AMBIENTAL IND E COM DE OLEOS IND LTDA",
+      "razaoSocial": "BR AMBIENTAL IND E COM DE OLEOS IND LTDA",
+      "idCliente": 1725,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "ALGO MAIS LAVANDERIA",
+      "razaoSocial": "ALGO MAIS LAVANDERIA",
+      "idCliente": 824,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "FORM & ART INDUSTRIA E COMERCIO DE ARTEFATOS METALICOS LTDA.",
+      "razaoSocial": "FORM & ART INDUSTRIA E COMERCIO DE ARTEFATOS METALICOS LTDA.",
+      "idCliente": 1051,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    },
+    {
+      "nomeFantasia": "S.MAGALHAES S.A LOGISTICA EM COM EXT",
+      "razaoSocial": "S.MAGALHAES S.A LOGISTICA EM COM EXT",
+      "idCliente": 1424,
+      "empresa": "brazil",
+      "estado": "SP",
+      "ativo": true
+    }
+  ]
+}

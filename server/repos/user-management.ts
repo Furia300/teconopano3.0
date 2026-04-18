@@ -126,7 +126,7 @@ export async function getAdminWhatsappNumbers(): Promise<string[]> {
   const { data } = await supabase
     .from("users")
     .select("whatsapp")
-    .eq("perfil", "administrador")
+    .in("perfil", ["administrador", "rh"])
     .eq("acesso", true)
     .not("whatsapp", "is", null);
   return (data ?? []).map((u) => u.whatsapp).filter(Boolean) as string[];

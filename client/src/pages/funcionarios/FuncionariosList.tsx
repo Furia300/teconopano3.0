@@ -30,6 +30,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ColaboradorDialog } from "./ColaboradorDialog";
+import { ColaboradorDetalhes } from "./ColaboradorDetalhes";
+import { useConfirmDelete } from "@/components/domain/ConfirmDeleteDialog";
 import { cn } from "@/lib/utils";
 
 interface Colaborador {
@@ -65,6 +67,8 @@ export default function FuncionariosList() {
   const [filterDepto, setFilterDepto] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editItem, setEditItem] = useState<Colaborador | null>(null);
+  const [viewingColab, setViewingColab] = useState<Colaborador | null>(null);
+  const [confirmDialog, openConfirm] = useConfirmDelete();
 
   const fetchColaboradores = async () => {
     try {
@@ -133,16 +137,20 @@ export default function FuncionariosList() {
     setDialogOpen(true);
   };
 
-  const handleDelete = async (id: number) => {
-    if (!confirm("Excluir este colaborador? Isso também removerá do RHiD se estiver conectado."))
-      return;
-    try {
-      await fetch(`/api/colaboradores/${id}`, { method: "DELETE" });
-      toast.success("Colaborador excluído");
-      fetchColaboradores();
-    } catch {
-      toast.error("Erro ao excluir");
-    }
+  const handleDelete = (id: number) => {
+    openConfirm({
+      title: "Excluir colaborador",
+      description: "Tem certeza que deseja excluir este colaborador? Isso também removerá do RHiD se estiver conectado.",
+      onConfirm: async () => {
+        try {
+          await fetch(`/api/colaboradores/${id}`, { method: "DELETE" });
+          toast.success("Colaborador excluído");
+          fetchColaboradores();
+        } catch {
+          toast.error("Erro ao excluir");
+        }
+      },
+    });
   };
 
   return (
@@ -206,7 +214,7 @@ export default function FuncionariosList() {
                 onClick={() => setFilterDepto("")}
                 className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
                   !filterDepto
-                    ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                    ? "bg-[var(--fips-primary)]/10 font-bold text-[var(--fips-primary)]"
                     : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
                 }`}
               >
@@ -218,7 +226,7 @@ export default function FuncionariosList() {
                   onClick={() => setFilterDepto(d)}
                   className={`flex items-center gap-2 rounded px-2 py-1.5 text-left text-[11px] transition-colors ${
                     filterDepto === d
-                      ? "bg-[var(--color-fips-blue-200)]/65 font-bold text-[var(--fips-primary)]"
+                      ? "bg-[var(--fips-primary)]/10 font-bold text-[var(--fips-primary)]"
                       : "text-[var(--fips-fg)] hover:bg-[var(--fips-surface-soft)]"
                   }`}
                 >
@@ -245,7 +253,7 @@ export default function FuncionariosList() {
         data={filtered}
         getRowId={(c) => `${c.fonte}-${c.id}`}
         emptyState={loading ? "Carregando colaboradores..." : "Nenhum colaborador encontrado"}
-        columns={colaboradorColumns({ onEdit: openEdit, onDelete: handleDelete })}
+        columns={colaboradorColumns({ onView: (c) => setViewingColab(c), onEdit: openEdit, onDelete: handleDelete })}
       />
 
       <ColaboradorDialog
@@ -255,6 +263,15 @@ export default function FuncionariosList() {
         fonte={fonte}
         onSuccess={fetchColaboradores}
       />
+
+      {viewingColab && (
+        <ColaboradorDetalhes
+          colaborador={viewingColab}
+          open={!!viewingColab}
+          onOpenChange={(open) => !open && setViewingColab(null)}
+        />
+      )}
+      {confirmDialog}
     </div>
   );
 }
@@ -516,6 +533,7 @@ function RhHero({ total, ativos, inativos, producao, fonte, syncing, onSync, onN
 /* ──────────────────────────── COLUMNS ──────────────────────────── */
 
 interface ColabActions {
+  onView: (c: Colaborador) => void;
   onEdit: (c: Colaborador) => void;
   onDelete: (id: number) => void;
 }
@@ -531,7 +549,7 @@ const deptoColor = (depto: string) => {
   return "#93BDE4";
 };
 
-function colaboradorColumns({ onEdit, onDelete }: ColabActions): DataListingColumn<Colaborador>[] {
+function colaboradorColumns({ onView, onEdit, onDelete }: ColabActions): DataListingColumn<Colaborador>[] {
   return [
     {
       id: "nome",
@@ -610,10 +628,10 @@ function colaboradorColumns({ onEdit, onDelete }: ColabActions): DataListingColu
       render: (c) => (
         <CellActions>
           <CellActionButton
-            title="Visualizar"
+            title="Ver detalhes"
             variant="primary"
             icon={<Eye className="h-3.5 w-3.5" />}
-            onClick={() => onEdit(c)}
+            onClick={() => onView(c)}
           />
           <CellActionButton
             title="Editar"

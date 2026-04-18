@@ -9,6 +9,7 @@
     "dev:full": "concurrently -n api,web -c blue,magenta \"npm run dev\" \"npm run dev:client\"",
     "build": "vite build && tsc -p tsconfig.server.json",
     "start": "NODE_ENV=production node dist/server/index.js",
+    "db:seed": "tsx server/seed.ts",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio"
   },

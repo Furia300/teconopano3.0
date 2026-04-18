@@ -13,6 +13,7 @@ const CLIENTE_SELECT = `
   cep,
   contato,
   email,
+  empresa,
   observacao,
   dataRetirada:data_retirada,
   ativo,

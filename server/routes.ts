@@ -282,60 +282,61 @@ let clientesList: any[] = [
 ];
 
 let expedicoesList: any[] = [
-  // ─── Entregues (com NF emitida) ───
-  { id: "ex1", clienteId: "cl3", estoqueOrigemId: "e3", nomeFantasia: "BREDA TRANSPORTE E SERVIÇOS", razaoSocial: "Breda Transportes S/A", cnpj: "05160935000310", contato: "(13) 3362-8000", email: "compras@breda.com.br", endereco: "Rod. Cônego Domênico, 1000 - Cubatão/SP", descricaoProduto: "ESTOPA Escuro", tipoMaterial: "ESTOPA", cor: "Escuro", medida: "", kilo: 200, kiloSolicitada: 200, unidade: 0, qtdePedido: 0, unidadeMedida: "Kilo", statusPedido: "", statusEntrega: "entregue", statusFinanceiro: "aprovado", statusNota: "emitida", statusMaterial: "", galpao: "Vicente", rota: "Rota Fixa", prioridade: "Normal", periodicidade: "Quinzenal", notaFiscal: "NF-2026-0041", observacaoEscritorio: "Contrato mensal - manutenção veículos", observacaoGalpao: "Entregue 01/04 — motorista José", createdAt: "2026-03-28T09:00:00Z" },
-  { id: "ex2", clienteId: "cl2", estoqueOrigemId: "e4", nomeFantasia: "CIA ULTRAGAZ S/A", razaoSocial: "Cia Ultragaz S.A.", cnpj: "61602199001275", contato: "(13) 3219-4000", email: "suprimentos@ultragaz.com.br", endereco: "Av. Portuária, 800 - Santos/SP", descricaoProduto: "GRU Variado", tipoMaterial: "GRU", cor: "Variado", medida: "", kilo: 150, kiloSolicitada: 150, unidade: 0, qtdePedido: 0, unidadeMedida: "Kilo", statusPedido: "", statusEntrega: "entregue", statusFinanceiro: "aprovado", statusNota: "emitida", statusMaterial: "", galpao: "Vicente", rota: "Rota Fixa", prioridade: "Normal", periodicidade: "Semanal", notaFiscal: "NF-2026-0055", observacaoEscritorio: "", observacaoGalpao: "Entregue 03/04 — motorista Carlos", createdAt: "2026-03-30T10:00:00Z" },
-  // ─── Pronto para entrega (NF emitida, financeiro aprovado) ───
-  { id: "ex3", clienteId: "cl1", estoqueOrigemId: "e1", nomeFantasia: "MARAMAR VEICULOS LTDA", razaoSocial: "Maramar Veículos Ltda", cnpj: "02498597000171", contato: "(13) 3261-5000", email: "compras@maramar.com.br", endereco: "Av. Ana Costa, 500 - Santos/SP", descricaoProduto: "TOALHA Branco 30x30 Cm", tipoMaterial: "TOALHA", cor: "Branco", medida: "30x30 Cm", kilo: 50, kiloSolicitada: 50, unidade: 100, qtdePedido: 100, unidadeMedida: "Pacote / Kilo", statusPedido: "", statusEntrega: "pronto_entrega", statusFinanceiro: "aprovado", statusNota: "emitida", statusMaterial: "", galpao: "Vicente", rota: "Rota Fixa", prioridade: "Normal", periodicidade: "Semanal", notaFiscal: "NF-2026-0078", observacaoEscritorio: "Cliente recorrente", observacaoGalpao: "Separado no galpão, aguardando motorista", createdAt: "2026-04-07T09:00:00Z" },
-  { id: "ex4", clienteId: "cl5", estoqueOrigemId: "e5", nomeFantasia: "SUCOCITRICO CUTRALE LTDA", razaoSocial: "Sucocítrico Cutrale Ltda", cnpj: "61649810001806", contato: "(13) 3344-2000", email: "compras@cutrale.com.br", endereco: "Rod. SP-055 km 266 - Guarujá/SP", descricaoProduto: "MALHA Azul 40x40 Cm", tipoMaterial: "MALHA", cor: "Azul", medida: "40x40 Cm", kilo: 95, kiloSolicitada: 95, unidade: 237, qtdePedido: 237, unidadeMedida: "Pacote / Kilo", statusPedido: "", statusEntrega: "pronto_entrega", statusFinanceiro: "aprovado", statusNota: "emitida", statusMaterial: "", galpao: "Vicente", rota: "Spot", prioridade: "Urgente", periodicidade: "", notaFiscal: "NF-2026-0082", observacaoEscritorio: "Pedido urgente — parada de manutenção", observacaoGalpao: "", createdAt: "2026-04-08T08:00:00Z" },
+  // ─── 3 BRAZIL (da planilha NF Brazil) ───
+  { id: "ex1", empresa: "brazil", clienteId: "cl3", estoqueOrigemId: "e3", nomeFantasia: "TOLEDO DO BRASIL INDUSTRIA DE BALANCAS LTDA", razaoSocial: "Toledo do Brasil Ind. de Balanças Ltda", cnpj: "59.702.773/0001-26", contato: "(11) 4235-8500", email: "compras@toledobrasil.com.br", endereco: "S.B.Campo/SP", descricaoProduto: "TOALHA Branco 30x30 Cm", tipoMaterial: "TOALHA", cor: "Branco", medida: "30x30 Cm", kilo: 600, kiloSolicitada: 600, unidade: 400, qtdePedido: 400, unidadeMedida: "Pacote / Kilo", statusPedido: "", statusEntrega: "entregue", statusFinanceiro: "aprovado", statusNota: "emitida", statusMaterial: "", galpao: "Vicente", rota: "319 RET. AQ.", prioridade: "Normal", periodicidade: "Quinzenal", notaFiscal: "NF-2026-8402", observacaoEscritorio: "Contrato recorrente Brazil", observacaoGalpao: "Entregue 05/01 — OK", createdAt: "2026-01-05T09:00:00Z" },
+  { id: "ex2", empresa: "brazil", clienteId: "cl2", estoqueOrigemId: "e4", nomeFantasia: "RANDON S/A IMPLEMENTOS E PARTICIPACOES (CAXIAS DO SUL)", razaoSocial: "Randon S/A Implementos e Participações", cnpj: "89.086.144/0001-16", contato: "(54) 3209-2000", email: "suprimentos@randon.com.br", endereco: "Caxias do Sul/RS", descricaoProduto: "GRU Variado", tipoMaterial: "GRU", cor: "Variado", medida: "", kilo: 710, kiloSolicitada: 710, unidade: 0, qtdePedido: 0, unidadeMedida: "Kilo", statusPedido: "", statusEntrega: "entregue", statusFinanceiro: "aprovado", statusNota: "emitida", statusMaterial: "", galpao: "Vicente", rota: "ROTA - A 300", prioridade: "Normal", periodicidade: "Semanal", notaFiscal: "NF-2026-8403", observacaoEscritorio: "Pedido recorrente Brazil — transportadora", observacaoGalpao: "Entregue 05/01 — motorista Carlos", createdAt: "2026-01-05T10:00:00Z" },
+  { id: "ex2b", empresa: "brazil", clienteId: "cl2b", estoqueOrigemId: "e5", nomeFantasia: "PERFECTA INDUSTRIA COMERCIO E SERVICOS LTDA", razaoSocial: "Perfecta Ind. Com. e Serviços Ltda", cnpj: "00.000.000/0001-00", contato: "(11) 4000-0000", email: "", endereco: "SP", descricaoProduto: "ESTOPA Escuro", tipoMaterial: "ESTOPA", cor: "Escuro", medida: "", kilo: 570, kiloSolicitada: 570, unidade: 0, qtdePedido: 0, unidadeMedida: "Kilo", statusPedido: "", statusEntrega: "em_rota", statusFinanceiro: "aprovado", statusNota: "emitida", statusMaterial: "", galpao: "Vicente", rota: "ROTA 99 SPOT", prioridade: "Urgente", periodicidade: "", notaFiscal: "NF-2026-8404", observacaoEscritorio: "Brazil — pedido spot", observacaoGalpao: "", createdAt: "2026-01-05T11:00:00Z" },
+  // ─── 3 TECNOPANO (da planilha NF Tecnopano) ───
+  { id: "ex3", empresa: "tecnopano", clienteId: "cl1", estoqueOrigemId: "e1", nomeFantasia: "GREIF EMBALAGENS INDUSTRIAIS DO BRASIL LTDA", razaoSocial: "Greif Embalagens Industriais do Brasil Ltda", cnpj: "", contato: "", email: "", endereco: "Santos/SP", descricaoProduto: "TOALHA Branco 30x30 Cm", tipoMaterial: "TOALHA", cor: "Branco", medida: "30x30 Cm", kilo: 649, kiloSolicitada: 649, unidade: 100, qtdePedido: 100, unidadeMedida: "Pacote / Kilo", statusPedido: "", statusEntrega: "pronto_entrega", statusFinanceiro: "aprovado", statusNota: "emitida", statusMaterial: "", galpao: "Vicente", rota: "ROTA - A 300", prioridade: "Normal", periodicidade: "Semanal", notaFiscal: "NF-2026-24166", observacaoEscritorio: "Cliente recorrente Tecnopano", observacaoGalpao: "Separado, aguardando motorista", createdAt: "2026-01-06T09:00:00Z" },
+  { id: "ex4", empresa: "tecnopano", clienteId: "cl5", estoqueOrigemId: "e5", nomeFantasia: "VIACAO PIRACICABANA S.A.", razaoSocial: "Viação Piracicabana S.A.", cnpj: "", contato: "", email: "", endereco: "S.B.Campo/SP", descricaoProduto: "MALHA Azul 40x40 Cm", tipoMaterial: "MALHA", cor: "Azul", medida: "40x40 Cm", kilo: 652, kiloSolicitada: 652, unidade: 237, qtdePedido: 237, unidadeMedida: "Pacote / Kilo", statusPedido: "", statusEntrega: "pronto_entrega", statusFinanceiro: "aprovado", statusNota: "emitida", statusMaterial: "", galpao: "Vicente", rota: "ROTA - B 301", prioridade: "Normal", periodicidade: "Mensal", notaFiscal: "NF-2026-24168", observacaoEscritorio: "Contrato mensal Tecnopano", observacaoGalpao: "", createdAt: "2026-01-06T10:00:00Z" },
   // ─── Aguardando NF (financeiro aprovado, NF pendente) ───
-  { id: "ex5", clienteId: "cl4", estoqueOrigemId: "e12", nomeFantasia: "VIAÇÃO PIRACICABANA S/A", razaoSocial: "Viação Piracicabana S.A.", cnpj: "54360623005759", contato: "(11) 4330-1000", email: "frotas@vpsa.com.br", endereco: "Rua Marechal, 200 - S.B.Campo/SP", descricaoProduto: "LENÇOL Branco 60x80 Cm", tipoMaterial: "LENÇOL", cor: "Branco", medida: "60x80 Cm", kilo: 200, kiloSolicitada: 200, unidade: 200, qtdePedido: 200, unidadeMedida: "Pacote / Kilo", statusPedido: "", statusEntrega: "aguardando_nf", statusFinanceiro: "aprovado", statusNota: "pendente_emissao", statusMaterial: "", galpao: "Vicente", rota: "Rota Fixa", prioridade: "Normal", periodicidade: "Mensal", notaFiscal: "", observacaoEscritorio: "Contrato mensal descartáveis", observacaoGalpao: "Material reservado", createdAt: "2026-04-10T09:00:00Z" },
-  { id: "ex6", clienteId: "cl6", estoqueOrigemId: "e14", nomeFantasia: "RANDON S/A IMPLEMENTOS", razaoSocial: "Randon S/A Implementos e Participações", cnpj: "89086144000116", contato: "(54) 3209-2000", email: "suprimentos@randon.com.br", endereco: "Av. Abramo Randon, 770 - Caxias do Sul/RS", descricaoProduto: "TOALHA Branco 40x40 Cm", tipoMaterial: "TOALHA", cor: "Branco", medida: "40x40 Cm", kilo: 145, kiloSolicitada: 145, unidade: 241, qtdePedido: 241, unidadeMedida: "Pacote / Kilo", statusPedido: "", statusEntrega: "aguardando_nf", statusFinanceiro: "aprovado", statusNota: "pendente_emissao", statusMaterial: "", galpao: "Vicente", rota: "Spot", prioridade: "Normal", periodicidade: "", notaFiscal: "", observacaoEscritorio: "Pedido Randon — envio via transportadora", observacaoGalpao: "", createdAt: "2026-04-11T10:00:00Z" },
+  { id: "ex5", empresa: "tecnopano", clienteId: "cl4", estoqueOrigemId: "e12", nomeFantasia: "VLI MULTIMODAL S.A", razaoSocial: "VLI Multimodal S.A.", cnpj: "", contato: "", email: "", endereco: "Santos/SP", descricaoProduto: "ESTOPA Escuro", tipoMaterial: "ESTOPA", cor: "Escuro", medida: "", kilo: 800, kiloSolicitada: 800, unidade: 0, qtdePedido: 0, unidadeMedida: "Kilo", statusPedido: "", statusEntrega: "aguardando_nf", statusFinanceiro: "aprovado", statusNota: "pendente_emissao", statusMaterial: "", galpao: "Vicente", rota: "ROTA - VLI 320", prioridade: "Normal", periodicidade: "Quinzenal", notaFiscal: "", observacaoEscritorio: "Contrato VLI — Tecnopano", observacaoGalpao: "Material reservado", createdAt: "2026-04-10T09:00:00Z" },
+  { id: "ex6", empresa: "brazil", clienteId: "cl6", estoqueOrigemId: "e14", nomeFantasia: "TRANSPORTADORA TURISTICA SUZANO LTDA", razaoSocial: "Transportadora Turística Suzano Ltda", cnpj: "", contato: "", email: "", endereco: "Suzano/SP", descricaoProduto: "TOALHA Branco 40x40 Cm", tipoMaterial: "TOALHA", cor: "Branco", medida: "40x40 Cm", kilo: 700, kiloSolicitada: 700, unidade: 241, qtdePedido: 241, unidadeMedida: "Pacote / Kilo", statusPedido: "", statusEntrega: "aguardando_nf", statusFinanceiro: "aprovado", statusNota: "pendente_emissao", statusMaterial: "", galpao: "Vicente", rota: "ROTA - A 300", prioridade: "Normal", periodicidade: "", notaFiscal: "", observacaoEscritorio: "Pedido Brazil — transportadora", observacaoGalpao: "", createdAt: "2026-01-06T10:00:00Z" },
   // ─── Aguardando financeiro (pendente aprovação) ───
-  { id: "ex7", clienteId: "cl7", estoqueOrigemId: "e10", nomeFantasia: "AUTO VIAÇÃO ABC LTDA", razaoSocial: "Auto Viação ABC Ltda", cnpj: "59153569000130", contato: "(11) 4335-1000", email: "frotas@aviabc.com.br", endereco: "Rua Tasman, 100 - S.B.Campo/SP", descricaoProduto: "TOALHA Branco 30x30 Cm", tipoMaterial: "TOALHA", cor: "Branco", medida: "30x30 Cm", kilo: 120, kiloSolicitada: 120, unidade: 200, qtdePedido: 200, unidadeMedida: "Pacote / Kilo", statusPedido: "", statusEntrega: "aguardando_financeiro", statusFinanceiro: "pendente_aprovacao", statusNota: "pendente_emissao", statusMaterial: "", galpao: "Vicente", rota: "Rota Fixa", prioridade: "Normal", periodicidade: "Quinzenal", notaFiscal: "", observacaoEscritorio: "Novo pedido — aguardar aprovação Lane", observacaoGalpao: "", createdAt: "2026-04-12T08:00:00Z" },
-  { id: "ex8", clienteId: "cl8", estoqueOrigemId: "e19", nomeFantasia: "NOVA JVS GUINDASTE E TRANSPORTES", razaoSocial: "Nova JVS Guindastes e Transportes Ltda", cnpj: "25101928000193", contato: "(13) 3468-3000", email: "operacional@novajvs.com.br", endereco: "Rod. Padre Manoel da Nóbrega, 2000 - São Vicente/SP", descricaoProduto: "MANTA ABSORÇÃO Escuro", tipoMaterial: "MANTA ABSORÇÃO", cor: "Escuro", medida: "", kilo: 200, kiloSolicitada: 200, unidade: 0, qtdePedido: 0, unidadeMedida: "Kilo", statusPedido: "", statusEntrega: "aguardando_financeiro", statusFinanceiro: "pendente_aprovacao", statusNota: "pendente_emissao", statusMaterial: "", galpao: "Vicente", rota: "Retire Aqui", prioridade: "Urgente", periodicidade: "", notaFiscal: "", observacaoEscritorio: "Cliente retira — guindastes port.", observacaoGalpao: "", createdAt: "2026-04-14T09:00:00Z" },
-  { id: "ex9", clienteId: "cl3", estoqueOrigemId: "e8", nomeFantasia: "BREDA TRANSPORTE E SERVIÇOS", razaoSocial: "Breda Transportes S/A", cnpj: "05160935000310", contato: "(13) 3362-8000", email: "compras@breda.com.br", endereco: "Rod. Cônego Domênico, 1000 - Cubatão/SP", descricaoProduto: "ESTOPA Escuro", tipoMaterial: "ESTOPA", cor: "Escuro", medida: "", kilo: 300, kiloSolicitada: 300, unidade: 0, qtdePedido: 0, unidadeMedida: "Kilo", statusPedido: "", statusEntrega: "aguardando_financeiro", statusFinanceiro: "pendente_aprovacao", statusNota: "pendente_emissao", statusMaterial: "", galpao: "Vicente", rota: "Rota Fixa", prioridade: "Normal", periodicidade: "Quinzenal", notaFiscal: "", observacaoEscritorio: "Pedido recorrente Breda", observacaoGalpao: "", createdAt: "2026-04-14T10:00:00Z" },
+  { id: "ex7", empresa: "tecnopano", clienteId: "cl7", estoqueOrigemId: "e10", nomeFantasia: "AUTO VIAÇÃO ABC LTDA", razaoSocial: "Auto Viação ABC Ltda", cnpj: "59153569000130", contato: "(11) 4335-1000", email: "frotas@aviabc.com.br", endereco: "Rua Tasman, 100 - S.B.Campo/SP", descricaoProduto: "TOALHA Branco 30x30 Cm", tipoMaterial: "TOALHA", cor: "Branco", medida: "30x30 Cm", kilo: 120, kiloSolicitada: 120, unidade: 200, qtdePedido: 200, unidadeMedida: "Pacote / Kilo", statusPedido: "", statusEntrega: "aguardando_financeiro", statusFinanceiro: "pendente_aprovacao", statusNota: "pendente_emissao", statusMaterial: "", galpao: "Vicente", rota: "Rota Fixa", prioridade: "Normal", periodicidade: "Quinzenal", notaFiscal: "", observacaoEscritorio: "Novo pedido — aguardar aprovação Lane", observacaoGalpao: "", createdAt: "2026-04-12T08:00:00Z" },
+  { id: "ex8", empresa: "tecnopano", clienteId: "cl8", estoqueOrigemId: "e19", nomeFantasia: "NOVA JVS GUINDASTE E TRANSPORTES", razaoSocial: "Nova JVS Guindastes e Transportes Ltda", cnpj: "25101928000193", contato: "(13) 3468-3000", email: "operacional@novajvs.com.br", endereco: "Rod. Padre Manoel da Nóbrega, 2000 - São Vicente/SP", descricaoProduto: "MANTA ABSORÇÃO Escuro", tipoMaterial: "MANTA ABSORÇÃO", cor: "Escuro", medida: "", kilo: 200, kiloSolicitada: 200, unidade: 0, qtdePedido: 0, unidadeMedida: "Kilo", statusPedido: "", statusEntrega: "aguardando_financeiro", statusFinanceiro: "pendente_aprovacao", statusNota: "pendente_emissao", statusMaterial: "", galpao: "Vicente", rota: "Retire Aqui", prioridade: "Urgente", periodicidade: "", notaFiscal: "", observacaoEscritorio: "Cliente retira — guindastes port.", observacaoGalpao: "", createdAt: "2026-04-14T09:00:00Z" },
+  { id: "ex9", empresa: "tecnopano", clienteId: "cl3", estoqueOrigemId: "e8", nomeFantasia: "BREDA TRANSPORTE E SERVIÇOS", razaoSocial: "Breda Transportes S/A", cnpj: "05160935000310", contato: "(13) 3362-8000", email: "compras@breda.com.br", endereco: "Rod. Cônego Domênico, 1000 - Cubatão/SP", descricaoProduto: "ESTOPA Escuro", tipoMaterial: "ESTOPA", cor: "Escuro", medida: "", kilo: 300, kiloSolicitada: 300, unidade: 0, qtdePedido: 0, unidadeMedida: "Kilo", statusPedido: "", statusEntrega: "aguardando_financeiro", statusFinanceiro: "pendente_aprovacao", statusNota: "pendente_emissao", statusMaterial: "", galpao: "Vicente", rota: "Rota Fixa", prioridade: "Normal", periodicidade: "Quinzenal", notaFiscal: "", observacaoEscritorio: "Pedido recorrente Breda", observacaoGalpao: "", createdAt: "2026-04-14T10:00:00Z" },
   // ─── Pendentes (recém-criados) ───
-  { id: "ex10", clienteId: "cl1", estoqueOrigemId: "e11", nomeFantasia: "MARAMAR VEICULOS LTDA", razaoSocial: "Maramar Veículos Ltda", cnpj: "02498597000171", contato: "(13) 3261-5000", email: "compras@maramar.com.br", endereco: "Av. Ana Costa, 500 - Santos/SP", descricaoProduto: "FRONHA Branco 50x70 Cm", tipoMaterial: "FRONHA", cor: "Branco", medida: "50x70 Cm", kilo: 60, kiloSolicitada: 60, unidade: 200, qtdePedido: 200, unidadeMedida: "Pacote / Kilo", statusPedido: "", statusEntrega: "pendente", statusFinanceiro: "pendente_aprovacao", statusNota: "pendente_emissao", statusMaterial: "", galpao: "Vicente", rota: "Rota Fixa", prioridade: "Baixa", periodicidade: "Mensal", notaFiscal: "", observacaoEscritorio: "Pedido extra do mês", observacaoGalpao: "", createdAt: "2026-04-15T08:00:00Z" },
-  { id: "ex11", clienteId: "cl4", estoqueOrigemId: "e20", nomeFantasia: "VIAÇÃO PIRACICABANA S/A", razaoSocial: "Viação Piracicabana S.A.", cnpj: "54360623005759", contato: "(11) 4330-1000", email: "frotas@vpsa.com.br", endereco: "Rua Marechal, 200 - S.B.Campo/SP", descricaoProduto: "UNIFORME Azul M", tipoMaterial: "UNIFORME", cor: "Azul", medida: "M", kilo: 90, kiloSolicitada: 90, unidade: 200, qtdePedido: 200, unidadeMedida: "Pacote / Kilo", statusPedido: "", statusEntrega: "pendente", statusFinanceiro: "pendente_aprovacao", statusNota: "pendente_emissao", statusMaterial: "", galpao: "Vicente", rota: "Rota Fixa", prioridade: "Normal", periodicidade: "Mensal", notaFiscal: "", observacaoEscritorio: "Uniformes para motoristas", observacaoGalpao: "", createdAt: "2026-04-15T09:00:00Z" },
-  { id: "ex12", clienteId: "cl2", estoqueOrigemId: "e9", nomeFantasia: "CIA ULTRAGAZ S/A", razaoSocial: "Cia Ultragaz S.A.", cnpj: "61602199001275", contato: "(13) 3219-4000", email: "suprimentos@ultragaz.com.br", endereco: "Av. Portuária, 800 - Santos/SP", descricaoProduto: "GRU Variado", tipoMaterial: "GRU", cor: "Variado", medida: "", kilo: 280, kiloSolicitada: 280, unidade: 0, qtdePedido: 0, unidadeMedida: "Kilo", statusPedido: "", statusEntrega: "pendente", statusFinanceiro: "pendente_aprovacao", statusNota: "pendente_emissao", statusMaterial: "", galpao: "Vicente", rota: "Rota Fixa", prioridade: "Normal", periodicidade: "Semanal", notaFiscal: "", observacaoEscritorio: "Reposição semanal", observacaoGalpao: "", createdAt: "2026-04-16T08:00:00Z" },
+  { id: "ex10", empresa: "tecnopano", clienteId: "cl1", estoqueOrigemId: "e11", nomeFantasia: "MARAMAR VEICULOS LTDA", razaoSocial: "Maramar Veículos Ltda", cnpj: "02498597000171", contato: "(13) 3261-5000", email: "compras@maramar.com.br", endereco: "Av. Ana Costa, 500 - Santos/SP", descricaoProduto: "FRONHA Branco 50x70 Cm", tipoMaterial: "FRONHA", cor: "Branco", medida: "50x70 Cm", kilo: 60, kiloSolicitada: 60, unidade: 200, qtdePedido: 200, unidadeMedida: "Pacote / Kilo", statusPedido: "", statusEntrega: "pendente", statusFinanceiro: "pendente_aprovacao", statusNota: "pendente_emissao", statusMaterial: "", galpao: "Vicente", rota: "Rota Fixa", prioridade: "Baixa", periodicidade: "Mensal", notaFiscal: "", observacaoEscritorio: "Pedido extra do mês", observacaoGalpao: "", createdAt: "2026-04-15T08:00:00Z" },
+  { id: "ex11", empresa: "tecnopano", clienteId: "cl4", estoqueOrigemId: "e20", nomeFantasia: "VIAÇÃO PIRACICABANA S/A", razaoSocial: "Viação Piracicabana S.A.", cnpj: "54360623005759", contato: "(11) 4330-1000", email: "frotas@vpsa.com.br", endereco: "Rua Marechal, 200 - S.B.Campo/SP", descricaoProduto: "UNIFORME Azul M", tipoMaterial: "UNIFORME", cor: "Azul", medida: "M", kilo: 90, kiloSolicitada: 90, unidade: 200, qtdePedido: 200, unidadeMedida: "Pacote / Kilo", statusPedido: "", statusEntrega: "pendente", statusFinanceiro: "pendente_aprovacao", statusNota: "pendente_emissao", statusMaterial: "", galpao: "Vicente", rota: "Rota Fixa", prioridade: "Normal", periodicidade: "Mensal", notaFiscal: "", observacaoEscritorio: "Uniformes para motoristas", observacaoGalpao: "", createdAt: "2026-04-15T09:00:00Z" },
+  { id: "ex12", empresa: "tecnopano", clienteId: "cl2", estoqueOrigemId: "e9", nomeFantasia: "CIA ULTRAGAZ S/A", razaoSocial: "Cia Ultragaz S.A.", cnpj: "61602199001275", contato: "(13) 3219-4000", email: "suprimentos@ultragaz.com.br", endereco: "Av. Portuária, 800 - Santos/SP", descricaoProduto: "GRU Variado", tipoMaterial: "GRU", cor: "Variado", medida: "", kilo: 280, kiloSolicitada: 280, unidade: 0, qtdePedido: 0, unidadeMedida: "Kilo", statusPedido: "", statusEntrega: "pendente", statusFinanceiro: "pendente_aprovacao", statusNota: "pendente_emissao", statusMaterial: "", galpao: "Vicente", rota: "Rota Fixa", prioridade: "Normal", periodicidade: "Semanal", notaFiscal: "", observacaoEscritorio: "Reposição semanal", observacaoGalpao: "", createdAt: "2026-04-16T08:00:00Z" },
 ];
 
 let producaoDiariaList: any[] = [
   // ─── 05/04 ───
-  { id: "pd1", data: "2026-04-05", nomeDupla: "GLINS/KAYAN", sala: "O4", material: "BR CASAL", horarioInicio: "08:40", horarioFim: "10:55", status: "completa", assinatura: "Kayan", encarregado: "Nodin", observacao: "", createdAt: "2026-04-05T08:40:00Z" },
-  { id: "pd2", data: "2026-04-05", nomeDupla: "GLINS/KAYAN", sala: "O4", material: "CASAL RVA", horarioInicio: "11:10", horarioFim: "12:30", status: "completa", assinatura: "Kayan", encarregado: "Nodin", observacao: "", createdAt: "2026-04-05T11:10:00Z" },
-  { id: "pd3", data: "2026-04-05", nomeDupla: "GLINS/KAYAN", sala: "O4", material: "C2 RVA", horarioInicio: "13:40", horarioFim: "16:00", status: "completa", assinatura: "Kayan", encarregado: "Nodin", observacao: "", createdAt: "2026-04-05T13:40:00Z" },
-  { id: "pd4", data: "2026-04-05", nomeDupla: "EDISON/LUI", sala: "O5", material: "KING", horarioInicio: "08:30", horarioFim: "11:00", status: "completa", assinatura: "Edison", encarregado: "Nodin", observacao: "", createdAt: "2026-04-05T08:30:00Z" },
-  { id: "pd5", data: "2026-04-05", nomeDupla: "EDISON/LUI", sala: "O5", material: "MICROFIBRA", horarioInicio: "11:15", horarioFim: null, status: "incompleta", assinatura: "Edison", encarregado: "Nodin", observacao: "Material insuficiente", createdAt: "2026-04-05T11:15:00Z" },
-  { id: "pd6", data: "2026-04-05", nomeDupla: "EDISON/LUI", sala: "COBERTÓRIO", material: "LAMBRELA", horarioInicio: "13:30", horarioFim: "15:45", status: "completa", assinatura: "Edison", encarregado: "Nodin", observacao: "", createdAt: "2026-04-05T13:30:00Z" },
+  { id: "pd1", data: "2026-04-05", nomeDupla: "GLINS/KAYAN", sala: "O4", material: "BR CASAL", pacotes: 96, quilos: 22, descarte: 1.5, costura: 3.2, horarioInicio: "08:40", horarioFim: "10:55", status: "completa", assinatura: "Kayan", encarregado: "Nodin", destino: "acabamento", costureiraInterna: null, observacao: "", createdAt: "2026-04-05T08:40:00Z" },
+  { id: "pd2", data: "2026-04-05", nomeDupla: "GLINS/KAYAN", sala: "O4", material: "CASAL RVA", pacotes: 84, quilos: 18, descarte: 2.0, costura: 1.8, horarioInicio: "11:10", horarioFim: "12:30", status: "completa", assinatura: "Kayan", encarregado: "Nodin", destino: "acabamento", costureiraInterna: null, observacao: "", createdAt: "2026-04-05T11:10:00Z" },
+  { id: "pd3", data: "2026-04-05", nomeDupla: "GLINS/KAYAN", sala: "O4", material: "C2 RVA", pacotes: 72, quilos: 15, descarte: 0.8, costura: 2.5, horarioInicio: "13:40", horarioFim: "16:00", status: "completa", assinatura: "Kayan", encarregado: "Nodin", destino: "acabamento", costureiraInterna: null, observacao: "", createdAt: "2026-04-05T13:40:00Z" },
+  { id: "pd4", data: "2026-04-05", nomeDupla: "EDISON/LUI", sala: "O5", material: "KING", pacotes: 48, quilos: 30, descarte: 3.0, costura: 0, horarioInicio: "08:30", horarioFim: "11:00", status: "completa", assinatura: "Edison", encarregado: "Nodin", destino: "acabamento", costureiraInterna: null, observacao: "", createdAt: "2026-04-05T08:30:00Z" },
+  { id: "pd5", data: "2026-04-05", nomeDupla: "EDISON/LUI", sala: "O5", material: "MICROFIBRA", pacotes: 0, quilos: 0, descarte: 0, costura: 0, horarioInicio: "11:15", horarioFim: null, status: "incompleta", assinatura: "Edison", encarregado: "Nodin", destino: "acabamento", costureiraInterna: null, observacao: "Material insuficiente", createdAt: "2026-04-05T11:15:00Z" },
+  { id: "pd6", data: "2026-04-05", nomeDupla: "EDISON/LUI", sala: "COBERTÓRIO", material: "LAMBRELA", pacotes: 60, quilos: 25, descarte: 1.2, costura: 4.0, horarioInicio: "13:30", horarioFim: "15:45", status: "completa", assinatura: "Edison", encarregado: "Nodin", destino: "acabamento", costureiraInterna: null, observacao: "", createdAt: "2026-04-05T13:30:00Z" },
   // ─── 04/04 ───
-  { id: "pd7", data: "2026-04-04", nomeDupla: "MARCOS/ANA", sala: "O3", material: "C2 LISA", horarioInicio: "08:00", horarioFim: "10:30", status: "completa", assinatura: "Marcos", encarregado: "Nodin", observacao: "", createdAt: "2026-04-04T08:00:00Z" },
-  { id: "pd8", data: "2026-04-04", nomeDupla: "MARCOS/ANA", sala: "O3", material: "CASAL EUA", horarioInicio: "10:45", horarioFim: "12:15", status: "completa", assinatura: "Marcos", encarregado: "Nodin", observacao: "", createdAt: "2026-04-04T10:45:00Z" },
-  { id: "pd9", data: "2026-04-04", nomeDupla: "RAFAEL/PEDRO", sala: "CORTE VLI", material: "ESTOPA", horarioInicio: "07:00", horarioFim: "11:30", status: "completa", assinatura: "Rafael", encarregado: "Nodin", observacao: "", createdAt: "2026-04-04T07:00:00Z" },
-  { id: "pd10", data: "2026-04-04", nomeDupla: "RAFAEL/PEDRO", sala: "FAIXA", material: "GRU", horarioInicio: "13:00", horarioFim: "16:30", status: "completa", assinatura: "Rafael", encarregado: "Nodin", observacao: "", createdAt: "2026-04-04T13:00:00Z" },
-  { id: "pd11", data: "2026-04-04", nomeDupla: "LUCAS/JOÃO", sala: "CORTE 01", material: "TOALHA", horarioInicio: "08:00", horarioFim: "12:00", status: "completa", assinatura: "Lucas", encarregado: "Nodin", observacao: "", createdAt: "2026-04-04T08:00:00Z" },
-  { id: "pd12", data: "2026-04-04", nomeDupla: "LUCAS/JOÃO", sala: "CORTE 03", material: "FRONHA", horarioInicio: "13:00", horarioFim: "16:00", status: "completa", assinatura: "Lucas", encarregado: "Nodin", observacao: "", createdAt: "2026-04-04T13:00:00Z" },
+  { id: "pd7", data: "2026-04-04", nomeDupla: "MARCOS/ANA", sala: "O3", material: "C2 LISA", pacotes: 88, quilos: 20, descarte: 1.0, costura: 2.0, horarioInicio: "08:00", horarioFim: "10:30", status: "completa", assinatura: "Marcos", encarregado: "Nodin", destino: "acabamento", costureiraInterna: null, observacao: "", createdAt: "2026-04-04T08:00:00Z" },
+  { id: "pd8", data: "2026-04-04", nomeDupla: "MARCOS/ANA", sala: "O3", material: "CASAL EUA", pacotes: 64, quilos: 16, descarte: 0.5, costura: 1.5, horarioInicio: "10:45", horarioFim: "12:15", status: "completa", assinatura: "Marcos", encarregado: "Nodin", destino: "acabamento", costureiraInterna: null, observacao: "", createdAt: "2026-04-04T10:45:00Z" },
+  { id: "pd9", data: "2026-04-04", nomeDupla: "RAFAEL/PEDRO", sala: "CORTE VLI", material: "ESTOPA", pacotes: 0, quilos: 45, descarte: 5.0, costura: 0, horarioInicio: "07:00", horarioFim: "11:30", status: "completa", assinatura: "Rafael", encarregado: "Nodin", destino: "acabamento", costureiraInterna: null, observacao: "", createdAt: "2026-04-04T07:00:00Z" },
+  { id: "pd10", data: "2026-04-04", nomeDupla: "RAFAEL/PEDRO", sala: "FAIXA", material: "GRU", pacotes: 0, quilos: 38, descarte: 4.0, costura: 0, horarioInicio: "13:00", horarioFim: "16:30", status: "completa", assinatura: "Rafael", encarregado: "Nodin", destino: "acabamento", costureiraInterna: null, observacao: "", createdAt: "2026-04-04T13:00:00Z" },
+  { id: "pd11", data: "2026-04-04", nomeDupla: "LUCAS/JOÃO", sala: "CORTE 01", material: "TOALHA", pacotes: 120, quilos: 28, descarte: 2.0, costura: 5.0, horarioInicio: "08:00", horarioFim: "12:00", status: "completa", assinatura: "Lucas", encarregado: "Nodin", destino: "acabamento", costureiraInterna: null, observacao: "", createdAt: "2026-04-04T08:00:00Z" },
+  { id: "pd12", data: "2026-04-04", nomeDupla: "LUCAS/JOÃO", sala: "CORTE 03", material: "FRONHA", pacotes: 200, quilos: 12, descarte: 0.3, costura: 1.0, horarioInicio: "13:00", horarioFim: "16:00", status: "completa", assinatura: "Lucas", encarregado: "Nodin", destino: "acabamento", costureiraInterna: null, observacao: "", createdAt: "2026-04-04T13:00:00Z" },
   // ─── 07/04 ───
-  { id: "pd13", data: "2026-04-07", nomeDupla: "RAFAEL/PEDRO", sala: "CORTE VLI", material: "ESTOPA", horarioInicio: "07:00", horarioFim: "11:00", status: "completa", assinatura: "Rafael", encarregado: "Nodin", observacao: "", createdAt: "2026-04-07T07:00:00Z" },
-  { id: "pd14", data: "2026-04-07", nomeDupla: "LUCAS/JOÃO", sala: "CORTE 01", material: "TOALHA", horarioInicio: "08:00", horarioFim: "12:00", status: "completa", assinatura: "Lucas", encarregado: "Nodin", observacao: "", createdAt: "2026-04-07T08:00:00Z" },
-  { id: "pd15", data: "2026-04-07", nomeDupla: "MARCOS/ANA", sala: "CORTE 04", material: "LENÇOL", horarioInicio: "08:00", horarioFim: "12:30", status: "completa", assinatura: "Marcos", encarregado: "Nodin", observacao: "", createdAt: "2026-04-07T08:00:00Z" },
-  { id: "pd16", data: "2026-04-07", nomeDupla: "GLINS/KAYAN", sala: "O4", material: "BR CASAL", horarioInicio: "08:30", horarioFim: "12:00", status: "completa", assinatura: "Kayan", encarregado: "Nodin", observacao: "", createdAt: "2026-04-07T08:30:00Z" },
-  { id: "pd17", data: "2026-04-07", nomeDupla: "EDISON/LUI", sala: "O5", material: "KING", horarioInicio: "08:00", horarioFim: "11:30", status: "completa", assinatura: "Edison", encarregado: "Nodin", observacao: "", createdAt: "2026-04-07T08:00:00Z" },
-  { id: "pd18", data: "2026-04-07", nomeDupla: "CARLOS/SILVA", sala: "CORTE 01", material: "MANTA ABSORÇÃO", horarioInicio: "13:00", horarioFim: "16:30", status: "completa", assinatura: "Carlos", encarregado: "Nodin", observacao: "", createdAt: "2026-04-07T13:00:00Z" },
+  { id: "pd13", data: "2026-04-07", nomeDupla: "RAFAEL/PEDRO", sala: "CORTE VLI", material: "ESTOPA", pacotes: 0, quilos: 42, descarte: 4.5, costura: 0, horarioInicio: "07:00", horarioFim: "11:00", status: "completa", assinatura: "Rafael", encarregado: "Nodin", destino: "acabamento", costureiraInterna: null, observacao: "", createdAt: "2026-04-07T07:00:00Z" },
+  { id: "pd14", data: "2026-04-07", nomeDupla: "LUCAS/JOÃO", sala: "CORTE 01", material: "TOALHA", pacotes: 110, quilos: 26, descarte: 1.8, costura: 4.5, horarioInicio: "08:00", horarioFim: "12:00", status: "completa", assinatura: "Lucas", encarregado: "Nodin", destino: "acabamento", costureiraInterna: null, observacao: "", createdAt: "2026-04-07T08:00:00Z" },
+  { id: "pd15", data: "2026-04-07", nomeDupla: "MARCOS/ANA", sala: "CORTE 04", material: "LENÇOL", pacotes: 40, quilos: 35, descarte: 2.5, costura: 0, horarioInicio: "08:00", horarioFim: "12:30", status: "completa", assinatura: "Marcos", encarregado: "Nodin", destino: "acabamento", costureiraInterna: null, observacao: "", createdAt: "2026-04-07T08:00:00Z" },
+  { id: "pd16", data: "2026-04-07", nomeDupla: "GLINS/KAYAN", sala: "O4", material: "BR CASAL", pacotes: 96, quilos: 21, descarte: 1.2, costura: 3.0, horarioInicio: "08:30", horarioFim: "12:00", status: "completa", assinatura: "Kayan", encarregado: "Nodin", destino: "acabamento", costureiraInterna: null, observacao: "", createdAt: "2026-04-07T08:30:00Z" },
+  { id: "pd17", data: "2026-04-07", nomeDupla: "EDISON/LUI", sala: "O5", material: "KING", pacotes: 50, quilos: 32, descarte: 2.8, costura: 0, horarioInicio: "08:00", horarioFim: "11:30", status: "completa", assinatura: "Edison", encarregado: "Nodin", destino: "acabamento", costureiraInterna: null, observacao: "", createdAt: "2026-04-07T08:00:00Z" },
+  { id: "pd18", data: "2026-04-07", nomeDupla: "CARLOS/SILVA", sala: "CORTE 01", material: "MANTA ABSORÇÃO", pacotes: 0, quilos: 50, descarte: 6.0, costura: 0, horarioInicio: "13:00", horarioFim: "16:30", status: "completa", assinatura: "Carlos", encarregado: "Nodin", destino: "acabamento", costureiraInterna: null, observacao: "", createdAt: "2026-04-07T13:00:00Z" },
   // ─── 08/04 → 14/04 ───
-  { id: "pd19", data: "2026-04-08", nomeDupla: "RAFAEL/PEDRO", sala: "FAIXA", material: "GRU", horarioInicio: "07:00", horarioFim: "11:00", status: "completa", assinatura: "Rafael", encarregado: "Nodin", observacao: "", createdAt: "2026-04-08T07:00:00Z" },
-  { id: "pd20", data: "2026-04-08", nomeDupla: "MARCOS/ANA", sala: "CORTE 02", material: "MALHA", horarioInicio: "08:00", horarioFim: "12:00", status: "completa", assinatura: "Marcos", encarregado: "Nodin", observacao: "", createdAt: "2026-04-08T08:00:00Z" },
-  { id: "pd21", data: "2026-04-09", nomeDupla: "LUCAS/JOÃO", sala: "CORTE 03", material: "FRONHA", horarioInicio: "08:00", horarioFim: "12:00", status: "completa", assinatura: "Lucas", encarregado: "Nodin", observacao: "", createdAt: "2026-04-09T08:00:00Z" },
-  { id: "pd22", data: "2026-04-09", nomeDupla: "GLINS/KAYAN", sala: "O4", material: "C2 RVA", horarioInicio: "08:30", horarioFim: "12:30", status: "completa", assinatura: "Kayan", encarregado: "Nodin", observacao: "", createdAt: "2026-04-09T08:30:00Z" },
-  { id: "pd23", data: "2026-04-10", nomeDupla: "RAFAEL/PEDRO", sala: "CORTE VLI", material: "ESTOPA", horarioInicio: "07:00", horarioFim: "11:30", status: "completa", assinatura: "Rafael", encarregado: "Nodin", observacao: "", createdAt: "2026-04-10T07:00:00Z" },
-  { id: "pd24", data: "2026-04-10", nomeDupla: "EDISON/LUI", sala: "COBERTÓRIO", material: "LAMBRELA", horarioInicio: "08:00", horarioFim: "12:00", status: "completa", assinatura: "Edison", encarregado: "Nodin", observacao: "", createdAt: "2026-04-10T08:00:00Z" },
-  { id: "pd25", data: "2026-04-11", nomeDupla: "LUCAS/JOÃO", sala: "CORTE 01", material: "LENÇOL", horarioInicio: "08:00", horarioFim: "12:00", status: "completa", assinatura: "Lucas", encarregado: "Nodin", observacao: "", createdAt: "2026-04-11T08:00:00Z" },
-  { id: "pd26", data: "2026-04-11", nomeDupla: "CARLOS/SILVA", sala: "CORTE 01", material: "MANTA ABSORÇÃO", horarioInicio: "13:00", horarioFim: "16:00", status: "completa", assinatura: "Carlos", encarregado: "Nodin", observacao: "", createdAt: "2026-04-11T13:00:00Z" },
-  { id: "pd27", data: "2026-04-14", nomeDupla: "RAFAEL/PEDRO", sala: "CORTE VLI", material: "MALHA", horarioInicio: "07:00", horarioFim: "11:00", status: "completa", assinatura: "Rafael", encarregado: "Nodin", observacao: "", createdAt: "2026-04-14T07:00:00Z" },
-  { id: "pd28", data: "2026-04-14", nomeDupla: "LUCAS/JOÃO", sala: "CORTE 03", material: "EDREDON", horarioInicio: "08:00", horarioFim: "12:00", status: "completa", assinatura: "Lucas", encarregado: "Nodin", observacao: "", createdAt: "2026-04-14T08:00:00Z" },
-  { id: "pd29", data: "2026-04-14", nomeDupla: "MARCOS/ANA", sala: "CORTE 04", material: "UNIFORME", horarioInicio: "08:00", horarioFim: "11:30", status: "completa", assinatura: "Marcos", encarregado: "Nodin", observacao: "", createdAt: "2026-04-14T08:00:00Z" },
-  { id: "pd30", data: "2026-04-14", nomeDupla: "GLINS/KAYAN", sala: "O4", material: "CASAL RVA", horarioInicio: "08:30", horarioFim: "12:00", status: "completa", assinatura: "Kayan", encarregado: "Nodin", observacao: "", createdAt: "2026-04-14T08:30:00Z" },
+  { id: "pd19", data: "2026-04-08", nomeDupla: "RAFAEL/PEDRO", sala: "FAIXA", material: "GRU", pacotes: 0, quilos: 40, descarte: 3.5, costura: 0, horarioInicio: "07:00", horarioFim: "11:00", status: "completa", assinatura: "Rafael", encarregado: "Nodin", destino: "acabamento", costureiraInterna: null, observacao: "", createdAt: "2026-04-08T07:00:00Z" },
+  { id: "pd20", data: "2026-04-08", nomeDupla: "MARCOS/ANA", sala: "CORTE 02", material: "MALHA", pacotes: 80, quilos: 18, descarte: 1.0, costura: 2.5, horarioInicio: "08:00", horarioFim: "12:00", status: "completa", assinatura: "Marcos", encarregado: "Nodin", destino: "acabamento", costureiraInterna: null, observacao: "", createdAt: "2026-04-08T08:00:00Z" },
+  { id: "pd21", data: "2026-04-09", nomeDupla: "LUCAS/JOÃO", sala: "CORTE 03", material: "FRONHA", pacotes: 180, quilos: 11, descarte: 0.2, costura: 0.8, horarioInicio: "08:00", horarioFim: "12:00", status: "completa", assinatura: "Lucas", encarregado: "Nodin", destino: "acabamento", costureiraInterna: null, observacao: "", createdAt: "2026-04-09T08:00:00Z" },
+  { id: "pd22", data: "2026-04-09", nomeDupla: "GLINS/KAYAN", sala: "O4", material: "C2 RVA", pacotes: 70, quilos: 14, descarte: 0.6, costura: 2.0, horarioInicio: "08:30", horarioFim: "12:30", status: "completa", assinatura: "Kayan", encarregado: "Nodin", destino: "acabamento", costureiraInterna: null, observacao: "", createdAt: "2026-04-09T08:30:00Z" },
+  { id: "pd23", data: "2026-04-10", nomeDupla: "RAFAEL/PEDRO", sala: "CORTE VLI", material: "ESTOPA", pacotes: 0, quilos: 44, descarte: 5.5, costura: 0, horarioInicio: "07:00", horarioFim: "11:30", status: "completa", assinatura: "Rafael", encarregado: "Nodin", destino: "acabamento", costureiraInterna: null, observacao: "", createdAt: "2026-04-10T07:00:00Z" },
+  { id: "pd24", data: "2026-04-10", nomeDupla: "EDISON/LUI", sala: "COBERTÓRIO", material: "LAMBRELA", pacotes: 55, quilos: 24, descarte: 1.0, costura: 3.5, horarioInicio: "08:00", horarioFim: "12:00", status: "completa", assinatura: "Edison", encarregado: "Nodin", destino: "acabamento", costureiraInterna: null, observacao: "", createdAt: "2026-04-10T08:00:00Z" },
+  { id: "pd25", data: "2026-04-11", nomeDupla: "LUCAS/JOÃO", sala: "CORTE 01", material: "LENÇOL", pacotes: 38, quilos: 33, descarte: 2.2, costura: 0, horarioInicio: "08:00", horarioFim: "12:00", status: "completa", assinatura: "Lucas", encarregado: "Nodin", destino: "acabamento", costureiraInterna: null, observacao: "", createdAt: "2026-04-11T08:00:00Z" },
+  { id: "pd26", data: "2026-04-11", nomeDupla: "CARLOS/SILVA", sala: "CORTE 01", material: "MANTA ABSORÇÃO", pacotes: 0, quilos: 48, descarte: 5.0, costura: 0, horarioInicio: "13:00", horarioFim: "16:00", status: "completa", assinatura: "Carlos", encarregado: "Nodin", destino: "acabamento", costureiraInterna: null, observacao: "", createdAt: "2026-04-11T13:00:00Z" },
+  { id: "pd27", data: "2026-04-14", nomeDupla: "RAFAEL/PEDRO", sala: "CORTE VLI", material: "MALHA", pacotes: 75, quilos: 17, descarte: 0.8, costura: 2.0, horarioInicio: "07:00", horarioFim: "11:00", status: "completa", assinatura: "Rafael", encarregado: "Nodin", destino: "acabamento", costureiraInterna: null, observacao: "", createdAt: "2026-04-14T07:00:00Z" },
+  { id: "pd28", data: "2026-04-14", nomeDupla: "LUCAS/JOÃO", sala: "CORTE 03", material: "EDREDON", pacotes: 30, quilos: 40, descarte: 3.0, costura: 0, horarioInicio: "08:00", horarioFim: "12:00", status: "completa", assinatura: "Lucas", encarregado: "Nodin", destino: "acabamento", costureiraInterna: null, observacao: "", createdAt: "2026-04-14T08:00:00Z" },
+  { id: "pd29", data: "2026-04-14", nomeDupla: "MARCOS/ANA", sala: "CORTE 04", material: "UNIFORME", pacotes: 200, quilos: 15, descarte: 0.5, costura: 8.0, horarioInicio: "08:00", horarioFim: "11:30", status: "completa", assinatura: "Marcos", encarregado: "Nodin", destino: "acabamento", costureiraInterna: null, observacao: "", createdAt: "2026-04-14T08:00:00Z" },
+  { id: "pd30", data: "2026-04-14", nomeDupla: "GLINS/KAYAN", sala: "O4", material: "CASAL RVA", pacotes: 90, quilos: 19, descarte: 1.5, costura: 2.8, horarioInicio: "08:30", horarioFim: "12:00", status: "completa", assinatura: "Kayan", encarregado: "Nodin", destino: "acabamento", costureiraInterna: null, observacao: "", createdAt: "2026-04-14T08:30:00Z" },
 ];
 
 let nextProducaoDiariaId = 31;
@@ -387,6 +388,18 @@ function resolvePerfilFromLogin(email: string, perfilOverride: unknown): string 
 }
 
 export function registerRoutes(app: Express) {
+  // ── Middleware: requer sessão de administrador ──
+  function requireAdmin(req: Request, res: Response, next: Function) {
+    if (!authSession.id || authSession.id === "") {
+      return res.status(401).json({ message: "Não autenticado" });
+    }
+    const perfil = (authSession.perfil || "").toLowerCase();
+    if (perfil !== "administrador" && perfil !== "super_admin") {
+      return res.status(403).json({ message: "Acesso restrito a administradores" });
+    }
+    next();
+  }
+
   // ==================== AUTH ====================
   app.post("/api/auth/login", async (req: Request, res: Response) => {
     const { email, password } = req.body;
@@ -517,7 +530,7 @@ export function registerRoutes(app: Express) {
   });
 
   // ── Gerar link de convite (admin envia para o user) ──
-  app.post("/api/admin/users/:id/invite-link", async (req: Request, res: Response) => {
+  app.post("/api/admin/users/:id/invite-link", requireAdmin, async (req: Request, res: Response) => {
     try {
       const { data: user } = await supabase
         .from("users")
@@ -802,7 +815,12 @@ export function registerRoutes(app: Express) {
 
   // ==================== SEPARACOES (Supabase) ====================
   app.get("/api/separacoes", async (_req: Request, res: Response) => {
-    try { res.json(await listSeparacoes()); }
+    try {
+      const dbSeps = await listSeparacoes();
+      const dbIds = new Set((dbSeps || []).map((s: any) => s.id));
+      const memOnly = separacoes.filter((s: any) => !dbIds.has(s.id));
+      res.json([...(dbSeps || []), ...memOnly]);
+    }
     catch (err) { console.error("[GET /api/separacoes]", err); res.status(500).json({ message: "Erro" }); }
   });
 
@@ -845,7 +863,9 @@ export function registerRoutes(app: Express) {
 
       // Auto-create costureira/repanol task when destino matches
       const destino = req.body.destino;
-      if (destino === "costureira") {
+
+      // Costura terceirizada → costureiraList (motorista busca/traz)
+      if (destino === "costureira" || destino === "costura_terceirizada") {
         try {
           const coleta = await dbGetColeta(req.body.coletaId);
           costureiraList.push({
@@ -864,10 +884,42 @@ export function registerRoutes(app: Express) {
             totalDifKg: 0, residuos: 0,
             assCostEntrega: null, assMotEntrega: null,
             assCostDevolucao: null, assMotDevolucao: null,
-            galpaoEnvio: "Vicente", observacao: "Gerado automaticamente pela triagem",
+            galpaoEnvio: "Vicente", observacao: "Gerado pela triagem — costura terceirizada",
           });
-          console.log(`[Triagem→Costureira] Auto-criado envio para ${req.body.tipoMaterial} ${req.body.peso}kg`);
-        } catch (e) { console.warn("[Triagem→Costureira] Erro:", e); }
+          console.log(`[Triagem→Costura Terceirizada] Envio para ${req.body.tipoMaterial} ${req.body.peso}kg`);
+        } catch (e) { console.warn("[Triagem→Costura Terceirizada] Erro:", e); }
+      }
+
+      // Costura interna CLT → producoes com sala="COSTURA" + salaOrigem
+      if (destino === "costura_interna") {
+        try {
+          const coleta = await dbGetColeta(req.body.coletaId);
+          producoes.push({
+            id: `p${nextProducaoId++}`,
+            coletaId: req.body.coletaId,
+            coletaNumero: coleta?.numero || 0,
+            fornecedor: coleta?.nomeFantasia || "",
+            sala: "COSTURA",
+            salaOrigem: req.body.salaOrigem || "Triagem",
+            tipoMaterial: req.body.tipoMaterial,
+            cor: req.body.cor || "",
+            acabamento: "",
+            medida: "",
+            kilo: Number(req.body.peso) || 0,
+            pesoEntrada: Number(req.body.peso) || 0,
+            pesoProduzido: null,
+            qtdePacotes: null,
+            unidadeMedida: "Kilo",
+            operador: "",
+            status: "em_andamento",
+            horarioInicio: new Date().toISOString(),
+            horarioFim: null,
+            qrCodeId: req.body.qrCodeId || "",
+            observacao: `Costura interna CLT — enviado de ${req.body.salaOrigem || "Triagem"}`,
+            createdAt: new Date().toISOString(),
+          });
+          console.log(`[Triagem→Costura Interna CLT] ${req.body.tipoMaterial} ${req.body.peso}kg de ${req.body.salaOrigem || "Triagem"}`);
+        } catch (e) { console.warn("[Triagem→Costura Interna] Erro:", e); }
       }
 
       if (destino === "repanol") {
@@ -967,18 +1019,51 @@ export function registerRoutes(app: Express) {
     const idx = costureiraList.findIndex((c) => c.id === req.params.id);
     if (idx === -1) return res.status(404).json({ message: "Envio não encontrado" });
 
+    const saida = costureiraList[idx].qtdsSaidaKg || 0;
+    const retornoKg = Number(req.body.qtdsRetornoKg) || 0;
+    const diffCalc = saida - retornoKg;
+    const residuoCalc = Number(req.body.residuos) || Math.max(diffCalc, 0);
+
     costureiraList[idx] = {
       ...costureiraList[idx],
       status: "retornado",
       dataRetorno: new Date().toISOString(),
       motoristaRetorno: req.body.motoristaRetorno || "",
-      qtdsRetornoKg: Number(req.body.qtdsRetornoKg) || 0,
+      qtdsRetornoKg: retornoKg,
       qtdsPacotesRetorno: Number(req.body.qtdsPacotesRetorno) || 0,
-      totalDifKg: Number(req.body.totalDifKg) || 0,
-      residuos: Number(req.body.residuos) || 0,
+      totalDifKg: diffCalc,
+      residuos: residuoCalc,
       assCostDevolucao: req.body.assCostDevolucao || "signed",
       assMotDevolucao: req.body.assMotDevolucao || "signed",
     };
+
+    // Auto-criar estoque com material retornado da costureira
+    if (retornoKg > 0) {
+      estoqueList.push({
+        id: `e${nextEstoqueId++}`,
+        producaoId: null,
+        coletaNumero: costureiraList[idx].coletaNumero,
+        fornecedor: costureiraList[idx].fornecedor,
+        descricaoProduto: `${costureiraList[idx].tipoMaterial} ${costureiraList[idx].tipoMedida || ""} Costurada`.trim(),
+        tipoMaterial: costureiraList[idx].tipoMaterial,
+        cor: "",
+        medida: costureiraList[idx].tipoMedida || "",
+        acabamento: "Costura Terceirizada",
+        kilo: retornoKg,
+        unidade: Number(req.body.qtdsPacotesRetorno) || 0,
+        pesoMedioPct: 0,
+        unidadeMedida: "Kilo",
+        qtdeReservadaPacote: 0,
+        galpao: costureiraList[idx].galpaoEnvio || "Vicente",
+        status: "Disponivel",
+        statusMaterial: "",
+        data: new Date().toISOString(),
+        origem: "costureira_terceirizada",
+        origemId: costureiraList[idx].id,
+      });
+      console.log(`[Costureira→Estoque] ${retornoKg}kg de ${costureiraList[idx].tipoMaterial} adicionado ao estoque (resíduo: ${residuoCalc}kg)`);
+    }
+
     res.json(costureiraList[idx]);
   });
 
@@ -1007,25 +1092,90 @@ export function registerRoutes(app: Express) {
       pesoMolhadoRetorno: 0,
       pesoTingidoRetorno: 0,
       repanolResiduo: 0,
+      motoristaEnvio: req.body.motoristaEnvio || "",
+      motoristaRetorno: "",
+      destinoRetorno: "",
       status: "enviado",
     };
     repanolList.push(novo);
     res.status(201).json(novo);
   });
 
-  app.put("/api/repanol/:id/retorno", (req: Request, res: Response) => {
+  app.put("/api/repanol/:id/retorno", async (req: Request, res: Response) => {
     const idx = repanolList.findIndex((r) => r.id === req.params.id);
     if (idx === -1) return res.status(404).json({ message: "Repanol não encontrado" });
+
+    const destinoRetorno = req.body.destinoRetorno || "triagem";
+    const totalEnvio = (repanolList[idx].pesoManchadoEnvio || 0) + (repanolList[idx].pesoMolhadoEnvio || 0) + (repanolList[idx].pesoTingidoEnvio || 0);
+    const manchRet = Number(req.body.pesoManchadoRetorno) || 0;
+    const molhRet = Number(req.body.pesoMolhadoRetorno) || 0;
+    const tingRet = Number(req.body.pesoTingidoRetorno) || 0;
+    const totalRet = manchRet + molhRet + tingRet;
+    const residuoCalc = Number(req.body.repanolResiduo) || Math.max(totalEnvio - totalRet, 0);
 
     repanolList[idx] = {
       ...repanolList[idx],
       dataRetorno: new Date().toISOString(),
-      pesoManchadoRetorno: Number(req.body.pesoManchadoRetorno) || 0,
-      pesoMolhadoRetorno: Number(req.body.pesoMolhadoRetorno) || 0,
-      pesoTingidoRetorno: Number(req.body.pesoTingidoRetorno) || 0,
-      repanolResiduo: Number(req.body.repanolResiduo) || 0,
+      pesoManchadoRetorno: manchRet,
+      pesoMolhadoRetorno: molhRet,
+      pesoTingidoRetorno: tingRet,
+      repanolResiduo: residuoCalc,
+      motoristaRetorno: req.body.motoristaRetorno || "",
+      destinoRetorno,
       status: "retornado",
     };
+
+    const r = repanolList[idx];
+    const totalRetorno = (Number(r.pesoManchadoRetorno) || 0) + (Number(r.pesoMolhadoRetorno) || 0) + (Number(r.pesoTingidoRetorno) || 0);
+
+    // Tingido → volta para triagem (auto-cria separação)
+    if (destinoRetorno === "triagem" && totalRetorno > 0) {
+      const sepId = `s${nextSeparacaoId++}`;
+      separacoes.push({
+        id: sepId,
+        coletaId: r.coletaId || "",
+        coletaNumero: r.coletaNumero,
+        fornecedor: r.fornecedor,
+        tipoMaterial: r.tipoMaterial,
+        cor: "Tingido",
+        peso: totalRetorno,
+        destino: "producao",
+        colaborador: "Retorno Repanol",
+        qrCode: `QR-REP-${r.id}`,
+        createdAt: new Date().toISOString(),
+        origem: "repanol_retorno",
+        origemId: r.id,
+      });
+      console.log(`[Repanol→Triagem] ${totalRetorno}kg criou separação ${sepId}`);
+    }
+
+    // GRU Cru → vai direto para VLI (auto-cria no estoque)
+    if (destinoRetorno === "vli" && totalRetorno > 0) {
+      estoqueList.push({
+        id: `e${nextEstoqueId++}`,
+        producaoId: null,
+        coletaNumero: r.coletaNumero,
+        fornecedor: r.fornecedor,
+        descricaoProduto: `${r.tipoMaterial} Tingido Repanol`,
+        tipoMaterial: r.tipoMaterial,
+        cor: "Tingido",
+        medida: "",
+        acabamento: "Repanol",
+        kilo: totalRetorno,
+        unidade: 0,
+        pesoMedioPct: 0,
+        unidadeMedida: "Kilo",
+        qtdeReservadaPacote: 0,
+        galpao: "Vicente",
+        status: "Disponivel",
+        statusMaterial: "",
+        data: new Date().toISOString(),
+        origem: "repanol_vli",
+        origemId: r.id,
+      });
+      console.log(`[Repanol→VLI] ${totalRetorno}kg direto para estoque VLI`);
+    }
+
     res.json(repanolList[idx]);
   });
 
@@ -1151,6 +1301,102 @@ export function registerRoutes(app: Express) {
     }
   });
 
+  // ==================== CLIENTES — CLASSIFICAÇÃO POR EMPRESA ====================
+
+  // POST /api/clientes/classificar-empresa
+  // Body: { empresa: "brazil" | "tecnopano", nomes: ["NOME1", "NOME2", ...] }
+  // Faz match por nome_fantasia (case-insensitive, trim) e atualiza o campo empresa
+  app.post("/api/clientes/classificar-empresa", async (req: Request, res: Response) => {
+    try {
+      const { empresa, nomes } = req.body;
+      if (!empresa || !nomes || !Array.isArray(nomes)) {
+        return res.status(400).json({ message: "empresa e nomes são obrigatórios" });
+      }
+
+      // Buscar todos os clientes
+      const { data: todos, error } = await supabase.from("clientes").select("id, nome_fantasia, empresa");
+      if (error) throw error;
+
+      // Normalizar nomes recebidos
+      const nomesNorm = nomes.map((n: string) => n.trim().toUpperCase());
+      const nomesSet = new Set(nomesNorm);
+
+      let matched = 0;
+      let alreadyOther = 0; // já classificado na OUTRA empresa → vira "ambas"
+      const updates: { id: string; empresa: string }[] = [];
+
+      for (const cli of (todos || [])) {
+        const nf = (cli.nome_fantasia || "").trim().toUpperCase();
+        if (!nomesSet.has(nf)) continue;
+
+        if (cli.empresa === empresa) {
+          // Já está classificado corretamente
+          matched++;
+          continue;
+        }
+
+        if (cli.empresa && cli.empresa !== "indefinido" && cli.empresa !== empresa) {
+          // Classificado na outra empresa → ambas
+          updates.push({ id: cli.id, empresa: "ambas" });
+          alreadyOther++;
+        } else {
+          updates.push({ id: cli.id, empresa });
+        }
+        matched++;
+      }
+
+      // Aplicar updates
+      for (const u of updates) {
+        await supabase.from("clientes").update({ empresa: u.empresa }).eq("id", u.id);
+      }
+
+      // Nomes que não encontraram match → criar como novos clientes
+      const existingNames = new Set((todos || []).map((c: any) => (c.nome_fantasia || "").trim().toUpperCase()));
+      const novos = nomesNorm.filter((n: string) => !existingNames.has(n));
+      const uniqueNovos = [...new Set(novos)];
+
+      for (const nome of uniqueNovos) {
+        await supabase.from("clientes").insert({
+          nome_fantasia: nome,
+          empresa,
+          ativo: true,
+        });
+      }
+
+      res.json({
+        empresa,
+        totalRecebidos: nomesNorm.length,
+        uniqueRecebidos: new Set(nomesNorm).size,
+        matched,
+        updates: updates.length,
+        ambas: alreadyOther,
+        novosInseridos: uniqueNovos.length,
+      });
+    } catch (err) {
+      console.error("[POST /api/clientes/classificar-empresa]", err);
+      res.status(500).json({ message: "Erro ao classificar clientes" });
+    }
+  });
+
+  // GET /api/clientes/por-empresa — resumo de classificação
+  app.get("/api/clientes/por-empresa", async (_req: Request, res: Response) => {
+    try {
+      const { data, error } = await supabase.from("clientes").select("id, nome_fantasia, empresa");
+      if (error) throw error;
+
+      const counts: Record<string, number> = {};
+      for (const c of (data || [])) {
+        const e = c.empresa || "indefinido";
+        counts[e] = (counts[e] || 0) + 1;
+      }
+
+      res.json({ total: (data || []).length, ...counts });
+    } catch (err) {
+      console.error("[GET /api/clientes/por-empresa]", err);
+      res.status(500).json({ message: "Erro" });
+    }
+  });
+
   // ==================== EXPEDICOES ====================
   // ==================== EXPEDIÇÕES / PEDIDOS (Supabase + fallback in-memory) ====================
   app.get("/api/expedicoes", async (_req: Request, res: Response) => {
@@ -1234,28 +1480,160 @@ export function registerRoutes(app: Express) {
 
   app.put("/api/expedicoes/:id/emitir-nf", async (req: Request, res: Response) => {
     try {
-      const notaFiscal = `NF-2026-${String(Math.floor(Math.random() * 9999)).padStart(4, "0")}`;
-      res.json(
-        await dbUpdateExpedicao(req.params.id, {
-          statusNota: "emitida",
-          notaFiscal,
-          statusEntrega: "pronto_entrega",
-          dataEmissaoNota: new Date().toISOString(),
-        }),
-      );
+      const empresaEmissao = req.body.empresa || "tecnopano";
+      const clienteId = req.body.clienteId;
+      const prefixo = empresaEmissao === "brazil" ? "BRZ" : "TNP";
+      const notaFiscal = `NF-${prefixo}-${String(Math.floor(Math.random() * 9999)).padStart(4, "0")}`;
+      const result = await dbUpdateExpedicao(req.params.id, {
+        statusNota: "emitida",
+        notaFiscal,
+        empresa: empresaEmissao,
+        statusEntrega: "pronto_entrega",
+        dataEmissaoNota: new Date().toISOString(),
+      });
+
+      // Se o cliente era indefinido, salvar a empresa no registro do cliente
+      if (clienteId) {
+        const { data: cli } = await supabase.from("clientes").select("empresa").eq("id", clienteId).single();
+        if (cli && (!cli.empresa || cli.empresa === "indefinido")) {
+          await supabase.from("clientes").update({ empresa: empresaEmissao }).eq("id", clienteId);
+          console.log(`[emitir-nf] Cliente ${clienteId} classificado como ${empresaEmissao}`);
+        }
+      }
+
+      res.json(result);
     } catch (err: any) {
       console.error("[PUT emitir-nf] FULL ERROR:", JSON.stringify(err, null, 2));
       res.status(500).json({ message: `Erro ao emitir NF: ${err?.message || err?.details || String(err)}` });
     }
   });
 
+  // ── Galpão (Lane): confirma material pronto → vai para financeiro ──
+  app.put("/api/expedicoes/:id/confirmar-material", async (req: Request, res: Response) => {
+    try {
+      const obsGalpao = req.body.observacaoGalpao || "";
+      res.json(await dbUpdateExpedicao(req.params.id, {
+        statusEntrega: "aguardando_financeiro",
+        observacaoGalpao: obsGalpao || undefined,
+      }));
+    } catch (err: any) {
+      res.status(500).json({ message: err.message || "Erro ao confirmar material" });
+    }
+  });
+
+  // ── Galpão (Lane): liberar caminhão (após NF emitida) ──
+  app.put("/api/expedicoes/:id/liberar", async (req: Request, res: Response) => {
+    try {
+      res.json(await dbUpdateExpedicao(req.params.id, {
+        statusEntrega: "pronto_entrega",
+      }));
+    } catch (err: any) {
+      res.status(500).json({ message: err.message || "Erro ao liberar" });
+    }
+  });
+
+  // ── Motorista: saiu para entregar ──
+  app.put("/api/expedicoes/:id/em-rota", async (req: Request, res: Response) => {
+    try {
+      res.json(await dbUpdateExpedicao(req.params.id, { statusEntrega: "em_rota" }));
+    } catch (err: any) {
+      res.status(500).json({ message: err.message || "Erro ao marcar em rota" });
+    }
+  });
+
+  // ── Motorista: entregue ──
   app.put("/api/expedicoes/:id/entregar", async (req: Request, res: Response) => {
     try {
-      res.json(await dbUpdateExpedicao(req.params.id, { statusEntrega: "entregue" }));
+      // Buscar pedido antes de atualizar para deduzir estoque
+      const pedido = await dbGetExpedicao(req.params.id);
+      const result = await dbUpdateExpedicao(req.params.id, { statusEntrega: "entregue" });
+
+      // Deduzir do estoque in-memory (se tem estoqueOrigemId)
+      if (pedido?.estoqueOrigemId) {
+        const eIdx = estoqueList.findIndex((e: any) => e.id === pedido.estoqueOrigemId);
+        if (eIdx !== -1) {
+          const kiloEntregue = pedido.kilo || pedido.kiloSolicitada || 0;
+          const unEntregue = pedido.qtdePedido || pedido.unidade || 0;
+          estoqueList[eIdx].kilo = Math.max(0, (estoqueList[eIdx].kilo || 0) - kiloEntregue);
+          estoqueList[eIdx].unidade = Math.max(0, (estoqueList[eIdx].unidade || 0) - unEntregue);
+          estoqueList[eIdx].qtdeReservadaPacote = Math.max(0, (estoqueList[eIdx].qtdeReservadaPacote || 0) - unEntregue);
+          if (estoqueList[eIdx].kilo <= 0 && estoqueList[eIdx].unidade <= 0) {
+            estoqueList[eIdx].status = "Esgotado";
+          }
+          console.log(`[Entrega→Estoque] Deduzido ${kiloEntregue}kg / ${unEntregue}un do estoque ${pedido.estoqueOrigemId}`);
+        }
+      }
+
+      res.json(result);
     } catch (err) {
       console.error("[PUT entregar]", err);
       res.status(500).json({ message: "Erro ao marcar entregue" });
     }
+  });
+
+  // ==================== RESÍDUO AGREGADO ====================
+  app.get("/api/residuos", (_req: Request, res: Response) => {
+    // Resíduo da Produção Diária (descarte por sala)
+    const producaoResiduo: Record<string, number> = {};
+    let totalDescarteProducao = 0;
+    let totalQuilosProducao = 0;
+    for (const p of producaoDiariaList) {
+      const sala = p.sala || "Sem Sala";
+      producaoResiduo[sala] = (producaoResiduo[sala] || 0) + (p.descarte || 0);
+      totalDescarteProducao += p.descarte || 0;
+      totalQuilosProducao += p.quilos || 0;
+    }
+
+    // Resíduo do Repanol
+    let totalResiduoRepanol = 0;
+    let totalEnvioRepanol = 0;
+    for (const r of repanolList) {
+      totalResiduoRepanol += r.repanolResiduo || 0;
+      totalEnvioRepanol += (r.pesoManchadoEnvio || 0) + (r.pesoMolhadoEnvio || 0) + (r.pesoTingidoEnvio || 0);
+    }
+
+    // Resíduo da Costureira Terceirizada
+    let totalResiduoCostureira = 0;
+    let totalEnvioCostureira = 0;
+    for (const c of costureiraList) {
+      totalResiduoCostureira += c.residuos || 0;
+      totalEnvioCostureira += c.qtdsSaidaKg || 0;
+    }
+
+    // Resíduo da Separação (destino descarte)
+    let totalDescarteSeparacao = 0;
+    for (const s of separacoes) {
+      if (s.destino === "descarte") totalDescarteSeparacao += s.peso || 0;
+    }
+
+    const totalGeral = totalDescarteProducao + totalResiduoRepanol + totalResiduoCostureira + totalDescarteSeparacao;
+    const totalProcessado = totalQuilosProducao + totalEnvioRepanol + totalEnvioCostureira;
+
+    res.json({
+      totalGeral,
+      percentualPerda: totalProcessado > 0 ? +((totalGeral / totalProcessado) * 100).toFixed(1) : 0,
+      producao: {
+        totalDescarte: totalDescarteProducao,
+        totalProduzido: totalQuilosProducao,
+        percentual: totalQuilosProducao > 0 ? +((totalDescarteProducao / totalQuilosProducao) * 100).toFixed(1) : 0,
+        porSala: producaoResiduo,
+      },
+      repanol: {
+        totalResiduo: totalResiduoRepanol,
+        totalEnvio: totalEnvioRepanol,
+        percentual: totalEnvioRepanol > 0 ? +((totalResiduoRepanol / totalEnvioRepanol) * 100).toFixed(1) : 0,
+        registros: repanolList.length,
+      },
+      costureira: {
+        totalResiduo: totalResiduoCostureira,
+        totalEnvio: totalEnvioCostureira,
+        percentual: totalEnvioCostureira > 0 ? +((totalResiduoCostureira / totalEnvioCostureira) * 100).toFixed(1) : 0,
+        registros: costureiraList.length,
+      },
+      separacao: {
+        totalDescarte: totalDescarteSeparacao,
+      },
+    });
   });
 
   /**
@@ -1504,15 +1882,85 @@ export function registerRoutes(app: Express) {
       nomeDupla: req.body.nomeDupla,
       sala: req.body.sala,
       material: req.body.material,
+      pacotes: Number(req.body.pacotes) || 0,
+      quilos: Number(req.body.quilos) || 0,
+      descarte: Number(req.body.descarte) || 0,
+      costura: Number(req.body.costura) || 0,
       horarioInicio: req.body.horarioInicio,
       horarioFim: req.body.horarioFim || null,
       status: req.body.status || "completa",
       assinatura: req.body.assinatura || "",
       encarregado: req.body.encarregado || "",
+      destino: req.body.destino || "acabamento",
+      costureiraInterna: req.body.costureiraInterna || null,
       observacao: req.body.observacao || "",
       createdAt: new Date().toISOString(),
     };
     producaoDiariaList.unshift(item);
+
+    // Supervisor decide: costura interna → cria registro na producoes
+    if (item.destino === "costura_interna") {
+      producoes.push({
+        id: `p${nextProducaoId++}`,
+        coletaId: "",
+        coletaNumero: 0,
+        fornecedor: "",
+        sala: "COSTURA",
+        salaOrigem: item.sala,
+        duplaOrigem: item.nomeDupla,
+        tipoMaterial: item.material,
+        cor: "",
+        acabamento: "",
+        medida: "",
+        kilo: item.quilos || 0,
+        pesoEntrada: item.quilos || 0,
+        pesoProduzido: null,
+        qtdePacotes: item.pacotes || null,
+        unidadeMedida: "Kilo",
+        operador: item.costureiraInterna || "",
+        status: "em_andamento",
+        horarioInicio: new Date().toISOString(),
+        horarioFim: null,
+        qrCodeId: "",
+        observacao: `Costura interna — enviado de ${item.sala} por ${item.nomeDupla}, supervisor: ${item.encarregado}`,
+        createdAt: new Date().toISOString(),
+      });
+      console.log(`[Produção→Costura Interna] ${item.material} ${item.quilos}kg de ${item.sala}/${item.nomeDupla} → costureira ${item.costureiraInterna}`);
+    }
+
+    // Destino acabamento + status completa → auto-criar no estoque
+    if (item.destino === "acabamento" && item.status === "completa" && item.quilos > 0) {
+      const pesoLiquido = item.quilos - (item.descarte || 0);
+      if (pesoLiquido > 0) {
+        estoqueList.push({
+          id: `e${nextEstoqueId++}`,
+          producaoId: item.id,
+          coletaNumero: 0,
+          fornecedor: "",
+          descricaoProduto: `${item.material} ${item.sala}`,
+          tipoMaterial: item.material,
+          cor: "",
+          medida: "",
+          acabamento: "Produção Diária",
+          kilo: pesoLiquido,
+          unidade: item.pacotes || 0,
+          pesoMedioPct: item.pacotes > 0 ? +(pesoLiquido / item.pacotes).toFixed(2) : 0,
+          unidadeMedida: item.pacotes > 0 ? "Pacote/Kilo" : "Kilo",
+          qtdeReservadaPacote: 0,
+          galpao: "Vicente",
+          status: "Disponivel",
+          statusMaterial: "",
+          data: new Date().toISOString(),
+          origem: "producao_diaria",
+          origemId: item.id,
+          salaOrigem: item.sala,
+          duplaOrigem: item.nomeDupla,
+          descarte: item.descarte || 0,
+        });
+        console.log(`[Produção→Estoque] ${pesoLiquido}kg (${item.quilos}kg - ${item.descarte}kg descarte) de ${item.material}/${item.sala} → estoque`);
+      }
+    }
+
     res.status(201).json(item);
   });
 
@@ -1525,7 +1973,7 @@ export function registerRoutes(app: Express) {
 
   // ==================== ADMIN: USERS ====================
 
-  app.get("/api/admin/users", async (_req: Request, res: Response) => {
+  app.get("/api/admin/users", requireAdmin, async (_req: Request, res: Response) => {
     try {
       const data = await listUsers(true);
       res.json(data);
@@ -1534,7 +1982,7 @@ export function registerRoutes(app: Express) {
     }
   });
 
-  app.get("/api/admin/users/:id", async (req: Request, res: Response) => {
+  app.get("/api/admin/users/:id", requireAdmin, async (req: Request, res: Response) => {
     try {
       const user = await getUser(req.params.id);
       const perms = await getGrantedResources(req.params.id);
@@ -1544,7 +1992,7 @@ export function registerRoutes(app: Express) {
     }
   });
 
-  app.post("/api/admin/users", async (req: Request, res: Response) => {
+  app.post("/api/admin/users", requireAdmin, async (req: Request, res: Response) => {
     try {
       const user = await createUser(req.body);
       await logAudit({ action: "user_create", resource: user.id, details: { nome: user.nome, perfil: user.perfil } });
@@ -1554,7 +2002,7 @@ export function registerRoutes(app: Express) {
     }
   });
 
-  app.put("/api/admin/users/:id", async (req: Request, res: Response) => {
+  app.put("/api/admin/users/:id", requireAdmin, async (req: Request, res: Response) => {
     try {
       const user = await updateUser(req.params.id, req.body);
       await logAudit({ action: "user_edit", resource: req.params.id, details: req.body });
@@ -1564,7 +2012,7 @@ export function registerRoutes(app: Express) {
     }
   });
 
-  app.delete("/api/admin/users/:id", async (req: Request, res: Response) => {
+  app.delete("/api/admin/users/:id", requireAdmin, async (req: Request, res: Response) => {
     try {
       await deactivateUser(req.params.id);
       await logAudit({ action: "user_deactivate", resource: req.params.id });
@@ -1574,7 +2022,7 @@ export function registerRoutes(app: Express) {
     }
   });
 
-  app.post("/api/admin/users/:id/reactivate", async (req: Request, res: Response) => {
+  app.post("/api/admin/users/:id/reactivate", requireAdmin, async (req: Request, res: Response) => {
     try {
       await reactivateUser(req.params.id);
       await logAudit({ action: "user_reactivate", resource: req.params.id });
@@ -1584,7 +2032,7 @@ export function registerRoutes(app: Express) {
     }
   });
 
-  app.post("/api/admin/users/:id/reset-password", async (req: Request, res: Response) => {
+  app.post("/api/admin/users/:id/reset-password", requireAdmin, async (req: Request, res: Response) => {
     try {
       const newPass = req.body.password || "Tecnopano@2026";
       await changePassword(req.params.id, newPass);
@@ -1597,7 +2045,7 @@ export function registerRoutes(app: Express) {
 
   // ==================== ADMIN: PERMISSIONS ====================
 
-  app.get("/api/admin/permissions/:userId", async (req: Request, res: Response) => {
+  app.get("/api/admin/permissions/:userId", requireAdmin, async (req: Request, res: Response) => {
     try {
       const perms = await getGrantedResources(req.params.userId);
       res.json(perms);
@@ -1606,7 +2054,7 @@ export function registerRoutes(app: Express) {
     }
   });
 
-  app.put("/api/admin/permissions/:userId", async (req: Request, res: Response) => {
+  app.put("/api/admin/permissions/:userId", requireAdmin, async (req: Request, res: Response) => {
     try {
       const { resources, grantedBy } = req.body;
       const result = await setPermissions(req.params.userId, resources, grantedBy);
@@ -1643,7 +2091,7 @@ export function registerRoutes(app: Express) {
     }
   });
 
-  app.get("/api/admin/access-requests", async (_req: Request, res: Response) => {
+  app.get("/api/admin/access-requests", requireAdmin, async (_req: Request, res: Response) => {
     try {
       const data = await listAllRequests();
       res.json(data);
@@ -1652,7 +2100,7 @@ export function registerRoutes(app: Express) {
     }
   });
 
-  app.get("/api/admin/access-requests/pending", async (_req: Request, res: Response) => {
+  app.get("/api/admin/access-requests/pending", requireAdmin, async (_req: Request, res: Response) => {
     try {
       const data = await listPendingRequests();
       res.json(data);
@@ -1661,7 +2109,7 @@ export function registerRoutes(app: Express) {
     }
   });
 
-  app.put("/api/admin/access-requests/:id/approve", async (req: Request, res: Response) => {
+  app.put("/api/admin/access-requests/:id/approve", requireAdmin, async (req: Request, res: Response) => {
     try {
       const result = await approveRequest(req.params.id, req.body.respondedBy);
       // Grant permission automatically
@@ -1680,7 +2128,7 @@ export function registerRoutes(app: Express) {
     }
   });
 
-  app.put("/api/admin/access-requests/:id/deny", async (req: Request, res: Response) => {
+  app.put("/api/admin/access-requests/:id/deny", requireAdmin, async (req: Request, res: Response) => {
     try {
       const result = await denyRequest(req.params.id, req.body.respondedBy, req.body.motivo);
       await logAudit({
@@ -1697,7 +2145,7 @@ export function registerRoutes(app: Express) {
 
   // ==================== AUDIT LOG ====================
 
-  app.get("/api/admin/audit-log", async (req: Request, res: Response) => {
+  app.get("/api/admin/audit-log", requireAdmin, async (req: Request, res: Response) => {
     try {
       const { userId, action, limit, offset } = req.query;
       const result = await listAuditLogs({

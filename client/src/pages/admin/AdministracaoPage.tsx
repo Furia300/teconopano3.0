@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from "react";
 import { toast } from "sonner";
 import {
   Shield, Users, Key, Bell, ScrollText, MessageCircle,
-  UserCheck, UserX, Clock, Activity,
+  UserCheck, UserX, Clock, Activity, Trophy,
 } from "lucide-react";
 import { PageHeader } from "@/components/domain/PageHeader";
 import { StatsCard } from "@/components/domain/StatsCard";
@@ -12,6 +12,8 @@ import { PermissoesTab } from "./tabs/PermissoesTab";
 import { SolicitacoesTab } from "./tabs/SolicitacoesTab";
 import { AuditLogTab } from "./tabs/AuditLogTab";
 import { NotificacoesTab } from "./tabs/NotificacoesTab";
+import { lazy, Suspense } from "react";
+const DashboardGamificacaoPage = lazy(() => import("@/pages/dashboard/DashboardGamificacaoPage"));
 
 /* ─── Cores FIPS DS canônicas ─── */
 const FIPS_COLORS = {
@@ -59,6 +61,7 @@ export default function AdministracaoPage() {
       {/* ─── PageHeader FIPS DS ─── */}
       <PageHeader
         title="Administração"
+        tutorialPage="administracao"
         description="Gestão de usuários, permissões, solicitações de acesso e auditoria do sistema"
         icon={Shield}
         stats={[
@@ -123,7 +126,7 @@ export default function AdministracaoPage() {
               style={{
                 borderRadius: "8px 8px 8px 14px",
                 background: active
-                  ? "var(--color-fips-blue-200)"
+                  ? "rgba(0,75,155,0.15)"
                   : "transparent",
                 color: active
                   ? "var(--fips-primary)"

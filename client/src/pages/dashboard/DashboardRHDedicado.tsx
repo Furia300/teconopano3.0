@@ -206,7 +206,7 @@ function Donut({ pct, color, size = 48, stroke = 4 }: { pct: number; color: stri
 function ChartTooltip({ title, color, rows, x, y, total }: { title: string; color: string; rows: { label: string; value: number; color?: string }[]; x: number; y: number; total?: number }) {
   const maxVal = Math.max(...rows.map(r => r.value), 1);
   return (
-    <div style={{ position: "fixed", left: x + 12, top: y - 10, zIndex: 50, pointerEvents: "none", animation: "fadeUp .15s ease" }}>
+    <div style={{ position: "absolute", left: 0, top: "100%", marginTop: 8, zIndex: 50, pointerEvents: "none", animation: "fadeUp .15s ease" }}>
       <div style={{ background: C.cardBg, borderRadius: "8px 8px 8px 14px", border: `1px solid ${C.cardBorder}`, boxShadow: "0 8px 30px rgba(0,42,104,.18)", minWidth: 180, maxWidth: 260, overflow: "hidden" }}>
         <div style={{ background: color, padding: "8px 14px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <span style={{ fontSize: 12, fontWeight: 700, color: C.branco, fontFamily: Fn.title }}>{title}</span>

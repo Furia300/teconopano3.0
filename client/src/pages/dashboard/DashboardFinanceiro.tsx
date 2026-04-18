@@ -1,20 +1,54 @@
+import { useState } from "react";
+import { toast } from "sonner";
 import {
-  LuDollarSign, LuFileText, LuCircleCheck, LuClock, LuTrendingUp, LuCircleAlert,
+  LuDollarSign, LuFileText, LuCircleCheck, LuClock, LuTrendingUp, LuCircleAlert, LuCircleX,
 } from "react-icons/lu";
-const DollarSign = LuDollarSign, FileText = LuFileText, CheckCircle2 = LuCircleCheck, Clock = LuClock, TrendingUp = LuTrendingUp, AlertCircle = LuCircleAlert;
+const DollarSign = LuDollarSign, FileText = LuFileText, CheckCircle2 = LuCircleCheck, Clock = LuClock, TrendingUp = LuTrendingUp, AlertCircle = LuCircleAlert, XCircle = LuCircleX;
 import { StatsCard } from "@/components/domain/StatsCard";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { PageHero } from "@/composites/PageHero";
 
 interface Props {
   data: any;
+  onRefresh?: () => void;
 }
 
-export default function DashboardFinanceiro({ data }: Props) {
+export default function DashboardFinanceiro({ data, onRefresh }: Props) {
+  const [loadingId, setLoadingId] = useState<string | null>(null);
+
   const pendAprovacao = data.expedicoes.filter((e: any) => e.statusFinanceiro === "pendente_aprovacao");
   const aprovados = data.expedicoes.filter((e: any) => e.statusFinanceiro === "aprovado");
   const rejeitados = data.expedicoes.filter((e: any) => e.statusFinanceiro === "rejeitado");
   const totalKgAprovado = aprovados.reduce((a: number, e: any) => a + (Number(e.kilo) || 0), 0);
+
+  const handleAprovar = async (id: string) => {
+    setLoadingId(id);
+    try {
+      const res = await fetch(`/api/expedicoes/${id}/aprovar-financeiro`, { method: "PUT" });
+      if (!res.ok) throw new Error();
+      toast.success("Pedido aprovado pelo financeiro!");
+      onRefresh?.();
+    } catch {
+      toast.error("Erro ao aprovar pedido.");
+    } finally {
+      setLoadingId(null);
+    }
+  };
+
+  const handleRejeitar = async (id: string) => {
+    setLoadingId(id);
+    try {
+      const res = await fetch(`/api/expedicoes/${id}/rejeitar-financeiro`, { method: "PUT" });
+      if (!res.ok) throw new Error();
+      toast.success("Pedido rejeitado.");
+      onRefresh?.();
+    } catch {
+      toast.error("Erro ao rejeitar pedido.");
+    } finally {
+      setLoadingId(null);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -58,13 +92,35 @@ export default function DashboardFinanceiro({ data }: Props) {
         ) : (
           <div className="space-y-2">
             {pendAprovacao.map((exp: any) => (
-              <div key={exp.id} className="flex items-center justify-between p-4 bg-amber-500/5 rounded-lg border border-amber-500/10">
-                <div>
+              <div key={exp.id} className="flex items-center justify-between gap-4 p-4 bg-amber-500/5 rounded-lg border border-amber-500/10">
+                <div className="min-w-0 flex-1">
                   <p className="font-medium text-sm">{exp.nomeFantasia}</p>
-                  <p className="text-xs text-muted-foreground">{exp.descricaoProduto} — {exp.kilo}kg</p>
+                  <p className="text-xs text-muted-foreground">
+                    {exp.descricaoProduto} — {exp.kilo}kg
+                    {exp.empresa && <span className="ml-2 opacity-60">({exp.empresa})</span>}
+                  </p>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Badge variant="warning">Pendente</Badge>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    onClick={() => handleRejeitar(exp.id)}
+                    loading={loadingId === exp.id}
+                    className="gap-1 text-xs"
+                  >
+                    <XCircle className="h-3.5 w-3.5" />
+                    Rejeitar
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="success"
+                    onClick={() => handleAprovar(exp.id)}
+                    loading={loadingId === exp.id}
+                    className="gap-1 text-xs"
+                  >
+                    <CheckCircle2 className="h-3.5 w-3.5" />
+                    Aprovar
+                  </Button>
                 </div>
               </div>
             ))}
