@@ -121,7 +121,7 @@ export function ColetaDetalhes({ coleta, open, onOpenChange }: ColetaDetalhesPro
                   {coleta.pesoTotalNF ? `${coleta.pesoTotalNF} kg` : "—"} → {coleta.pesoTotalAtual ? `${coleta.pesoTotalAtual} kg` : "—"}
                 </p>
                 {diffPeso > 0 && (
-                  <p className="text-xs text-destructive">Diferença: -{diffPeso} kg</p>
+                  <p className="text-xs font-semibold" style={{ color: "#ef4444" }}>Diferença: -{diffPeso} kg</p>
                 )}
               </div>
             </div>

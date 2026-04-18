@@ -585,7 +585,7 @@ export function DataListingTable<T>({
                         : appearance.zebra && i % 2 === 1
                           ? "bg-[var(--color-fips-blue-200)]/25 dark:bg-white/[0.03]"
                           : "",
-                      "hover:bg-[var(--color-fips-blue-200)]/40 dark:hover:bg-[rgba(253,194,78,0.06)]",
+                      "hover:bg-[rgba(255,7,58,0.04)] dark:hover:bg-[rgba(255,7,58,0.06)]",
                     )}
                   >
                     {selectable && (
@@ -771,20 +771,30 @@ export function CellMuted({ children }: { children: ReactNode }) {
   return <span className="text-[var(--fips-fg-muted)]" style={{ fontSize: "var(--cell-fs, inherit)" }}>{children}</span>;
 }
 
-/** Wrapper para ações inline (edit/more etc.) — botões transparentes 24x24 */
+/** Wrapper para ações inline — gap ajustado para botões neumorphic */
 export function CellActions({ children }: { children: ReactNode }) {
-  return <div className="inline-flex justify-center gap-0.5">{children}</div>;
+  return <div className="inline-flex justify-center gap-1">{children}</div>;
 }
 
 export function CellActionButton({
   onClick,
   title,
   icon,
+  variant = "default",
 }: {
   onClick?: () => void;
   title: string;
   icon: ReactNode;
+  /** "default" = cinza sutil, "primary" = azul accent, "danger" = vermelho, "success" = verde */
+  variant?: "default" | "primary" | "danger" | "success";
 }) {
+  const variantColors = {
+    default: { idle: "var(--fips-fg-muted)", hover: "var(--fips-fg)", bg: "var(--fips-surface-soft)" },
+    primary: { idle: "var(--fips-primary)", hover: "#93BDE4", bg: "rgba(147,189,228,0.12)" },
+    danger: { idle: "#ef4444", hover: "#FCA5A5", bg: "rgba(239,68,68,0.10)" },
+    success: { idle: "#00C64C", hover: "#8BE5AD", bg: "rgba(0,198,76,0.10)" },
+  };
+  const vc = variantColors[variant];
   return (
     <button
       type="button"
@@ -793,8 +803,22 @@ export function CellActionButton({
         e.stopPropagation();
         onClick?.();
       }}
-      className="flex cursor-pointer items-center justify-center rounded border-0 bg-transparent text-[var(--fips-fg-muted)] transition-colors hover:bg-[var(--fips-surface-soft)] hover:text-[var(--fips-fg)]"
-      style={{ width: "calc(var(--cell-fs, 13) * 1.85)", height: "calc(var(--cell-fs, 13) * 1.85)" }}
+      style={{
+        width: 26, height: 26, borderRadius: 6,
+        display: "flex", alignItems: "center", justifyContent: "center",
+        border: "none", cursor: "pointer",
+        background: "transparent",
+        color: vc.idle,
+        transition: "all .15s",
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.background = vc.bg;
+        e.currentTarget.style.color = vc.hover;
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.background = "transparent";
+        e.currentTarget.style.color = vc.idle;
+      }}
     >
       {icon}
     </button>

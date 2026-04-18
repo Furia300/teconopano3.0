@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Truck, Plus, Eye, Trash2, Package, Activity, CheckCircle2, Inbox, MoreHorizontal } from "lucide-react";
+import { Truck, Plus, Eye, Trash2, Package, Activity, CheckCircle2, Inbox, MoreHorizontal, Scissors, Pencil } from "lucide-react";
 import { PageHeader } from "@/components/domain/PageHeader";
 import { StatsCard } from "@/components/domain/StatsCard";
 import { DataListingToolbar } from "@/components/domain/DataListingToolbar";
@@ -340,6 +340,7 @@ function coletaColumns({ onView, onDelete }: ColetaColumnActions): DataListingCo
     {
       id: "chegada",
       label: "Chegada",
+      default: false,
       sortable: true,
       width: "90px",
       render: (c) => <CellMonoMuted>{formatDateBR(c.dataChegada)}</CellMonoMuted>,
@@ -381,17 +382,25 @@ function coletaColumns({ onView, onDelete }: ColetaColumnActions): DataListingCo
       label: "Ações",
       fixed: true,
       align: "center",
-      width: "80px",
+      width: "110px",
       render: (c) => (
         <CellActions>
           <CellActionButton
             title="Ver detalhes"
             icon={<Eye className="h-3.5 w-3.5" />}
+            variant="primary"
+            onClick={() => onView(c)}
+          />
+          <CellActionButton
+            title="Editar coleta"
+            icon={<Pencil className="h-3.5 w-3.5" />}
+            variant="default"
             onClick={() => onView(c)}
           />
           <CellActionButton
             title="Excluir coleta"
-            icon={<Trash2 className="h-3.5 w-3.5 text-[var(--fips-danger)]" />}
+            icon={<Trash2 className="h-3.5 w-3.5" />}
+            variant="danger"
             onClick={() => onDelete(c.id)}
           />
         </CellActions>
