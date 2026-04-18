@@ -22,6 +22,12 @@ const DARK_COLOR_MAP: Record<string, string> = {
   "#002a68": "#7EAED6",
   "#00C64C": "#8BE5AD",
   "#00c64c": "#8BE5AD",
+  "#00904C": "#8BE5AD",
+  "#00904c": "#8BE5AD",
+  "#DC3545": "#FCA5A5",
+  "#dc3545": "#FCA5A5",
+  "#9B59B6": "#C4B5FD",
+  "#9b59b6": "#C4B5FD",
 };
 
 function useDark() {
