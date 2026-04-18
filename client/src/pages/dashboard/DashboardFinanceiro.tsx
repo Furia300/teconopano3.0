@@ -1,6 +1,7 @@
 import {
-  DollarSign, FileText, CheckCircle2, Clock, TrendingUp, AlertCircle,
-} from "lucide-react";
+  LuDollarSign, LuFileText, LuCircleCheck, LuClock, LuTrendingUp, LuCircleAlert,
+} from "react-icons/lu";
+const DollarSign = LuDollarSign, FileText = LuFileText, CheckCircle2 = LuCircleCheck, Clock = LuClock, TrendingUp = LuTrendingUp, AlertCircle = LuCircleAlert;
 import { StatsCard } from "@/components/domain/StatsCard";
 import { Badge } from "@/components/ui/badge";
 import { PageHero } from "@/composites/PageHero";

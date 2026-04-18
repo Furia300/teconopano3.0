@@ -1,6 +1,7 @@
 import {
-  Package, Truck, Clock, CheckCircle2, AlertCircle, MapPin, Send,
-} from "lucide-react";
+  LuPackage, LuTruck, LuClock, LuCircleCheck, LuCircleAlert, LuMapPin, LuSend,
+} from "react-icons/lu";
+const Package = LuPackage, Truck = LuTruck, Clock = LuClock, CheckCircle2 = LuCircleCheck, AlertCircle = LuCircleAlert, MapPin = LuMapPin, Send = LuSend;
 import { StatsCard } from "@/components/domain/StatsCard";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";

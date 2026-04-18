@@ -1,4 +1,6 @@
 import { useState, useMemo, useEffect, useRef } from "react";
+import { LuTrophy, LuScale, LuPackage, LuUsers, LuFactory, LuChartBarIncreasing, LuLayoutGrid, LuStar, LuFlame, LuCalendar, LuX, LuFlag, LuChevronDown, LuCheck } from "react-icons/lu";
+import { AreaChart, Area, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, PieChart, Pie, Cell } from "recharts";
 
 /* ═══ TYPES ═══ */
 interface Producao {
@@ -50,20 +52,20 @@ const DARK = {
 let C = LIGHT;
 const Fn = { title: "'Saira Expanded',sans-serif", body: "'Open Sans',sans-serif", mono: "'Fira Code',monospace" };
 
-/* ═══ SVG ICONS ═══ */
+/* ═══ ICONS (react-icons/lu) ═══ */
 const Ic = {
-  trophy: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><path d="M6 3h8v5a4 4 0 01-8 0V3z" stroke={c} strokeWidth="1.4"/><path d="M6 5H3a1 1 0 00-1 1v1a3 3 0 003 3h1M14 5h3a1 1 0 011 1v1a3 3 0 01-3 3h-1" stroke={c} strokeWidth="1.3"/><path d="M8 12v2h4v-2M7 14h6M10 3v1" stroke={c} strokeWidth="1.3" strokeLinecap="round"/></svg>,
-  scale: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><path d="M10 2v16M3 6l7-2 7 2M3 6l2 6h-4L3 6zM17 6l2 6h-4L17 6z" stroke={c} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>,
-  package: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><path d="M3 6l7-4 7 4v8l-7 4-7-4V6z" stroke={c} strokeWidth="1.4" strokeLinejoin="round"/><path d="M3 6l7 4 7-4M10 10v8" stroke={c} strokeWidth="1.3"/></svg>,
-  users: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><circle cx="7" cy="6" r="3" stroke={c} strokeWidth="1.4"/><path d="M1 17c0-3 2.5-5 6-5s6 2 6 5" stroke={c} strokeWidth="1.4" strokeLinecap="round"/><circle cx="14" cy="7" r="2" stroke={c} strokeWidth="1.2"/><path d="M15 12c2 .5 4 2 4 4" stroke={c} strokeWidth="1.2" strokeLinecap="round"/></svg>,
-  factory: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><path d="M2 18V8l4-3v5l4-3v5l4-3v8H2z" stroke={c} strokeWidth="1.4" strokeLinejoin="round"/><rect x="14" y="2" width="4" height="16" rx="1" stroke={c} strokeWidth="1.4"/></svg>,
-  chart: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><rect x="3" y="10" width="3" height="7" rx="1" stroke={c} strokeWidth="1.3"/><rect x="8.5" y="6" width="3" height="11" rx="1" stroke={c} strokeWidth="1.3"/><rect x="14" y="3" width="3" height="14" rx="1" stroke={c} strokeWidth="1.3"/></svg>,
-  grid: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="1.5" stroke={c} strokeWidth="1.4"/><rect x="11" y="2" width="7" height="7" rx="1.5" stroke={c} strokeWidth="1.4"/><rect x="2" y="11" width="7" height="7" rx="1.5" stroke={c} strokeWidth="1.4"/><rect x="11" y="11" width="7" height="7" rx="1.5" stroke={c} strokeWidth="1.4"/></svg>,
-  star: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><path d="M10 2l2.47 5.01L18 7.75l-4 3.9.94 5.49L10 14.63l-4.94 2.51.94-5.49-4-3.9 5.53-.74L10 2z" stroke={c} strokeWidth="1.4" strokeLinejoin="round"/></svg>,
-  fire: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><path d="M10 2c0 3-3 5-3 8a4.5 4.5 0 009 0c0-2-1-3.5-2-5-1 1.5-2 2-2 2s0-2-2-5z" stroke={c} strokeWidth="1.4" strokeLinejoin="round"/></svg>,
-  calendar: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><rect x="2" y="4" width="16" height="14" rx="2" stroke={c} strokeWidth="1.5"/><path d="M2 8h16M6 2v4M14 2v4" stroke={c} strokeWidth="1.5" strokeLinecap="round"/></svg>,
-  x: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke={c} strokeWidth="1.8" strokeLinecap="round"/></svg>,
-  flag: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><path d="M4 2v16M4 2h10l-3 4 3 4H4" stroke={c} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+  trophy: (s: number, c: string) => <LuTrophy size={s} color={c} />,
+  scale: (s: number, c: string) => <LuScale size={s} color={c} />,
+  package: (s: number, c: string) => <LuPackage size={s} color={c} />,
+  users: (s: number, c: string) => <LuUsers size={s} color={c} />,
+  factory: (s: number, c: string) => <LuFactory size={s} color={c} />,
+  chart: (s: number, c: string) => <LuChartBarIncreasing size={s} color={c} />,
+  grid: (s: number, c: string) => <LuLayoutGrid size={s} color={c} />,
+  star: (s: number, c: string) => <LuStar size={s} color={c} />,
+  fire: (s: number, c: string) => <LuFlame size={s} color={c} />,
+  calendar: (s: number, c: string) => <LuCalendar size={s} color={c} />,
+  x: (s: number, c: string) => <LuX size={s} color={c} />,
+  flag: (s: number, c: string) => <LuFlag size={s} color={c} />,
 };
 
 /* ═══ MEDAL COLORS ═══ */
@@ -100,12 +102,12 @@ function DSSelect({ label, value, onChange, options, placeholder = "Todos", icon
       <div onClick={() => setOpen(!open)} style={{ display: "flex", alignItems: "center", gap: 8, height: 30, padding: "0 12px", background: C.cardBg, border: `1.5px solid ${bc}`, borderRadius: open ? "8px 8px 0 0" : 8, transition: "all .18s", boxShadow: open ? "0 0 0 3px rgba(147,189,228,0.35)" : "none", cursor: "pointer", fontFamily: Fn.body, fontSize: 12, userSelect: "none" }}>
         {icon && <span style={{ display: "flex", flexShrink: 0, opacity: .55 }}>{icon}</span>}
         <span style={{ flex: 1, color: value ? C.cinzaEscuro : C.textLight, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontWeight: 600 }}>{value || placeholder}</span>
-        <svg width={14} height={14} viewBox="0 0 20 20" fill="none" style={{ flexShrink: 0, opacity: .45, transition: "transform .2s", transform: open ? "rotate(180deg)" : "rotate(0)" }}><path d="M6 8l4 4 4-4" stroke={C.cinzaChumbo} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+        <LuChevronDown size={14} color={C.cinzaChumbo} style={{ flexShrink: 0, opacity: .45, transition: "transform .2s", transform: open ? "rotate(180deg)" : "rotate(0)" }} />
       </div>
       {open && <div style={{ position: "absolute", top: "100%", left: 0, right: 0, zIndex: 20, background: C.cardBg, border: `1.5px solid ${C.azulProfundo}`, borderTop: "none", borderRadius: "0 0 8px 8px", boxShadow: "0 6px 20px rgba(0,75,155,.12)", maxHeight: 200, overflowY: "auto" }}>
         <div onClick={() => { onChange(null); setOpen(false) }} style={{ padding: "6px 14px", fontSize: 12, fontFamily: Fn.body, color: !value ? C.azulProfundo : C.cinzaEscuro, fontWeight: !value ? 600 : 400, background: !value ? C.azulCeuClaro : "transparent", cursor: "pointer" }}>{placeholder}</div>
         {options.map((o, i) => { const sel = o === value; return <div key={o} onClick={() => { onChange(o); setOpen(false) }} onMouseEnter={() => setHi(i)} onMouseLeave={() => setHi(-1)} style={{ padding: "6px 14px", fontSize: 12, fontFamily: Fn.body, color: sel ? C.azulProfundo : C.cinzaEscuro, fontWeight: sel ? 600 : 400, background: sel ? C.azulCeuClaro : i === hi ? C.bg : "transparent", cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}>
-          {sel && <svg width={12} height={12} viewBox="0 0 16 16" fill="none" style={{ marginLeft: -14, flexShrink: 0 }}><path d="M3.5 8.5L6.5 11.5L12.5 4.5" stroke={C.azulProfundo} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>}
+          {sel && <LuCheck size={12} color={C.azulProfundo} style={{ marginLeft: -14, flexShrink: 0 }} />}
           {o}
         </div> })}
       </div>}
@@ -141,35 +143,19 @@ function ChartTooltip({ title, color, rows, x, y, total }: { title: string; colo
   );
 }
 
-/* ═══ Donut (multi-segment) ═══ */
+/* ═══ Donut (multi-segment) — Recharts ═══ */
 function DonutChart({ segments, size = 130, strokeW = 14, center, hov, setHov }: {
   segments: { label: string; value: number; color: string; key: string }[];
   size?: number; strokeW?: number; center: React.ReactNode;
   hov: number | null; setHov: (i: number | null) => void;
 }) {
-  const cx = size / 2, cy = size / 2, r = (size - strokeW * 2) / 2;
-  const circ = 2 * Math.PI * r;
-  const total = Math.max(segments.reduce((a, s) => a + s.value, 0), 1);
-  let acc = 0;
   return (
     <div style={{ position: "relative" }}>
-      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ transform: "rotate(-90deg)" }}>
-        <circle cx={cx} cy={cy} r={r} fill="none" stroke={C.cardBorder} strokeWidth={strokeW} />
-        {segments.map((s, i) => {
-          const pct = s.value / total;
-          const dash = pct * circ;
-          const off = acc * circ;
-          acc += pct;
-          return (
-            <circle key={i} cx={cx} cy={cy} r={r} fill="none" stroke={s.color}
-              strokeWidth={hov === i ? strokeW + 4 : strokeW}
-              strokeDasharray={`${dash} ${circ - dash}`} strokeDashoffset={-off}
-              strokeLinecap="round" style={{ transition: "all .15s", cursor: "default" }}
-              onMouseEnter={() => setHov(i)} onMouseLeave={() => setHov(null)}
-            />
-          );
-        })}
-      </svg>
+      <PieChart width={size} height={size}>
+        <Pie data={segments} cx="50%" cy="50%" innerRadius={(size - strokeW * 4) / 2} outerRadius={(size - strokeW) / 2} startAngle={90} endAngle={-270} dataKey="value" stroke="none" onMouseEnter={(_, i) => setHov(i)} onMouseLeave={() => setHov(null)}>
+          {segments.map((s, i) => <Cell key={i} fill={s.color} opacity={hov !== null && hov !== i ? 0.5 : 1} />)}
+        </Pie>
+      </PieChart>
       <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", pointerEvents: "none" }}>
         {center}
       </div>
@@ -385,10 +371,7 @@ export function DashboardGamificacao({ producoes, producaoDiaria }: Props) {
         {/* ═══ KPIs ═══ */}
         <div style={{ display: "grid", gridTemplateColumns: mob ? "repeat(2,1fr)" : "repeat(4,1fr)", gap: mob ? 10 : 16, marginBottom: mob ? 16 : 24 }} onMouseMove={trackMouse}>
           {kpis.map((k, i) => {
-            const max = Math.max(...k.sparkPts), min = Math.min(...k.sparkPts);
-            const sw2 = 200, sh = 40;
-            const pts = k.sparkPts.map((v, j) => ({ x: (j / (k.sparkPts.length - 1)) * sw2, y: sh - ((v - min) / (max - min || 1)) * (sh - 8) + 4 }));
-            const line = pts.map(p => `${p.x},${p.y}`).join(" ");
+            const sparkData = k.sparkPts.map((v, j) => ({ idx: j, v }));
             const uid = k.color.replace('#', '') + 'g' + i;
             return (
               <div
@@ -408,11 +391,17 @@ export function DashboardGamificacao({ producoes, producaoDiaria }: Props) {
                   <span style={{ fontSize: mob ? 22 : 26, fontWeight: 800, fontFamily: Fn.title, color: C.azulEscuro, lineHeight: 1, letterSpacing: "-0.02em", display: "block", paddingRight: mob ? 40 : 48 }}>{k.value}</span>
                 </div>
                 <div style={{ overflow: "hidden", borderRadius: "0 0 12px 24px", marginLeft: -1, marginRight: -1, marginBottom: -1 }}>
-                  <svg width="100%" height={sh + 16} viewBox={`-2 -12 ${sw2 + 4} ${sh + 28}`} preserveAspectRatio="none" style={{ display: "block" }}>
-                    <defs><linearGradient id={`ga${uid}`} x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor={k.color} stopOpacity=".18" /><stop offset="100%" stopColor={k.color} stopOpacity="0" /></linearGradient></defs>
-                    <polygon points={`0,${sh} ${line} ${sw2},${sh}`} fill={`url(#ga${uid})`} />
-                    <polyline points={line} fill="none" stroke={k.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
+                  <ResponsiveContainer width="100%" height={56}>
+                    <AreaChart data={sparkData} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
+                      <defs>
+                        <linearGradient id={`ga${uid}`} x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor={k.color} stopOpacity={0.18} />
+                          <stop offset="100%" stopColor={k.color} stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <Area type="monotone" dataKey="v" stroke={k.color} strokeWidth={2} fill={`url(#ga${uid})`} dot={false} isAnimationActive={false} />
+                    </AreaChart>
+                  </ResponsiveContainer>
                 </div>
               </div>
             );
@@ -622,43 +611,32 @@ export function DashboardGamificacao({ producoes, producaoDiaria }: Props) {
               </div>
               <div style={{ width: 30, height: 30, borderRadius: 8, background: `${C.verdeFloresta}0A`, display: "flex", alignItems: "center", justifyContent: "center" }}>{Ic.calendar(14, C.verdeFloresta)}</div>
             </div>
-            {(() => {
-              const bw = 40, gp = 16, chartW = 7 * (bw + gp) - gp, chartH = 120;
-              return (
-                <div style={{ display: "flex", justifyContent: "center" }}>
-                  <svg width={chartW + 40} height={chartH + 50} viewBox={`-20 -20 ${chartW + 40} ${chartH + 50}`}>
-                    <line x1={0} y1={chartH} x2={chartW} y2={chartH} stroke={C.cardBorder} strokeWidth=".5" />
-                    {weeklyData.map((day, i) => {
-                      const bh = maxWeekKg > 0 ? Math.max(4, (day.kg / maxWeekKg) * chartH) : 4;
-                      const x = i * (bw + gp);
-                      const isH = hovWeekBar === i;
-                      const color = day.kg > 0 ? C.verdeFloresta : C.textLight;
-                      return (
-                        <g key={i} onMouseEnter={() => setHovWeekBar(i)} onMouseLeave={() => setHovWeekBar(-1)} style={{ cursor: "pointer" }}>
-                          <rect x={x} y={-20} width={bw} height={chartH + 50} fill="transparent" />
-                          <rect x={x} y={chartH - bh} width={bw} height={bh} rx={6} fill={color} opacity={isH ? 1 : 0.75} style={{ transition: "all .15s" }} />
-                          <text x={x + bw / 2} y={chartH - bh - 6} textAnchor="middle" fontSize="10" fontWeight="700" fill={C.azulEscuro} fontFamily={Fn.mono}>{day.kg > 0 ? formatKg(day.kg) : ""}</text>
-                          <text x={x + bw / 2} y={chartH + 16} textAnchor="middle" fontSize="10" fill={isH ? C.verdeFloresta : C.cinzaChumbo} fontFamily={Fn.body} fontWeight={isH ? 700 : 400}>{day.label}</text>
-                          {isH && <rect x={x - 2} y={chartH - bh - 2} width={bw + 4} height={bh + 4} rx={7} fill="none" stroke={color} strokeWidth="1.5" strokeDasharray="4 2" />}
-                        </g>
-                      );
-                    })}
-                  </svg>
-                </div>
-              );
-            })()}
-            {hovWeekBar >= 0 && weeklyData[hovWeekBar] && (
-              <ChartTooltip
-                title={weeklyData[hovWeekBar].label}
-                color={C.verdeFloresta}
-                total={Math.round(weeklyData[hovWeekBar].kg)}
-                rows={[
-                  { label: "Peso (kg)", value: Math.round(weeklyData[hovWeekBar].kg), color: C.verdeFloresta },
-                  { label: "Pacotes", value: weeklyData[hovWeekBar].pacotes, color: C.azulProfundo },
-                ]}
-                x={tipPos.x} y={tipPos.y}
-              />
-            )}
+            <ResponsiveContainer width="100%" height={170}>
+              <BarChart data={weeklyData} margin={{ top: 20, right: 5, bottom: 5, left: 5 }}
+                onMouseMove={(state: any) => { if (state && state.activeTooltipIndex != null) setHovWeekBar(state.activeTooltipIndex); }}
+                onMouseLeave={() => setHovWeekBar(-1)}
+              >
+                <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: C.cinzaChumbo, fontFamily: Fn.body }} />
+                <YAxis hide domain={[0, 'dataMax']} />
+                <Tooltip cursor={false} content={({ active, payload }) => {
+                  if (!active || !payload?.[0]) return null;
+                  const d = payload[0].payload;
+                  return (
+                    <ChartTooltip
+                      title={d.label}
+                      color={C.verdeFloresta}
+                      total={Math.round(d.kg)}
+                      rows={[
+                        { label: "Peso (kg)", value: Math.round(d.kg), color: C.verdeFloresta },
+                        { label: "Pacotes", value: d.pacotes, color: C.azulProfundo },
+                      ]}
+                      x={tipPos.x} y={tipPos.y}
+                    />
+                  );
+                }} />
+                <Bar dataKey="kg" radius={[6, 6, 0, 0]} fill={C.verdeFloresta} label={{ position: "top", fontSize: 10, fontWeight: 700, fill: C.azulEscuro, fontFamily: Fn.mono, formatter: (v: number) => v > 0 ? formatKg(v) : "" }} />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
 
           {/* Resumo Lateral */}

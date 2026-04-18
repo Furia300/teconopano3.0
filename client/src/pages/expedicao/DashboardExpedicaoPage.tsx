@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Send } from "lucide-react";
+import { LuSend } from "react-icons/lu";
+const Send = LuSend;
 import { PageHeader } from "@/components/domain/PageHeader";
 import { DashboardPrintButton } from "@/components/domain/DashboardPrintButton";
 import { ExpedicaoDashboard } from "./ExpedicaoDashboard";

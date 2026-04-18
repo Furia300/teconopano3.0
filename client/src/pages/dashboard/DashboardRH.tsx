@@ -1,5 +1,6 @@
 import { useMemo } from "react";
-import { Building2, UserCheck, UserX, Users, BriefcaseBusiness, AlertTriangle } from "lucide-react";
+import { LuBuilding2, LuUserCheck, LuUserX, LuUsers, LuBriefcaseBusiness, LuTriangleAlert } from "react-icons/lu";
+const Building2 = LuBuilding2, UserCheck = LuUserCheck, UserX = LuUserX, Users = LuUsers, BriefcaseBusiness = LuBriefcaseBusiness, AlertTriangle = LuTriangleAlert;
 import { KpiSparklineCard, sparklineFromSeed } from "@/components/domain/KpiSparklineCard";
 import { PageHero } from "@/composites/PageHero";
 

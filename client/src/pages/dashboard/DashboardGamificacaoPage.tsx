@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Trophy } from "lucide-react";
+import { LuTrophy } from "react-icons/lu";
+const Trophy = LuTrophy;
 import { PageHeader } from "@/components/domain/PageHeader";
 import { DashboardPrintButton } from "@/components/domain/DashboardPrintButton";
 import { DashboardGamificacao } from "./DashboardGamificacao";

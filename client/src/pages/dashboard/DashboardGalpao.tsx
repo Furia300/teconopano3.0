@@ -1,7 +1,8 @@
 import {
-  Truck, Factory, Warehouse, ClipboardList, Droplets, Scissors,
-  TrendingUp, ArrowRight, AlertCircle, CheckCircle2, Table2,
-} from "lucide-react";
+  LuTruck, LuFactory, LuWarehouse, LuClipboardList, LuDroplets, LuScissors,
+  LuTrendingUp, LuArrowRight, LuCircleAlert, LuCircleCheck, LuTable2,
+} from "react-icons/lu";
+const Truck = LuTruck, Factory = LuFactory, Warehouse = LuWarehouse, ClipboardList = LuClipboardList, Droplets = LuDroplets, Scissors = LuScissors, TrendingUp = LuTrendingUp, ArrowRight = LuArrowRight, AlertCircle = LuCircleAlert, CheckCircle2 = LuCircleCheck, Table2 = LuTable2;
 import { Link } from "wouter";
 import { StatsCard } from "@/components/domain/StatsCard";
 import { Badge } from "@/components/ui/badge";

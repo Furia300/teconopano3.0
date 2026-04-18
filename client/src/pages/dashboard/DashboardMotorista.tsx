@@ -1,4 +1,5 @@
-import { Truck, Factory, Scissors, Package } from "lucide-react";
+import { LuTruck, LuFactory, LuScissors, LuPackage } from "react-icons/lu";
+const Truck = LuTruck, Factory = LuFactory, Scissors = LuScissors, Package = LuPackage;
 import type { DashboardData } from "@/types/dashboard";
 import { StatsCard } from "@/components/domain/StatsCard";
 import { PageHero } from "@/composites/PageHero";

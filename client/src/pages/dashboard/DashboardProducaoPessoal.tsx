@@ -1,6 +1,7 @@
 import {
-  Factory, Clock, CheckCircle2, Weight, Package,
-} from "lucide-react";
+  LuFactory, LuClock, LuCircleCheck, LuWeight, LuPackage,
+} from "react-icons/lu";
+const Factory = LuFactory, Clock = LuClock, CheckCircle2 = LuCircleCheck, Weight = LuWeight, Package = LuPackage;
 import { StatsCard } from "@/components/domain/StatsCard";
 import { Badge } from "@/components/ui/badge";
 import { PageHero } from "@/composites/PageHero";

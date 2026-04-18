@@ -1,6 +1,7 @@
 import {
-  FileText, CheckCircle2, Clock, AlertCircle,
-} from "lucide-react";
+  LuFileText, LuCircleCheck, LuClock, LuCircleAlert,
+} from "react-icons/lu";
+const FileText = LuFileText, CheckCircle2 = LuCircleCheck, Clock = LuClock, AlertCircle = LuCircleAlert;
 import { StatsCard } from "@/components/domain/StatsCard";
 import { Badge } from "@/components/ui/badge";
 import { PageHero } from "@/composites/PageHero";

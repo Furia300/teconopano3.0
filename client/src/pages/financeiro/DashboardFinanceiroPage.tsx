@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { DollarSign } from "lucide-react";
+import { LuDollarSign } from "react-icons/lu";
+const DollarSign = LuDollarSign;
 import { PageHeader } from "@/components/domain/PageHeader";
 import { DashboardPrintButton } from "@/components/domain/DashboardPrintButton";
 import { FinanceiroDashboard } from "./FinanceiroDashboard";

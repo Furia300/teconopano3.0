@@ -1,4 +1,6 @@
 import { useState, useMemo, useEffect, useRef } from "react";
+import { LuSend, LuUsers, LuScale, LuCircleCheck, LuClock, LuChartBarIncreasing, LuTruck, LuLayoutGrid, LuX, LuFlag, LuDollarSign, LuBox, LuBuilding2, LuChevronDown, LuCheck } from "react-icons/lu";
+import { ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, XAxis, Tooltip, AreaChart, Area } from "recharts";
 
 /* ─── Types ─── */
 interface Expedicao {
@@ -34,21 +36,21 @@ const DARK = { azulProfundo: "#5B9BD5", azulEscuro: "#E2E8F0", azulClaro: "#7EAE
 let C = LIGHT;
 const Fn = { title: "'Saira Expanded',sans-serif", body: "'Open Sans',sans-serif", mono: "'Fira Code',monospace" };
 
-/* ─── SVG Icons ─── */
+/* ─── Icons (react-icons/lu) ─── */
 const Ic = {
-  send: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><path d="M18 2L9 11M18 2l-5 16-4-7-7-4 16-5z" stroke={c} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>,
-  users: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><circle cx="7" cy="7" r="3" stroke={c} strokeWidth="1.4"/><path d="M1 17c0-3 2.7-5 6-5s6 2 6 5" stroke={c} strokeWidth="1.4" strokeLinecap="round"/><circle cx="14" cy="6" r="2.5" stroke={c} strokeWidth="1.2"/><path d="M15.5 12c2 .5 3.5 2 3.5 4" stroke={c} strokeWidth="1.2" strokeLinecap="round"/></svg>,
-  scale: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><path d="M10 2v16M3 6l7-2 7 2M3 6l2 6h-4L3 6zM17 6l2 6h-4L17 6z" stroke={c} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>,
-  check: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><path d="M4 10l4 4 8-8" stroke={c} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>,
-  clock: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke={c} strokeWidth="1.4"/><path d="M10 5v5l3 3" stroke={c} strokeWidth="1.4" strokeLinecap="round"/></svg>,
-  chart: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><rect x="2" y="10" width="4" height="8" rx="1" stroke={c} strokeWidth="1.3"/><rect x="8" y="5" width="4" height="13" rx="1" stroke={c} strokeWidth="1.3"/><rect x="14" y="2" width="4" height="16" rx="1" stroke={c} strokeWidth="1.3"/></svg>,
-  truck: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><rect x="1" y="6" width="11" height="9" rx="1.5" stroke={c} strokeWidth="1.4"/><path d="M12 9h4l2.5 3v3h-6.5" stroke={c} strokeWidth="1.4" strokeLinejoin="round"/><circle cx="5" cy="16" r="1.5" stroke={c} strokeWidth="1.3"/><circle cx="15.5" cy="16" r="1.5" stroke={c} strokeWidth="1.3"/></svg>,
-  grid: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="1.5" stroke={c} strokeWidth="1.3"/><rect x="11" y="2" width="7" height="7" rx="1.5" stroke={c} strokeWidth="1.3"/><rect x="2" y="11" width="7" height="7" rx="1.5" stroke={c} strokeWidth="1.3"/><rect x="11" y="11" width="7" height="7" rx="1.5" stroke={c} strokeWidth="1.3"/></svg>,
-  x: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke={c} strokeWidth="1.5" strokeLinecap="round"/></svg>,
-  flag: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><path d="M4 2v16M4 2l10 5-10 5" stroke={c} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>,
-  dollar: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><path d="M10 2v16M6 6c0-1.5 1.8-2 4-2s4 .5 4 2-1.8 2-4 3-4 1.5-4 3 1.8 2 4 2 4-.5 4-2" stroke={c} strokeWidth="1.4" strokeLinecap="round"/></svg>,
-  box: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><path d="M2 6l8-4 8 4v8l-8 4-8-4V6z" stroke={c} strokeWidth="1.3" strokeLinejoin="round"/><path d="M2 6l8 4 8-4M10 10v8" stroke={c} strokeWidth="1.3" strokeLinejoin="round"/></svg>,
-  edificio: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><rect x="3" y="2" width="14" height="16" rx="2" stroke={c} strokeWidth="1.4"/><rect x="6" y="5" width="3" height="3" rx=".5" stroke={c} strokeWidth="1"/><rect x="11" y="5" width="3" height="3" rx=".5" stroke={c} strokeWidth="1"/><rect x="6" y="10" width="3" height="3" rx=".5" stroke={c} strokeWidth="1"/><rect x="11" y="10" width="3" height="3" rx=".5" stroke={c} strokeWidth="1"/><rect x="8" y="15" width="4" height="3" rx=".5" stroke={c} strokeWidth="1"/></svg>,
+  send: (s: number, c: string) => <LuSend size={s} color={c} />,
+  users: (s: number, c: string) => <LuUsers size={s} color={c} />,
+  scale: (s: number, c: string) => <LuScale size={s} color={c} />,
+  check: (s: number, c: string) => <LuCircleCheck size={s} color={c} />,
+  clock: (s: number, c: string) => <LuClock size={s} color={c} />,
+  chart: (s: number, c: string) => <LuChartBarIncreasing size={s} color={c} />,
+  truck: (s: number, c: string) => <LuTruck size={s} color={c} />,
+  grid: (s: number, c: string) => <LuLayoutGrid size={s} color={c} />,
+  x: (s: number, c: string) => <LuX size={s} color={c} />,
+  flag: (s: number, c: string) => <LuFlag size={s} color={c} />,
+  dollar: (s: number, c: string) => <LuDollarSign size={s} color={c} />,
+  box: (s: number, c: string) => <LuBox size={s} color={c} />,
+  edificio: (s: number, c: string) => <LuBuilding2 size={s} color={c} />,
 };
 
 /* ─── Helpers ─── */
@@ -93,12 +95,12 @@ function DSSelect({ label, value, onChange, options, placeholder = "Todos", icon
       <div onClick={() => setOpen(!open)} style={{ display: "flex", alignItems: "center", gap: 8, height: 30, padding: "0 12px", background: C.cardBg, border: `1.5px solid ${bc}`, borderRadius: open ? "8px 8px 0 0" : 8, transition: "all .18s", boxShadow: open ? "0 0 0 3px rgba(147,189,228,0.35)" : "none", cursor: "pointer", fontFamily: Fn.body, fontSize: 12, userSelect: "none" }}>
         {icon && <span style={{ display: "flex", flexShrink: 0, opacity: .55 }}>{icon}</span>}
         <span style={{ flex: 1, color: value ? C.cinzaEscuro : C.textLight, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontWeight: 600 }}>{value || placeholder}</span>
-        <svg width={14} height={14} viewBox="0 0 20 20" fill="none" style={{ flexShrink: 0, opacity: .45, transition: "transform .2s", transform: open ? "rotate(180deg)" : "rotate(0)" }}><path d="M6 8l4 4 4-4" stroke={C.cinzaChumbo} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+        <LuChevronDown size={14} color={C.cinzaChumbo} style={{ flexShrink: 0, opacity: .45, transition: "transform .2s", transform: open ? "rotate(180deg)" : "rotate(0)" }} />
       </div>
       {open && <div style={{ position: "absolute", top: "100%", left: 0, right: 0, zIndex: 20, background: C.cardBg, border: `1.5px solid ${C.azulProfundo}`, borderTop: "none", borderRadius: "0 0 8px 8px", boxShadow: "0 6px 20px rgba(0,75,155,.12)", maxHeight: 200, overflowY: "auto" }}>
         <div onClick={() => { onChange(null); setOpen(false) }} style={{ padding: "6px 14px", fontSize: 12, fontFamily: Fn.body, color: !value ? C.azulProfundo : C.cinzaEscuro, fontWeight: !value ? 600 : 400, background: !value ? C.azulCeuClaro : "transparent", cursor: "pointer" }}>{placeholder}</div>
         {options.map((o, i) => { const sel = o === value; return <div key={o} onClick={() => { onChange(o); setOpen(false) }} onMouseEnter={() => setHi(i)} onMouseLeave={() => setHi(-1)} style={{ padding: "6px 14px", fontSize: 12, fontFamily: Fn.body, color: sel ? C.azulProfundo : C.cinzaEscuro, fontWeight: sel ? 600 : 400, background: sel ? C.azulCeuClaro : i === hi ? C.bg : "transparent", cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}>
-          {sel && <svg width={12} height={12} viewBox="0 0 16 16" fill="none" style={{ marginLeft: -14, flexShrink: 0 }}><path d="M3.5 8.5L6.5 11.5L12.5 4.5" stroke={C.azulProfundo} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>}
+          {sel && <LuCheck size={12} color={C.azulProfundo} style={{ marginLeft: -14, flexShrink: 0 }} />}
           {o}
         </div> })}
       </div>}
@@ -158,24 +160,40 @@ function DSDateField({
   );
 }
 
-/* ─── Donut ─── */
+/* ─── Donut (Recharts) ─── */
 function Donut({ segments, size = 130, strokeW = 14, center, hov, setHov, onClick }: {
   segments: { label: string; value: number; color: string; key: string }[];
   size?: number; strokeW?: number; center: React.ReactNode;
   hov: number | null; setHov: (i: number | null) => void;
   onClick?: (key: string) => void;
 }) {
-  const total = Math.max(segments.reduce((a, s) => a + s.value, 0), 1);
-  const cx = size / 2, cy = size / 2, r = (size - strokeW) / 2 - 4;
-  const circ = 2 * Math.PI * r; let acc = 0;
+  const innerR = (size / 2) - strokeW - 4;
+  const outerR = (size / 2) - 4;
   return (
-    <div style={{ position: "relative" }}>
-      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ transform: "rotate(-90deg)" }}>
-        <circle cx={cx} cy={cy} r={r} fill="none" stroke={C.cardBorder} strokeWidth={strokeW} />
-        {segments.map((s, i) => { const pct = s.value / total; const dash = pct * circ; const off = acc * circ; acc += pct;
-          return <circle key={i} cx={cx} cy={cy} r={r} fill="none" stroke={s.color} strokeWidth={hov === i ? strokeW + 4 : strokeW} strokeDasharray={`${dash} ${circ - dash}`} strokeDashoffset={-off} strokeLinecap="round" style={{ transition: "all .15s", cursor: onClick ? "pointer" : "default" }} onClick={() => onClick?.(s.key)} onMouseEnter={() => setHov(i)} onMouseLeave={() => setHov(null)} />;
-        })}
-      </svg>
+    <div style={{ position: "relative", width: size, height: size }}>
+      <PieChart width={size} height={size}>
+        <Pie
+          data={segments}
+          dataKey="value"
+          cx="50%"
+          cy="50%"
+          innerRadius={innerR}
+          outerRadius={outerR}
+          paddingAngle={1}
+          startAngle={90}
+          endAngle={-270}
+          stroke="none"
+          isAnimationActive={false}
+          onMouseEnter={(_, i) => setHov(i)}
+          onMouseLeave={() => setHov(null)}
+          onClick={(_, i) => onClick?.(segments[i].key)}
+          style={{ cursor: onClick ? "pointer" : "default" }}
+        >
+          {segments.map((s, i) => (
+            <Cell key={i} fill={s.color} strokeWidth={0} style={{ outline: "none", transition: "all .15s", transform: hov === i ? "scale(1.04)" : "scale(1)", transformOrigin: "center" }} />
+          ))}
+        </Pie>
+      </PieChart>
       <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", pointerEvents: "none" }}>{center}</div>
     </div>
   );
@@ -216,7 +234,6 @@ export function ExpedicaoDashboard({ expedicoes }: Props) {
   const dark = useDark();
   C = dark ? DARK : LIGHT;
 
-  const [hovKpiPt, setHovKpiPt] = useState<{ c: number; p: number } | null>(null);
   const [hovStatus, setHovStatus] = useState<number | null>(null);
   const [hovBar, setHovBar] = useState(-1);
   const [hovForn, setHovForn] = useState(-1);
@@ -334,7 +351,7 @@ export function ExpedicaoDashboard({ expedicoes }: Props) {
     for (const e of filtered) { if (!e.createdAt) continue; const d = new Date(e.createdAt); const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`; if (map[key] !== undefined) map[key]++; }
     return Object.entries(map).map(([m, count]) => ({ month: m, label: new Date(m + "-01").toLocaleDateString("pt-BR", { month: "short" }).toUpperCase(), count }));
   }, [filtered]);
-  const maxMonth = Math.max(...monthlyData.map(m => m.count), 1);
+
 
   /* Rota distribution */
   const rotaData = useMemo(() => {
@@ -413,12 +430,8 @@ export function ExpedicaoDashboard({ expedicoes }: Props) {
       {/* ═══ KPIs ═══ */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16, marginBottom: 24 }}>
         {kpis.map((k, i) => {
-          const max = Math.max(...k.pts), min = Math.min(...k.pts);
-          const sw2 = 200, sh = 40;
-          const points = k.pts.map((v, j) => ({ x: (j / (k.pts.length - 1)) * sw2, y: sh - ((v - min) / (max - min || 1)) * (sh - 8) + 4 }));
-          const line = points.map(p => `${p.x},${p.y}`).join(" ");
+          const sparkData = k.pts.map((v, j) => ({ name: MONTHS[j], value: v }));
           const uid = `ek${i}`;
-          const hovPt = hovKpiPt && hovKpiPt.c === i ? hovKpiPt.p : -1;
           return (
             <div key={i} style={cardStyle(i)}>
               <div style={{ padding: "18px 20px 6px", position: "relative", zIndex: 2 }}>
@@ -430,13 +443,25 @@ export function ExpedicaoDashboard({ expedicoes }: Props) {
                 </div>
               </div>
               <div style={{ overflow: "hidden", borderRadius: "0 0 12px 24px", marginLeft: -1, marginRight: -1, marginBottom: -1 }}>
-                <svg width="100%" height={sh + 16} viewBox={`-2 -12 ${sw2 + 4} ${sh + 28}`} preserveAspectRatio="none" style={{ display: "block" }} onMouseLeave={() => setHovKpiPt(null)}>
-                  <defs><linearGradient id={`g${uid}`} x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor={k.color} stopOpacity=".18" /><stop offset="100%" stopColor={k.color} stopOpacity="0" /></linearGradient></defs>
-                  <polygon points={`0,${sh} ${line} ${sw2},${sh}`} fill={`url(#g${uid})`} />
-                  <polyline points={line} fill="none" stroke={k.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  {points.map((p, j) => (<g key={j} onMouseEnter={() => setHovKpiPt({ c: i, p: j })} style={{ cursor: "pointer" }}><circle cx={p.x} cy={p.y} r="10" fill="transparent" /><circle cx={p.x} cy={p.y} r={hovPt === j ? 4 : 0} fill={k.color} />{hovPt === j && <><text x={p.x} y={p.y - 8} textAnchor="middle" fontSize="9" fontWeight="700" fill={k.color} fontFamily={Fn.mono}>{k.pts[j]}</text><text x={p.x} y={sh + 10} textAnchor="middle" fontSize="7" fill={C.cinzaChumbo} fontFamily={Fn.body}>{MONTHS[j]}</text></>}</g>))}
-                  {points.map((p, j) => j % 2 === 0 && hovPt === -1 ? <text key={`m${j}`} x={p.x} y={sh + 10} textAnchor="middle" fontSize="7" fill={C.textLight} fontFamily={Fn.body}>{MONTHS[j]}</text> : null)}
-                </svg>
+                <ResponsiveContainer width="100%" height={56}>
+                  <AreaChart data={sparkData} margin={{ top: 4, right: 0, bottom: 0, left: 0 }}>
+                    <defs>
+                      <linearGradient id={`g${uid}`} x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor={k.color} stopOpacity={0.18} />
+                        <stop offset="100%" stopColor={k.color} stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <Tooltip
+                      content={({ active, payload }) => {
+                        if (!active || !payload?.[0]) return null;
+                        const d = payload[0].payload;
+                        return <div style={{ background: C.cardBg, border: `1px solid ${C.cardBorder}`, borderRadius: 6, padding: "4px 8px", fontSize: 9, fontFamily: Fn.mono, color: k.color, fontWeight: 700 }}>{d.name}: {d.value}</div>;
+                      }}
+                      cursor={false}
+                    />
+                    <Area type="monotone" dataKey="value" stroke={k.color} strokeWidth={2} fill={`url(#g${uid})`} isAnimationActive={false} dot={false} activeDot={{ r: 4, fill: k.color, stroke: "none" }} />
+                  </AreaChart>
+                </ResponsiveContainer>
               </div>
             </div>
           );
@@ -450,19 +475,17 @@ export function ExpedicaoDashboard({ expedicoes }: Props) {
             <div><span style={{ fontSize: 13, fontWeight: 700, color: C.azulEscuro, fontFamily: Fn.title, display: "block" }}>Pedidos por Mês</span><span style={{ fontSize: 10, color: C.cinzaChumbo }}>Últimos 6 meses{hasFilter ? " · filtrado" : ""}</span></div>
             <div style={{ width: 30, height: 30, borderRadius: 8, background: `${C.azulProfundo}0A`, display: "flex", alignItems: "center", justifyContent: "center" }}>{Ic.chart(14, C.azulProfundo)}</div>
           </div>
-          <div style={{ display: "flex", justifyContent: "center" }}>
-            {(() => {
-              const bw = 48, gp = 16, chartW = monthlyData.length * (bw + gp) - gp, chartH = 120;
-              return (
-                <svg width={chartW + 20} height={chartH + 40} viewBox={`-10 -16 ${chartW + 20} ${chartH + 40}`}>
-                  <line x1={0} y1={chartH} x2={chartW} y2={chartH} stroke={C.cardBorder} strokeWidth=".5" />
-                  {monthlyData.map((m, i) => { const bh = Math.max(6, (m.count / maxMonth) * chartH); const x = i * (bw + gp); const isH = hovBar === i;
-                    return (<g key={i} onMouseEnter={() => setHovBar(i)} onMouseLeave={() => setHovBar(-1)} style={{ cursor: "pointer" }}><rect x={x} y={-16} width={bw} height={chartH + 40} fill="transparent" /><rect x={x} y={chartH - bh} width={bw} height={bh} rx={6} fill={C.azulProfundo} opacity={isH ? 1 : 0.82} style={{ transition: "all .15s" }} />{isH && <rect x={x - 2} y={chartH - bh - 2} width={bw + 4} height={bh + 4} rx={7} fill="none" stroke={C.azulProfundo} strokeWidth="1.5" strokeDasharray="4 2" />}<text x={x + bw / 2} y={chartH - bh - 6} textAnchor="middle" fontSize="11" fontWeight="700" fill={C.azulEscuro} fontFamily={Fn.mono}>{m.count}</text><text x={x + bw / 2} y={chartH + 16} textAnchor="middle" fontSize="9" fill={C.cinzaChumbo} fontFamily={Fn.body}>{m.label}</text></g>);
-                  })}
-                </svg>);
-            })()}
-          </div>
-          {hovBar >= 0 && monthlyData[hovBar] && <ChartTooltip title={monthlyData[hovBar].label} color={C.azulProfundo} x={tipPos.x} y={tipPos.y} rows={[{ label: "Pedidos no mês", value: monthlyData[hovBar].count, color: C.azulProfundo }, { label: "% do total", value: `${total > 0 ? Math.round((monthlyData[hovBar].count / total) * 100) : 0}%`, color: C.azulCeu }]} />}
+          <ResponsiveContainer width="100%" height={160}>
+            <BarChart data={monthlyData} onMouseMove={(state: any) => { if (state && state.activeTooltipIndex != null) setHovBar(state.activeTooltipIndex); }} onMouseLeave={() => setHovBar(-1)}>
+              <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fontSize: 9, fill: C.cinzaChumbo, fontFamily: Fn.body }} />
+              <Tooltip content={({ active, payload }) => {
+                if (!active || !payload?.[0]) return null;
+                const d = payload[0].payload;
+                return <ChartTooltip title={d.label} color={C.azulProfundo} x={tipPos.x} y={tipPos.y} rows={[{ label: "Pedidos no mês", value: d.count, color: C.azulProfundo }, { label: "% do total", value: `${total > 0 ? Math.round((d.count / total) * 100) : 0}%`, color: C.azulCeu }]} />;
+              }} cursor={false} wrapperStyle={{ pointerEvents: "none" }} />
+              <Bar dataKey="count" fill={C.azulProfundo} radius={[6, 6, 0, 0]} opacity={0.82} label={{ position: "top", fontSize: 11, fontWeight: 700, fill: C.azulEscuro, fontFamily: Fn.mono }} />
+            </BarChart>
+          </ResponsiveContainer>
         </div>
 
         <div style={{ ...cardStyle(), padding: 20 }}>

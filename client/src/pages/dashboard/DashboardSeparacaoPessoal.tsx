@@ -1,6 +1,7 @@
 import {
-  ClipboardList, Weight, Package, ArrowRight,
-} from "lucide-react";
+  LuClipboardList, LuWeight, LuPackage, LuArrowRight,
+} from "react-icons/lu";
+const ClipboardList = LuClipboardList, Weight = LuWeight, Package = LuPackage, ArrowRight = LuArrowRight;
 import { StatsCard } from "@/components/domain/StatsCard";
 import { Badge } from "@/components/ui/badge";
 import { PageHero } from "@/composites/PageHero";

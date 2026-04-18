@@ -3,6 +3,8 @@ import type { DashboardData } from "@/types/dashboard";
 import { FipsJunctionLines, PageHero } from "@/composites/PageHero";
 import { shellDarkGlassPanel } from "@/lib/docHeaderChrome";
 import { DashboardPrintButton } from "@/components/domain/DashboardPrintButton";
+import { LuTruck, LuFactory, LuWarehouse, LuPackage, LuDollarSign, LuFile, LuScissors, LuDroplets, LuUsers, LuArrowUp, LuArrowDown, LuChartBarIncreasing, LuLayoutGrid, LuClock, LuTriangleAlert, LuCircleCheck, LuMapPin, LuScale, LuX, LuBuilding2, LuFlag, LuChevronDown, LuCheck } from "react-icons/lu";
+import { AreaChart, Area, ResponsiveContainer, BarChart, Bar, XAxis, Tooltip, PieChart, Pie, Cell } from "recharts";
 
 type Props = { data: DashboardData };
 
@@ -51,29 +53,29 @@ const DARK = {
 let C = LIGHT;
 const Fn = { title: "'Saira Expanded',sans-serif", body: "'Open Sans',sans-serif", mono: "'Fira Code',monospace" };
 
-/* ═══ SVG ICONS ═══ */
+/* ═══ ICONS (react-icons/lu) ═══ */
 const Ic = {
-  truck: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><rect x="1" y="6" width="11" height="9" rx="1.5" stroke={c} strokeWidth="1.4"/><path d="M12 9h4l2.5 3v3h-6.5" stroke={c} strokeWidth="1.4" strokeLinejoin="round"/><circle cx="5" cy="16" r="1.5" stroke={c} strokeWidth="1.3"/><circle cx="15.5" cy="16" r="1.5" stroke={c} strokeWidth="1.3"/></svg>,
-  factory: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><path d="M2 18V8l4-3v5l4-3v5l4-3v8H2z" stroke={c} strokeWidth="1.4" strokeLinejoin="round"/><rect x="14" y="2" width="4" height="16" rx="1" stroke={c} strokeWidth="1.4"/></svg>,
-  warehouse: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><path d="M2 8l8-5 8 5v10H2V8z" stroke={c} strokeWidth="1.4" strokeLinejoin="round"/><rect x="7" y="12" width="6" height="6" rx="1" stroke={c} strokeWidth="1.3"/></svg>,
-  package: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><path d="M3 6l7-4 7 4v8l-7 4-7-4V6z" stroke={c} strokeWidth="1.4" strokeLinejoin="round"/><path d="M3 6l7 4 7-4M10 10v8" stroke={c} strokeWidth="1.3"/></svg>,
-  dollar: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke={c} strokeWidth="1.5"/><path d="M10 4v12M7 7.5c0-1 1.5-2 3-2s3 .5 3 2-1 2-3 2.5-3 1-3 2.5 1.5 2 3 2 3-1 3-2" stroke={c} strokeWidth="1.3" strokeLinecap="round"/></svg>,
-  file: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><path d="M6 2h6l5 5v10a1 1 0 01-1 1H6a1 1 0 01-1-1V3a1 1 0 011-1z" stroke={c} strokeWidth="1.5" strokeLinejoin="round"/><path d="M12 2v5h5" stroke={c} strokeWidth="1.5"/></svg>,
-  scissors: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><circle cx="5" cy="5" r="2.5" stroke={c} strokeWidth="1.4"/><circle cx="5" cy="15" r="2.5" stroke={c} strokeWidth="1.4"/><path d="M7 6.5L17 16M7 13.5L17 4" stroke={c} strokeWidth="1.4" strokeLinecap="round"/></svg>,
-  droplets: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><path d="M10 2c-3 4-5 6-5 9a5 5 0 0010 0c0-3-2-5-5-9z" stroke={c} strokeWidth="1.5" strokeLinejoin="round"/></svg>,
-  users: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><circle cx="7" cy="6" r="3" stroke={c} strokeWidth="1.4"/><path d="M1 17c0-3 2.5-5 6-5s6 2 6 5" stroke={c} strokeWidth="1.4" strokeLinecap="round"/><circle cx="14" cy="7" r="2" stroke={c} strokeWidth="1.2"/><path d="M15 12c2 .5 4 2 4 4" stroke={c} strokeWidth="1.2" strokeLinecap="round"/></svg>,
-  arrowUp: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 16 16" fill="none"><path d="M8 12V4M5 7l3-3 3 3" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>,
-  arrowDown: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 16 16" fill="none"><path d="M8 4v8M5 9l3 3 3-3" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>,
-  chart: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><rect x="3" y="10" width="3" height="7" rx="1" stroke={c} strokeWidth="1.3"/><rect x="8.5" y="6" width="3" height="11" rx="1" stroke={c} strokeWidth="1.3"/><rect x="14" y="3" width="3" height="14" rx="1" stroke={c} strokeWidth="1.3"/></svg>,
-  grid: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="7" height="7" rx="1.5" stroke={c} strokeWidth="1.4"/><rect x="11" y="2" width="7" height="7" rx="1.5" stroke={c} strokeWidth="1.4"/><rect x="2" y="11" width="7" height="7" rx="1.5" stroke={c} strokeWidth="1.4"/><rect x="11" y="11" width="7" height="7" rx="1.5" stroke={c} strokeWidth="1.4"/></svg>,
-  clock: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke={c} strokeWidth="1.5"/><path d="M10 5.5V10l3 2" stroke={c} strokeWidth="1.5" strokeLinecap="round"/></svg>,
-  alert: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><path d="M10 2L1.5 17h17L10 2z" stroke={c} strokeWidth="1.5" strokeLinejoin="round"/><path d="M10 8v4M10 14v.5" stroke={c} strokeWidth="1.8" strokeLinecap="round"/></svg>,
-  check: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke={c} strokeWidth="1.5"/><path d="M7 10l2 2 4-4" stroke={c} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>,
-  map: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><path d="M10 2C6.7 2 4 4.7 4 8c0 5 6 10 6 10s6-5 6-10c0-3.3-2.7-6-6-6z" stroke={c} strokeWidth="1.5"/><circle cx="10" cy="8" r="2" stroke={c} strokeWidth="1.3"/></svg>,
-  scale: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><path d="M10 2v16M3 6l7-2 7 2M3 6l2 6h-4L3 6zM17 6l2 6h-4L17 6z" stroke={c} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/></svg>,
-  x: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke={c} strokeWidth="1.8" strokeLinecap="round"/></svg>,
-  edificio: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><rect x="3" y="2" width="14" height="16" rx="1.5" stroke={c} strokeWidth="1.5"/><path d="M7 6h2M11 6h2M7 10h2M11 10h2M8 14h4v4H8z" stroke={c} strokeWidth="1.3" strokeLinecap="round"/></svg>,
-  flag: (s: number, c: string) => <svg width={s} height={s} viewBox="0 0 20 20" fill="none"><path d="M4 2v16M4 2h10l-3 4 3 4H4" stroke={c} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+  truck: (s: number, c: string) => <LuTruck size={s} color={c} />,
+  factory: (s: number, c: string) => <LuFactory size={s} color={c} />,
+  warehouse: (s: number, c: string) => <LuWarehouse size={s} color={c} />,
+  package: (s: number, c: string) => <LuPackage size={s} color={c} />,
+  dollar: (s: number, c: string) => <LuDollarSign size={s} color={c} />,
+  file: (s: number, c: string) => <LuFile size={s} color={c} />,
+  scissors: (s: number, c: string) => <LuScissors size={s} color={c} />,
+  droplets: (s: number, c: string) => <LuDroplets size={s} color={c} />,
+  users: (s: number, c: string) => <LuUsers size={s} color={c} />,
+  arrowUp: (s: number, c: string) => <LuArrowUp size={s} color={c} />,
+  arrowDown: (s: number, c: string) => <LuArrowDown size={s} color={c} />,
+  chart: (s: number, c: string) => <LuChartBarIncreasing size={s} color={c} />,
+  grid: (s: number, c: string) => <LuLayoutGrid size={s} color={c} />,
+  clock: (s: number, c: string) => <LuClock size={s} color={c} />,
+  alert: (s: number, c: string) => <LuTriangleAlert size={s} color={c} />,
+  check: (s: number, c: string) => <LuCircleCheck size={s} color={c} />,
+  map: (s: number, c: string) => <LuMapPin size={s} color={c} />,
+  scale: (s: number, c: string) => <LuScale size={s} color={c} />,
+  x: (s: number, c: string) => <LuX size={s} color={c} />,
+  edificio: (s: number, c: string) => <LuBuilding2 size={s} color={c} />,
+  flag: (s: number, c: string) => <LuFlag size={s} color={c} />,
 };
 
 function JunctionLines({ style }: { style?: React.CSSProperties }) {
@@ -130,12 +132,12 @@ function DSSelect({ label, value, onChange, options, placeholder = "Todos", icon
       <div onClick={() => setOpen(!open)} style={{ display: "flex", alignItems: "center", gap: 8, height: 30, padding: "0 12px", background: C.cardBg, border: `1.5px solid ${bc}`, borderRadius: open ? "8px 8px 0 0" : 8, transition: "all .18s", boxShadow: open ? "0 0 0 3px rgba(147,189,228,0.35)" : "none", cursor: "pointer", fontFamily: Fn.body, fontSize: 12, userSelect: "none" }}>
         {icon && <span style={{ display: "flex", flexShrink: 0, opacity: .55 }}>{icon}</span>}
         <span style={{ flex: 1, color: value ? C.cinzaEscuro : C.textLight, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontWeight: 600 }}>{value || placeholder}</span>
-        <svg width={14} height={14} viewBox="0 0 20 20" fill="none" style={{ flexShrink: 0, opacity: .45, transition: "transform .2s", transform: open ? "rotate(180deg)" : "rotate(0)" }}><path d="M6 8l4 4 4-4" stroke={C.cinzaChumbo} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+        <LuChevronDown size={14} color={C.cinzaChumbo} style={{ flexShrink: 0, opacity: .45, transition: "transform .2s", transform: open ? "rotate(180deg)" : "rotate(0)" }} />
       </div>
       {open && <div style={{ position: "absolute", top: "100%", left: 0, right: 0, zIndex: 20, background: C.cardBg, border: `1.5px solid ${C.azulProfundo}`, borderTop: "none", borderRadius: "0 0 8px 8px", boxShadow: "0 6px 20px rgba(0,75,155,.12)", maxHeight: 200, overflowY: "auto" }}>
         <div onClick={() => { onChange(null); setOpen(false) }} style={{ padding: "6px 14px", fontSize: 12, fontFamily: Fn.body, color: !value ? C.azulProfundo : C.cinzaEscuro, fontWeight: !value ? 600 : 400, background: !value ? C.azulCeuClaro : "transparent", cursor: "pointer" }}>{placeholder}</div>
         {options.map((o, i) => { const sel = o === value; return <div key={o} onClick={() => { onChange(o); setOpen(false) }} onMouseEnter={() => setHi(i)} onMouseLeave={() => setHi(-1)} style={{ padding: "6px 14px", fontSize: 12, fontFamily: Fn.body, color: sel ? C.azulProfundo : C.cinzaEscuro, fontWeight: sel ? 600 : 400, background: sel ? C.azulCeuClaro : i === hi ? C.bg : "transparent", cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}>
-          {sel && <svg width={12} height={12} viewBox="0 0 16 16" fill="none" style={{ marginLeft: -14, flexShrink: 0 }}><path d="M3.5 8.5L6.5 11.5L12.5 4.5" stroke={C.azulProfundo} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>}
+          {sel && <LuCheck size={12} color={C.azulProfundo} style={{ marginLeft: -14, flexShrink: 0 }} />}
           {o}
         </div> })}
       </div>}
@@ -307,7 +309,6 @@ export default function DashboardRHDedicado({ data }: Props) {
   const [hovGalpao, setHovGalpao] = useState(-1);
   const [hovMaterial, setHovMaterial] = useState(-1);
   const [hovExpStatus, setHovExpStatus] = useState<number | null>(null);
-  const [hovKpiPt, setHovKpiPt] = useState<{ c: number; p: number } | null>(null);
   const [hovKpiCard, setHovKpiCard] = useState(-1);
   const [hovExpRow, setHovExpRow] = useState(-1);
   const [hovColetaStatus, setHovColetaStatus] = useState<number | null>(null);
@@ -408,7 +409,7 @@ export default function DashboardRHDedicado({ data }: Props) {
                 {Ic.users(24, "#ed1b24")}
               </div>
               <div className="min-w-0">
-                <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(253,194,78,0.16)", border: "1px solid rgba(253,194,78,0.42)", borderRadius: 20, padding: "4px 12px", fontSize: 10, fontWeight: 600, color: C.amareloOuro, marginBottom: 8 }}>RH · Tecnopano 3.0</div>
+                <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(253,194,78,0.16)", border: "1px solid rgba(253,194,78,0.42)", borderRadius: 20, padding: "4px 12px", fontSize: 10, fontWeight: 600, color: C.amareloOuro, marginBottom: 8 }}>RH · Tecnopano 2.0</div>
                 <h2 className="font-heading text-xl font-bold tracking-tight text-white sm:text-[22px]" style={{ lineHeight: 1.2 }}>Painel <span style={{ color: C.amareloOuro }}>RH</span></h2>
                 <p className="mt-0.5 text-xs text-white/45 sm:text-[13px]">Gestão de Pessoas · {totalColabs} colaboradores · {ativos} ativos · {numDepartamentos} departamentos{hasFilter ? " (filtrado)" : ""}</p>
                 <p className="mt-1 text-[10px] text-white/30">{new Date().toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</p>
@@ -498,12 +499,8 @@ export default function DashboardRHDedicado({ data }: Props) {
         {/* ═══ KPIs ═══ */}
         <div style={{ display: "grid", gridTemplateColumns: mob ? "repeat(2,1fr)" : "repeat(4,1fr)", gap: mob ? 10 : 16, marginBottom: mob ? 16 : 24 }}>
           {kpis.map((k, i) => {
-            const max = Math.max(...k.sparkPts), min = Math.min(...k.sparkPts);
-            const sw2 = 200, sh = 40;
-            const pts = k.sparkPts.map((v, j) => ({ x: (j / (k.sparkPts.length - 1)) * sw2, y: sh - ((v - min) / (max - min || 1)) * (sh - 8) + 4 }));
-            const line = pts.map(p => `${p.x},${p.y}`).join(" ");
+            const sparkData = k.sparkPts.map((v, j) => ({ name: MONTHS[j], value: v }));
             const uid = k.color.replace('#', '') + 'k' + i;
-            const hovPt = hovKpiPt && hovKpiPt.c === i ? hovKpiPt.p : -1;
             return (
               <div
                 key={i}
@@ -535,13 +532,23 @@ export default function DashboardRHDedicado({ data }: Props) {
                   </div>
                 </div>
                 <div style={{ overflow: "hidden", borderRadius: "0 0 12px 24px", marginLeft: -1, marginRight: -1, marginBottom: -1 }}>
-                  <svg width="100%" height={sh + 16} viewBox={`-2 -12 ${sw2 + 4} ${sh + 28}`} preserveAspectRatio="none" style={{ display: "block" }} onMouseLeave={() => setHovKpiPt(null)}>
-                    <defs><linearGradient id={`ga${uid}`} x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor={k.color} stopOpacity=".18" /><stop offset="100%" stopColor={k.color} stopOpacity="0" /></linearGradient></defs>
-                    <polygon points={`0,${sh} ${line} ${sw2},${sh}`} fill={`url(#ga${uid})`} />
-                    <polyline points={line} fill="none" stroke={k.color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    {pts.map((p, j) => (<g key={j} onMouseEnter={() => setHovKpiPt({ c: i, p: j })} style={{ cursor: "pointer" }}><circle cx={p.x} cy={p.y} r="10" fill="transparent" /><circle cx={p.x} cy={p.y} r={hovPt === j ? 4 : 0} fill={k.color} />{hovPt === j && <><text x={p.x} y={p.y - 8} textAnchor="middle" fontSize="9" fontWeight="700" fill={k.color} fontFamily={Fn.mono}>{k.sparkPts[j]}</text><text x={p.x} y={sh + 10} textAnchor="middle" fontSize="7" fill={C.cinzaChumbo} fontFamily={Fn.body}>{MONTHS[j]}</text></>}</g>))}
-                    {pts.map((p, j) => j % 2 === 0 && hovPt === -1 ? <text key={`m${j}`} x={p.x} y={sh + 10} textAnchor="middle" fontSize="7" fill={C.textLight} fontFamily={Fn.body}>{MONTHS[j]}</text> : null)}
-                  </svg>
+                  <ResponsiveContainer width="100%" height={56}>
+                    <AreaChart data={sparkData} margin={{ top: 4, right: 0, bottom: 0, left: 0 }}>
+                      <defs>
+                        <linearGradient id={`ga${uid}`} x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor={k.color} stopOpacity={0.18} />
+                          <stop offset="100%" stopColor={k.color} stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <Tooltip
+                        contentStyle={{ background: C.cardBg, border: `1px solid ${C.cardBorder}`, borderRadius: 6, fontSize: 10, fontFamily: Fn.mono, padding: "4px 8px" }}
+                        labelStyle={{ fontSize: 9, color: C.cinzaChumbo, fontFamily: Fn.body }}
+                        itemStyle={{ color: k.color, fontWeight: 700 }}
+                        formatter={(val: any) => [val, k.label]}
+                      />
+                      <Area type="monotone" dataKey="value" stroke={k.color} strokeWidth={2} fill={`url(#ga${uid})`} dot={false} activeDot={{ r: 4, fill: k.color, strokeWidth: 0 }} />
+                    </AreaChart>
+                  </ResponsiveContainer>
                 </div>
               </div>
             );
@@ -553,29 +560,33 @@ export default function DashboardRHDedicado({ data }: Props) {
         <div style={{ display: "grid", gridTemplateColumns: mob ? "1fr" : "1fr 1fr", gap: mob ? 12 : 16, marginBottom: mob ? 16 : 24 }}>
           {/* Department distribution bar chart */}
           {(() => {
-            const max = Math.max(...topDeptCounts, 1);
-            const bw = 48, gp = 20, chartW = topDeptLabels.length * (bw + gp) - gp, chartH = 110;
+            const barData = topDeptLabels.map((label, i) => ({
+              name: label.length > 8 ? label.slice(0, 7) + "…" : label,
+              value: topDeptCounts[i],
+              fill: pipelineColors[i % pipelineColors.length],
+            }));
             return (
               <div style={{ background: C.cardBg, borderRadius: "12px 12px 12px 24px", border: `1px solid ${C.cardBorder}`, padding: mob ? 14 : 20, boxShadow: "0 1px 3px rgba(0,75,155,.04)" }} onMouseMove={trackMouse}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
                   <div><span style={{ fontSize: 13, fontWeight: 700, color: C.azulEscuro, fontFamily: Fn.title, display: "block" }}>Distribuição por Departamento</span><span style={{ fontSize: 10, color: C.cinzaChumbo }}>Top {topDeptLabels.length} departamentos{hasFilter ? " (filtrado)" : ""}</span></div>
                   <div style={{ width: 30, height: 30, borderRadius: 8, background: `${C.azulProfundo}0A`, display: "flex", alignItems: "center", justifyContent: "center" }}>{Ic.chart(14, C.azulProfundo)}</div>
                 </div>
-                <div style={{ display: "flex", justifyContent: "center" }}>
-                  <svg width={chartW + 40} height={chartH + 50} viewBox={`-20 -20 ${chartW + 40} ${chartH + 50}`}>
-                    <line x1={0} y1={chartH} x2={chartW} y2={chartH} stroke={C.cardBorder} strokeWidth=".5" />
-                    {topDeptLabels.map((label, i) => {
-                      const bh = Math.max(6, (topDeptCounts[i] / max) * chartH); const x = i * (bw + gp); const isH = hovPipeline === i;
-                      return <g key={i} onMouseEnter={() => setHovPipeline(i)} onMouseLeave={() => setHovPipeline(-1)} style={{ cursor: "pointer" }}>
-                        <rect x={x} y={-20} width={bw} height={chartH + 50} fill="transparent" />
-                        <rect x={x} y={chartH - bh} width={bw} height={bh} rx={6} fill={pipelineColors[i % pipelineColors.length]} opacity={isH ? 1 : 0.82} style={{ transition: "all .15s" }} />
-                        <text x={x + bw / 2} y={chartH - bh - 6} textAnchor="middle" fontSize="11" fontWeight="700" fill={C.azulEscuro} fontFamily={Fn.mono}>{topDeptCounts[i]}</text>
-                        <text x={x + bw / 2} y={chartH + 16} textAnchor="middle" fontSize="9" fill={isH ? pipelineColors[i % pipelineColors.length] : C.cinzaChumbo} fontFamily={Fn.body} fontWeight={isH ? 700 : 400}>{label.length > 8 ? label.slice(0, 7) + "…" : label}</text>
-                        {isH && <rect x={x - 2} y={chartH - bh - 2} width={bw + 4} height={bh + 4} rx={7} fill="none" stroke={pipelineColors[i % pipelineColors.length]} strokeWidth="1.5" strokeDasharray="4 2" />}
-                      </g>;
-                    })}
-                  </svg>
-                </div>
+                <ResponsiveContainer width="100%" height={180}>
+                  <BarChart data={barData} margin={{ top: 10, right: 10, bottom: 5, left: 10 }} onMouseMove={(state: any) => { if (state && state.activeTooltipIndex != null) setHovPipeline(state.activeTooltipIndex); }} onMouseLeave={() => setHovPipeline(-1)}>
+                    <XAxis dataKey="name" tick={{ fontSize: 9, fill: C.cinzaChumbo, fontFamily: Fn.body }} axisLine={{ stroke: C.cardBorder, strokeWidth: 0.5 }} tickLine={false} />
+                    <Tooltip
+                      contentStyle={{ background: C.cardBg, border: `1px solid ${C.cardBorder}`, borderRadius: 6, fontSize: 11, fontFamily: Fn.mono, padding: "6px 10px" }}
+                      labelStyle={{ fontSize: 10, color: C.cinzaChumbo, fontFamily: Fn.body }}
+                      formatter={(val: any) => [val, "Colaboradores"]}
+                      cursor={{ fill: `${C.azulProfundo}08` }}
+                    />
+                    <Bar dataKey="value" radius={[6, 6, 0, 0]} label={{ position: "top", fontSize: 11, fontWeight: 700, fill: C.azulEscuro, fontFamily: Fn.mono }}>
+                      {barData.map((entry, idx) => (
+                        <Cell key={idx} fill={entry.fill} opacity={hovPipeline === idx ? 1 : 0.82} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
                 {hovPipeline >= 0 && <ChartTooltip title={topDeptLabels[hovPipeline]} color={pipelineColors[hovPipeline % pipelineColors.length]} total={topDeptCounts[hovPipeline]} rows={(() => { const dept = topDeptLabels[hovPipeline]; const deptColabs = fColabs.filter((c: any) => c.departamento === dept); const ativosD = deptColabs.filter((c: any) => c.status === 1).length; const inativosD = deptColabs.length - ativosD; return [{ label: "Ativos", value: ativosD, color: C.verdeFloresta }, { label: "Inativos", value: inativosD, color: C.danger }].filter(r => r.value > 0); })()} x={tipPos.x} y={tipPos.y} />}
               </div>
             );
@@ -583,7 +594,7 @@ export default function DashboardRHDedicado({ data }: Props) {
 
           {/* Colaboradores por Status — Donut */}
           {(() => {
-            const size = 130, cx = size / 2, cy = size / 2, r = 48, sw = 14; const circ = 2 * Math.PI * r; let acc = 0;
+            const size = 130;
             return (
               <div style={{ background: C.cardBg, borderRadius: "10px 10px 10px 18px", border: `1px solid ${filter.status ? STATUS_COLAB_COLORS[filter.status] || C.cardBorder : C.cardBorder}`, padding: mob ? 14 : 20, boxShadow: "0 1px 3px rgba(0,75,155,.04)", transition: "border-color .15s" }} onMouseMove={trackMouse}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
@@ -591,11 +602,32 @@ export default function DashboardRHDedicado({ data }: Props) {
                   <div style={{ width: 30, height: 30, borderRadius: 8, background: `${C.azulProfundo}0A`, display: "flex", alignItems: "center", justifyContent: "center" }}>{Ic.users(14, C.azulProfundo)}</div>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: mob ? 12 : 20, justifyContent: "center" }}>
-                  <div style={{ position: "relative" }}>
-                    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ transform: "rotate(-90deg)" }}>
-                      <circle cx={cx} cy={cy} r={r} fill="none" stroke={C.cardBorder} strokeWidth={sw} />
-                      {colabByStatus.map((s, i) => { const pct = s.value / colabStatusTotal; const dash = pct * circ; const off = acc * circ; acc += pct; const isActive = filter.status === s.key; const isDimmed = filter.status && !isActive; return <circle key={i} cx={cx} cy={cy} r={r} fill="none" stroke={s.color} strokeWidth={hovColetaStatus === i ? sw + 4 : sw} strokeDasharray={`${dash} ${circ - dash}`} strokeDashoffset={-off} strokeLinecap="round" opacity={isDimmed ? .2 : 1} style={{ transition: "all .15s", cursor: "pointer" }} onClick={() => toggle("status", s.key)} onMouseEnter={() => setHovColetaStatus(i)} onMouseLeave={() => setHovColetaStatus(null)} /> })}
-                    </svg>
+                  <div style={{ position: "relative", width: size, height: size }}>
+                    <PieChart width={size} height={size}>
+                      <Pie
+                        data={colabByStatus}
+                        dataKey="value"
+                        cx={size / 2 - 1}
+                        cy={size / 2 - 1}
+                        innerRadius={34}
+                        outerRadius={48}
+                        startAngle={90}
+                        endAngle={-270}
+                        paddingAngle={1}
+                        strokeWidth={0}
+                        isAnimationActive={false}
+                        onMouseEnter={(_, idx) => setHovColetaStatus(idx)}
+                        onMouseLeave={() => setHovColetaStatus(null)}
+                        onClick={(_, idx) => toggle("status", colabByStatus[idx]?.key)}
+                        style={{ cursor: "pointer" }}
+                      >
+                        {colabByStatus.map((s, idx) => {
+                          const isActive = filter.status === s.key;
+                          const isDimmed = filter.status && !isActive;
+                          return <Cell key={idx} fill={s.color} opacity={isDimmed ? 0.2 : hovColetaStatus === idx ? 1 : 0.85} stroke="none" />;
+                        })}
+                      </Pie>
+                    </PieChart>
                     <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", pointerEvents: "none" }}>
                       {hovColetaStatus !== null ? <><span style={{ fontSize: 16, fontWeight: 800, fontFamily: Fn.title, color: colabByStatus[hovColetaStatus]?.color, lineHeight: 1 }}>{colabByStatus[hovColetaStatus]?.value}</span><span style={{ fontSize: 8, color: C.cinzaChumbo }}>{Math.round((colabByStatus[hovColetaStatus]?.value || 0) / colabStatusTotal * 100)}%</span></> : <><span style={{ fontSize: 20, fontWeight: 800, fontFamily: Fn.title, color: C.azulEscuro, lineHeight: 1 }}>{totalColabs}</span><span style={{ fontSize: 9, color: C.cinzaChumbo }}>total</span></>}
                     </div>
@@ -673,7 +705,7 @@ export default function DashboardRHDedicado({ data }: Props) {
         <div style={{ display: "grid", gridTemplateColumns: mob ? "1fr" : "1fr 1fr", gap: mob ? 12 : 16, marginBottom: mob ? 16 : 24 }}>
           {/* Distribuição por Status donut */}
           {(() => {
-            const size = 120, cx = size / 2, cy = size / 2, r = 44, sw = 14; const circ = 2 * Math.PI * r; let acc = 0;
+            const size = 120;
             return (
               <div style={{ background: C.cardBg, borderRadius: "10px 10px 10px 18px", border: `1px solid ${C.cardBorder}`, padding: mob ? 14 : 20, boxShadow: "0 1px 3px rgba(0,75,155,.04)", transition: "border-color .15s" }}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
@@ -681,11 +713,29 @@ export default function DashboardRHDedicado({ data }: Props) {
                   <div style={{ width: 30, height: 30, borderRadius: 8, background: `${C.amareloEscuro}0A`, display: "flex", alignItems: "center", justifyContent: "center" }}>{Ic.users(14, C.amareloEscuro)}</div>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: mob ? 12 : 24, justifyContent: "center" }}>
-                  <div style={{ position: "relative" }}>
-                    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ transform: "rotate(-90deg)" }}>
-                      <circle cx={cx} cy={cy} r={r} fill="none" stroke={C.cardBorder} strokeWidth={sw} />
-                      {statusDistrib.map((s, i) => { const pct = s.value / statusDistribTotal; const dash = pct * circ; const off = acc * circ; acc += pct; return <circle key={i} cx={cx} cy={cy} r={r} fill="none" stroke={s.color} strokeWidth={hovExpStatus === i ? sw + 4 : sw} strokeDasharray={`${dash} ${circ - dash}`} strokeDashoffset={-off} strokeLinecap="round" style={{ transition: "all .15s", cursor: "pointer" }} onMouseEnter={() => setHovExpStatus(i)} onMouseLeave={() => setHovExpStatus(null)} /> })}
-                    </svg>
+                  <div style={{ position: "relative", width: size, height: size }}>
+                    <PieChart width={size} height={size}>
+                      <Pie
+                        data={statusDistrib}
+                        dataKey="value"
+                        cx={size / 2 - 1}
+                        cy={size / 2 - 1}
+                        innerRadius={30}
+                        outerRadius={44}
+                        startAngle={90}
+                        endAngle={-270}
+                        paddingAngle={1}
+                        strokeWidth={0}
+                        isAnimationActive={false}
+                        onMouseEnter={(_, idx) => setHovExpStatus(idx)}
+                        onMouseLeave={() => setHovExpStatus(null)}
+                        style={{ cursor: "pointer" }}
+                      >
+                        {statusDistrib.map((s, idx) => (
+                          <Cell key={idx} fill={s.color} opacity={hovExpStatus === idx ? 1 : 0.85} stroke="none" />
+                        ))}
+                      </Pie>
+                    </PieChart>
                     <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", pointerEvents: "none" }}>
                       {hovExpStatus !== null ? <><span style={{ fontSize: 16, fontWeight: 800, fontFamily: Fn.title, color: statusDistrib[hovExpStatus]?.color, lineHeight: 1 }}>{statusDistrib[hovExpStatus]?.value}</span><span style={{ fontSize: 8, color: C.cinzaChumbo }}>{Math.round((statusDistrib[hovExpStatus]?.value || 0) / statusDistribTotal * 100)}%</span></> : <><span style={{ fontSize: 20, fontWeight: 800, fontFamily: Fn.title, color: C.azulEscuro, lineHeight: 1 }}>{totalColabs}</span><span style={{ fontSize: 9, color: C.cinzaChumbo }}>total</span></>}
                     </div>

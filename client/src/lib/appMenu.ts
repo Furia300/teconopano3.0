@@ -112,6 +112,8 @@ export const APP_MENU: AppMenuItem[] = [
     ],
   },
 
+  { icon: Box, label: "Estoque", href: "/estoque", perfis: ["administrador", "expedicao", "galpao", "michele"] },
+
   {
     icon: Truck,
     label: "Logística",

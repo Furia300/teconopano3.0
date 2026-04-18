@@ -195,6 +195,7 @@ let separacoes: any[] = [
 ];
 
 let producoes: any[] = [
+  // ─── Existentes ───
   { id: "p1", coletaId: "3", coletaNumero: 246, fornecedor: "HOTEL MAJESTIC", sala: "CORTE 01", tipoMaterial: "TOALHA", cor: "Branco", acabamento: "Corte-Reto", medida: "30x30 Cm", kilo: 120, pesoMedio: 0.5, qtdePacote: 240, unidadeSaida: "unidade", statusEstoque: "em_estoque", operador: "Lucas", dataCriacao: "2026-03-29T08:00:00Z" },
   { id: "p2", coletaId: "3", coletaNumero: 246, fornecedor: "HOTEL MAJESTIC", sala: "CORTE 03", tipoMaterial: "ENXOVAL", cor: "Branco", acabamento: "Overlock", medida: "50x50 Cm", kilo: 80, pesoMedio: 0.8, qtdePacote: 100, unidadeSaida: "unidade", statusEstoque: "em_estoque", operador: "Lucas", dataCriacao: "2026-03-29T09:30:00Z" },
   { id: "p3", coletaId: "4", coletaNumero: 245, fornecedor: "VLI LOGÍSTICA", sala: "CORTE VLI", tipoMaterial: "ESTOPA", cor: "Escuro", acabamento: "Sem Acabamento", medida: "", kilo: 400, pesoMedio: 0, qtdePacote: 0, unidadeSaida: "kilo", statusEstoque: "em_estoque", operador: "Rafael", dataCriacao: "2026-03-24T07:00:00Z" },
@@ -202,6 +203,33 @@ let producoes: any[] = [
   { id: "p5", coletaId: "2", coletaNumero: 247, fornecedor: "SUL AMERICANA", sala: "CORTE 02", tipoMaterial: "MALHA", cor: "Azul", acabamento: "Zig-Zag", medida: "40x40 Cm", kilo: 95, pesoMedio: 0.4, qtdePacote: 237, unidadeSaida: "unidade", statusEstoque: "pendente", operador: "Ana", dataCriacao: "2026-04-01T10:00:00Z" },
   { id: "p6", coletaId: "1", coletaNumero: 248, fornecedor: "ATMOSFERA GESTÃO", sala: "CORTE 04", tipoMaterial: "LENÇOL", cor: "Branco", acabamento: "Overlock", medida: "60x80 Cm", kilo: 180, pesoMedio: 1.2, qtdePacote: 150, unidadeSaida: "unidade", statusEstoque: "pendente", operador: "Marcos", dataCriacao: "2026-04-04T14:00:00Z" },
   { id: "p7", coletaId: "1", coletaNumero: 248, fornecedor: "ATMOSFERA GESTÃO", sala: "CORTE 05", tipoMaterial: "EDREDON", cor: "Colorido", acabamento: "Sem Acabamento", medida: "", kilo: 130, pesoMedio: 0, qtdePacote: 0, unidadeSaida: "kilo", statusEstoque: "pendente", operador: "Marcos", dataCriacao: "2026-04-04T15:00:00Z" },
+  // ─── Novos dados mock para gamificação ───
+  // Rafael — mais dias de produção (líder em kg)
+  { id: "p8", coletaId: "4", coletaNumero: 245, fornecedor: "VLI LOGÍSTICA", sala: "CORTE VLI", tipoMaterial: "ESTOPA", cor: "Escuro", acabamento: "Sem Acabamento", medida: "", kilo: 520, pesoMedio: 0, qtdePacote: 0, unidadeSaida: "kilo", statusEstoque: "em_estoque", operador: "Rafael", dataCriacao: "2026-04-07T07:00:00Z" },
+  { id: "p9", coletaId: "4", coletaNumero: 245, fornecedor: "VLI LOGÍSTICA", sala: "FAIXA", tipoMaterial: "GRU", cor: "Variado", acabamento: "Corte-Reto", medida: "", kilo: 280, pesoMedio: 0, qtdePacote: 0, unidadeSaida: "kilo", statusEstoque: "em_estoque", operador: "Rafael", dataCriacao: "2026-04-08T07:30:00Z" },
+  { id: "p10", coletaId: "3", coletaNumero: 246, fornecedor: "HOTEL MAJESTIC", sala: "CORTE VLI", tipoMaterial: "ESTOPA", cor: "Escuro", acabamento: "Sem Acabamento", medida: "", kilo: 310, pesoMedio: 0, qtdePacote: 0, unidadeSaida: "kilo", statusEstoque: "pendente", operador: "Rafael", dataCriacao: "2026-04-10T08:00:00Z" },
+  { id: "p11", coletaId: "1", coletaNumero: 248, fornecedor: "ATMOSFERA GESTÃO", sala: "CORTE VLI", tipoMaterial: "MALHA", cor: "Azul", acabamento: "Corte-Reto", medida: "30x30 Cm", kilo: 190, pesoMedio: 0.3, qtdePacote: 633, unidadeSaida: "unidade", statusEstoque: "pendente", operador: "Rafael", dataCriacao: "2026-04-14T07:00:00Z" },
+  // Lucas — segundo lugar
+  { id: "p12", coletaId: "1", coletaNumero: 248, fornecedor: "ATMOSFERA GESTÃO", sala: "CORTE 01", tipoMaterial: "TOALHA", cor: "Branco", acabamento: "Corte-Reto", medida: "30x30 Cm", kilo: 250, pesoMedio: 0.5, qtdePacote: 500, unidadeSaida: "unidade", statusEstoque: "em_estoque", operador: "Lucas", dataCriacao: "2026-04-07T08:00:00Z" },
+  { id: "p13", coletaId: "2", coletaNumero: 247, fornecedor: "SUL AMERICANA", sala: "CORTE 03", tipoMaterial: "FRONHA", cor: "Branco", acabamento: "Overlock", medida: "50x70 Cm", kilo: 160, pesoMedio: 0.3, qtdePacote: 533, unidadeSaida: "unidade", statusEstoque: "pendente", operador: "Lucas", dataCriacao: "2026-04-09T09:00:00Z" },
+  { id: "p14", coletaId: "3", coletaNumero: 246, fornecedor: "HOTEL MAJESTIC", sala: "CORTE 01", tipoMaterial: "LENÇOL", cor: "Branco", acabamento: "Overlock", medida: "60x80 Cm", kilo: 200, pesoMedio: 1.0, qtdePacote: 200, unidadeSaida: "unidade", statusEstoque: "em_estoque", operador: "Lucas", dataCriacao: "2026-04-11T08:00:00Z" },
+  { id: "p15", coletaId: "1", coletaNumero: 248, fornecedor: "ATMOSFERA GESTÃO", sala: "CORTE 03", tipoMaterial: "EDREDON", cor: "Colorido", acabamento: "Sem Acabamento", medida: "", kilo: 175, pesoMedio: 0, qtdePacote: 0, unidadeSaida: "kilo", statusEstoque: "pendente", operador: "Lucas", dataCriacao: "2026-04-14T10:00:00Z" },
+  // Marcos — terceiro lugar
+  { id: "p16", coletaId: "2", coletaNumero: 247, fornecedor: "SUL AMERICANA", sala: "CORTE 04", tipoMaterial: "LENÇOL", cor: "Branco", acabamento: "Overlock", medida: "60x80 Cm", kilo: 220, pesoMedio: 1.2, qtdePacote: 183, unidadeSaida: "unidade", statusEstoque: "pendente", operador: "Marcos", dataCriacao: "2026-04-07T14:00:00Z" },
+  { id: "p17", coletaId: "3", coletaNumero: 246, fornecedor: "HOTEL MAJESTIC", sala: "CORTE 05", tipoMaterial: "TOALHA", cor: "Branco", acabamento: "Corte-Reto", medida: "40x40 Cm", kilo: 145, pesoMedio: 0.6, qtdePacote: 241, unidadeSaida: "unidade", statusEstoque: "em_estoque", operador: "Marcos", dataCriacao: "2026-04-09T15:00:00Z" },
+  { id: "p18", coletaId: "4", coletaNumero: 245, fornecedor: "VLI LOGÍSTICA", sala: "CORTE 04", tipoMaterial: "UNIFORME", cor: "Azul", acabamento: "Zig-Zag", medida: "M", kilo: 90, pesoMedio: 0.45, qtdePacote: 200, unidadeSaida: "unidade", statusEstoque: "pendente", operador: "Marcos", dataCriacao: "2026-04-11T14:00:00Z" },
+  // Ana — quarto lugar
+  { id: "p19", coletaId: "1", coletaNumero: 248, fornecedor: "ATMOSFERA GESTÃO", sala: "CORTE 02", tipoMaterial: "MALHA", cor: "Azul", acabamento: "Zig-Zag", medida: "40x40 Cm", kilo: 110, pesoMedio: 0.4, qtdePacote: 275, unidadeSaida: "unidade", statusEstoque: "pendente", operador: "Ana", dataCriacao: "2026-04-08T10:00:00Z" },
+  { id: "p20", coletaId: "3", coletaNumero: 246, fornecedor: "HOTEL MAJESTIC", sala: "CORTE 02", tipoMaterial: "TNT", cor: "Branco", acabamento: "Corte-Reto", medida: "30x30 Cm", kilo: 85, pesoMedio: 0.2, qtdePacote: 425, unidadeSaida: "unidade", statusEstoque: "em_estoque", operador: "Ana", dataCriacao: "2026-04-10T09:30:00Z" },
+  { id: "p21", coletaId: "2", coletaNumero: 247, fornecedor: "SUL AMERICANA", sala: "CORTE 02", tipoMaterial: "FRONHA", cor: "Escuro", acabamento: "Overlock", medida: "50x70 Cm", kilo: 70, pesoMedio: 0.3, qtdePacote: 233, unidadeSaida: "unidade", statusEstoque: "pendente", operador: "Ana", dataCriacao: "2026-04-14T11:00:00Z" },
+  // Pedro — quinto lugar
+  { id: "p22", coletaId: "4", coletaNumero: 245, fornecedor: "VLI LOGÍSTICA", sala: "FAIXA", tipoMaterial: "ESTOPA", cor: "Escuro", acabamento: "Sem Acabamento", medida: "", kilo: 180, pesoMedio: 0, qtdePacote: 0, unidadeSaida: "kilo", statusEstoque: "em_estoque", operador: "Pedro", dataCriacao: "2026-04-07T07:00:00Z" },
+  { id: "p23", coletaId: "1", coletaNumero: 248, fornecedor: "ATMOSFERA GESTÃO", sala: "FAIXA", tipoMaterial: "AVENTAL", cor: "Branco", acabamento: "Corte-Reto", medida: "", kilo: 65, pesoMedio: 0, qtdePacote: 0, unidadeSaida: "kilo", statusEstoque: "pendente", operador: "Pedro", dataCriacao: "2026-04-10T07:30:00Z" },
+  // João — sexto lugar
+  { id: "p24", coletaId: "2", coletaNumero: 247, fornecedor: "SUL AMERICANA", sala: "CORTE 03", tipoMaterial: "GSY", cor: "Variado", acabamento: "Corte-Reto", medida: "30x30 Cm", kilo: 95, pesoMedio: 0.35, qtdePacote: 271, unidadeSaida: "unidade", statusEstoque: "pendente", operador: "João", dataCriacao: "2026-04-09T08:00:00Z" },
+  { id: "p25", coletaId: "3", coletaNumero: 246, fornecedor: "HOTEL MAJESTIC", sala: "CORTE 03", tipoMaterial: "TOALHA", cor: "Branco", acabamento: "Corte-Reto", medida: "50x50 Cm", kilo: 130, pesoMedio: 0.7, qtdePacote: 185, unidadeSaida: "unidade", statusEstoque: "em_estoque", operador: "João", dataCriacao: "2026-04-12T09:00:00Z" },
+  // Carlos — sétimo
+  { id: "p26", coletaId: "1", coletaNumero: 248, fornecedor: "ATMOSFERA GESTÃO", sala: "CORTE 01", tipoMaterial: "MANTA ABSORÇÃO", cor: "Escuro", acabamento: "Sem Acabamento", medida: "", kilo: 200, pesoMedio: 0, qtdePacote: 0, unidadeSaida: "kilo", statusEstoque: "em_estoque", operador: "Carlos", dataCriacao: "2026-04-11T07:00:00Z" },
 ];
 
 let repanolList: any[] = [
@@ -218,49 +246,107 @@ let costureiraList: any[] = [
 ];
 
 let estoqueList: any[] = [
-  { id: "e1", coletaNumero: 246, fornecedor: "HOTEL MAJESTIC", descricaoProduto: "TOALHA Branco 30x30 Cm Corte-Reto", tipoMaterial: "TOALHA", cor: "Branco", medida: "30x30 Cm", acabamento: "Corte-Reto", kilo: 120, unidade: 240, pesoMedioPct: 0.5, unidadeMedida: "Pacote/Kilo", qtdeReservadaPacote: 50, galpao: "Vicente", status: "Disponivel", statusMaterial: "", data: "2026-03-30T10:00:00Z" },
-  { id: "e2", coletaNumero: 246, fornecedor: "HOTEL MAJESTIC", descricaoProduto: "ENXOVAL Branco 50x50 Cm Overlock", tipoMaterial: "ENXOVAL", cor: "Branco", medida: "50x50 Cm", acabamento: "Overlock", kilo: 80, unidade: 100, pesoMedioPct: 0.8, unidadeMedida: "Pacote/Kilo", qtdeReservadaPacote: 0, galpao: "Vicente", status: "Disponivel", statusMaterial: "", data: "2026-03-30T11:00:00Z" },
-  { id: "e3", coletaNumero: 245, fornecedor: "VLI LOGÍSTICA", descricaoProduto: "ESTOPA Escuro", tipoMaterial: "ESTOPA", cor: "Escuro", medida: "", acabamento: "Sem Acabamento", kilo: 400, unidade: 0, pesoMedioPct: 0, unidadeMedida: "Kilo", qtdeReservadaPacote: 0, galpao: "Vicente", status: "Disponivel", statusMaterial: "", data: "2026-03-25T09:00:00Z" },
-  { id: "e4", coletaNumero: 245, fornecedor: "VLI LOGÍSTICA", descricaoProduto: "GRU Variado", tipoMaterial: "GRU", cor: "Variado", medida: "", acabamento: "Corte-Reto", kilo: 350, unidade: 0, pesoMedioPct: 0, unidadeMedida: "Kilo", qtdeReservadaPacote: 0, galpao: "Vicente", status: "Pendente", statusMaterial: "", data: "2026-03-25T10:00:00Z" },
-  { id: "e5", coletaNumero: 247, fornecedor: "SUL AMERICANA", descricaoProduto: "MALHA Azul 40x40 Cm Zig-Zag", tipoMaterial: "MALHA", cor: "Azul", medida: "40x40 Cm", acabamento: "Zig-Zag", kilo: 95, unidade: 237, pesoMedioPct: 0.4, unidadeMedida: "Pacote/Kilo", qtdeReservadaPacote: 100, galpao: "Vicente", status: "Reservado", statusMaterial: "", data: "2026-04-02T12:00:00Z" },
+  // ─── Produção original (p1-p7) ───
+  { id: "e1", producaoId: "p1", coletaNumero: 246, fornecedor: "HOTEL MAJESTIC", descricaoProduto: "TOALHA Branco 30x30 Cm Corte-Reto", tipoMaterial: "TOALHA", cor: "Branco", medida: "30x30 Cm", acabamento: "Corte-Reto", kilo: 120, unidade: 240, pesoMedioPct: 0.5, unidadeMedida: "Pacote/Kilo", qtdeReservadaPacote: 100, galpao: "Vicente", status: "Disponivel", statusMaterial: "", data: "2026-03-30T10:00:00Z" },
+  { id: "e2", producaoId: "p2", coletaNumero: 246, fornecedor: "HOTEL MAJESTIC", descricaoProduto: "ENXOVAL Branco 50x50 Cm Overlock", tipoMaterial: "ENXOVAL", cor: "Branco", medida: "50x50 Cm", acabamento: "Overlock", kilo: 80, unidade: 100, pesoMedioPct: 0.8, unidadeMedida: "Pacote/Kilo", qtdeReservadaPacote: 50, galpao: "Vicente", status: "Disponivel", statusMaterial: "", data: "2026-03-30T11:00:00Z" },
+  { id: "e3", producaoId: "p3", coletaNumero: 245, fornecedor: "VLI LOGÍSTICA", descricaoProduto: "ESTOPA Escuro Sem Acabamento", tipoMaterial: "ESTOPA", cor: "Escuro", medida: "", acabamento: "Sem Acabamento", kilo: 400, unidade: 0, pesoMedioPct: 0, unidadeMedida: "Kilo", qtdeReservadaPacote: 0, galpao: "Vicente", status: "Disponivel", statusMaterial: "", data: "2026-03-25T09:00:00Z" },
+  { id: "e4", producaoId: "p4", coletaNumero: 245, fornecedor: "VLI LOGÍSTICA", descricaoProduto: "GRU Variado Corte-Reto", tipoMaterial: "GRU", cor: "Variado", medida: "", acabamento: "Corte-Reto", kilo: 350, unidade: 0, pesoMedioPct: 0, unidadeMedida: "Kilo", qtdeReservadaPacote: 0, galpao: "Vicente", status: "Reservado", statusMaterial: "", data: "2026-03-25T10:00:00Z" },
+  { id: "e5", producaoId: "p5", coletaNumero: 247, fornecedor: "SUL AMERICANA", descricaoProduto: "MALHA Azul 40x40 Cm Zig-Zag", tipoMaterial: "MALHA", cor: "Azul", medida: "40x40 Cm", acabamento: "Zig-Zag", kilo: 95, unidade: 237, pesoMedioPct: 0.4, unidadeMedida: "Pacote/Kilo", qtdeReservadaPacote: 237, galpao: "Vicente", status: "Reservado", statusMaterial: "", data: "2026-04-02T12:00:00Z" },
+  { id: "e6", producaoId: "p6", coletaNumero: 248, fornecedor: "ATMOSFERA GESTÃO", descricaoProduto: "LENÇOL Branco 60x80 Cm Overlock", tipoMaterial: "LENÇOL", cor: "Branco", medida: "60x80 Cm", acabamento: "Overlock", kilo: 180, unidade: 150, pesoMedioPct: 1.2, unidadeMedida: "Pacote/Kilo", qtdeReservadaPacote: 0, galpao: "Vicente", status: "Disponivel", statusMaterial: "", data: "2026-04-05T10:00:00Z" },
+  { id: "e7", producaoId: "p7", coletaNumero: 248, fornecedor: "ATMOSFERA GESTÃO", descricaoProduto: "EDREDON Colorido", tipoMaterial: "EDREDON", cor: "Colorido", medida: "", acabamento: "Sem Acabamento", kilo: 130, unidade: 0, pesoMedioPct: 0, unidadeMedida: "Kilo", qtdeReservadaPacote: 0, galpao: "Vicente", status: "Disponivel", statusMaterial: "", data: "2026-04-05T11:00:00Z" },
+  // ─── Novos da produção expandida (p8-p26) ───
+  { id: "e8", producaoId: "p8", coletaNumero: 245, fornecedor: "VLI LOGÍSTICA", descricaoProduto: "ESTOPA Escuro Sem Acabamento", tipoMaterial: "ESTOPA", cor: "Escuro", medida: "", acabamento: "Sem Acabamento", kilo: 520, unidade: 0, pesoMedioPct: 0, unidadeMedida: "Kilo", qtdeReservadaPacote: 0, galpao: "Vicente", status: "Disponivel", statusMaterial: "", data: "2026-04-07T12:00:00Z" },
+  { id: "e9", producaoId: "p9", coletaNumero: 245, fornecedor: "VLI LOGÍSTICA", descricaoProduto: "GRU Variado Corte-Reto", tipoMaterial: "GRU", cor: "Variado", medida: "", acabamento: "Corte-Reto", kilo: 280, unidade: 0, pesoMedioPct: 0, unidadeMedida: "Kilo", qtdeReservadaPacote: 0, galpao: "Vicente", status: "Disponivel", statusMaterial: "", data: "2026-04-08T12:00:00Z" },
+  { id: "e10", producaoId: "p12", coletaNumero: 248, fornecedor: "ATMOSFERA GESTÃO", descricaoProduto: "TOALHA Branco 30x30 Cm Corte-Reto", tipoMaterial: "TOALHA", cor: "Branco", medida: "30x30 Cm", acabamento: "Corte-Reto", kilo: 250, unidade: 500, pesoMedioPct: 0.5, unidadeMedida: "Pacote/Kilo", qtdeReservadaPacote: 200, galpao: "Vicente", status: "Disponivel", statusMaterial: "", data: "2026-04-07T14:00:00Z" },
+  { id: "e11", producaoId: "p13", coletaNumero: 247, fornecedor: "SUL AMERICANA", descricaoProduto: "FRONHA Branco 50x70 Cm Overlock", tipoMaterial: "FRONHA", cor: "Branco", medida: "50x70 Cm", acabamento: "Overlock", kilo: 160, unidade: 533, pesoMedioPct: 0.3, unidadeMedida: "Pacote/Kilo", qtdeReservadaPacote: 0, galpao: "Vicente", status: "Disponivel", statusMaterial: "", data: "2026-04-09T14:00:00Z" },
+  { id: "e12", producaoId: "p14", coletaNumero: 246, fornecedor: "HOTEL MAJESTIC", descricaoProduto: "LENÇOL Branco 60x80 Cm Overlock", tipoMaterial: "LENÇOL", cor: "Branco", medida: "60x80 Cm", acabamento: "Overlock", kilo: 200, unidade: 200, pesoMedioPct: 1.0, unidadeMedida: "Pacote/Kilo", qtdeReservadaPacote: 200, galpao: "Vicente", status: "Reservado", statusMaterial: "", data: "2026-04-11T14:00:00Z" },
+  { id: "e13", producaoId: "p16", coletaNumero: 247, fornecedor: "SUL AMERICANA", descricaoProduto: "LENÇOL Branco 60x80 Cm Overlock", tipoMaterial: "LENÇOL", cor: "Branco", medida: "60x80 Cm", acabamento: "Overlock", kilo: 220, unidade: 183, pesoMedioPct: 1.2, unidadeMedida: "Pacote/Kilo", qtdeReservadaPacote: 0, galpao: "Vicente", status: "Disponivel", statusMaterial: "", data: "2026-04-08T10:00:00Z" },
+  { id: "e14", producaoId: "p17", coletaNumero: 246, fornecedor: "HOTEL MAJESTIC", descricaoProduto: "TOALHA Branco 40x40 Cm Corte-Reto", tipoMaterial: "TOALHA", cor: "Branco", medida: "40x40 Cm", acabamento: "Corte-Reto", kilo: 145, unidade: 241, pesoMedioPct: 0.6, unidadeMedida: "Pacote/Kilo", qtdeReservadaPacote: 241, galpao: "Vicente", status: "Reservado", statusMaterial: "", data: "2026-04-10T10:00:00Z" },
+  { id: "e15", producaoId: "p19", coletaNumero: 248, fornecedor: "ATMOSFERA GESTÃO", descricaoProduto: "MALHA Azul 40x40 Cm Zig-Zag", tipoMaterial: "MALHA", cor: "Azul", medida: "40x40 Cm", acabamento: "Zig-Zag", kilo: 110, unidade: 275, pesoMedioPct: 0.4, unidadeMedida: "Pacote/Kilo", qtdeReservadaPacote: 0, galpao: "Vicente", status: "Disponivel", statusMaterial: "", data: "2026-04-09T10:00:00Z" },
+  { id: "e16", producaoId: "p20", coletaNumero: 246, fornecedor: "HOTEL MAJESTIC", descricaoProduto: "TNT Branco 30x30 Cm Corte-Reto", tipoMaterial: "TNT", cor: "Branco", medida: "30x30 Cm", acabamento: "Corte-Reto", kilo: 85, unidade: 425, pesoMedioPct: 0.2, unidadeMedida: "Pacote/Kilo", qtdeReservadaPacote: 0, galpao: "Vicente", status: "Disponivel", statusMaterial: "", data: "2026-04-11T10:00:00Z" },
+  { id: "e17", producaoId: "p22", coletaNumero: 245, fornecedor: "VLI LOGÍSTICA", descricaoProduto: "ESTOPA Escuro Sem Acabamento", tipoMaterial: "ESTOPA", cor: "Escuro", medida: "", acabamento: "Sem Acabamento", kilo: 180, unidade: 0, pesoMedioPct: 0, unidadeMedida: "Kilo", qtdeReservadaPacote: 0, galpao: "Vicente", status: "Disponivel", statusMaterial: "", data: "2026-04-08T10:00:00Z" },
+  { id: "e18", producaoId: "p25", coletaNumero: 247, fornecedor: "SUL AMERICANA", descricaoProduto: "TOALHA Branco 50x50 Cm Corte-Reto", tipoMaterial: "TOALHA", cor: "Branco", medida: "50x50 Cm", acabamento: "Corte-Reto", kilo: 130, unidade: 185, pesoMedioPct: 0.7, unidadeMedida: "Pacote/Kilo", qtdeReservadaPacote: 0, galpao: "Vicente", status: "Disponivel", statusMaterial: "", data: "2026-04-13T10:00:00Z" },
+  { id: "e19", producaoId: "p26", coletaNumero: 248, fornecedor: "ATMOSFERA GESTÃO", descricaoProduto: "MANTA ABSORÇÃO Escuro", tipoMaterial: "MANTA ABSORÇÃO", cor: "Escuro", medida: "", acabamento: "Sem Acabamento", kilo: 200, unidade: 0, pesoMedioPct: 0, unidadeMedida: "Kilo", qtdeReservadaPacote: 0, galpao: "Vicente", status: "Disponivel", statusMaterial: "", data: "2026-04-12T10:00:00Z" },
+  { id: "e20", producaoId: "p18", coletaNumero: 245, fornecedor: "VLI LOGÍSTICA", descricaoProduto: "UNIFORME Azul M Zig-Zag", tipoMaterial: "UNIFORME", cor: "Azul", medida: "M", acabamento: "Zig-Zag", kilo: 90, unidade: 200, pesoMedioPct: 0.45, unidadeMedida: "Pacote/Kilo", qtdeReservadaPacote: 200, galpao: "Vicente", status: "Reservado", statusMaterial: "", data: "2026-04-12T14:00:00Z" },
 ];
 
 let clientesList: any[] = [
-  { id: "cl1", nome: "INDÚSTRIA MEGA STEEL", cnpj: "11.111.111/0001-01", contato: "(11) 3000-1000", email: "compras@megasteel.com" },
-  { id: "cl2", nome: "OFICINA RÁPIDA AUTO", cnpj: "22.222.222/0001-02", contato: "(13) 3000-2000", email: "contato@rapidaauto.com" },
-  { id: "cl3", nome: "LIMPEZA TOTAL LTDA", cnpj: "33.333.333/0001-03", contato: "(11) 3000-3000", email: "pedidos@limpezatotal.com" },
-  { id: "cl4", nome: "PETROBRÁS - CUBATÃO", cnpj: "44.444.444/0001-04", contato: "(13) 3000-4000", email: "suprimentos@petrobras.com" },
-  { id: "cl5", nome: "PORTO DE SANTOS SA", cnpj: "55.555.555/0001-05", contato: "(13) 3000-5000", email: "compras@portosantos.com" },
+  { id: "cl1", nome: "MARAMAR VEICULOS LTDA", cnpj: "02498597000171", contato: "(13) 3261-5000", email: "compras@maramar.com.br", cidade: "Santos", estado: "SP" },
+  { id: "cl2", nome: "CIA ULTRAGAZ S/A", cnpj: "61602199001275", contato: "(13) 3219-4000", email: "suprimentos@ultragaz.com.br", cidade: "Santos", estado: "SP" },
+  { id: "cl3", nome: "BREDA TRANSPORTE E SERVIÇOS", cnpj: "05160935000310", contato: "(13) 3362-8000", email: "compras@breda.com.br", cidade: "Cubatão", estado: "SP" },
+  { id: "cl4", nome: "VIAÇÃO PIRACICABANA S/A", cnpj: "54360623005759", contato: "(11) 4330-1000", email: "frotas@vpsa.com.br", cidade: "São Bernardo do Campo", estado: "SP" },
+  { id: "cl5", nome: "SUCOCITRICO CUTRALE LTDA", cnpj: "61649810001806", contato: "(13) 3344-2000", email: "compras@cutrale.com.br", cidade: "Guarujá", estado: "SP" },
+  { id: "cl6", nome: "RANDON S/A IMPLEMENTOS", cnpj: "89086144000116", contato: "(54) 3209-2000", email: "suprimentos@randon.com.br", cidade: "Caxias do Sul", estado: "RS" },
+  { id: "cl7", nome: "AUTO VIAÇÃO ABC LTDA", cnpj: "59153569000130", contato: "(11) 4335-1000", email: "frotas@aviabc.com.br", cidade: "São Bernardo do Campo", estado: "SP" },
+  { id: "cl8", nome: "NOVA JVS GUINDASTE E TRANSPORTES", cnpj: "25101928000193", contato: "(13) 3468-3000", email: "operacional@novajvs.com.br", cidade: "São Vicente", estado: "SP" },
 ];
 
 let expedicoesList: any[] = [
-  { id: "ex1", clienteId: "cl1", nomeFantasia: "INDÚSTRIA MEGA STEEL", razaoSocial: "Mega Steel Ind. Ltda", cnpj: "11.111.111/0001-01", contato: "(11) 3000-1000", email: "compras@megasteel.com", endereco: "Rua Industrial, 500 - Cubatão/SP", descricaoProduto: "TOALHA Branco 30x30 Cm", tipoMaterial: "TOALHA", cor: "Branco", medida: "30x30 Cm", kilo: 50, kiloSolicitada: 50, unidade: 100, qtdePedido: 100, unidadeMedida: "Pacote / Kilo", statusPedido: "", statusEntrega: "aguardando_financeiro", statusFinanceiro: "pendente_aprovacao", statusNota: "pendente_emissao", statusMaterial: "", galpao: "Vicente", rota: "Rota Fixa", prioridade: "Normal", periodicidade: "Quinzenal", notaFiscal: "", observacaoEscritorio: "Cliente recorrente", observacaoGalpao: "", createdAt: "2026-04-04T09:00:00Z" },
-  { id: "ex2", clienteId: "cl4", nomeFantasia: "PETROBRÁS - CUBATÃO", razaoSocial: "Petróleo Brasileiro SA", cnpj: "44.444.444/0001-04", contato: "(13) 3000-4000", email: "suprimentos@petrobras.com", endereco: "Rod. Cônego Domênico, 1000 - Cubatão/SP", descricaoProduto: "ESTOPA Escuro", tipoMaterial: "ESTOPA", cor: "Escuro", medida: "", kilo: 200, kiloSolicitada: 200, unidade: 0, qtdePedido: 0, unidadeMedida: "Kilo", statusPedido: "", statusEntrega: "aguardando_nf", statusFinanceiro: "aprovado", statusNota: "pendente_emissao", statusMaterial: "", galpao: "Vicente", rota: "Spot", prioridade: "Urgente", periodicidade: "", notaFiscal: "", observacaoEscritorio: "Pedido urgente - Petrobrás", observacaoGalpao: "Material já separado no galpão", createdAt: "2026-04-03T14:00:00Z" },
-  { id: "ex3", clienteId: "cl2", nomeFantasia: "OFICINA RÁPIDA AUTO", razaoSocial: "Rápida Auto Serviços Ltda", cnpj: "22.222.222/0001-02", contato: "(13) 3000-2000", email: "contato@rapidaauto.com", endereco: "Av. Ana Costa, 300 - Santos/SP", descricaoProduto: "MALHA Azul 40x40 Cm", tipoMaterial: "MALHA", cor: "Azul", medida: "40x40 Cm", kilo: 30, kiloSolicitada: 30, unidade: 75, qtdePedido: 75, unidadeMedida: "Pacote / Kilo", statusPedido: "", statusEntrega: "pronto_entrega", statusFinanceiro: "aprovado", statusNota: "emitida", statusMaterial: "", galpao: "Vicente", rota: "Rota Fixa", prioridade: "Normal", periodicidade: "Semanal", notaFiscal: "NF-2026-0078", observacaoEscritorio: "", observacaoGalpao: "", createdAt: "2026-04-01T10:00:00Z" },
-  { id: "ex4", clienteId: "cl5", nomeFantasia: "PORTO DE SANTOS SA", razaoSocial: "Santos Port Authority SA", cnpj: "55.555.555/0001-05", contato: "(13) 3000-5000", email: "compras@portosantos.com", endereco: "Av. Portuária, 1 - Santos/SP", descricaoProduto: "GRU Variado", tipoMaterial: "GRU", cor: "Variado", medida: "", kilo: 150, kiloSolicitada: 150, unidade: 0, qtdePedido: 0, unidadeMedida: "Kilo", statusPedido: "", statusEntrega: "entregue", statusFinanceiro: "aprovado", statusNota: "emitida", statusMaterial: "", galpao: "Vicente", rota: "Spot", prioridade: "Normal", periodicidade: "", notaFiscal: "NF-2026-0065", observacaoEscritorio: "", observacaoGalpao: "Entregue em 02/04", createdAt: "2026-03-28T08:00:00Z" },
-  { id: "ex5", clienteId: "cl3", nomeFantasia: "LIMPEZA TOTAL LTDA", razaoSocial: "Limpeza Total Serviços Ltda", cnpj: "33.333.333/0001-03", contato: "(11) 3000-3000", email: "pedidos@limpezatotal.com", endereco: "Rua Limpeza, 100 - São Vicente/SP", descricaoProduto: "ENXOVAL Branco 50x50 Cm", tipoMaterial: "ENXOVAL", cor: "Branco", medida: "50x50 Cm", kilo: 40, kiloSolicitada: 40, unidade: 50, qtdePedido: 50, unidadeMedida: "Pacote / Kilo", statusPedido: "", statusEntrega: "pendente", statusFinanceiro: "pendente_aprovacao", statusNota: "pendente_emissao", statusMaterial: "", galpao: "Vicente", rota: "Retire Aqui", prioridade: "Baixa", periodicidade: "Mensal", notaFiscal: "", observacaoEscritorio: "Cliente retira no galpão", observacaoGalpao: "", createdAt: "2026-04-05T07:00:00Z" },
+  // ─── Entregues (com NF emitida) ───
+  { id: "ex1", clienteId: "cl3", estoqueOrigemId: "e3", nomeFantasia: "BREDA TRANSPORTE E SERVIÇOS", razaoSocial: "Breda Transportes S/A", cnpj: "05160935000310", contato: "(13) 3362-8000", email: "compras@breda.com.br", endereco: "Rod. Cônego Domênico, 1000 - Cubatão/SP", descricaoProduto: "ESTOPA Escuro", tipoMaterial: "ESTOPA", cor: "Escuro", medida: "", kilo: 200, kiloSolicitada: 200, unidade: 0, qtdePedido: 0, unidadeMedida: "Kilo", statusPedido: "", statusEntrega: "entregue", statusFinanceiro: "aprovado", statusNota: "emitida", statusMaterial: "", galpao: "Vicente", rota: "Rota Fixa", prioridade: "Normal", periodicidade: "Quinzenal", notaFiscal: "NF-2026-0041", observacaoEscritorio: "Contrato mensal - manutenção veículos", observacaoGalpao: "Entregue 01/04 — motorista José", createdAt: "2026-03-28T09:00:00Z" },
+  { id: "ex2", clienteId: "cl2", estoqueOrigemId: "e4", nomeFantasia: "CIA ULTRAGAZ S/A", razaoSocial: "Cia Ultragaz S.A.", cnpj: "61602199001275", contato: "(13) 3219-4000", email: "suprimentos@ultragaz.com.br", endereco: "Av. Portuária, 800 - Santos/SP", descricaoProduto: "GRU Variado", tipoMaterial: "GRU", cor: "Variado", medida: "", kilo: 150, kiloSolicitada: 150, unidade: 0, qtdePedido: 0, unidadeMedida: "Kilo", statusPedido: "", statusEntrega: "entregue", statusFinanceiro: "aprovado", statusNota: "emitida", statusMaterial: "", galpao: "Vicente", rota: "Rota Fixa", prioridade: "Normal", periodicidade: "Semanal", notaFiscal: "NF-2026-0055", observacaoEscritorio: "", observacaoGalpao: "Entregue 03/04 — motorista Carlos", createdAt: "2026-03-30T10:00:00Z" },
+  // ─── Pronto para entrega (NF emitida, financeiro aprovado) ───
+  { id: "ex3", clienteId: "cl1", estoqueOrigemId: "e1", nomeFantasia: "MARAMAR VEICULOS LTDA", razaoSocial: "Maramar Veículos Ltda", cnpj: "02498597000171", contato: "(13) 3261-5000", email: "compras@maramar.com.br", endereco: "Av. Ana Costa, 500 - Santos/SP", descricaoProduto: "TOALHA Branco 30x30 Cm", tipoMaterial: "TOALHA", cor: "Branco", medida: "30x30 Cm", kilo: 50, kiloSolicitada: 50, unidade: 100, qtdePedido: 100, unidadeMedida: "Pacote / Kilo", statusPedido: "", statusEntrega: "pronto_entrega", statusFinanceiro: "aprovado", statusNota: "emitida", statusMaterial: "", galpao: "Vicente", rota: "Rota Fixa", prioridade: "Normal", periodicidade: "Semanal", notaFiscal: "NF-2026-0078", observacaoEscritorio: "Cliente recorrente", observacaoGalpao: "Separado no galpão, aguardando motorista", createdAt: "2026-04-07T09:00:00Z" },
+  { id: "ex4", clienteId: "cl5", estoqueOrigemId: "e5", nomeFantasia: "SUCOCITRICO CUTRALE LTDA", razaoSocial: "Sucocítrico Cutrale Ltda", cnpj: "61649810001806", contato: "(13) 3344-2000", email: "compras@cutrale.com.br", endereco: "Rod. SP-055 km 266 - Guarujá/SP", descricaoProduto: "MALHA Azul 40x40 Cm", tipoMaterial: "MALHA", cor: "Azul", medida: "40x40 Cm", kilo: 95, kiloSolicitada: 95, unidade: 237, qtdePedido: 237, unidadeMedida: "Pacote / Kilo", statusPedido: "", statusEntrega: "pronto_entrega", statusFinanceiro: "aprovado", statusNota: "emitida", statusMaterial: "", galpao: "Vicente", rota: "Spot", prioridade: "Urgente", periodicidade: "", notaFiscal: "NF-2026-0082", observacaoEscritorio: "Pedido urgente — parada de manutenção", observacaoGalpao: "", createdAt: "2026-04-08T08:00:00Z" },
+  // ─── Aguardando NF (financeiro aprovado, NF pendente) ───
+  { id: "ex5", clienteId: "cl4", estoqueOrigemId: "e12", nomeFantasia: "VIAÇÃO PIRACICABANA S/A", razaoSocial: "Viação Piracicabana S.A.", cnpj: "54360623005759", contato: "(11) 4330-1000", email: "frotas@vpsa.com.br", endereco: "Rua Marechal, 200 - S.B.Campo/SP", descricaoProduto: "LENÇOL Branco 60x80 Cm", tipoMaterial: "LENÇOL", cor: "Branco", medida: "60x80 Cm", kilo: 200, kiloSolicitada: 200, unidade: 200, qtdePedido: 200, unidadeMedida: "Pacote / Kilo", statusPedido: "", statusEntrega: "aguardando_nf", statusFinanceiro: "aprovado", statusNota: "pendente_emissao", statusMaterial: "", galpao: "Vicente", rota: "Rota Fixa", prioridade: "Normal", periodicidade: "Mensal", notaFiscal: "", observacaoEscritorio: "Contrato mensal descartáveis", observacaoGalpao: "Material reservado", createdAt: "2026-04-10T09:00:00Z" },
+  { id: "ex6", clienteId: "cl6", estoqueOrigemId: "e14", nomeFantasia: "RANDON S/A IMPLEMENTOS", razaoSocial: "Randon S/A Implementos e Participações", cnpj: "89086144000116", contato: "(54) 3209-2000", email: "suprimentos@randon.com.br", endereco: "Av. Abramo Randon, 770 - Caxias do Sul/RS", descricaoProduto: "TOALHA Branco 40x40 Cm", tipoMaterial: "TOALHA", cor: "Branco", medida: "40x40 Cm", kilo: 145, kiloSolicitada: 145, unidade: 241, qtdePedido: 241, unidadeMedida: "Pacote / Kilo", statusPedido: "", statusEntrega: "aguardando_nf", statusFinanceiro: "aprovado", statusNota: "pendente_emissao", statusMaterial: "", galpao: "Vicente", rota: "Spot", prioridade: "Normal", periodicidade: "", notaFiscal: "", observacaoEscritorio: "Pedido Randon — envio via transportadora", observacaoGalpao: "", createdAt: "2026-04-11T10:00:00Z" },
+  // ─── Aguardando financeiro (pendente aprovação) ───
+  { id: "ex7", clienteId: "cl7", estoqueOrigemId: "e10", nomeFantasia: "AUTO VIAÇÃO ABC LTDA", razaoSocial: "Auto Viação ABC Ltda", cnpj: "59153569000130", contato: "(11) 4335-1000", email: "frotas@aviabc.com.br", endereco: "Rua Tasman, 100 - S.B.Campo/SP", descricaoProduto: "TOALHA Branco 30x30 Cm", tipoMaterial: "TOALHA", cor: "Branco", medida: "30x30 Cm", kilo: 120, kiloSolicitada: 120, unidade: 200, qtdePedido: 200, unidadeMedida: "Pacote / Kilo", statusPedido: "", statusEntrega: "aguardando_financeiro", statusFinanceiro: "pendente_aprovacao", statusNota: "pendente_emissao", statusMaterial: "", galpao: "Vicente", rota: "Rota Fixa", prioridade: "Normal", periodicidade: "Quinzenal", notaFiscal: "", observacaoEscritorio: "Novo pedido — aguardar aprovação Lane", observacaoGalpao: "", createdAt: "2026-04-12T08:00:00Z" },
+  { id: "ex8", clienteId: "cl8", estoqueOrigemId: "e19", nomeFantasia: "NOVA JVS GUINDASTE E TRANSPORTES", razaoSocial: "Nova JVS Guindastes e Transportes Ltda", cnpj: "25101928000193", contato: "(13) 3468-3000", email: "operacional@novajvs.com.br", endereco: "Rod. Padre Manoel da Nóbrega, 2000 - São Vicente/SP", descricaoProduto: "MANTA ABSORÇÃO Escuro", tipoMaterial: "MANTA ABSORÇÃO", cor: "Escuro", medida: "", kilo: 200, kiloSolicitada: 200, unidade: 0, qtdePedido: 0, unidadeMedida: "Kilo", statusPedido: "", statusEntrega: "aguardando_financeiro", statusFinanceiro: "pendente_aprovacao", statusNota: "pendente_emissao", statusMaterial: "", galpao: "Vicente", rota: "Retire Aqui", prioridade: "Urgente", periodicidade: "", notaFiscal: "", observacaoEscritorio: "Cliente retira — guindastes port.", observacaoGalpao: "", createdAt: "2026-04-14T09:00:00Z" },
+  { id: "ex9", clienteId: "cl3", estoqueOrigemId: "e8", nomeFantasia: "BREDA TRANSPORTE E SERVIÇOS", razaoSocial: "Breda Transportes S/A", cnpj: "05160935000310", contato: "(13) 3362-8000", email: "compras@breda.com.br", endereco: "Rod. Cônego Domênico, 1000 - Cubatão/SP", descricaoProduto: "ESTOPA Escuro", tipoMaterial: "ESTOPA", cor: "Escuro", medida: "", kilo: 300, kiloSolicitada: 300, unidade: 0, qtdePedido: 0, unidadeMedida: "Kilo", statusPedido: "", statusEntrega: "aguardando_financeiro", statusFinanceiro: "pendente_aprovacao", statusNota: "pendente_emissao", statusMaterial: "", galpao: "Vicente", rota: "Rota Fixa", prioridade: "Normal", periodicidade: "Quinzenal", notaFiscal: "", observacaoEscritorio: "Pedido recorrente Breda", observacaoGalpao: "", createdAt: "2026-04-14T10:00:00Z" },
+  // ─── Pendentes (recém-criados) ───
+  { id: "ex10", clienteId: "cl1", estoqueOrigemId: "e11", nomeFantasia: "MARAMAR VEICULOS LTDA", razaoSocial: "Maramar Veículos Ltda", cnpj: "02498597000171", contato: "(13) 3261-5000", email: "compras@maramar.com.br", endereco: "Av. Ana Costa, 500 - Santos/SP", descricaoProduto: "FRONHA Branco 50x70 Cm", tipoMaterial: "FRONHA", cor: "Branco", medida: "50x70 Cm", kilo: 60, kiloSolicitada: 60, unidade: 200, qtdePedido: 200, unidadeMedida: "Pacote / Kilo", statusPedido: "", statusEntrega: "pendente", statusFinanceiro: "pendente_aprovacao", statusNota: "pendente_emissao", statusMaterial: "", galpao: "Vicente", rota: "Rota Fixa", prioridade: "Baixa", periodicidade: "Mensal", notaFiscal: "", observacaoEscritorio: "Pedido extra do mês", observacaoGalpao: "", createdAt: "2026-04-15T08:00:00Z" },
+  { id: "ex11", clienteId: "cl4", estoqueOrigemId: "e20", nomeFantasia: "VIAÇÃO PIRACICABANA S/A", razaoSocial: "Viação Piracicabana S.A.", cnpj: "54360623005759", contato: "(11) 4330-1000", email: "frotas@vpsa.com.br", endereco: "Rua Marechal, 200 - S.B.Campo/SP", descricaoProduto: "UNIFORME Azul M", tipoMaterial: "UNIFORME", cor: "Azul", medida: "M", kilo: 90, kiloSolicitada: 90, unidade: 200, qtdePedido: 200, unidadeMedida: "Pacote / Kilo", statusPedido: "", statusEntrega: "pendente", statusFinanceiro: "pendente_aprovacao", statusNota: "pendente_emissao", statusMaterial: "", galpao: "Vicente", rota: "Rota Fixa", prioridade: "Normal", periodicidade: "Mensal", notaFiscal: "", observacaoEscritorio: "Uniformes para motoristas", observacaoGalpao: "", createdAt: "2026-04-15T09:00:00Z" },
+  { id: "ex12", clienteId: "cl2", estoqueOrigemId: "e9", nomeFantasia: "CIA ULTRAGAZ S/A", razaoSocial: "Cia Ultragaz S.A.", cnpj: "61602199001275", contato: "(13) 3219-4000", email: "suprimentos@ultragaz.com.br", endereco: "Av. Portuária, 800 - Santos/SP", descricaoProduto: "GRU Variado", tipoMaterial: "GRU", cor: "Variado", medida: "", kilo: 280, kiloSolicitada: 280, unidade: 0, qtdePedido: 0, unidadeMedida: "Kilo", statusPedido: "", statusEntrega: "pendente", statusFinanceiro: "pendente_aprovacao", statusNota: "pendente_emissao", statusMaterial: "", galpao: "Vicente", rota: "Rota Fixa", prioridade: "Normal", periodicidade: "Semanal", notaFiscal: "", observacaoEscritorio: "Reposição semanal", observacaoGalpao: "", createdAt: "2026-04-16T08:00:00Z" },
 ];
 
 let producaoDiariaList: any[] = [
+  // ─── 05/04 ───
   { id: "pd1", data: "2026-04-05", nomeDupla: "GLINS/KAYAN", sala: "O4", material: "BR CASAL", horarioInicio: "08:40", horarioFim: "10:55", status: "completa", assinatura: "Kayan", encarregado: "Nodin", observacao: "", createdAt: "2026-04-05T08:40:00Z" },
   { id: "pd2", data: "2026-04-05", nomeDupla: "GLINS/KAYAN", sala: "O4", material: "CASAL RVA", horarioInicio: "11:10", horarioFim: "12:30", status: "completa", assinatura: "Kayan", encarregado: "Nodin", observacao: "", createdAt: "2026-04-05T11:10:00Z" },
   { id: "pd3", data: "2026-04-05", nomeDupla: "GLINS/KAYAN", sala: "O4", material: "C2 RVA", horarioInicio: "13:40", horarioFim: "16:00", status: "completa", assinatura: "Kayan", encarregado: "Nodin", observacao: "", createdAt: "2026-04-05T13:40:00Z" },
   { id: "pd4", data: "2026-04-05", nomeDupla: "EDISON/LUI", sala: "O5", material: "KING", horarioInicio: "08:30", horarioFim: "11:00", status: "completa", assinatura: "Edison", encarregado: "Nodin", observacao: "", createdAt: "2026-04-05T08:30:00Z" },
   { id: "pd5", data: "2026-04-05", nomeDupla: "EDISON/LUI", sala: "O5", material: "MICROFIBRA", horarioInicio: "11:15", horarioFim: null, status: "incompleta", assinatura: "Edison", encarregado: "Nodin", observacao: "Material insuficiente", createdAt: "2026-04-05T11:15:00Z" },
   { id: "pd6", data: "2026-04-05", nomeDupla: "EDISON/LUI", sala: "COBERTÓRIO", material: "LAMBRELA", horarioInicio: "13:30", horarioFim: "15:45", status: "completa", assinatura: "Edison", encarregado: "Nodin", observacao: "", createdAt: "2026-04-05T13:30:00Z" },
+  // ─── 04/04 ───
   { id: "pd7", data: "2026-04-04", nomeDupla: "MARCOS/ANA", sala: "O3", material: "C2 LISA", horarioInicio: "08:00", horarioFim: "10:30", status: "completa", assinatura: "Marcos", encarregado: "Nodin", observacao: "", createdAt: "2026-04-04T08:00:00Z" },
   { id: "pd8", data: "2026-04-04", nomeDupla: "MARCOS/ANA", sala: "O3", material: "CASAL EUA", horarioInicio: "10:45", horarioFim: "12:15", status: "completa", assinatura: "Marcos", encarregado: "Nodin", observacao: "", createdAt: "2026-04-04T10:45:00Z" },
+  { id: "pd9", data: "2026-04-04", nomeDupla: "RAFAEL/PEDRO", sala: "CORTE VLI", material: "ESTOPA", horarioInicio: "07:00", horarioFim: "11:30", status: "completa", assinatura: "Rafael", encarregado: "Nodin", observacao: "", createdAt: "2026-04-04T07:00:00Z" },
+  { id: "pd10", data: "2026-04-04", nomeDupla: "RAFAEL/PEDRO", sala: "FAIXA", material: "GRU", horarioInicio: "13:00", horarioFim: "16:30", status: "completa", assinatura: "Rafael", encarregado: "Nodin", observacao: "", createdAt: "2026-04-04T13:00:00Z" },
+  { id: "pd11", data: "2026-04-04", nomeDupla: "LUCAS/JOÃO", sala: "CORTE 01", material: "TOALHA", horarioInicio: "08:00", horarioFim: "12:00", status: "completa", assinatura: "Lucas", encarregado: "Nodin", observacao: "", createdAt: "2026-04-04T08:00:00Z" },
+  { id: "pd12", data: "2026-04-04", nomeDupla: "LUCAS/JOÃO", sala: "CORTE 03", material: "FRONHA", horarioInicio: "13:00", horarioFim: "16:00", status: "completa", assinatura: "Lucas", encarregado: "Nodin", observacao: "", createdAt: "2026-04-04T13:00:00Z" },
+  // ─── 07/04 ───
+  { id: "pd13", data: "2026-04-07", nomeDupla: "RAFAEL/PEDRO", sala: "CORTE VLI", material: "ESTOPA", horarioInicio: "07:00", horarioFim: "11:00", status: "completa", assinatura: "Rafael", encarregado: "Nodin", observacao: "", createdAt: "2026-04-07T07:00:00Z" },
+  { id: "pd14", data: "2026-04-07", nomeDupla: "LUCAS/JOÃO", sala: "CORTE 01", material: "TOALHA", horarioInicio: "08:00", horarioFim: "12:00", status: "completa", assinatura: "Lucas", encarregado: "Nodin", observacao: "", createdAt: "2026-04-07T08:00:00Z" },
+  { id: "pd15", data: "2026-04-07", nomeDupla: "MARCOS/ANA", sala: "CORTE 04", material: "LENÇOL", horarioInicio: "08:00", horarioFim: "12:30", status: "completa", assinatura: "Marcos", encarregado: "Nodin", observacao: "", createdAt: "2026-04-07T08:00:00Z" },
+  { id: "pd16", data: "2026-04-07", nomeDupla: "GLINS/KAYAN", sala: "O4", material: "BR CASAL", horarioInicio: "08:30", horarioFim: "12:00", status: "completa", assinatura: "Kayan", encarregado: "Nodin", observacao: "", createdAt: "2026-04-07T08:30:00Z" },
+  { id: "pd17", data: "2026-04-07", nomeDupla: "EDISON/LUI", sala: "O5", material: "KING", horarioInicio: "08:00", horarioFim: "11:30", status: "completa", assinatura: "Edison", encarregado: "Nodin", observacao: "", createdAt: "2026-04-07T08:00:00Z" },
+  { id: "pd18", data: "2026-04-07", nomeDupla: "CARLOS/SILVA", sala: "CORTE 01", material: "MANTA ABSORÇÃO", horarioInicio: "13:00", horarioFim: "16:30", status: "completa", assinatura: "Carlos", encarregado: "Nodin", observacao: "", createdAt: "2026-04-07T13:00:00Z" },
+  // ─── 08/04 → 14/04 ───
+  { id: "pd19", data: "2026-04-08", nomeDupla: "RAFAEL/PEDRO", sala: "FAIXA", material: "GRU", horarioInicio: "07:00", horarioFim: "11:00", status: "completa", assinatura: "Rafael", encarregado: "Nodin", observacao: "", createdAt: "2026-04-08T07:00:00Z" },
+  { id: "pd20", data: "2026-04-08", nomeDupla: "MARCOS/ANA", sala: "CORTE 02", material: "MALHA", horarioInicio: "08:00", horarioFim: "12:00", status: "completa", assinatura: "Marcos", encarregado: "Nodin", observacao: "", createdAt: "2026-04-08T08:00:00Z" },
+  { id: "pd21", data: "2026-04-09", nomeDupla: "LUCAS/JOÃO", sala: "CORTE 03", material: "FRONHA", horarioInicio: "08:00", horarioFim: "12:00", status: "completa", assinatura: "Lucas", encarregado: "Nodin", observacao: "", createdAt: "2026-04-09T08:00:00Z" },
+  { id: "pd22", data: "2026-04-09", nomeDupla: "GLINS/KAYAN", sala: "O4", material: "C2 RVA", horarioInicio: "08:30", horarioFim: "12:30", status: "completa", assinatura: "Kayan", encarregado: "Nodin", observacao: "", createdAt: "2026-04-09T08:30:00Z" },
+  { id: "pd23", data: "2026-04-10", nomeDupla: "RAFAEL/PEDRO", sala: "CORTE VLI", material: "ESTOPA", horarioInicio: "07:00", horarioFim: "11:30", status: "completa", assinatura: "Rafael", encarregado: "Nodin", observacao: "", createdAt: "2026-04-10T07:00:00Z" },
+  { id: "pd24", data: "2026-04-10", nomeDupla: "EDISON/LUI", sala: "COBERTÓRIO", material: "LAMBRELA", horarioInicio: "08:00", horarioFim: "12:00", status: "completa", assinatura: "Edison", encarregado: "Nodin", observacao: "", createdAt: "2026-04-10T08:00:00Z" },
+  { id: "pd25", data: "2026-04-11", nomeDupla: "LUCAS/JOÃO", sala: "CORTE 01", material: "LENÇOL", horarioInicio: "08:00", horarioFim: "12:00", status: "completa", assinatura: "Lucas", encarregado: "Nodin", observacao: "", createdAt: "2026-04-11T08:00:00Z" },
+  { id: "pd26", data: "2026-04-11", nomeDupla: "CARLOS/SILVA", sala: "CORTE 01", material: "MANTA ABSORÇÃO", horarioInicio: "13:00", horarioFim: "16:00", status: "completa", assinatura: "Carlos", encarregado: "Nodin", observacao: "", createdAt: "2026-04-11T13:00:00Z" },
+  { id: "pd27", data: "2026-04-14", nomeDupla: "RAFAEL/PEDRO", sala: "CORTE VLI", material: "MALHA", horarioInicio: "07:00", horarioFim: "11:00", status: "completa", assinatura: "Rafael", encarregado: "Nodin", observacao: "", createdAt: "2026-04-14T07:00:00Z" },
+  { id: "pd28", data: "2026-04-14", nomeDupla: "LUCAS/JOÃO", sala: "CORTE 03", material: "EDREDON", horarioInicio: "08:00", horarioFim: "12:00", status: "completa", assinatura: "Lucas", encarregado: "Nodin", observacao: "", createdAt: "2026-04-14T08:00:00Z" },
+  { id: "pd29", data: "2026-04-14", nomeDupla: "MARCOS/ANA", sala: "CORTE 04", material: "UNIFORME", horarioInicio: "08:00", horarioFim: "11:30", status: "completa", assinatura: "Marcos", encarregado: "Nodin", observacao: "", createdAt: "2026-04-14T08:00:00Z" },
+  { id: "pd30", data: "2026-04-14", nomeDupla: "GLINS/KAYAN", sala: "O4", material: "CASAL RVA", horarioInicio: "08:30", horarioFim: "12:00", status: "completa", assinatura: "Kayan", encarregado: "Nodin", observacao: "", createdAt: "2026-04-14T08:30:00Z" },
 ];
 
-let nextProducaoDiariaId = 9;
+let nextProducaoDiariaId = 31;
 let nextColetaId = 6;
 let nextColetaNumero = 250;
 let nextSeparacaoId = 12;
-let nextProducaoId = 8;
+let nextProducaoId = 27;
 let nextRepanolId = 4;
 let nextCostureiraId = 5;
-let nextEstoqueId = 6;
-let nextExpedicaoId = 6;
+let nextEstoqueId = 21;
+let nextExpedicaoId = 13;
 
 /** Sessão em memória (dev) — substituir por cookie/session + DB. */
 type AuthSessionUser = { id: string; username: string; nome: string; perfil: string };
@@ -954,7 +1040,14 @@ export function registerRoutes(app: Express) {
   });
 
   app.get("/api/producoes", (_req: Request, res: Response) => {
-    res.json(producoes);
+    // Map kilo→pesoTotal, qtdePacote→quantidadePacotes for frontend compatibility
+    const mapped = producoes.map((p: any) => ({
+      ...p,
+      pesoTotal: p.pesoTotal ?? p.kilo ?? 0,
+      quantidadePacotes: p.quantidadePacotes ?? p.qtdePacote ?? 0,
+      createdAt: p.createdAt ?? p.dataCriacao ?? null,
+    }));
+    res.json(mapped);
   });
 
   app.post("/api/producoes", async (req: Request, res: Response) => {
@@ -1059,13 +1152,17 @@ export function registerRoutes(app: Express) {
   });
 
   // ==================== EXPEDICOES ====================
-  // ==================== EXPEDIÇÕES / PEDIDOS (Supabase) ====================
+  // ==================== EXPEDIÇÕES / PEDIDOS (Supabase + fallback in-memory) ====================
   app.get("/api/expedicoes", async (_req: Request, res: Response) => {
     try {
-      res.json(await dbListExpedicoes());
+      const dbData = await dbListExpedicoes();
+      // Merge: Supabase first, then in-memory items not already in DB
+      const dbIds = new Set((dbData || []).map((e: any) => e.id));
+      const merged = [...(dbData || []), ...expedicoesList.filter(e => !dbIds.has(e.id))];
+      res.json(merged);
     } catch (err) {
-      console.error("[GET /api/expedicoes]", err);
-      res.status(500).json({ message: "Erro ao listar pedidos" });
+      console.error("[GET /api/expedicoes] fallback to in-memory", err);
+      res.json(expedicoesList);
     }
   });
 
@@ -1180,13 +1277,17 @@ export function registerRoutes(app: Express) {
     }
   });
 
-  // ==================== ESTOQUE (Supabase) ====================
+  // ==================== ESTOQUE (Supabase + fallback in-memory) ====================
   app.get("/api/estoque", async (_req: Request, res: Response) => {
     try {
-      res.json(await dbListEstoque());
+      const dbData = await dbListEstoque();
+      // Merge: Supabase first, then in-memory items not already in DB
+      const dbIds = new Set((dbData || []).map((e: any) => e.id));
+      const merged = [...(dbData || []), ...estoqueList.filter(e => !dbIds.has(e.id))];
+      res.json(merged);
     } catch (err) {
-      console.error("[GET /api/estoque]", err);
-      res.status(500).json({ message: "Erro ao listar estoque" });
+      console.error("[GET /api/estoque] fallback to in-memory", err);
+      res.json(estoqueList);
     }
   });
 
@@ -1710,7 +1811,7 @@ export function registerRoutes(app: Express) {
     if (!phone) return res.status(400).json({ message: "Número obrigatório" });
 
     try {
-      const sent = await sendWhatsApp(phone, "✅ *Teste Tecnopano 3.0*\n\nNotificações do sistema estão funcionando!");
+      const sent = await sendWhatsApp(phone, "✅ *Teste Tecnopano 2.0*\n\nNotificações do sistema estão funcionando!");
       if (sent) {
         res.json({ ok: true, message: "Mensagem enviada" });
       } else {

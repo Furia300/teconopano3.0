@@ -12,7 +12,7 @@ export function DashboardPrintButton({ title }: { title?: string }) {
   const handlePrint = useCallback(() => {
     setPreparing(true);
     document.body.classList.add("printing-dashboard");
-    if (title) document.title = `${title} — Tecnopano 3.0`;
+    if (title) document.title = `${title} — Tecnopano 2.0`;
 
     // Pequeno delay para garantir que o CSS de print aplique
     requestAnimationFrame(() => {

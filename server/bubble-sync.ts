@@ -1,5 +1,5 @@
 /**
- * Bubble.io → Tecnopano 3.0 — Sincronização bidirecional (Bubble → Supabase)
+ * Bubble.io → Tecnopano 2.0 — Sincronização bidirecional (Bubble → Supabase)
  *
  * - Importação inicial: últimos 3 meses
  * - Polling automático: a cada 5 minutos busca registros modificados desde o último sync

@@ -1,5 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
-import { BarChart3, TrendingUp } from "lucide-react";
+import { LuChartBarIncreasing, LuTrendingUp } from "react-icons/lu";
+const BarChart3 = LuChartBarIncreasing, TrendingUp = LuTrendingUp;
 import { PageHeader } from "@/components/domain/PageHeader";
 import { StatsCard } from "@/components/domain/StatsCard";
 import { DashboardPrintButton } from "@/components/domain/DashboardPrintButton";
